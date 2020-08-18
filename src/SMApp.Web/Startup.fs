@@ -1,6 +1,7 @@
 namespace SMApp.Web
 
 open System
+
 open Microsoft.AspNetCore
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Hosting
@@ -8,7 +9,10 @@ open Microsoft.AspNetCore.Http
 open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
+
 open WebSharper.AspNetCore
+
+open Serilog
 
 type Startup() =
 
@@ -32,10 +36,14 @@ module Program =
     let BuildWebHost args =
         WebHost
             .CreateDefaultBuilder(args)
+            .UseSerilog()
             .UseStartup<Startup>()
             .Build()
 
     [<EntryPoint>]
     let main args =
-        BuildWebHost(args).Run()
+        let config = new LoggerConfiguration()
+        Log.Logger <- config.MinimumLevel.Debug().Enrich.FromLogContext().WriteTo.Console().CreateLogger()
+        do BuildWebHost(args).Run()
+        do Log.CloseAndFlush()
         0
