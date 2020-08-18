@@ -32,7 +32,7 @@ namespace SMApp
         static void Main(string[] args)
         {
             Args = args;
-            if (Args.Contains("cx") || Args.Contains("sm"))
+            if (Args.Contains("cui"))
             {
                 SetLogger(new SerilogLogger(console: false, debug: true));
             }
@@ -47,10 +47,7 @@ namespace SMApp
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             System.Console.CancelKeyPress += Console_CancelKeyPress;
-            if (!args.Contains("cx") && !args.Contains("sm"))
-            {
-                PrintLogo();
-            }
+            PrintLogo();
             if (args.Contains("--debug"))
             {
                 Info("Debug mode set.");

@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\build\Common.props" />
   <PropertyGroup>
@@ -6,27 +7,23 @@
     <Authors>Allister Beharry</Authors>
     <Product>SMApp</Product>
     <Company />
-    <AssemblyVersion>0.3.1.0</AssemblyVersion>
-    <FileVersion>0.3.1.0</FileVersion>
-    <Version>0.3.1</Version>
+    <AssemblyVersion>0.1.1.0</AssemblyVersion>
+    <FileVersion>0.1.1.0</FileVersion>
+    <Version>0.1.0</Version>
+    <UserSecretsId>43b7eb91-9cce-4bc2-b08e-7f8840a6800e</UserSecretsId>
   </PropertyGroup>
-
   <ItemGroup>
-    <None Remove="SMApp.cmd" />
     <None Remove="SMApp.log" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" PrivateAssets="All" Version="1.0.0" />
     <PackageReference Include="Colorful.Console" Version="1.2.9" />
     <PackageReference Include="CommandLineParser" Version="2.6.0" />
     <PackageReference Include="Figgle" Version="0.3.0" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\SMApp.Base\SMApp.Base.csproj" />
     <ProjectReference Include="..\SMApp.CUI.EDDI\SMApp.CUI.EDDI.csproj" />
     <ProjectReference Include="..\SMApp.Logger.Serilog\SMApp.Logger.Serilog.csproj" />
   </ItemGroup>
-
 </Project>

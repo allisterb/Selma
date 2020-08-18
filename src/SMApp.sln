@@ -13,6 +13,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMApp.CLI", "SMApp.CLI\SMAp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMApp.Logger.Serilog", "SMApp.Logger.Serilog\SMApp.Logger.Serilog.csproj", "{63314C9E-498C-4EF4-9B52-BC0CBC3BEF15}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{58D5A197-EB9E-40D4-B130-4209045A6C03}"
+	ProjectSection(SolutionItems) = preProject
+		..\build\Common.props = ..\build\Common.props
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

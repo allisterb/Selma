@@ -38,7 +38,7 @@ namespace SMApp
             {
                 Configuration = new ConfigurationBuilder()
                 .AddJsonFile("config.json", optional: true)
-                .AddUserSecrets("d24251d3-99ae-4afc-a9d8-bf9eafcc0ca0")
+                .AddUserSecrets("43b7eb91-9cce-4bc2-b08e-7f8840a6800e")
                 .Build();
             }
 
