@@ -1,0 +1,6 @@
+#!/bin/bash
+
+set -e
+cd /src/SMApp.CLI/bin/Debug/net461
+dotnet "SMApp.CLI.dll" "$@"
+cd ../../../../
