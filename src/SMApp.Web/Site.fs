@@ -16,17 +16,6 @@ module Templating =
 
     type MainTemplate = Templating.Template<"wwwroot/Main.html">
 
-    // Compute a menubar where the menu item for the given endpoint is active
-    let MenuBar (ctx: Context<Route>) endpoint : Doc list =
-        let ( => ) txt act =
-             li [if endpoint = act then yield attr.``class`` "active"] [
-                a [attr.href (ctx.Link act)] [text txt]
-             ]
-        [
-            "Home" => Home
-            "About" => About
-        ]
-
     let Main ctx action (title: string) (body: Doc list) =
         Content.Page(
             MainTemplate()
