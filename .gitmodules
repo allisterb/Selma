@@ -1,0 +1,3 @@
+[submodule "ext/terminal"]
+	path = ext/terminal
+	url = https://github.com/allisterb/terminal.git
