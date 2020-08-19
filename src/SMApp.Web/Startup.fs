@@ -16,7 +16,7 @@ open Serilog
 
 type Startup() =
 
-    member this.ConfigureServices(services: IServiceCollection) =
+    member this.ConfigureServices(services: IServiceCollection) = 
         services.AddSitelet(Site.Main)
             .AddAuthentication("WebSharper")
             .AddCookie("WebSharper", fun options -> ())

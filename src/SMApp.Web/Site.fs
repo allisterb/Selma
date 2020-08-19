@@ -1,9 +1,11 @@
 namespace SMApp.Web
 
 open WebSharper
+open WebSharper.JavaScript
 open WebSharper.Sitelets
 open WebSharper.UI
 open WebSharper.UI.Server
+open WebSharper.JQueryTerminal
 
 type Route =
     | [<EndPoint "/">] Home
@@ -32,26 +34,33 @@ module Templating =
                 .Body(body)
                 .Doc()
         )
-
+    
+   
 module Site =
     open WebSharper.UI.Html
 
     let HomePage ctx =
         Templating.Main ctx Home "Home" [
             h1 [] [text "Say Hi to the server!"]
-            div [] [client <@ Client.Main() @>]
+            client <@ Client.Term() @>
         ]
 
     let AboutPage ctx =
         Templating.Main ctx About "About" [
             h1 [] [text "About"]
             p [] [text "This is a template WebSharper client-server application."]
+           
         ]
+            
 
+    
     [<Website>]
-    let Main =
+    let Main = 
         Application.MultiPage (fun ctx endpoint ->
             match endpoint with
             | Home -> HomePage ctx
             | About -> AboutPage ctx
         )
+    
+    
+
