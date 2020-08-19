@@ -2,7 +2,7 @@
   "profiles": {
     "Victor.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "cx -b"
+      "commandLineArgs": "cui"
     }
   }
 }

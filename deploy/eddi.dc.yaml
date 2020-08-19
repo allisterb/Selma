@@ -1,0 +1,57 @@
+kind: DeploymentConfig
+apiVersion: apps.openshift.io/v1
+metadata:
+  name: eddi
+  namespace: victor
+spec:
+  triggers:
+    - type: ConfigChange
+  replicas: 1
+  revisionHistoryLimit: 10
+  test: false
+  selector:
+    name: eddi
+  template:
+    metadata:
+      labels:
+        name: eddi
+    spec:
+      containers:
+        - resources:
+            limits:
+              memory: 512Mi
+          terminationMessagePath: /dev/termination-log
+          name: eddi
+          livenessProbe:
+            tcpSocket:
+              port: 7070
+            initialDelaySeconds: 30
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          env:
+            - name: EDDI_ENV
+              value: development
+            - name: EDDI_JAVA_ENV_MONGODBUSER
+              value: mongodb.username=eddi
+            - name: EDDI_JAVA_ENV_MONGODBPASSWORD
+              value: mongodb.password=eddi
+            - name: EDDI_JAVA_ENV_MONGODBHOSTS
+              value: mongodb.hosts=172.30.48.222:27017
+          securityContext:
+            capabilities: {}
+            privileged: false
+          ports:
+            - containerPort: 7070
+              protocol: TCP
+          imagePullPolicy: IfNotPresent
+          terminationMessagePolicy: File
+          image: registry.connect.redhat.com/labsai/eddi
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      imagePullSecrets:
+        - name: redhat-connect
+      schedulerName: default-scheduler

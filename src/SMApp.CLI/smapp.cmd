@@ -2,9 +2,9 @@
 @setlocal
 set ERROR_CODE=0
 
-REM dotnet ".\bin\Debug\netcoreapp2.1\Victor.CLI.dll" %*
+REM dotnet ".\bin\Debug\netcoreapp2.1\SMApp.CLI.dll" %*
 cd bin\Debug\net461\
-"Victor.CLI.exe" %*
+"SMApp.CLI.exe" %*
 goto end
 
 :end

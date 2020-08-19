@@ -3,7 +3,7 @@
 set ERROR_CODE=0
 
 cd src\SMApp.CLI\bin\Debug\net461
-"SMApp.CLI.exe" %*
+SMApp.CLI.exe %*
 goto end
 
 :end

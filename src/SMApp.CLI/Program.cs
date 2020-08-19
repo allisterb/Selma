@@ -34,17 +34,12 @@ namespace SMApp
             Args = args;
             if (Args.Contains("cui"))
             {
-                SetLogger(new SerilogLogger(console: false, debug: true));
+                SetLogger(new SerilogLogger(console: true, debug: false));
             }
-            else if (Args.Contains("--debug"))
+            if (Args.Contains("--debug"))
             {
                 SetLogger(new SerilogLogger(console: true, debug: true));
             }
-            else
-            {
-                SetLogger(new SerilogLogger(console: true, debug: false));
-            }
-
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             System.Console.CancelKeyPress += Console_CancelKeyPress;
             PrintLogo();
@@ -125,6 +120,7 @@ namespace SMApp
         #region Methods
         static async Task CUI(CUIOptions o)
         {
+            var eddiServerUrl = Config("CUI_EDDI_SERVER_URL");
             EDDIClient c = new EDDIClient(Config("CUI_EDDI_SERVER_URL"), HttpClient);
             if (o.GetBots)
             {
