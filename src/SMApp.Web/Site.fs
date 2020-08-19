@@ -35,13 +35,11 @@ module Templating =
                 .Doc()
         )
     
-   
 module Site =
     open WebSharper.UI.Html
 
     let HomePage ctx =
         Templating.Main ctx Home "Home" [
-            h1 [] [text "Say Hi to the server!"]
             div [attr.id "main"] []
             client <@ Client.Term() @>
         ]
@@ -53,8 +51,6 @@ module Site =
            
         ]
             
-
-    
     [<Website>]
     let Main = 
         Application.MultiPage (fun ctx endpoint ->

@@ -53,4 +53,3 @@ module Client =
     let Term() = 
         Terminal("#main", interpreter, Opt) |> ignore
         Doc.Empty
-
