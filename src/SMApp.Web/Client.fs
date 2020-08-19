@@ -5,7 +5,8 @@ open WebSharper.JavaScript
 open WebSharper.UI
 open WebSharper.UI.Client
 open WebSharper.UI.Html
-open WebSharper.JQueryTerminal
+open SMApp.JQueryTerminal
+
 [<JavaScript>]
 module Client =
 
@@ -28,28 +29,44 @@ module Client =
         ]
 
 
-    let (|Welcome|Help|Other|) =
+    let (|Welcome|Help|Switch|Other|) =
           function
           | "help" -> Help
           | "welcome" -> Welcome
+          | "switch" -> Switch
           | _ -> Other
 
 
-    let interpreter =
-        FuncWithThis<Terminal, string->Unit>(fun this command ->
-            match command with
-            | Help -> this.Echo "Commands: help, clear, template"
-            | _ -> this.Echo "Com"
-        )
 
+    let i2 (this:Terminal) (command:string) = 
+            match command with
+            | Switch -> this.Pop()
+            | _ -> this.Pop()
+            
+        
+    
     let Opt =
         Options(
             Name = "Terminal1",
-            Prompt = "> ",
+            Prompt = ">> ",
             Greetings = "Welcome to the Terminal Test Page! See 'help' for the list of commands.",
             OnInit = (fun (t:Terminal) -> t.Enable(); t.Echo("Hey Dood, it's workin'!"))
+        )
+
+    let interpreter =
+        ThisAction<Terminal, string>(fun this command ->
+            match command with
+            | Help -> this.Echo "Commands: help, clear, template"
+            | Switch -> 
+                this.Push(fun (this:Terminal) (command:string) -> 
+                    match command with
+                    | Switch -> this.Pop()
+                    | _ -> this.Pop()
+                ,InterpreterOptions())
+            | _ -> this.Echo "Com"
         )
 
     let Term() = 
         Terminal("#main", interpreter, Opt) |> ignore
         Doc.Empty
+

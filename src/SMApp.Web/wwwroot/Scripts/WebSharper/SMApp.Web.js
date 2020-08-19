@@ -1,7 +1,7 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Web,Client,SC$1,WebSharper,UI,Doc,Var$1,Submitter,View,Remoting,AjaxRemotingProvider,Concurrency,AttrProxy;
+ var Global,SMApp,Web,Client,SC$1,WebSharper,UI,Doc,Var$1,Submitter,View,Remoting,AjaxRemotingProvider,Concurrency,AttrProxy,IntelliFactory,Runtime;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Web=SMApp.Web=SMApp.Web||{};
@@ -17,6 +17,8 @@
  AjaxRemotingProvider=Remoting&&Remoting.AjaxRemotingProvider;
  Concurrency=WebSharper&&WebSharper.Concurrency;
  AttrProxy=UI&&UI.AttrProxy;
+ IntelliFactory=Global.IntelliFactory;
+ Runtime=IntelliFactory&&IntelliFactory.Runtime;
  Client.Term=function()
  {
   var interpreter,options;
@@ -25,15 +27,22 @@
   Global.$("#main").terminal(interpreter,options);
   return Doc.get_Empty();
  };
+ Client.interpreter=function()
+ {
+  SC$1.$cctor();
+  return SC$1.interpreter;
+ };
  Client.Opt=function()
  {
   SC$1.$cctor();
   return SC$1.Opt;
  };
- Client.interpreter=function()
+ Client.i2=function(_this,command)
  {
-  SC$1.$cctor();
-  return SC$1.interpreter;
+  if(Client.Welcome(command).$==2)
+   _this.pop();
+  else
+   _this.pop();
  };
  Client.Welcome=function(a)
  {
@@ -43,8 +52,11 @@
   }:a==="welcome"?{
    $:0,
    $0:null
-  }:{
+  }:a==="switch"?{
    $:2,
+   $0:null
+  }:{
+   $:3,
    $0:null
   };
  };
@@ -56,7 +68,7 @@
   vReversed=View.MapAsync(function(a)
   {
    var b;
-   return a!=null&&a.$==1?(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.DoSomething:1815544093",[a.$0]):(b=null,Concurrency.Delay(function()
+   return a!=null&&a.$==1?(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.DoSomething:224511867",[a.$0]):(b=null,Concurrency.Delay(function()
    {
     return Concurrency.Return("");
    }));
@@ -70,14 +82,19 @@
  {
   var r;
   SC$1.$cctor=Global.ignore;
-  SC$1.interpreter=function(command)
-  {
-   return Client.Welcome(command).$==1?this.echo("Commands: help, clear, template"):this.echo("Com");
-  };
-  SC$1.Opt=(r={},r.name="Terminal1",r.prompt="> ",r.greetings="Welcome to the Terminal Test Page! See 'help' for the list of commands.",r.onInit=function(t)
+  SC$1.Opt=(r={},r.name="Terminal1",r.prompt=">> ",r.greetings="Welcome to the Terminal Test Page! See 'help' for the list of commands.",r.onInit=function(t)
   {
    t.enable();
    return t.echo("Hey Dood, it's workin'!");
   },r);
+  SC$1.interpreter=Runtime.ThisFunc(function(_this,command)
+  {
+   var a;
+   a=Client.Welcome(command);
+   return a.$==1?_this.echo("Commands: help, clear, template"):a.$==2?_this.push(function(command$1)
+   {
+    return Client.Welcome(command$1).$==2?this.pop():this.pop();
+   },{}):_this.echo("Com");
+  });
  };
 }());

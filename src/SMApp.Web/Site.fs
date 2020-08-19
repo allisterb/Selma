@@ -2,10 +2,11 @@ namespace SMApp.Web
 
 open WebSharper
 open WebSharper.JavaScript
+open WebSharper.Web
 open WebSharper.Sitelets
 open WebSharper.UI
 open WebSharper.UI.Server
-open WebSharper.JQueryTerminal
+
 
 type Route =
     | [<EndPoint "/">] Home
@@ -44,7 +45,8 @@ module Site =
     let Main = 
         Application.MultiPage (fun ctx endpoint ->
             match endpoint with
-            | Home -> HomePage ctx
+            | Home -> 
+                HomePage ctx
             | About -> AboutPage ctx
         )
     
