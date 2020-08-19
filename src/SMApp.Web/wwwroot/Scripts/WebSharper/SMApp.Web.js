@@ -23,7 +23,7 @@
   interpreter=Client.interpreter();
   options=Client.Opt();
   Global.$("#main").terminal(interpreter,options);
-  return Doc.Element("hr",[],[]);
+  return Doc.get_Empty();
  };
  Client.Opt=function()
  {
@@ -56,7 +56,7 @@
   vReversed=View.MapAsync(function(a)
   {
    var b;
-   return a!=null&&a.$==1?(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.DoSomething:1867586241",[a.$0]):(b=null,Concurrency.Delay(function()
+   return a!=null&&a.$==1?(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.DoSomething:1090234137",[a.$0]):(b=null,Concurrency.Delay(function()
    {
     return Concurrency.Return("");
    }));

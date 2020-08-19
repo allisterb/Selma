@@ -51,10 +51,6 @@ module Client =
         )
 
     let Term() = 
-        let j = Terminal("#main", interpreter, Opt)
-        hr [] []
-    
-   // let T () =
-    //    div [ on.afterRender(fun container ->]
-
+        Terminal("#main", interpreter, Opt) |> ignore
+        Doc.Empty
 

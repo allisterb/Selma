@@ -42,6 +42,7 @@ module Site =
     let HomePage ctx =
         Templating.Main ctx Home "Home" [
             h1 [] [text "Say Hi to the server!"]
+            div [attr.id "main"] []
             client <@ Client.Term() @>
         ]
 
