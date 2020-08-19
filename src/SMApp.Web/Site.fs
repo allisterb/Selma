@@ -14,7 +14,7 @@ type Route =
 module Templating =
     open WebSharper.UI.Html
 
-    type MainTemplate = Templating.Template<"Main.html">
+    type MainTemplate = Templating.Template<"wwwroot/Main.html">
 
     // Compute a menubar where the menu item for the given endpoint is active
     let MenuBar (ctx: Context<Route>) endpoint : Doc list =
