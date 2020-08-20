@@ -23,6 +23,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SMApp.Base.Fs\SMApp.Base.Fs.fsproj" />
+    <ProjectReference Include="..\SMApp.Core\SMApp.Core.fsproj" />
+    <ProjectReference Include="..\SMApp.CUI.EDDI\SMApp.CUI.EDDI.csproj" />
     <ProjectReference Include="..\SMApp.Logger.Serilog\SMApp.Logger.Serilog.csproj" />
   </ItemGroup>
 

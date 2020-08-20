@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 
-namespace SMApp
+namespace SMApp.EDDI
 {
     public partial class EDDIClient
     {

@@ -4,7 +4,7 @@ using System.Text;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-namespace SMApp
+namespace SMApp.EDDI
 {
     public class MillisecondEpochConverter : DateTimeConverterBase
     {

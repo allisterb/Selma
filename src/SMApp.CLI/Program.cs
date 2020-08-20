@@ -1135,11 +1135,26 @@ namespace SMApp
             {
                 try
                 {
-                    Info("Getting user {0}...", o.GetUser);
+                    Info("Getting user id for {0}...", o.GetUser);
                     c.ReadResponseAsString = true;
-                    var userid = await c.UserstoreUsersGetByNameAsync(o.GetUser);//(o.GetConversation, false, true, null);
+                    var u = await c.UserstoreUsersGetByNameAsync(o.GetUser);
+                    var userid = new Uri(u).Segments.Last();
                     Info("User id for {0} is {1}.", o.GetUser, userid);
-                    
+                    var user = await c.UserstoreUsersGetByIdAsync(userid);
+                    if (o.Json)
+                    {
+                        WriteInfo(EDDIClient.Serialize(user));
+                        WriteToFileIfRequired(o, EDDIClient.Serialize(user));
+                    }
+                    else
+                    {
+                        WriteInfo("User: {0}.", user.Username);
+                        WriteInfo("Pass: {0}.", user.Password);
+                        if (user.DisplayName != null)
+                        {
+                            WriteInfo("Display Name: {0}.", user.DisplayName);
+                        }
+                    }
                 }
                 catch (EDDIApiException eae)
                 {
