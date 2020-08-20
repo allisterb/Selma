@@ -10,25 +10,6 @@ open SMApp.JQueryTerminal
 [<JavaScript>]
 module Client =
 
-    
-    let Main () =
-        let rvInput = Var.Create ""
-        let submit = Submitter.CreateOption rvInput.View
-        let vReversed =
-            submit.View.MapAsync(function
-                | None -> async { return "" }
-                | Some input -> Server.DoSomething input
-            )
-        div [] [
-          
-            Doc.Input [] rvInput
-            Doc.Button "Send" [] submit.Trigger
-            hr [] []
-            h4 [attr.``class`` "text-muted"] [text "The server responded:"]
-            div [attr.``class`` "jumbotron"] [h1 [] [textView vReversed]]
-        ]
-
-
     let (|Welcome|Help|Switch|Other|) =
           function
           | "help" -> Help
@@ -36,37 +17,23 @@ module Client =
           | "switch" -> Switch
           | _ -> Other
 
-
-
-    let i2 (this:Terminal) (command:string) = 
+    let i2 (this:Terminal) (command:string)   = 
             match command with
-            | Switch -> this.Pop()
-            | _ -> this.Pop()
-            
-        
-    
-    let Opt =
+            | Help -> this.Echo("Commands: help, clear, template")
+            | Switch -> this.Echo "switch"
+            | _ -> this.Echo "Unknown"
+
+    let baseOpt =
         Options(
-            Name = "Terminal1",
-            Prompt = ">> ",
-            Greetings = "Welcome to the Terminal Test Page! See 'help' for the list of commands.",
-            OnInit = (fun (t:Terminal) -> t.Enable(); t.Echo("Hey Dood, it's workin'!"))
+            Name="_Base", 
+            Greetings = "Welcome to Selma",
+            OnInit = (fun (t:Terminal) -> t.Push(i2, Options(Name="Main", Prompt=">")))
         )
 
-    let interpreter =
-        ThisAction<Terminal, string>(fun this command ->
-            match command with
-            | Help -> this.Echo "Commands: help, clear, template"
-            | Switch -> 
-                this.Push(fun (this:Terminal) (command:string) -> 
-                    match command with
-                    | Switch -> this.Pop()
-                    | _ -> this.Pop()
-                ,InterpreterOptions())
-            | _ -> this.Echo "Com"
-        )
+    let baseInt =
+        FuncWithThis<Terminal, string->unit>(fun this command->())
 
     let Term() = 
-        Terminal("#main", interpreter, Opt) |> ignore
+        Terminal("#main", baseInt, baseOpt) |> ignore
         Doc.Empty
 

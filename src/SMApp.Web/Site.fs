@@ -30,8 +30,8 @@ module Site =
 
     let HomePage ctx =
         Templating.Main ctx Home "Home" [
-            div [attr.id "main"] []
-            client <@ Client.Term() @>
+            div [attr.id "main"] [client <@ Client.Term() @>]
+         
         ]
 
     let AboutPage ctx =

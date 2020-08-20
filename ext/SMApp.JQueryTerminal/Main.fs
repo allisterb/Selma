@@ -27,7 +27,7 @@ module Definition =
 
     let callbackSA = T<string[]> ^-> T<unit>
     let callbackS = T<string> ^-> T<unit>
-    let interpreterFunction = Terminal -* T<string> ^-> T<unit>
+    let interpreterFunction =  Terminal-*T<string>^-> T<unit>
     let greetingsCallback = callbackS ^-> T<unit>
 
     let Options =
@@ -148,7 +148,7 @@ module Definition =
             "resume" => T<unit> ^-> T<unit>
             "reset" => T<unit> ^-> T<unit>
             "paused" => T<unit> ^-> T<bool>
-            "push" => (interpreterFunction * InterpreterOptions) ^-> T<unit>
+            "push" => (interpreterFunction * Options) ^-> T<unit>
             "pop" => T<unit> ^-> T<unit>
         ]|>ignore
 
