@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="RestSharp" Version="106.11.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SMApp.Base\SMApp.Base.csproj" />
+  </ItemGroup>
+
+</Project>
