@@ -121,6 +121,15 @@ namespace SMApp
         static async Task CUI(CUIOptions o)
         {
             var eddiServerUrl = Config("CUI_EDDI_SERVER_URL");
+            if (string.IsNullOrEmpty(eddiServerUrl))
+            {
+                Error("Could not retrive the E.D.D.I server url from configuration using key {0}.", "CUI_EDDI_SERVER_URL");
+                Exit(ExitResult.NOT_FOUND_OR_SERVER_ERROR);
+            }
+            else
+            {
+                Info("E.D.D.I server is at {0}", eddiServerUrl);
+            }
             EDDIClient c = new EDDIClient(Config("CUI_EDDI_SERVER_URL"), HttpClient);
             if (o.GetBots)
             {
@@ -1097,6 +1106,53 @@ namespace SMApp
                 }
 
             }
+            else if (!string.IsNullOrEmpty(o.CreateUser))
+            {
+                Info("Creating user...");
+                await c.UserstoreUsersPostAsync(new User() { Username = o.CreateUser });
+                int s = EDDIClient.LastStatusCode;
+                if (s == 201)
+                {
+                    string l = EDDIClient.GetLastResponseHeader("Location").First();
+                    Info("Created user at {0}.", l);
+                    if (!string.IsNullOrEmpty(o.File))
+                    {
+                        var u = new Uri(l);
+                        var id = u.Segments.Last();
+                        var v = u.Query.Split('=').Last();
+                        var f = new FileInfo(o.File);
+                        var name = Path.Combine(f.Directory.FullName, "user." + id + "." + v + ".json");
+                        File.Move(f.FullName, name);
+                        Info("Renamed {0} to {1}.", f.FullName, name);
+                    }
+                }
+                else
+                {
+                    Error("Did not create user. HTTP status code {0}.", s);
+                }
+            }
+            else if (!string.IsNullOrEmpty(o.GetUser))
+            {
+                try
+                {
+                    Info("Getting user {0}...", o.GetUser);
+                    c.ReadResponseAsString = true;
+                    var userid = await c.UserstoreUsersGetByNameAsync(o.GetUser);//(o.GetConversation, false, true, null);
+                    Info("User id for {0} is {1}.", o.GetUser, userid);
+                    
+                }
+                catch (EDDIApiException eae)
+                {
+                    Error("Could not get user: {0}: {1}", o.GetUser, eae.Message);
+                    Exit(ExitResult.NOT_FOUND_OR_SERVER_ERROR);
+                }
+                catch (Exception e)
+                {
+                    Error(e, "Unknown error getting user {0}.", o.GetUser);
+                    Exit(ExitResult.UNHANDLED_EXCEPTION);
+                }
+            }
+
             else
             {
                 Error("Select the CUI operation and options you want to use.");

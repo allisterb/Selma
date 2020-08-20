@@ -127,5 +127,13 @@ namespace SMApp
         [Option("delete-convo", Required = false, HelpText = "Delete a conversation with the specified if.")]
         public string DeleteConversation { get; set; }
 
+        [Option("get-user", Required = false, HelpText = "Create a user with the specified input.")]
+        public string GetUser { get; set; }
+
+        [Option("create-user", Required = false, HelpText = "Create a user with the specified input.")]
+        public string CreateUser { get; set; }
+
+        [Option("update-user", Required = false, HelpText = "Update a user with the specified id from the specified input.")]
+        public string UpdateUser { get; set; }
     }
 }

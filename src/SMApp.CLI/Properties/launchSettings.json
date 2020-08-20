@@ -2,7 +2,11 @@
   "profiles": {
     "Victor.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "cui"
+      "commandLineArgs": "cui --get-user allister"
+    },
+    "SMApp.CLI": {
+      "commandName": "Project",
+      "commandLineArgs": "cui --get-user allister"
     }
   }
 }

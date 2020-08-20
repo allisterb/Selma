@@ -11452,7 +11452,7 @@ namespace SMApp
         /// <summary>Search user.</summary>
         /// <returns>successful operation</returns>
         /// <exception cref="EDDIApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<System.Uri> UserstoreUsersGetByNameAsync(string username)
+        public System.Threading.Tasks.Task<string> UserstoreUsersGetByNameAsync(string username)
         {
             return UserstoreUsersGetByNameAsync(username, System.Threading.CancellationToken.None);
         }
@@ -11461,7 +11461,7 @@ namespace SMApp
         /// <summary>Search user.</summary>
         /// <returns>successful operation</returns>
         /// <exception cref="EDDIApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<System.Uri> UserstoreUsersGetByNameAsync(string username, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<string> UserstoreUsersGetByNameAsync(string username, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/userstore/users?");
@@ -11499,17 +11499,21 @@ namespace SMApp
                         var status_ = ((int)response_.StatusCode).ToString();
                         if (status_ == "200")
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Uri>(response_, headers_).ConfigureAwait(false);
-                            return objectResponse_.Object;
+                            return await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
                         }
-                        else
-                        if (status_ != "200" && status_ != "204")
+                        else if (status_ == "404")
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new EDDIApiException($"The user {username} does not exist on the server.", (int)response_.StatusCode, responseData_, headers_, null);
+
+                        }
+                        else if (status_ != "200" && status_ != "204")
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
                             throw new EDDIApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
 
-                        return default(System.Uri);
+                        return default(string);
                     }
                     finally
                     {
