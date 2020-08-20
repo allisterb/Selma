@@ -10,6 +10,7 @@ namespace SMApp
 {
     public class EDDIApi : Api
     {
+        #region Constructor
         public EDDIApi() : base()
         {
             CUI_EDDI_SERVER_URL = Api.Config("CUI_EDDI_SERVER_URL");
@@ -23,6 +24,7 @@ namespace SMApp
                 Error("Could not retrieve the E.D.D.I server url using configuration key {0}.", "CUI_EDDI_SERVER_URL");
             }
         }
+        #endregion
 
         #region Properties
         public string CUI_EDDI_SERVER_URL { get; }

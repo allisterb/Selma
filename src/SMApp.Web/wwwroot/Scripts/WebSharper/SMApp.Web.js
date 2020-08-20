@@ -1,7 +1,7 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Web,User,Resource,Client,SC$1,WebSharper,UI,Doc,Concurrency,Remoting,AjaxRemotingProvider;
+ var Global,SMApp,Web,User,Resource,Client,SC$1,WebSharper,UI,Doc,Concurrency,Remoting,AjaxRemotingProvider,IntelliFactory,Runtime;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Web=SMApp.Web=SMApp.Web||{};
@@ -15,10 +15,11 @@
  Concurrency=WebSharper&&WebSharper.Concurrency;
  Remoting=WebSharper&&WebSharper.Remoting;
  AjaxRemotingProvider=Remoting&&Remoting.AjaxRemotingProvider;
- User.New=function(Id,UserName)
+ IntelliFactory=Global.IntelliFactory;
+ Runtime=IntelliFactory&&IntelliFactory.Runtime;
+ User.New=function(UserName)
  {
   return{
-   Id:Id,
    UserName:UserName
   };
  };
@@ -54,10 +55,15 @@
   a=Client.Welcome(command);
   a.$==1?_this.echo("Commands: help, clear, template"):a.$==0?Concurrency.Start((b=null,Concurrency.Delay(function()
   {
-   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetUser:-1788449364",["allister"]),function(a$1)
+   _this.disable();
+   return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetUser:2094211678",["allister"]),function(a$1)
    {
     return a$1!=null&&a$1.$==1?(_this.echo("bar"),Concurrency.Zero()):(_this.echo("foo"),Concurrency.Zero());
-   });
+   }),Concurrency.Delay(function()
+   {
+    _this.enable();
+    return Concurrency.Zero();
+   }));
   })),null):a.$==2?_this.echo("switch"):_this.echo("Unknown");
  };
  Client.Welcome=function(a)
@@ -88,9 +94,9 @@
     return Client.i2(this,c);
    },(r$1={},r$1.name="Main",r$1.prompt=">",r$1));
   },r);
-  SC$1.baseInt=function()
+  SC$1.baseInt=Runtime.ThisFunc(function()
   {
    return null;
-  };
+  });
  };
 }());

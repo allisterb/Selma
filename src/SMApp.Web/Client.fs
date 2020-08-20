@@ -25,9 +25,11 @@ module Client =
             | Help -> this.Echo("Commands: help, clear, template")
             | Welcome -> 
                 async {
+                    this.Disable()
                     match! Server.GetUser "allister" with
                     | None -> this.Echo "foo"
                     | Some _ -> this.Echo "bar"
+                    this.Enable()
                 } |> Async.Start
 
 
@@ -42,7 +44,7 @@ module Client =
         )
 
     let baseInt =
-        FuncWithThis<Terminal, string->unit>(fun this command->())
+        ThisAction<Terminal, string>(fun this command->())
 
     let Term() = 
         Terminal("#main", baseInt, baseOpt) |> ignore
