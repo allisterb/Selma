@@ -14,6 +14,8 @@ open WebSharper.AspNetCore
 
 open Serilog
 
+open SMApp
+
 type Startup() =
 
     member this.ConfigureServices(services: IServiceCollection) = 
@@ -44,6 +46,7 @@ module Program =
     let main args =
         let config = new LoggerConfiguration()
         Log.Logger <- config.MinimumLevel.Debug().Enrich.FromLogContext().WriteTo.Console().CreateLogger()
+        do Api.SetLogger(new SerilogLogger());
         do BuildWebHost(args).Run()
         do Log.CloseAndFlush()
         0

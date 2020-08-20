@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Models.fs" />
     <Compile Include="Server.fs" />
     <Compile Include="Client.fs" />
     <Compile Include="Site.fs" />
@@ -24,7 +25,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SMApp.Base.Fs\SMApp.Base.Fs.fsproj" />
-    <ProjectReference Include="..\SMApp.Core\SMApp.Core.fsproj" />
     <ProjectReference Include="..\SMApp.CUI.EDDI\SMApp.CUI.EDDI.csproj" />
     <ProjectReference Include="..\SMApp.Logger.Serilog\SMApp.Logger.Serilog.csproj" />
   </ItemGroup>

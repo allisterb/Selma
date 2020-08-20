@@ -13,6 +13,8 @@ using Figgle;
 using CommandLine;
 using CommandLine.Text;
 
+using SMApp.EDDI;
+
 namespace SMApp
 {
     #region Enums

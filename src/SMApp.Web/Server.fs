@@ -8,6 +8,7 @@ open SMApp
 open SMApp.EDDI
 
 module Server =        
+    
     let eddi = new EDDIApi()
     
     [<Rpc>]

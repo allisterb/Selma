@@ -14,7 +14,7 @@ namespace SMApp
             {
                 Config = new LoggerConfiguration().WriteTo.Console();
             }
-            Config = Config.WriteTo.File(logFileName ?? "Victor.log");
+            Config = Config.WriteTo.File(logFileName ?? "SMApp.log");
             if (debug)
             {
                 Config = Config.MinimumLevel.Debug();
@@ -26,6 +26,8 @@ namespace SMApp
         {
             Logger = logger;
         }
+
+        public SerilogLogger() : this(Log.Logger) {}
 
         public LoggerConfiguration Config { get; protected set; }
 

@@ -1,10 +1,12 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Web,Client,SC$1,WebSharper,UI,Doc,Concurrency,Remoting,AjaxRemotingProvider;
+ var Global,SMApp,Web,User,Resource,Client,SC$1,WebSharper,UI,Doc,Concurrency,Remoting,AjaxRemotingProvider;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Web=SMApp.Web=SMApp.Web||{};
+ User=Web.User=Web.User||{};
+ Resource=Web.Resource=Web.Resource||{};
  Client=Web.Client=Web.Client||{};
  SC$1=Global.StartupCode$SMApp_Web$Client=Global.StartupCode$SMApp_Web$Client||{};
  WebSharper=Global.WebSharper;
@@ -13,6 +15,21 @@
  Concurrency=WebSharper&&WebSharper.Concurrency;
  Remoting=WebSharper&&WebSharper.Remoting;
  AjaxRemotingProvider=Remoting&&Remoting.AjaxRemotingProvider;
+ User.New=function(Id,UserName)
+ {
+  return{
+   Id:Id,
+   UserName:UserName
+  };
+ };
+ Resource.New=function(Name,Description,Url)
+ {
+  return{
+   Name:Name,
+   Description:Description,
+   Url:Url
+  };
+ };
  Client.Term=function()
  {
   var interpreter,options;
@@ -37,7 +54,7 @@
   a=Client.Welcome(command);
   a.$==1?_this.echo("Commands: help, clear, template"):a.$==0?Concurrency.Start((b=null,Concurrency.Delay(function()
   {
-   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetUser:-1910473327",["allister"]),function(a$1)
+   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetUser:-1788449364",["allister"]),function(a$1)
    {
     return a$1!=null&&a$1.$==1?(_this.echo("bar"),Concurrency.Zero()):(_this.echo("foo"),Concurrency.Zero());
    });

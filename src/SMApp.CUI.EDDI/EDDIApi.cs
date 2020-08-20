@@ -33,7 +33,7 @@ namespace SMApp
         public async Task<User> GetUser(string userName)
         {
             ThrowIfNotInitialized();
-            using (var op = Begin("Getting user id for {0}...", userName))
+            using (var op = Begin("Get user id for {0}", userName))
             {
                 Client.ReadResponseAsString = true;
                 var u = await Client.UserstoreUsersGetByNameAsync(userName);

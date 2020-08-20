@@ -30,8 +30,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{2A
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "WebSharper.JQueryTerminal.Tests", "..\ext\terminal\WebSharper.JQueryTerminal.Tests\WebSharper.JQueryTerminal.Tests.fsproj", "{32DFA028-4476-406C-A0BA-6FB64C5BE8AB}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "SMApp.Core", "SMApp.Core\SMApp.Core.fsproj", "{DC238033-EB00-444B-8067-ED9D2790EB03}"
-EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "SMApp.Base.Fs", "SMApp.Base.Fs\SMApp.Base.Fs.fsproj", "{811DBC03-3079-4CF7-99E6-C28C620069A3}"
 EndProject
 Global
@@ -64,10 +62,6 @@ Global
 		{32DFA028-4476-406C-A0BA-6FB64C5BE8AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{32DFA028-4476-406C-A0BA-6FB64C5BE8AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{32DFA028-4476-406C-A0BA-6FB64C5BE8AB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DC238033-EB00-444B-8067-ED9D2790EB03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DC238033-EB00-444B-8067-ED9D2790EB03}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DC238033-EB00-444B-8067-ED9D2790EB03}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DC238033-EB00-444B-8067-ED9D2790EB03}.Release|Any CPU.Build.0 = Release|Any CPU
 		{811DBC03-3079-4CF7-99E6-C28C620069A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{811DBC03-3079-4CF7-99E6-C28C620069A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{811DBC03-3079-4CF7-99E6-C28C620069A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
