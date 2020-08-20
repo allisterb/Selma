@@ -1,17 +1,19 @@
 namespace SMApp.Web
 
-module Server =
-    
-    open FSharp.Control
+open FSharp.Control
 
-    open WebSharper
-    
-    open SMApp
-    open SMApp.EDDI
-    
+open WebSharper
+
+open SMApp
+open SMApp.EDDI
+
+module Server =        
     let eddi = new EDDIApi()
     
     [<Rpc>]
     let GetUser user = async {
-        return! eddi.GetUser user
+        let! u = eddi.GetUser user |> Async.AwaitTask
+        match u with
+        | null -> return None
+        | o -> return (o |> Some)
     }

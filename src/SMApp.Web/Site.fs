@@ -43,12 +43,8 @@ module Site =
             
     [<Website>]
     let Main = 
-        Application.MultiPage (fun ctx endpoint ->
-            match endpoint with
-            | Home -> 
-                HomePage ctx
+        Sitelet.Infer <| fun ctx route ->
+            match route with
+            | Home -> HomePage ctx
             | About -> AboutPage ctx
-        )
-    
-    
-
+        

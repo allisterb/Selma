@@ -1,7 +1,7 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Web,Client,SC$1,WebSharper,UI,Doc;
+ var Global,SMApp,Web,Client,SC$1,WebSharper,UI,Doc,Concurrency,Remoting,AjaxRemotingProvider;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Web=SMApp.Web=SMApp.Web||{};
@@ -10,6 +10,9 @@
  WebSharper=Global.WebSharper;
  UI=WebSharper&&WebSharper.UI;
  Doc=UI&&UI.Doc;
+ Concurrency=WebSharper&&WebSharper.Concurrency;
+ Remoting=WebSharper&&WebSharper.Remoting;
+ AjaxRemotingProvider=Remoting&&Remoting.AjaxRemotingProvider;
  Client.Term=function()
  {
   var interpreter,options;
@@ -30,9 +33,15 @@
  };
  Client.i2=function(_this,command)
  {
-  var a;
+  var a,b;
   a=Client.Welcome(command);
-  a.$==1?_this.echo("Commands: help, clear, template"):a.$==2?_this.echo("switch"):_this.echo("Unknown");
+  a.$==1?_this.echo("Commands: help, clear, template"):a.$==0?Concurrency.Start((b=null,Concurrency.Delay(function()
+  {
+   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetUser:-1910473327",["allister"]),function(a$1)
+   {
+    return a$1!=null&&a$1.$==1?(_this.echo("bar"),Concurrency.Zero()):(_this.echo("foo"),Concurrency.Zero());
+   });
+  })),null):a.$==2?_this.echo("switch"):_this.echo("Unknown");
  };
  Client.Welcome=function(a)
  {

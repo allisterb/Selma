@@ -1,10 +1,13 @@
 namespace SMApp.Web
 
+open FSharp.Control
+
 open WebSharper
 open WebSharper.JavaScript
 open WebSharper.UI
 open WebSharper.UI.Client
 open WebSharper.UI.Html
+
 open SMApp.JQueryTerminal
 
 [<JavaScript>]
@@ -20,6 +23,14 @@ module Client =
     let i2 (this:Terminal) (command:string)   = 
             match command with
             | Help -> this.Echo("Commands: help, clear, template")
+            | Welcome -> 
+                async {
+                    match! Server.GetUser "allister" with
+                    | None -> this.Echo "foo"
+                    | Some _ -> this.Echo "bar"
+                } |> Async.Start
+
+
             | Switch -> this.Echo "switch"
             | _ -> this.Echo "Unknown"
 
