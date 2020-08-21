@@ -16,18 +16,6 @@ module Client =
     
     /// Main interpreter
     let Main (term:Terminal) (command:string)  = 
-        /// Local commands
-        let (|Help|DebugOn|NonLocal|) =
-            function
-            | "help" -> Help
-            | "debug on" -> DebugOn
-            | _ -> NonLocal 
-    
-        let (|Hello|_|) : Meaning option -> Entity list option =
-            function
-            | Some(Intent "Hello" e) -> Some e
-            | _ -> None
-            
         match command with
         | Help -> term.Echo "This is the help commnd"
         | DebugOn -> term.Echo("Debug mode set."); debugMode <- true
@@ -35,8 +23,8 @@ module Client =
             do term.Disable()
             async {
                 match! Server.GetMeaning command with
-                | Hello(e::[]) when e.Role = "contact" -> term.Echo(sprintf "This is the hello intent. The user name is %s." e.Role)
-                | Hello(_) -> term.Echo("This is the hello intent but I don't know who the user is.")
+                | HelloUser u -> term.Echo(sprintf "This is the hello intent. The user name is %s." u.Value)
+                | Hello _ -> term.Echo("This is the hello intent but I don't know who the user is.")
                 | _ -> term.Echo "This is the whatever intent"
                 do term.Enable()
             } |> Async.Start 

@@ -16,3 +16,19 @@ module NLU =
                 |> Some
         | _ -> None
         
+    /// Local commands
+    let (|Help|DebugOn|NonLocal|) =
+        function
+        | "help" -> Help
+        | "debug on" -> DebugOn
+        | _ -> NonLocal 
+    
+    let (|Hello|_|) =
+        function
+        | Some(Intent "Hello" e) -> Some e
+        | _ -> None
+
+    let (|HelloUser|_|) =
+        function
+        | Hello (e::[]) when  e.Role = "contact" -> Some e
+        | _ -> None

@@ -95,6 +95,35 @@
    Url:Url
   };
  };
+ NLU.HelloUser=function(a)
+ {
+  var $1,a$1;
+  return(a$1=NLU.Hello(a),a$1!=null&&a$1.$==1&&(a$1.$0.$==1&&(a$1.$0.$1.$==0&&(a$1.$0.$0.get_Role()==="contact"&&($1=a$1.$0.$0,true)))))?{
+   $:1,
+   $0:$1
+  }:null;
+ };
+ NLU.Hello=function(a)
+ {
+  var $1,a$1;
+  return a!=null&&a.$==1&&(a$1=NLU.Intent("Hello",a.$0),a$1!=null&&a$1.$==1&&($1=a$1.$0,true))?{
+   $:1,
+   $0:$1
+  }:null;
+ };
+ NLU.Help=function(a)
+ {
+  return a==="help"?{
+   $:0,
+   $0:null
+  }:a==="debug on"?{
+   $:1,
+   $0:null
+  }:{
+   $:2,
+   $0:null
+  };
+ };
  NLU.Intent=function(name,a)
  {
   return a.get_TopIntent().get_Name()===name&&a.get_TopIntent().get_Confidence()>NLU.intentConfidenceThreshold()?{
@@ -150,36 +179,20 @@
  Client.Main=function(term,command)
  {
   var a,b;
-  function Hello(a$1)
-  {
-   var $1,a$2;
-   return a$1!=null&&a$1.$==1&&(a$2=NLU.Intent("Hello",a$1.$0),a$2!=null&&a$2.$==1&&($1=a$2.$0,true))?{
-    $:1,
-    $0:$1
-   }:null;
-  }
-  a=command==="help"?{
-   $:0,
-   $0:null
-  }:command==="debug on"?{
-   $:1,
-   $0:null
-  }:{
-   $:2,
-   $0:null
-  };
+  a=NLU.Help(command);
   a.$==1?(term.echo("Debug mode set."),Client.set_debugMode(true)):a.$==2?(term.disable(),Concurrency.Start((b=null,Concurrency.Delay(function()
   {
-   return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-1952518609",[command]),function(a$1)
+   return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-1637281986",[command]),function(a$1)
    {
-    var $1,a$2,$2;
-    return(a$2=Hello(a$1),a$2!=null&&a$2.$==1&&(a$2.$0.$==1&&(a$2.$0.$1.$==0&&(a$2.$0.$0.get_Role()==="contact"&&($1=a$2.$0.$0,true)))))?(term.echo((function($3)
+    var a$2,$1;
+    a$2=NLU.HelloUser(a$1);
+    return a$2!=null&&a$2.$==1?(term.echo((function($2)
     {
-     return function($4)
+     return function($3)
      {
-      return $3("This is the hello intent. The user name is "+Utils.toSafe($4)+".");
+      return $2("This is the hello intent. The user name is "+Utils.toSafe($3)+".");
      };
-    }(Global.id))($1.get_Role())),Concurrency.Zero()):($2=Hello(a$1),$2!=null&&$2.$==1)?(term.echo("This is the hello intent but I don't know who the user is."),Concurrency.Zero()):(term.echo("This is the whatever intent"),Concurrency.Zero());
+    }(Global.id))(a$2.$0.get_Value())),Concurrency.Zero()):($1=NLU.Hello(a$1),$1!=null&&$1.$==1)?(term.echo("This is the hello intent but I don't know who the user is."),Concurrency.Zero()):(term.echo("This is the whatever intent"),Concurrency.Zero());
    }),Concurrency.Delay(function()
    {
     term.enable();
