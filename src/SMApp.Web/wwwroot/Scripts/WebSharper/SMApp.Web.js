@@ -1,7 +1,7 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Web,User,Meaning,Intent,Entity,Resource,Client,SC$1,IntelliFactory,Runtime,WebSharper,List,UI,Doc,Concurrency,Remoting,AjaxRemotingProvider;
+ var Global,SMApp,Web,User,Meaning,Intent,Entity,Resource,Client,SC$1,IntelliFactory,Runtime,WebSharper,List,UI,Doc,Concurrency,Remoting,AjaxRemotingProvider,Utils;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Web=SMApp.Web=SMApp.Web||{};
@@ -21,6 +21,7 @@
  Concurrency=WebSharper&&WebSharper.Concurrency;
  Remoting=WebSharper&&WebSharper.Remoting;
  AjaxRemotingProvider=Remoting&&Remoting.AjaxRemotingProvider;
+ Utils=WebSharper&&WebSharper.Utils;
  User.New=function(UserName)
  {
   return{
@@ -115,31 +116,56 @@
   {
    return a$1.get_TopIntent().get_Name()==="Hello"&&a$1.get_TopIntent().get_Confidence()>0.8?{
     $:1,
-    $0:a$1.get_Entities()
+    $0:List.filter(function(e)
+    {
+     return e.get_Confidence()>0.8;
+    },a$1.get_Entities())
    }:null;
   }
   a=command==="help"?{
+   $:0,
+   $0:null
+  }:command==="debug on"?{
    $:1,
-   $0:"This is the help function"
-  }:null;
-  a!=null&&a.$==1?term.echo(a.$0):Concurrency.Start((b=null,Concurrency.Delay(function()
+   $0:null
+  }:{
+   $:2,
+   $0:null
+  };
+  a.$==1?(term.echo("Debug mode set."),Client.set_debugMode(true)):a.$==2?(term.disable(),Concurrency.Start((b=null,Concurrency.Delay(function()
   {
-   term.disable();
-   return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:222565848",[command]),function(a$1)
+   return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:1317303349",[command]),function(a$1)
    {
-    var $1,a$2;
-    return a$1!=null&&a$1.$==1&&(a$2=Hello(a$1.$0),a$2!=null&&a$2.$==1&&($1=a$2.$0,true))?(term.echo("This is the hello intent"),Concurrency.Zero()):(term.echo("This is the whatever intent"),Concurrency.Zero());
+    var $1,a$2,$2,$3;
+    return a$1!=null&&a$1.$==1&&(a$2=Hello(a$1.$0),a$2!=null&&a$2.$==1&&(a$2.$0.$==1&&(a$2.$0.$1.$==0&&(a$2.$0.$0.get_Role()==="contact"&&($1=a$2.$0.$0,true)))))?(term.echo((function($4)
+    {
+     return function($5)
+     {
+      return $4("This is the hello intent. The user name is "+Utils.toSafe($5)+".");
+     };
+    }(Global.id))($1.get_Role())),Concurrency.Zero()):a$1!=null&&a$1.$==1&&($3=Hello(a$1.$0),$3!=null&&$3.$==1)?(term.echo("This is the hello intent but I don't know who the user is."),Concurrency.Zero()):(term.echo("This is the whatever intent"),Concurrency.Zero());
    }),Concurrency.Delay(function()
    {
     term.enable();
     return Concurrency.Zero();
    }));
-  })),null);
+  })),null)):term.echo("This is the help commnd");
+ };
+ Client.debugMode=function()
+ {
+  SC$1.$cctor();
+  return SC$1.debugMode;
+ };
+ Client.set_debugMode=function($1)
+ {
+  SC$1.$cctor();
+  SC$1.debugMode=$1;
  };
  SC$1.$cctor=function()
  {
   var r;
   SC$1.$cctor=Global.ignore;
+  SC$1.debugMode=false;
   SC$1.baseOpt=(r={},r.name="_",r.greetings="Welcome to Selma",r.onInit=function(t)
   {
    var r$1;

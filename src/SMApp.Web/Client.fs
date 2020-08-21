@@ -12,25 +12,31 @@ open SMApp.JQueryTerminal
 
 [<JavaScript>]
 module Client =
-
+    let mutable debugMode = false
+    
+    /// Main interpreter
     let Main (term:Terminal) (command:string)  = 
-        let (|Help|_|) =
+        /// Local commands
+        let (|Help|DebugOn|NonLocal|) =
             function
-            | "help" -> Some "This is the help function"
-            | _ -> None 
+            | "help" -> Help
+            | "debug on" -> DebugOn
+            | _ -> NonLocal 
     
         let (|Hello|_|) :Meaning -> Entity list option =
             function
-            | m when m.TopIntent.Name = "Hello" && m.TopIntent.Confidence > 0.8f -> m.Entities |> Some
+            | m when m.TopIntent.Name = "Hello" && m.TopIntent.Confidence > 0.8f  -> m.Entities |> List.where(fun e -> e.Confidence > 0.8f) |> Some
             | _ -> None
             
         match command with
-        | Help h -> term.Echo h
-        | _ -> 
+        | Help -> term.Echo "This is the help commnd"
+        | DebugOn -> term.Echo("Debug mode set."); debugMode <- true
+        | NonLocal -> 
+            do term.Disable()
             async {
-                do term.Disable()
                 match! Server.GetMeaning command with
-                | Some(Hello e) -> term.Echo "This is the hello intent"
+                | Some(Hello(e::[])) when e.Role = "contact" -> term.Echo(sprintf "This is the hello intent. The user name is %s." e.Role)
+                | Some(Hello(_)) -> term.Echo("This is the hello intent but I don't know who the user is.")
                 | _ -> term.Echo "This is the whatever intent"
                 do term.Enable()
             } |> Async.Start 
