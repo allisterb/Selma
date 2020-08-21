@@ -50,8 +50,7 @@ namespace SMApp
             request.AddHeader("Authorization", authValue);
             IRestResponse response = await restClient.ExecuteAsync(request);
             if (response.ErrorException != null) throw response.ErrorException;
-            var m = JsonConvert.DeserializeObject<Meaning>(response.Content);
-            return m;
+            return JsonConvert.DeserializeObject<Meaning>(response.Content);
         }
         #endregion
 

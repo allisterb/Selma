@@ -16,9 +16,14 @@ with
     member x.Unwrap = match x with | Meaning(i, e)-> i, e
     member x.Intents = let (i, e) = x.Unwrap in i
     member x.Entities = let (i, e) = x.Unwrap in e
+    member x.TopIntent = x.Intents |> List.sortBy (fun i -> i.Confidence) |> List.head
 and
     [<JavaScript>]
     Intent = Intent of string * float32 
+        with
+        member x.Unwrap = match x with | Intent(n,c)->(n,c)
+        member x.Name = let (n, _) = x.Unwrap in n
+        member x.Confidence = let (_, c) = x.Unwrap in c
 and 
     [<JavaScript>]
     Entity = Entity of string * float32 * string * string

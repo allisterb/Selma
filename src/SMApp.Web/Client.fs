@@ -28,7 +28,7 @@ module Client =
                     this.Disable()
                     match! Server.GetMeaning "Hello I'm John" with
                     | None -> this.Echo "foo"
-                    | Some _ -> this.Echo "bar"
+                    | Some m -> this.Echo m.TopIntent.Name 
                     this.Enable()
                 } |> Async.Start
 

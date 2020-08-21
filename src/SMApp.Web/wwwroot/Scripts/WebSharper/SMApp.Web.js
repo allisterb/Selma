@@ -1,12 +1,13 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Web,User,Meaning,Entity,Resource,Client,SC$1,IntelliFactory,Runtime,WebSharper,UI,Doc,Concurrency,Remoting,AjaxRemotingProvider;
+ var Global,SMApp,Web,User,Meaning,Intent,Entity,Resource,Client,SC$1,IntelliFactory,Runtime,WebSharper,List,UI,Doc,Concurrency,Remoting,AjaxRemotingProvider;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Web=SMApp.Web=SMApp.Web||{};
  User=Web.User=Web.User||{};
  Meaning=Web.Meaning=Web.Meaning||{};
+ Intent=Web.Intent=Web.Intent||{};
  Entity=Web.Entity=Web.Entity||{};
  Resource=Web.Resource=Web.Resource||{};
  Client=Web.Client=Web.Client||{};
@@ -14,6 +15,7 @@
  IntelliFactory=Global.IntelliFactory;
  Runtime=IntelliFactory&&IntelliFactory.Runtime;
  WebSharper=Global.WebSharper;
+ List=WebSharper&&WebSharper.List;
  UI=WebSharper&&WebSharper.UI;
  Doc=UI&&UI.Doc;
  Concurrency=WebSharper&&WebSharper.Concurrency;
@@ -26,6 +28,13 @@
   };
  };
  Meaning=Web.Meaning=Runtime.Class({
+  get_TopIntent:function()
+  {
+   return List.head(List.sortBy(function(i)
+   {
+    return i.get_Confidence();
+   },this.get_Intents()));
+  },
   get_Entities:function()
   {
    return(this.get_Unwrap())[1];
@@ -39,6 +48,20 @@
    return[this.$0,this.$1];
   }
  },null,Meaning);
+ Intent=Web.Intent=Runtime.Class({
+  get_Confidence:function()
+  {
+   return(this.get_Unwrap())[1];
+  },
+  get_Name:function()
+  {
+   return(this.get_Unwrap())[0];
+  },
+  get_Unwrap:function()
+  {
+   return[this.$0,this.$1];
+  }
+ },null,Intent);
  Entity=Web.Entity=Runtime.Class({
   get_Value:function()
   {
@@ -94,9 +117,9 @@
   a.$==1?_this.echo("Commands: help, clear, template"):a.$==0?Concurrency.Start((b=null,Concurrency.Delay(function()
   {
    _this.disable();
-   return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-414293294",["Hello I'm John"]),function(a$1)
+   return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:477919497",["Hello I'm John"]),function(a$1)
    {
-    return a$1!=null&&a$1.$==1?(_this.echo("bar"),Concurrency.Zero()):(_this.echo("foo"),Concurrency.Zero());
+    return a$1!=null&&a$1.$==1?(_this.echo(a$1.$0.get_TopIntent().get_Name()),Concurrency.Zero()):(_this.echo("foo"),Concurrency.Zero());
    }),Concurrency.Delay(function()
    {
     _this.enable();
