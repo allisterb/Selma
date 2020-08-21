@@ -18,7 +18,7 @@
     <None Include="wsconfig.json" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.2.8" />
+    <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="MongoDB.Driver" Version="2.11.0" />
     <PackageReference Include="Npgsql.FSharp" Version="3.6.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="3.4.0" />
