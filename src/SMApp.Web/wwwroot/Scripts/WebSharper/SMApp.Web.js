@@ -1,7 +1,7 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Web,User,Meaning,Intent,Entity,Resource,NLU,SC$1,Client,SC$2,IntelliFactory,Runtime,WebSharper,List,UI,Doc,Concurrency,Remoting,AjaxRemotingProvider,Utils;
+ var Global,SMApp,Web,User,Meaning,Intent,Entity,Resource,NLU,SC$1,Client,SC$2,IntelliFactory,Runtime,WebSharper,List,UI,Doc,Utils,Concurrency,Remoting,AjaxRemotingProvider;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Web=SMApp.Web=SMApp.Web||{};
@@ -20,10 +20,10 @@
  List=WebSharper&&WebSharper.List;
  UI=WebSharper&&WebSharper.UI;
  Doc=UI&&UI.Doc;
+ Utils=WebSharper&&WebSharper.Utils;
  Concurrency=WebSharper&&WebSharper.Concurrency;
  Remoting=WebSharper&&WebSharper.Remoting;
  AjaxRemotingProvider=Remoting&&Remoting.AjaxRemotingProvider;
- Utils=WebSharper&&WebSharper.Utils;
  User.New=function(UserName)
  {
   return{
@@ -119,8 +119,11 @@
   }:a==="debug on"?{
    $:1,
    $0:null
-  }:{
+  }:a==="debug off"?{
    $:2,
+   $0:null
+  }:{
+   $:3,
    $0:null
   };
  };
@@ -180,9 +183,21 @@
  {
   var a,b;
   a=NLU.Help(command);
-  a.$==1?(term.echo("Debug mode set."),Client.set_debugMode(true)):a.$==2?(term.disable(),Concurrency.Start((b=null,Concurrency.Delay(function()
+  a.$==1?(Client.set_debugMode(true),term.echo((function($1)
   {
-   return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-1637281986",[command]),function(a$1)
+   return function($2)
+   {
+    return $1("Debug mode is now "+Utils.prettyPrint($2)+".");
+   };
+  }(Global.id))(Client.debugMode()))):a.$==2?(Client.set_debugMode(false),term.echo((function($1)
+  {
+   return function($2)
+   {
+    return $1("Debug mode is now "+Utils.prettyPrint($2)+".");
+   };
+  }(Global.id))(Client.debugMode()))):a.$==3?(term.disable(),Concurrency.Start((b=null,Concurrency.Delay(function()
+  {
+   return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-621881670",[command]),function(a$1)
    {
     var a$2,$1;
     a$2=NLU.HelloUser(a$1);

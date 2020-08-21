@@ -17,10 +17,11 @@ module NLU =
         | _ -> None
         
     /// Local commands
-    let (|Help|DebugOn|NonLocal|) =
+    let (|Help|DebugOn|DebugOff|NonLocal|) =
         function
         | "help" -> Help
         | "debug on" -> DebugOn
+        | "debug off"-> DebugOff
         | _ -> NonLocal 
     
     let (|Hello|_|) =

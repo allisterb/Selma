@@ -18,7 +18,8 @@ module Client =
     let Main (term:Terminal) (command:string)  = 
         match command with
         | Help -> term.Echo "This is the help commnd"
-        | DebugOn -> term.Echo("Debug mode set."); debugMode <- true
+        | DebugOn -> debugMode <- true; sprintf "Debug mode is now %A." debugMode |> term.Echo 
+        | DebugOff -> debugMode <- false; sprintf "Debug mode is now %A." debugMode |> term.Echo 
         | NonLocal -> 
             do term.Disable()
             async {
