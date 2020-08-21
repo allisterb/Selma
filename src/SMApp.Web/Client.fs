@@ -40,7 +40,7 @@ module Client =
             Options(
                 Name="_", 
                 Greetings = "Welcome to Selma",
-                OnInit = (fun (t:Terminal) -> do speak "Welcome to Selma 1 2 3 4."; t.Push(Main))
+                OnInit = (fun (t:Terminal) -> do speak "Welcome to Selma."; t.Push(Main))
             )
         Terminal("#main", ThisAction<Terminal, string>(fun _ _ ->()), _Opt) |> ignore
         Doc.Empty

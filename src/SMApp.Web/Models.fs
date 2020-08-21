@@ -4,12 +4,13 @@ open System
 
 open WebSharper
 
-/// Basic user information for app authentication and authorization
+/// Basic user information for app authentication.
 [<JavaScript>]
 type User = {
     UserName: string
 }
 
+/// Represents the meaning of a natural language sentence with intents and entities.
 [<JavaScript>]
 type Meaning = Meaning of Intent list * Entity list
 with 
@@ -34,6 +35,7 @@ and
         member x.Role = let (_, _, r, _) = x.Unwrap in r
         member x.Value = let (_, _, _, v) = x.Unwrap in v
 
+/// Interprets input entered by the user in the terminal CUI.
 [<JavaScript>]
 type Interpreter = Interpreter of ((SMApp.JQueryTerminal.Terminal->string->unit) * SMApp.JQueryTerminal.Options)
     with

@@ -18,7 +18,7 @@ module Server =
     let GetUser user = 
         async {
             match! eddi.GetUser user |> Async.AwaitTask |> Async.Catch with
-            | Choice1Of2 o when not(isNull(o)) -> debugf "Foud user {0}." [user]; return Some {UserName=o.Username}
+            | Choice1Of2 o when not(isNull(o)) -> debugf "Found user {0}." [user]; return Some {UserName=o.Username}
             | _ -> debugf "Did not find user {0}." [user]; return None
         }
         
