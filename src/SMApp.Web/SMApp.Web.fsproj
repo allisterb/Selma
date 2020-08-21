@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
     <UserSecretsId>f3ed0dc7-f978-44ae-8add-9e5bfcf8fa8a</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
@@ -18,6 +18,7 @@
     <None Include="wsconfig.json" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.2.8" />
     <PackageReference Include="MongoDB.Driver" Version="2.11.0" />
     <PackageReference Include="Npgsql.FSharp" Version="3.6.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="3.4.0" />

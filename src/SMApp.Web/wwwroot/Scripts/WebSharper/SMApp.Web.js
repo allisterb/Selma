@@ -284,7 +284,7 @@
     };
    }(Global.id))(Client.debugMode()))):a.$==3?(term.disable(),Concurrency.Start((b=null,Concurrency.Delay(function()
    {
-    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-2106313811",[command]),function(a$1)
+    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:394434405",[command]),function(a$1)
     {
      var a$2,$1;
      a$2=NLU.HelloUser(a$1);

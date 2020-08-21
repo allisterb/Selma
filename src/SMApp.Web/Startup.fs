@@ -23,7 +23,7 @@ type Startup() =
             .AddCookie("WebSharper", fun options -> ())
         |> ignore
 
-    member this.Configure(app: IApplicationBuilder, env: IWebHostEnvironment) =
+    member this.Configure(app: IApplicationBuilder, env: IHostingEnvironment) =
         if env.IsDevelopment() then app.UseDeveloperExceptionPage() |> ignore
         FSharp.MongoDB.SerializationProviderModule.Register()
         app.UseAuthentication()
