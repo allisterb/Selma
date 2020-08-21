@@ -4,7 +4,7 @@ open System
 
 open WebSharper
 
-/// Basic user information for authentication and authorization
+/// Basic user information for app authentication and authorization
 [<JavaScript>]
 type User = {
     UserName: string
@@ -33,6 +33,33 @@ and
         member x.Confidence = let (_, c, _, _) = x.Unwrap in c
         member x.Role = let (_, _, r, _) = x.Unwrap in r
         member x.Value = let (_, _, _, v) = x.Unwrap in v
+
+[<JavaScript>]
+type Interpreter = Interpreter of ((SMApp.JQueryTerminal.Terminal->string->unit) * SMApp.JQueryTerminal.Options)
+    with
+    member x.Unwrap = match x with | Interpreter(i, o) -> i, o
+    member x.Func = x.Unwrap |> fst
+    member x.Options = x.Unwrap |> snd
+
+[<JavaScript>]
+type CUIContext =
+    | InterpreterCtx of Interpreter
+    | MenuCtx
+    | InputCtx
+
+type Skill =
+    | PainManagement
+    | FatigueManagement
+    | BreathingManagement
+    | EmotionsManagement
+    | Nutrition
+    | Exercise
+    | SleepManagement
+
+type Disease = {
+    Name: string
+    Description: string
+}
         
 [<JavaScript>]
 type Resource = {

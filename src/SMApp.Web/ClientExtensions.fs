@@ -10,5 +10,4 @@ open SMApp.JQueryTerminal
 [<AutoOpen; JavaScript>]
 module ClientExtensions =
     type Terminal with
-        member x.Red(s:string) = x.Echo("red")
-
+        member x.Push(i:Interpreter) = x.Push(i.Func, i.Options)

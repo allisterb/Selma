@@ -1,7 +1,7 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Web,User,Meaning,Intent,Entity,Resource,NLU,SC$1,ClientExtensions,Client,SC$2,IntelliFactory,Runtime,WebSharper,List,UI,Doc,Utils,Concurrency,Remoting,AjaxRemotingProvider;
+ var Global,SMApp,Web,User,Meaning,Intent,Entity,Interpreter,CUIContext,Resource,NLU,SC$1,ClientExtensions,Client,SC$2,IntelliFactory,Runtime,WebSharper,List,UI,Doc,Utils,Concurrency,Remoting,AjaxRemotingProvider;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Web=SMApp.Web=SMApp.Web||{};
@@ -9,6 +9,8 @@
  Meaning=Web.Meaning=Web.Meaning||{};
  Intent=Web.Intent=Web.Intent||{};
  Entity=Web.Entity=Web.Entity||{};
+ Interpreter=Web.Interpreter=Web.Interpreter||{};
+ CUIContext=Web.CUIContext=Web.CUIContext||{};
  Resource=Web.Resource=Web.Resource||{};
  NLU=Web.NLU=Web.NLU||{};
  SC$1=Global.StartupCode$SMApp_Web$NLU=Global.StartupCode$SMApp_Web$NLU||{};
@@ -88,6 +90,26 @@
    return[this.$0,this.$1,this.$2,this.$3];
   }
  },null,Entity);
+ Interpreter=Web.Interpreter=Runtime.Class({
+  get_Options:function()
+  {
+   return(this.get_Unwrap())[1];
+  },
+  get_Func:function()
+  {
+   return(this.get_Unwrap())[0];
+  },
+  get_Unwrap:function()
+  {
+   return[this.$0[0],this.$0[1]];
+  }
+ },null,Interpreter);
+ CUIContext.Input={
+  $:2
+ };
+ CUIContext.MenuChoice={
+  $:1
+ };
  Resource.New=function(Name,Description,Url)
  {
   return{
@@ -164,71 +186,32 @@
   SC$1.intentConfidenceThreshold=0.8;
   SC$1.entityConfidenceThreshold=0.8;
  };
- ClientExtensions["Terminal.Red"]=function(x,s)
+ ClientExtensions["Terminal.Push"]=function(x,i)
  {
-  x.echo("red");
+  var a,b;
+  a=i.get_Func();
+  b=i.get_Options();
+  x.push(Runtime.CreateFuncWithThis(a),b);
  };
  Client.Term=function()
  {
-  var baseOpt,r,interpreter;
-  baseOpt=(r={},r.name="_",r.greetings="Welcome to Selma",r.onInit=function(t)
+  var _Opt,r,interpreter;
+  _Opt=(r={},r.name="_",r.greetings="Welcome to Selma",r.onInit=function(t)
   {
-   var r$1;
-   t.echo((function($1)
-   {
-    return function($2)
-    {
-     return $1("There are "+Global.String($2)+" speech voices available.");
-    };
-   }(Global.id))(Global.speechSynthesis.getVoices().length));
-   return t.push(function(c)
-   {
-    return Client.Main(this,c);
-   },(r$1={},r$1.name="Main",r$1.prompt=">",r$1));
+   Client.speak("Welcome to Selma 1 2 3 4.");
+   return ClientExtensions["Terminal.Push"](t,Client.Main());
   },r);
   interpreter=Runtime.ThisFunc(function()
   {
    return null;
   });
-  Global.$("#main").terminal(interpreter,baseOpt);
+  Global.$("#main").terminal(interpreter,_Opt);
   return Doc.get_Empty();
  };
- Client.Main=function(term,command)
+ Client.Main=function()
  {
-  var a,b;
-  Global.speechSynthesis.speak(new Global.SpeechSynthesisUtterance("hello 1 2 3 4"));
-  a=NLU.Help(command);
-  a.$==1?(Client.set_debugMode(true),term.echo((function($1)
-  {
-   return function($2)
-   {
-    return $1("Debug mode is now "+Utils.prettyPrint($2)+".");
-   };
-  }(Global.id))(Client.debugMode()))):a.$==2?(Client.set_debugMode(false),term.echo((function($1)
-  {
-   return function($2)
-   {
-    return $1("Debug mode is now "+Utils.prettyPrint($2)+".");
-   };
-  }(Global.id))(Client.debugMode()))):a.$==3?(term.disable(),Concurrency.Start((b=null,Concurrency.Delay(function()
-  {
-   return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:1589908590",[command]),function(a$1)
-   {
-    var a$2,$1;
-    a$2=NLU.HelloUser(a$1);
-    return a$2!=null&&a$2.$==1?(term.echo((function($2)
-    {
-     return function($3)
-     {
-      return $2("This is the hello intent. The user name is "+Utils.toSafe($3)+".");
-     };
-    }(Global.id))(a$2.$0.get_Value())),Concurrency.Zero()):($1=NLU.Hello(a$1),$1!=null&&$1.$==1)?(term.echo("This is the hello intent but I don't know who the user is."),Concurrency.Zero()):(term.echo("This is the whatever intent"),Concurrency.Zero());
-   }),Concurrency.Delay(function()
-   {
-    term.enable();
-    return Concurrency.Zero();
-   }));
-  })),null)):ClientExtensions["Terminal.Red"](term,"This is the help commnd");
+  SC$2.$cctor();
+  return SC$2.Main;
  };
  Client.debugMode=function()
  {
@@ -240,9 +223,60 @@
   SC$2.$cctor();
   SC$2.debugMode=$1;
  };
+ Client.speak=function(text)
+ {
+  Global.speechSynthesis.speak(new Global.SpeechSynthesisUtterance(text));
+ };
  SC$2.$cctor=function()
  {
+  var r;
   SC$2.$cctor=Global.ignore;
+  function main(term,command)
+  {
+   var a,b;
+   a=NLU.Help(command);
+   return a.$==1?(Client.set_debugMode(true),term.echo((function($1)
+   {
+    return function($2)
+    {
+     return $1("Debug mode is now "+Utils.prettyPrint($2)+".");
+    };
+   }(Global.id))(Client.debugMode()))):a.$==2?(Client.set_debugMode(false),term.echo((function($1)
+   {
+    return function($2)
+    {
+     return $1("Debug mode is now "+Utils.prettyPrint($2)+".");
+    };
+   }(Global.id))(Client.debugMode()))):a.$==3?(term.disable(),Concurrency.Start((b=null,Concurrency.Delay(function()
+   {
+    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-1248913656",[command]),function(a$1)
+    {
+     var a$2,$1;
+     a$2=NLU.HelloUser(a$1);
+     return a$2!=null&&a$2.$==1?(term.echo((function($2)
+     {
+      return function($3)
+      {
+       return $2("This is the hello intent. The user name is "+Utils.toSafe($3)+".");
+      };
+     }(Global.id))(a$2.$0.get_Value())),Concurrency.Zero()):($1=NLU.Hello(a$1),$1!=null&&$1.$==1)?(term.echo("This is the hello intent but I don't know who the user is."),Concurrency.Zero()):(term.echo("This is the whatever intent"),Concurrency.Zero());
+    }),Concurrency.Delay(function()
+    {
+     term.enable();
+     return Concurrency.Zero();
+    }));
+   })),null)):term.echo("This is the help commnd");
+  }
   SC$2.debugMode=false;
+  SC$2.Main=new Interpreter({
+   $:0,
+   $0:[function($1)
+   {
+    return function($2)
+    {
+     return main($1,$2);
+    };
+   },(r={},r.name="Main",r.prompt=">",r)]
+  });
  };
 }());
