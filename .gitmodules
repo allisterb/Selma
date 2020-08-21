@@ -1,3 +1,6 @@
 [submodule "ext/terminal"]
 	path = ext/terminal
 	url = https://github.com/allisterb/terminal.git
+[submodule "ext/webspeech-ext"]
+	path = ext/webspeech-ext
+	url = https://github.com/allisterb/webspeech-1.git
