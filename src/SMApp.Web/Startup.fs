@@ -11,7 +11,6 @@ open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
 
 open WebSharper.AspNetCore
-
 open Serilog
 
 open SMApp
@@ -26,7 +25,7 @@ type Startup() =
 
     member this.Configure(app: IApplicationBuilder, env: IWebHostEnvironment) =
         if env.IsDevelopment() then app.UseDeveloperExceptionPage() |> ignore
-
+        FSharp.MongoDB.SerializationProviderModule.Register()
         app.UseAuthentication()
             .UseStaticFiles()
             .UseWebSharper()

@@ -5,7 +5,7 @@ open System.Collections.Generic;
 open FSharp.Control
 
 open WebSharper
-
+open MongoDB.Driver
 open SMApp
 open SMApp.EDDI
 
@@ -13,7 +13,15 @@ module Server =
     
     let private eddi = new EDDIApi()
     let private witai = new WitApi()
+    let private mongodb =
+            let host = Api.Config("MONGODB")
+            do if host.IsEmpty() then failwith "Could not retrieve the MongoDB host using configuration key MONGODB"
+            let connectionString = sprintf "mongodb+srv://%s:%s@<%s>/test?w=majority" "eddi" "eddi" host
+            let client = new MongoDB.Driver.MongoClient(connectionString)
+            client.GetDatabase("eddi")
+    let private users = mongodb.GetCollection<User>("Users")
     
+    //let u = users.FindAsync()
     [<Rpc>]
     let GetUser user = 
         async {

@@ -13,13 +13,17 @@ open SMApp.WebSpeech
 
 [<JavaScript>]
 module Client =
-    let speak text = Window.SpeechSynthesis.Speak(new SpeechSynthesisUtterance(text))
     
+    (* Options for the CUI session.*)
     let mutable debugMode = false
+    let mutable transcribe = false
+
+    let speak text = async { Window.SpeechSynthesis.Speak(new SpeechSynthesisUtterance(text)) } |> Async.Start
     
     /// Main interpreter
     let Main = 
         let main (term:Terminal) (command:string)  =    
+            speak command
             match command with
             | Help -> term.Echo "This is the help commnd"
             | DebugOn -> debugMode <- true; sprintf "Debug mode is now %A." debugMode |> term.Echo 
@@ -40,7 +44,7 @@ module Client =
             Options(
                 Name="_", 
                 Greetings = "Welcome to Selma",
-                OnInit = (fun (t:Terminal) -> do speak "Welcome to Selma."; t.Push(Main))
+                OnInit = (fun (t:Terminal) -> t.Push(Main))
             )
-        Terminal("#main", ThisAction<Terminal, string>(fun _ _ ->()), _Opt) |> ignore
+        Terminal("#main", ThisAction<Terminal, string>(fun _ _ -> speak "Welcome to Selma."), _Opt) |> ignore
         Doc.Empty
