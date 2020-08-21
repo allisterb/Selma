@@ -211,18 +211,21 @@
   b=i.get_Options();
   x.push(Runtime.CreateFuncWithThis(a),b);
  };
+ ClientExtensions["Terminal.Echo'"]=function(x,text)
+ {
+  x.disable();
+  x.echo(text);
+  x.enable();
+ };
  Client.Term=function()
  {
-  var _Opt,r,interpreter;
-  _Opt=(r={},r.name="_",r.greetings="Welcome to Selma",r.onInit=function(t)
+  var interpreter,options;
+  interpreter=Runtime.ThisFunc(function(term,command)
   {
-   return ClientExtensions["Terminal.Push"](t,Client.Main());
-  },r);
-  interpreter=Runtime.ThisFunc(function()
-  {
-   return Client.speak("Welcome to Selma.");
+   return((Client.Main().get_Func())(term))(command);
   });
-  Global.$("#main").terminal(interpreter,_Opt);
+  options=Client.Main().get_Options();
+  Global.$("#main").terminal(interpreter,options);
   return Doc.get_Empty();
  };
  Client.Main=function()
@@ -266,15 +269,14 @@
   function main(term,command)
   {
    var a,b;
-   Client.speak(command);
    a=NLU.Help(command);
-   return a.$==1?(Client.set_debugMode(true),term.echo((function($1)
+   return a.$==1?(Client.set_debugMode(true),ClientExtensions["Terminal.Echo'"](term,(function($1)
    {
     return function($2)
     {
      return $1("Debug mode is now "+Utils.prettyPrint($2)+".");
     };
-   }(Global.id))(Client.debugMode()))):a.$==2?(Client.set_debugMode(false),term.echo((function($1)
+   }(Global.id))(Client.debugMode()))):a.$==2?(Client.set_debugMode(false),ClientExtensions["Terminal.Echo'"](term,(function($1)
    {
     return function($2)
     {
@@ -282,7 +284,7 @@
     };
    }(Global.id))(Client.debugMode()))):a.$==3?(term.disable(),Concurrency.Start((b=null,Concurrency.Delay(function()
    {
-    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-874575511",[command]),function(a$1)
+    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-2106313811",[command]),function(a$1)
     {
      var a$2,$1;
      a$2=NLU.HelloUser(a$1);
@@ -298,7 +300,7 @@
      term.enable();
      return Concurrency.Zero();
     }));
-   })),null)):term.echo("This is the help commnd");
+   })),null)):ClientExtensions["Terminal.Echo'"](term,"This is the help commnd");
   }
   SC$3.debugMode=false;
   SC$3.transcribe=false;
@@ -310,7 +312,7 @@
     {
      return main($1,$2);
     };
-   },(r={},r.name="Main",r.prompt=">",r)]
+   },(r={},r.name="Main",r.greetings="Welcome to Selma",r.prompt=">",r)]
   });
  };
 }());

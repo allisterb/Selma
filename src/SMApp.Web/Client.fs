@@ -23,11 +23,10 @@ module Client =
     /// Main interpreter
     let Main = 
         let main (term:Terminal) (command:string)  =    
-            speak command
             match command with
-            | Help -> term.Echo "This is the help commnd"
-            | DebugOn -> debugMode <- true; sprintf "Debug mode is now %A." debugMode |> term.Echo 
-            | DebugOff -> debugMode <- false; sprintf "Debug mode is now %A." debugMode |> term.Echo 
+            | Help -> term.Echo' "This is the help commnd"
+            | DebugOn -> debugMode <- true; sprintf "Debug mode is now %A." debugMode |> term.Echo' 
+            | DebugOff -> debugMode <- false; sprintf "Debug mode is now %A." debugMode |> term.Echo' 
             | NonLocal -> 
                 do term.Disable()
                 async {
@@ -37,14 +36,14 @@ module Client =
                     | _ -> term.Echo "This is the whatever intent"
                     do term.Enable()
                 } |> Async.Start
-        Interpreter(main, Options(Name="Main", Prompt=">"))
+        let mainOpt =
+            Options(
+                Name="Main", 
+                Greetings = "Welcome to Selma",
+                Prompt =">"
+            )
+        Interpreter(main, mainOpt)
     
     let Term() = 
-        let _Opt =
-            Options(
-                Name="_", 
-                Greetings = "Welcome to Selma",
-                OnInit = (fun (t:Terminal) -> t.Push(Main))
-            )
-        Terminal("#main", ThisAction<Terminal, string>(fun _ _ -> speak "Welcome to Selma."), _Opt) |> ignore
+        Terminal("#main", ThisAction<Terminal, string>(fun term command -> Main.Func term command), Main.Options) |> ignore
         Doc.Empty
