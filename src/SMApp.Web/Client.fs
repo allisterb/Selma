@@ -17,7 +17,7 @@ module Client =
     /// Main interpreter
     let Main (term:Terminal) (command:string)  = 
         match command with
-        | Help -> term.Echo "This is the help commnd"
+        | Help -> term.Red "This is the help commnd"
         | DebugOn -> debugMode <- true; sprintf "Debug mode is now %A." debugMode |> term.Echo 
         | DebugOff -> debugMode <- false; sprintf "Debug mode is now %A." debugMode |> term.Echo 
         | NonLocal -> 

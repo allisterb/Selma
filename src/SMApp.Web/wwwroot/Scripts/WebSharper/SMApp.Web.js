@@ -1,7 +1,7 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Web,User,Meaning,Intent,Entity,Resource,NLU,SC$1,Client,SC$2,IntelliFactory,Runtime,WebSharper,List,UI,Doc,Utils,Concurrency,Remoting,AjaxRemotingProvider;
+ var Global,SMApp,Web,User,Meaning,Intent,Entity,Resource,NLU,SC$1,ClientExtensions,Client,SC$2,IntelliFactory,Runtime,WebSharper,List,UI,Doc,Utils,Concurrency,Remoting,AjaxRemotingProvider;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Web=SMApp.Web=SMApp.Web||{};
@@ -12,6 +12,7 @@
  Resource=Web.Resource=Web.Resource||{};
  NLU=Web.NLU=Web.NLU||{};
  SC$1=Global.StartupCode$SMApp_Web$NLU=Global.StartupCode$SMApp_Web$NLU||{};
+ ClientExtensions=Web.ClientExtensions=Web.ClientExtensions||{};
  Client=Web.Client=Web.Client||{};
  SC$2=Global.StartupCode$SMApp_Web$Client=Global.StartupCode$SMApp_Web$Client||{};
  IntelliFactory=Global.IntelliFactory;
@@ -163,6 +164,10 @@
   SC$1.intentConfidenceThreshold=0.8;
   SC$1.entityConfidenceThreshold=0.8;
  };
+ ClientExtensions["Terminal.Red"]=function(x,s)
+ {
+  x.echo("red");
+ };
  Client.Term=function()
  {
   var interpreter,options;
@@ -197,7 +202,7 @@
    };
   }(Global.id))(Client.debugMode()))):a.$==3?(term.disable(),Concurrency.Start((b=null,Concurrency.Delay(function()
   {
-   return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-621881670",[command]),function(a$1)
+   return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:1689067273",[command]),function(a$1)
    {
     var a$2,$1;
     a$2=NLU.HelloUser(a$1);
@@ -213,7 +218,7 @@
     term.enable();
     return Concurrency.Zero();
    }));
-  })),null)):term.echo("This is the help commnd");
+  })),null)):ClientExtensions["Terminal.Red"](term,"This is the help commnd");
  };
  Client.debugMode=function()
  {
