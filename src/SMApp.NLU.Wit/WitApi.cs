@@ -13,32 +13,34 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
 
-namespace SMApp.NLU.Wit
+using SMApp.NLU.Wit;
+
+namespace SMApp
 {
-    public class WitClient : Api
+    public class WitApi : Api
     {
         #region Constructors
-        public WitClient(string token) : base()
+        public WitApi(string token) : base()
         {
             if (string.IsNullOrEmpty(token))
             {
                 Error("The Wit.ai token retrieved is empty.");
-                Initialized = false;
             }
             else
             {
                 authValue = "Bearer " + token;
+                restClient = new RestClient("https://api.wit.ai");
                 Initialized = true;
             }
         }
 
-        public WitClient() : this(Config("WITAI")) { }
+        public WitApi() : this(Config("WITAI")) { }
         #endregion
 
         #region Methods
-        public Meaning GetMeaning(string q, string msg_id = null, string thread_id = null)
+        public async Task<Meaning> GetMeaning(string q, string msg_id = null, string thread_id = null)
         {
-            var client = new RestClient("https://api.wit.ai");
+            ThrowIfNotInitialized();
             var request = new RestRequest("message", Method.GET);
             request.AddQueryParameter("q", q);
             if (msg_id != null)
@@ -46,14 +48,16 @@ namespace SMApp.NLU.Wit
             if (thread_id != null)
                 request.AddQueryParameter("thread_id", thread_id);
             request.AddHeader("Authorization", authValue);
-            IRestResponse response = client.Execute(request);
+            IRestResponse response = await restClient.ExecuteAsync(request);
             if (response.ErrorException != null) throw response.ErrorException;
-            return JsonConvert.DeserializeObject<Meaning>(response.Content);
+            var m = JsonConvert.DeserializeObject<Meaning>(response.Content);
+            return m;
         }
         #endregion
 
         #region Fields
         private string authValue;
+        private RestClient restClient;
         #endregion
     }
 }

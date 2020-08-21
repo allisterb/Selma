@@ -1,9 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>f3ed0dc7-f978-44ae-8add-9e5bfcf8fa8a</UserSecretsId>
   </PropertyGroup>
-
   <ItemGroup>
     <Compile Include="Models.fs" />
     <Compile Include="Server.fs" />
@@ -14,25 +14,22 @@
     <Content Update="wwwroot\Style.css" />
     <None Include="wsconfig.json" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Serilog.AspNetCore" Version="3.4.0" />
-    <PackageReference Include="WebSharper" Version="4.6.7.408" />    
+    <PackageReference Include="WebSharper" Version="4.6.7.408" />
     <PackageReference Include="WebSharper.FSharp" Version="4.6.7.408" />
     <PackageReference Include="WebSharper.UI" Version="4.6.3.219" />
     <PackageReference Include="WebSharper.AspNetCore" Version="4.6.2.136" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\SMApp.Base.Fs\SMApp.Base.Fs.fsproj" />
     <ProjectReference Include="..\SMApp.CUI.EDDI\SMApp.CUI.EDDI.csproj" />
     <ProjectReference Include="..\SMApp.Logger.Serilog\SMApp.Logger.Serilog.csproj" />
+    <ProjectReference Include="..\SMApp.NLU.Wit\SMApp.NLU.Wit.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <Reference Include="SMApp.JQueryTerminal">
       <HintPath>..\..\ext\SMApp.JQueryTerminal\bin\Debug\netstandard2.0\SMApp.JQueryTerminal.dll</HintPath>
     </Reference>
   </ItemGroup>
-
 </Project>

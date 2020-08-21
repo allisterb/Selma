@@ -26,7 +26,7 @@ module Client =
             | Welcome -> 
                 async {
                     this.Disable()
-                    match! Server.GetUser "allister" with
+                    match! Server.GetMeaning "Hello I'm John" with
                     | None -> this.Echo "foo"
                     | Some _ -> this.Echo "bar"
                     this.Enable()

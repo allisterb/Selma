@@ -14,7 +14,6 @@ type Route =
     | [<EndPoint "/about">] About
 
 module Templates =
-   
     type MainTemplate = Templating.Template<"wwwroot/Main.html">
 
     let Main ctx action (title: string) (body: Doc list) =
@@ -26,18 +25,15 @@ module Templates =
         )
     
 module Site =
-    
     let HomePage ctx =
         Templates.Main ctx Home "Home" [
             div [attr.id "main"] [client <@ Client.Term() @>]
-         
         ]
 
     let AboutPage ctx =
         Templates.Main ctx About "About" [
             h1 [] [text "About"]
             p [] [text "This is a template WebSharper client-server application."]
-           
         ]
             
     [<Website>]
@@ -46,4 +42,5 @@ module Site =
             match route with
             | Home -> HomePage ctx
             | About -> AboutPage ctx
+    
         

@@ -1,28 +1,66 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Web,User,Resource,Client,SC$1,WebSharper,UI,Doc,Concurrency,Remoting,AjaxRemotingProvider,IntelliFactory,Runtime;
+ var Global,SMApp,Web,User,Meaning,Entity,Resource,Client,SC$1,IntelliFactory,Runtime,WebSharper,UI,Doc,Concurrency,Remoting,AjaxRemotingProvider;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Web=SMApp.Web=SMApp.Web||{};
  User=Web.User=Web.User||{};
+ Meaning=Web.Meaning=Web.Meaning||{};
+ Entity=Web.Entity=Web.Entity||{};
  Resource=Web.Resource=Web.Resource||{};
  Client=Web.Client=Web.Client||{};
  SC$1=Global.StartupCode$SMApp_Web$Client=Global.StartupCode$SMApp_Web$Client||{};
+ IntelliFactory=Global.IntelliFactory;
+ Runtime=IntelliFactory&&IntelliFactory.Runtime;
  WebSharper=Global.WebSharper;
  UI=WebSharper&&WebSharper.UI;
  Doc=UI&&UI.Doc;
  Concurrency=WebSharper&&WebSharper.Concurrency;
  Remoting=WebSharper&&WebSharper.Remoting;
  AjaxRemotingProvider=Remoting&&Remoting.AjaxRemotingProvider;
- IntelliFactory=Global.IntelliFactory;
- Runtime=IntelliFactory&&IntelliFactory.Runtime;
  User.New=function(UserName)
  {
   return{
    UserName:UserName
   };
  };
+ Meaning=Web.Meaning=Runtime.Class({
+  get_Entities:function()
+  {
+   return(this.get_Unwrap())[1];
+  },
+  get_Intents:function()
+  {
+   return(this.get_Unwrap())[0];
+  },
+  get_Unwrap:function()
+  {
+   return[this.$0,this.$1];
+  }
+ },null,Meaning);
+ Entity=Web.Entity=Runtime.Class({
+  get_Value:function()
+  {
+   return(this.get_Unwrap())[3];
+  },
+  get_Role:function()
+  {
+   return(this.get_Unwrap())[2];
+  },
+  get_Confidence:function()
+  {
+   return(this.get_Unwrap())[1];
+  },
+  get_Name:function()
+  {
+   return(this.get_Unwrap())[0];
+  },
+  get_Unwrap:function()
+  {
+   return[this.$0,this.$1,this.$2,this.$3];
+  }
+ },null,Entity);
  Resource.New=function(Name,Description,Url)
  {
   return{
@@ -56,7 +94,7 @@
   a.$==1?_this.echo("Commands: help, clear, template"):a.$==0?Concurrency.Start((b=null,Concurrency.Delay(function()
   {
    _this.disable();
-   return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetUser:2094211678",["allister"]),function(a$1)
+   return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-414293294",["Hello I'm John"]),function(a$1)
    {
     return a$1!=null&&a$1.$==1?(_this.echo("bar"),Concurrency.Zero()):(_this.echo("foo"),Concurrency.Zero());
    }),Concurrency.Delay(function()

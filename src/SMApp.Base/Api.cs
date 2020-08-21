@@ -23,22 +23,31 @@ namespace SMApp
             if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("KUBERNETES_PORT")) || !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("OPENSHIFT_BUILD_NAMESPACE")))
             {
                 Configuration = new ConfigurationBuilder()
-                    .AddJsonFile("config.json", optional: true)
                     .AddEnvironmentVariables()
+                    .Build();
+            }
+            else if (Assembly.GetEntryAssembly().GetName().Name == "SMApp.CLI" && Environment.GetEnvironmentVariable("USERNAME") == "Allister")
+            {
+                Configuration = new ConfigurationBuilder()
+                    .AddUserSecrets("43b7eb91-9cce-4bc2-b08e-7f8840a6800e")
                     .Build();
             }
             else if (Assembly.GetEntryAssembly().GetName().Name == "SMApp.CLI" && Environment.GetEnvironmentVariable("USERNAME") != "Allister")
             {
                 Configuration = new ConfigurationBuilder()
                 .AddJsonFile("config.json", optional: true)
-                .AddEnvironmentVariables()
                 .Build();
+            }
+            else if (Assembly.GetEntryAssembly().GetName().Name == "SMApp.Web" && Environment.GetEnvironmentVariable("USERNAME") == "Allister")
+            {
+                Configuration = new ConfigurationBuilder()
+                    .AddUserSecrets("f3ed0dc7-f978-44ae-8add-9e5bfcf8fa8a")
+                    .Build();
             }
             else
             {
                 Configuration = new ConfigurationBuilder()
                 .AddJsonFile("config.json", optional: true)
-                .AddUserSecrets("43b7eb91-9cce-4bc2-b08e-7f8840a6800e")
                 .Build();
             }
 
