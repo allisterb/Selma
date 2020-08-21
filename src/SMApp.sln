@@ -16,6 +16,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{58D5A197-EB9E-40D4-B130-4209045A6C03}"
 	ProjectSection(SolutionItems) = preProject
 		..\build\Common.props = ..\build\Common.props
+		..\build\oc-port-forward.cmd = ..\build\oc-port-forward.cmd
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{6D8F868E-885F-46A0-ABB2-AA847C1EC782}"
@@ -35,6 +36,13 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMApp.NLU.Wit", "SMApp.NLU.Wit\SMApp.NLU.Wit.csproj", "{393A1DA3-6803-46C1-816B-482B0EAFA800}"
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharp.MongoDB", "..\ext\FSharp.MongoDB\FSharp.MongoDB.fsproj", "{693A2D85-8C99-48B1-9687-3DB0AECB7526}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{08D21D7A-6818-417B-900D-BD9F2B95B9B0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deploy", "Deploy", "{471A2D10-FC79-4425-92A4-CF8234D86D1E}"
+	ProjectSection(SolutionItems) = preProject
+		..\deploy\oc-deploy.cmd = ..\deploy\oc-deploy.cmd
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
