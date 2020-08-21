@@ -23,9 +23,9 @@ module Client =
             | "debug on" -> DebugOn
             | _ -> NonLocal 
     
-        let (|Hello|_|) :Meaning -> Entity list option =
+        let (|Hello|_|) : Meaning option -> Entity list option =
             function
-            | m when m.TopIntent.Name = "Hello" && m.TopIntent.Confidence > 0.8f  -> m.Entities |> List.where(fun e -> e.Confidence > 0.8f) |> Some
+            | Some(Intent "Hello" e) -> Some e
             | _ -> None
             
         match command with
@@ -35,8 +35,8 @@ module Client =
             do term.Disable()
             async {
                 match! Server.GetMeaning command with
-                | Some(Hello(e::[])) when e.Role = "contact" -> term.Echo(sprintf "This is the hello intent. The user name is %s." e.Role)
-                | Some(Hello(_)) -> term.Echo("This is the hello intent but I don't know who the user is.")
+                | Hello(e::[]) when e.Role = "contact" -> term.Echo(sprintf "This is the hello intent. The user name is %s." e.Role)
+                | Hello(_) -> term.Echo("This is the hello intent but I don't know who the user is.")
                 | _ -> term.Echo "This is the whatever intent"
                 do term.Enable()
             } |> Async.Start 

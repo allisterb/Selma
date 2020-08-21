@@ -1,7 +1,7 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Web,User,Meaning,Intent,Entity,Resource,Client,SC$1,IntelliFactory,Runtime,WebSharper,List,UI,Doc,Concurrency,Remoting,AjaxRemotingProvider,Utils;
+ var Global,SMApp,Web,User,Meaning,Intent,Entity,Resource,NLU,SC$1,Client,SC$2,IntelliFactory,Runtime,WebSharper,List,UI,Doc,Concurrency,Remoting,AjaxRemotingProvider,Utils;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Web=SMApp.Web=SMApp.Web||{};
@@ -10,8 +10,10 @@
  Intent=Web.Intent=Web.Intent||{};
  Entity=Web.Entity=Web.Entity||{};
  Resource=Web.Resource=Web.Resource||{};
+ NLU=Web.NLU=Web.NLU||{};
+ SC$1=Global.StartupCode$SMApp_Web$NLU=Global.StartupCode$SMApp_Web$NLU||{};
  Client=Web.Client=Web.Client||{};
- SC$1=Global.StartupCode$SMApp_Web$Client=Global.StartupCode$SMApp_Web$Client||{};
+ SC$2=Global.StartupCode$SMApp_Web$Client=Global.StartupCode$SMApp_Web$Client||{};
  IntelliFactory=Global.IntelliFactory;
  Runtime=IntelliFactory&&IntelliFactory.Runtime;
  WebSharper=Global.WebSharper;
@@ -93,6 +95,42 @@
    Url:Url
   };
  };
+ NLU.Intent=function(name,a)
+ {
+  return a.get_TopIntent().get_Name()===name&&a.get_TopIntent().get_Confidence()>NLU.intentConfidenceThreshold()?{
+   $:1,
+   $0:List.filter(function(e)
+   {
+    return e.get_Confidence()>NLU.entityConfidenceThreshold();
+   },a.get_Entities())
+  }:null;
+ };
+ NLU.entityConfidenceThreshold=function()
+ {
+  SC$1.$cctor();
+  return SC$1.entityConfidenceThreshold;
+ };
+ NLU.set_entityConfidenceThreshold=function($1)
+ {
+  SC$1.$cctor();
+  SC$1.entityConfidenceThreshold=$1;
+ };
+ NLU.intentConfidenceThreshold=function()
+ {
+  SC$1.$cctor();
+  return SC$1.intentConfidenceThreshold;
+ };
+ NLU.set_intentConfidenceThreshold=function($1)
+ {
+  SC$1.$cctor();
+  SC$1.intentConfidenceThreshold=$1;
+ };
+ SC$1.$cctor=function()
+ {
+  SC$1.$cctor=Global.ignore;
+  SC$1.intentConfidenceThreshold=0.8;
+  SC$1.entityConfidenceThreshold=0.8;
+ };
  Client.Term=function()
  {
   var interpreter,options;
@@ -106,20 +144,18 @@
  };
  Client.baseOpt=function()
  {
-  SC$1.$cctor();
-  return SC$1.baseOpt;
+  SC$2.$cctor();
+  return SC$2.baseOpt;
  };
  Client.Main=function(term,command)
  {
   var a,b;
   function Hello(a$1)
   {
-   return a$1.get_TopIntent().get_Name()==="Hello"&&a$1.get_TopIntent().get_Confidence()>0.8?{
+   var $1,a$2;
+   return a$1!=null&&a$1.$==1&&(a$2=NLU.Intent("Hello",a$1.$0),a$2!=null&&a$2.$==1&&($1=a$2.$0,true))?{
     $:1,
-    $0:List.filter(function(e)
-    {
-     return e.get_Confidence()>0.8;
-    },a$1.get_Entities())
+    $0:$1
    }:null;
   }
   a=command==="help"?{
@@ -134,16 +170,16 @@
   };
   a.$==1?(term.echo("Debug mode set."),Client.set_debugMode(true)):a.$==2?(term.disable(),Concurrency.Start((b=null,Concurrency.Delay(function()
   {
-   return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:1317303349",[command]),function(a$1)
+   return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-1952518609",[command]),function(a$1)
    {
-    var $1,a$2,$2,$3;
-    return a$1!=null&&a$1.$==1&&(a$2=Hello(a$1.$0),a$2!=null&&a$2.$==1&&(a$2.$0.$==1&&(a$2.$0.$1.$==0&&(a$2.$0.$0.get_Role()==="contact"&&($1=a$2.$0.$0,true)))))?(term.echo((function($4)
+    var $1,a$2,$2;
+    return(a$2=Hello(a$1),a$2!=null&&a$2.$==1&&(a$2.$0.$==1&&(a$2.$0.$1.$==0&&(a$2.$0.$0.get_Role()==="contact"&&($1=a$2.$0.$0,true)))))?(term.echo((function($3)
     {
-     return function($5)
+     return function($4)
      {
-      return $4("This is the hello intent. The user name is "+Utils.toSafe($5)+".");
+      return $3("This is the hello intent. The user name is "+Utils.toSafe($4)+".");
      };
-    }(Global.id))($1.get_Role())),Concurrency.Zero()):a$1!=null&&a$1.$==1&&($3=Hello(a$1.$0),$3!=null&&$3.$==1)?(term.echo("This is the hello intent but I don't know who the user is."),Concurrency.Zero()):(term.echo("This is the whatever intent"),Concurrency.Zero());
+    }(Global.id))($1.get_Role())),Concurrency.Zero()):($2=Hello(a$1),$2!=null&&$2.$==1)?(term.echo("This is the hello intent but I don't know who the user is."),Concurrency.Zero()):(term.echo("This is the whatever intent"),Concurrency.Zero());
    }),Concurrency.Delay(function()
    {
     term.enable();
@@ -153,20 +189,20 @@
  };
  Client.debugMode=function()
  {
-  SC$1.$cctor();
-  return SC$1.debugMode;
+  SC$2.$cctor();
+  return SC$2.debugMode;
  };
  Client.set_debugMode=function($1)
  {
-  SC$1.$cctor();
-  SC$1.debugMode=$1;
+  SC$2.$cctor();
+  SC$2.debugMode=$1;
  };
- SC$1.$cctor=function()
+ SC$2.$cctor=function()
  {
   var r;
-  SC$1.$cctor=Global.ignore;
-  SC$1.debugMode=false;
-  SC$1.baseOpt=(r={},r.name="_",r.greetings="Welcome to Selma",r.onInit=function(t)
+  SC$2.$cctor=Global.ignore;
+  SC$2.debugMode=false;
+  SC$2.baseOpt=(r={},r.name="_",r.greetings="Welcome to Selma",r.onInit=function(t)
   {
    var r$1;
    return t.push(function(c)
