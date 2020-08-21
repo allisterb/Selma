@@ -9,6 +9,7 @@ open WebSharper.UI.Client
 open WebSharper.UI.Html
 
 open SMApp.JQueryTerminal
+open SMApp.WebSpeech
 
 [<JavaScript>]
 module Client =
