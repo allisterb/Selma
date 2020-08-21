@@ -44,10 +44,16 @@ type Interpreter = Interpreter of ((SMApp.JQueryTerminal.Terminal->string->unit)
     member x.Options = x.Unwrap |> snd
 
 [<JavaScript>]
+type Menu = Menu of Map<int, string> * Interpreter
+
+[<JavaScript>]
+type Input = Input of Interpreter
+
+[<JavaScript>]
 type CUIContext =
     | InterpreterCtx of Interpreter
-    | MenuCtx
-    | InputCtx
+    | MenuCtx of Menu
+    | InputCtx of Input
 
 type Skill =
     | PainManagement

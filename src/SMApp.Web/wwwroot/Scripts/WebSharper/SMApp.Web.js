@@ -1,7 +1,7 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Web,User,Meaning,Intent,Entity,Interpreter,CUIContext,Resource,NLU,SC$1,CUI,SC$2,ClientExtensions,Client,SC$3,IntelliFactory,Runtime,WebSharper,List,UI,Doc,Concurrency,Utils,Remoting,AjaxRemotingProvider;
+ var Global,SMApp,Web,User,Meaning,Intent,Entity,Interpreter,Resource,NLU,SC$1,CUI,SC$2,ClientExtensions,Client,SC$3,IntelliFactory,Runtime,WebSharper,List,Seq,Random,UI,Doc,Concurrency,Utils,Remoting,AjaxRemotingProvider;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Web=SMApp.Web=SMApp.Web||{};
@@ -10,7 +10,6 @@
  Intent=Web.Intent=Web.Intent||{};
  Entity=Web.Entity=Web.Entity||{};
  Interpreter=Web.Interpreter=Web.Interpreter||{};
- CUIContext=Web.CUIContext=Web.CUIContext||{};
  Resource=Web.Resource=Web.Resource||{};
  NLU=Web.NLU=Web.NLU||{};
  SC$1=Global.StartupCode$SMApp_Web$NLU=Global.StartupCode$SMApp_Web$NLU||{};
@@ -23,6 +22,8 @@
  Runtime=IntelliFactory&&IntelliFactory.Runtime;
  WebSharper=Global.WebSharper;
  List=WebSharper&&WebSharper.List;
+ Seq=WebSharper&&WebSharper.Seq;
+ Random=WebSharper&&WebSharper.Random;
  UI=WebSharper&&WebSharper.UI;
  Doc=UI&&UI.Doc;
  Concurrency=WebSharper&&WebSharper.Concurrency;
@@ -106,12 +107,6 @@
    return[this.$0[0],this.$0[1]];
   }
  },null,Interpreter);
- CUIContext.InputCtx={
-  $:2
- };
- CUIContext.MenuCtx={
-  $:1
- };
  Resource.New=function(Name,Description,Url)
  {
   return{
@@ -198,11 +193,21 @@
   SC$2.$cctor();
   return SC$2.helloPhrases;
  };
+ CUI.getRandomPhrase=function(phrases)
+ {
+  return Seq.nth(CUI.rng().Next(0,phrases.get_Length()),phrases);
+ };
+ CUI.rng=function()
+ {
+  SC$2.$cctor();
+  return SC$2.rng;
+ };
  SC$2.$cctor=function()
  {
   SC$2.$cctor=Global.ignore;
-  SC$2.helloPhrases=List.ofArray(["Welcome","Welcome to Selma","Hi I'm Selma, how can I help?","Hello I'm Selma, how can I help?"]);
-  SC$2.helloUserPhrases=List.ofArray(["Welcome $user, nice to see you again..","Welcome to Selma","Hi I'm Selma, how can I help?","Hello I'm Selma, how can I help?"]);
+  SC$2.rng=new Random.New();
+  SC$2.helloPhrases=List.ofArray(["Welcome!","Welcome to Selma","I am Selma. How can I help?","Hi I'm Selma, how can I help?","Hello I'm Selma, how can I help?","My name is Selma."]);
+  SC$2.helloUserPhrases=List.ofArray(["Hi $user, welcome back.","Welcome $user, nice to see you again..","Hello $user","Good to see you $user."]);
  };
  ClientExtensions["Terminal.Push"]=function(x,i)
  {
@@ -226,12 +231,20 @@
   });
   options=Client.Main().get_Options();
   Global.$("#main").terminal(interpreter,options);
+  Client.context().unshift({
+   $:0,
+   $0:Client.Main()
+  });
   return Doc.get_Empty();
  };
  Client.Main=function()
  {
   SC$3.$cctor();
   return SC$3.Main;
+ };
+ Client.speakRandomPhrase=function(phrases)
+ {
+  Client.speak(CUI.getRandomPhrase(phrases));
  };
  Client.speak=function(text)
  {
@@ -262,6 +275,11 @@
   SC$3.$cctor();
   SC$3.debugMode=$1;
  };
+ Client.context=function()
+ {
+  SC$3.$cctor();
+  return SC$3.context;
+ };
  SC$3.$cctor=function()
  {
   var r;
@@ -284,7 +302,7 @@
     };
    }(Global.id))(Client.debugMode()))):a.$==3?(term.disable(),Concurrency.Start((b=null,Concurrency.Delay(function()
    {
-    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-1461664678",[command]),function(a$1)
+    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:1524111558",[command]),function(a$1)
     {
      var a$2,$1;
      a$2=NLU.HelloUser(a$1);
@@ -294,7 +312,7 @@
       {
        return $2("This is the hello intent. The user name is "+Utils.toSafe($3)+".");
       };
-     }(Global.id))(a$2.$0.get_Value())),Concurrency.Zero()):($1=NLU.Hello(a$1),$1!=null&&$1.$==1)?(term.echo("This is the hello intent but I don't know who the user is."),Concurrency.Zero()):(term.echo("This is the whatever intent"),Concurrency.Zero());
+     }(Global.id))(a$2.$0.get_Value())),Concurrency.Zero()):($1=NLU.Hello(a$1),$1!=null&&$1.$==1)?(Client.speakRandomPhrase(CUI.helloPhrases()),Concurrency.Zero()):(term.echo("This is the whatever intent"),Concurrency.Zero());
     }),Concurrency.Delay(function()
     {
      term.enable();
@@ -302,6 +320,7 @@
     }));
    })),null)):ClientExtensions["Terminal.Echo'"](term,"This is the help commnd");
   }
+  SC$3.context=[];
   SC$3.debugMode=false;
   SC$3.transcribe=false;
   SC$3.Main=new Interpreter({
@@ -312,7 +331,7 @@
     {
      return main($1,$2);
     };
-   },(r={},r.name="Main",r.greetings="Welcome to Selma",r.prompt=">",r)]
+   },(r={},r.name="Main",r.greetings="Welcome to Selma. Type hello to begin or help.",r.prompt=">",r)]
   });
  };
 }());
