@@ -170,23 +170,33 @@
  };
  Client.Term=function()
  {
-  var interpreter,options;
+  var baseOpt,r,interpreter;
+  baseOpt=(r={},r.name="_",r.greetings="Welcome to Selma",r.onInit=function(t)
+  {
+   var r$1;
+   t.echo((function($1)
+   {
+    return function($2)
+    {
+     return $1("There are "+Global.String($2)+" speech voices available.");
+    };
+   }(Global.id))(Global.speechSynthesis.getVoices().length));
+   return t.push(function(c)
+   {
+    return Client.Main(this,c);
+   },(r$1={},r$1.name="Main",r$1.prompt=">",r$1));
+  },r);
   interpreter=Runtime.ThisFunc(function()
   {
    return null;
   });
-  options=Client.baseOpt();
-  Global.$("#main").terminal(interpreter,options);
+  Global.$("#main").terminal(interpreter,baseOpt);
   return Doc.get_Empty();
- };
- Client.baseOpt=function()
- {
-  SC$2.$cctor();
-  return SC$2.baseOpt;
  };
  Client.Main=function(term,command)
  {
   var a,b;
+  Global.speechSynthesis.speak(new Global.SpeechSynthesisUtterance("hello 1 2 3 4"));
   a=NLU.Help(command);
   a.$==1?(Client.set_debugMode(true),term.echo((function($1)
   {
@@ -202,7 +212,7 @@
    };
   }(Global.id))(Client.debugMode()))):a.$==3?(term.disable(),Concurrency.Start((b=null,Concurrency.Delay(function()
   {
-   return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:14825134",[command]),function(a$1)
+   return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:1589908590",[command]),function(a$1)
    {
     var a$2,$1;
     a$2=NLU.HelloUser(a$1);
@@ -232,16 +242,7 @@
  };
  SC$2.$cctor=function()
  {
-  var r;
   SC$2.$cctor=Global.ignore;
   SC$2.debugMode=false;
-  SC$2.baseOpt=(r={},r.name="_",r.greetings="Welcome to Selma",r.onInit=function(t)
-  {
-   var r$1;
-   return t.push(function(c)
-   {
-    return Client.Main(this,c);
-   },(r$1={},r$1.name="Main",r$1.prompt=">",r$1));
-  },r);
  };
 }());

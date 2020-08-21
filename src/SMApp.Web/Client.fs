@@ -16,7 +16,8 @@ module Client =
     let mutable debugMode = false
     
     /// Main interpreter
-    let Main (term:Terminal) (command:string)  = 
+    let Main (term:Terminal) (command:string)  =    
+        do Window.SpeechSynthesis.Speak(new SpeechSynthesisUtterance("hello 1 2 3 4"))
         match command with
         | Help -> term.Red "This is the help commnd"
         | DebugOn -> debugMode <- true; sprintf "Debug mode is now %A." debugMode |> term.Echo 
@@ -31,14 +32,12 @@ module Client =
                 do term.Enable()
             } |> Async.Start 
 
-    let baseOpt =
-        Options(
-            Name="_", 
-            Greetings = "Welcome to Selma",
-            OnInit = (fun (t:Terminal) -> t.Push(Main, Options(Name="Main", Prompt=">")))
-        )
-
     let Term() = 
+        let baseOpt =
+            Options(
+                Name="_", 
+                Greetings = "Welcome to Selma",
+                OnInit = (fun (t:Terminal) -> t.Echo(sprintf "There are %i speech voices available." (Window.SpeechSynthesis.GetVoices().Length)); t.Push(Main, Options(Name="Main", Prompt=">")))
+            )
         Terminal("#main", ThisAction<Terminal, string>(fun _ _ ->()), baseOpt) |> ignore
         Doc.Empty
-

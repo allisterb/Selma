@@ -48,7 +48,7 @@ module Definition =
         |=> Inherits T<EventTarget>
         |+> Static [ 
             Constructor O 
-            |> WithInline "new (window.SpeecRecognition || window.webkitSpeechRecognition)()"
+            |> WithInline "new (window.SpeechRecognition || window.webkitSpeechRecognition)()"
         ]
         |+> Instance [
             "grammars" =@ SpeechGrammarList
