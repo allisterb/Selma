@@ -4,3 +4,6 @@
 [submodule "ext/webspeech-ext"]
 	path = ext/webspeech-ext
 	url = https://github.com/allisterb/webspeech-1.git
+[submodule "ext/FSharp.MongoDB"]
+	path = ext/FSharp.MongoDB
+	url = https://github.com/afshawnlotfi/FSharp.MongoDB.git
