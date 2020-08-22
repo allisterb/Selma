@@ -295,17 +295,14 @@
  Client.say=function(text)
  {
   var b;
-  if(Client.currentVoice()!==""&&Client.currentVoice()!=="None")
-   {
-    Concurrency.Start((b=null,Concurrency.Delay(function()
-    {
-     var u;
-     u=new Global.SpeechSynthesisUtterance(text);
-     u.voiceURI=Client.currentVoiceURI();
-     Global.speechSynthesis.speak(u);
-     return Concurrency.Zero();
-    })),null);
-   }
+  Concurrency.Start((b=null,Concurrency.Delay(function()
+  {
+   var u;
+   u=new Global.SpeechSynthesisUtterance(text);
+   u.voiceURI=Client.currentVoiceURI();
+   Global.speechSynthesis.speak(u);
+   return Concurrency.Zero();
+  })),null);
  };
  Client.initSpeech=function()
  {
@@ -385,7 +382,7 @@
     return $1("Debug mode is now off.");
    }(Global.id))):a.$==4?Client.say("Quick voice 1"):a.$==5?Client.say("Quick voice 2"):a.$==6?(term.disable(),Concurrency.Start((b=null,Concurrency.Delay(function()
    {
-    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-1003314992",[command]),function(a$1)
+    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-735435952",[command]),function(a$1)
     {
      var a$2,$1;
      a$2=NLU.HelloUser(a$1);
@@ -395,13 +392,7 @@
       {
        return $2("This is the hello intent. The user name is "+Utils.toSafe($3)+".");
       };
-     }(Global.id))(a$2.$0.get_Value())),Concurrency.Zero()):($1=NLU.Hello(a$1),$1!=null&&$1.$==1)?(Client.sayRandom(CUI.helloPhrases()),term.echo((function($2)
-     {
-      return function($3)
-      {
-       return $2(Global.String($3));
-      };
-     }(Global.id))(Global.speechSynthesis.getVoices().length)),Concurrency.Zero()):(term.echo("This is the whatever intent"),Concurrency.Zero());
+     }(Global.id))(a$2.$0.get_Value())),Concurrency.Zero()):($1=NLU.Hello(a$1),$1!=null&&$1.$==1)?(Client.sayRandom(CUI.helloPhrases()),Concurrency.Zero()):(term.echo("This is the whatever intent"),Concurrency.Zero());
     }),Concurrency.Delay(function()
     {
      term.enable();

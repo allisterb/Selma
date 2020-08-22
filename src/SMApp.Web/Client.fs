@@ -42,13 +42,12 @@ module Client =
             currentVoiceURI <- v.VoiceURI
             else if currentVoice = "" then error "No speech synthesis voice is available. You must install a speech synthesis voice on this device or computer to use Selma."
 
-    let say text = 
-        do if currentVoice <> "" && currentVoice <> "None" then
-            async { 
-                let u = new SpeechSynthesisUtterance(text)
-                u.VoiceURI <- currentVoiceURI
-                Window.SpeechSynthesis.Speak(u) 
-            } |> Async.Start
+    let say text =        
+        async { 
+            let u = new SpeechSynthesisUtterance(text)
+            u.VoiceURI <- currentVoiceURI
+            Window.SpeechSynthesis.Speak(u) 
+        } |> Async.Start
             
     let sayVoices() =
         let voices = Window.SpeechSynthesis.GetVoices()
@@ -78,7 +77,7 @@ module Client =
                 async {
                     match! Server.GetMeaning command with
                     | HelloUser u -> term.Echo(sprintf "This is the hello intent. The user name is %s." u.Value)
-                    | Hello _ -> sayRandom helloPhrases; (sprintf "%i" (Window.SpeechSynthesis.GetVoices().Length)) |> term.Echo
+                    | Hello _ -> sayRandom helloPhrases;
                     | _ -> term.Echo "This is the whatever intent"
                     do term.Enable()
                 } |> Async.Start
