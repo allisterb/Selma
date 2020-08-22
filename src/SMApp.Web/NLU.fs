@@ -17,14 +17,16 @@ module NLU =
         | _ -> None
         
     /// Quick commands that can be parsed without using the NLU service
-    let (|QuickHelp|QuickVoices|DebugOn|DebugOff|QuickVoice1|QuickVoice2|Phrase|) =
+    let (|QuickHello|QuickHelp|DebugOn|DebugOff|Phrase|) =
         function
+        | "hello"
+        | "hey"
+        | "yo"
+        | "hi" ->
+                QuickHello
         | "help" -> QuickHelp
-        | "voices" -> QuickVoices
         | "debug on" -> DebugOn
-        | "debug off"-> DebugOff
-        | "voice 1" -> QuickVoice1
-        | "voice 2" -> QuickVoice2
+        | "debug off" -> DebugOff
         | _ -> Phrase 
     
     let (|Hello|_|) =

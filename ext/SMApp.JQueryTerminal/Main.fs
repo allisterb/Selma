@@ -150,6 +150,7 @@ module Definition =
             "paused" => T<unit> ^-> T<bool>
             "push" => (interpreterFunction * Options) ^-> T<unit>
             "pop" => T<unit> ^-> T<unit>
+            "set_prompt" => T<string>^->T<unit> |> WithSourceName "setPrompt"
         ]|>ignore
 
     let Assembly =

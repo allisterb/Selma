@@ -27,15 +27,17 @@ module Client =
     (* Speech functions *)
     
     let initSpeech() =
+        do 
         let voices = Window.SpeechSynthesis.GetVoices() |> toArray
         do voices |> Array.iter(fun v-> 
-            if currentVoice = Unchecked.defaultof<SpeechSynthesisVoice> && (v.Name.Contains "Microsoft Zira" || v.Name.Contains "English Female") then
+            if currentVoice = Unchecked.defaultof<SpeechSynthesisVoice> && (v.Name.Contains "Microsoft Zira" || v.Name.ToLower().Contains "female") then
                 currentVoice <- v; info <| sprintf "Using voice %s." currentVoice.Name
             )
         do if currentVoice = Unchecked.defaultof<SpeechSynthesisVoice> && voices.Length > 0 then
                 let v = voices |> Array.find (fun v -> v.Default) in currentVoice <- v; info <| sprintf "Using voice %s." currentVoice.Name
                 let u = new SpeechSynthesisUtterance(sprintf "Using the default speech synthesis voice.") in async { Window.SpeechSynthesis.Speak u } |> Async.Start
             else if currentVoice = Unchecked.defaultof<SpeechSynthesisVoice> then error "No speech synthesis voice is available. In order to use Selma you must install a speech synthesis voice on this device or computer."
+        
 
     let say text =        
         async { 
@@ -50,31 +52,36 @@ module Client =
         sprintf "There are currently %i voices installed on this computer or device." voices.Length |> say
         for i = 0 to voices.Length - 1 do
             let v = voices.[i]
-            sprintf "Voice %i: Name: %s Local: %A." i v.Name v.LocalService |> say
+            sprintf "Voice %i. Name: %s, Local: %A." i v.Name v.LocalService |> say
 
     let sayRandom phrases = say <| getRandomPhrase phrases    
     
     let stopSpeaking = if Window.SpeechSynthesis.Speaking || Window.SpeechSynthesis.Pending then Window.SpeechSynthesis.Cancel()
     
+    let wait (f:unit -> unit) =
+        do async {f()} |> Async.Start
+        do currentTerm.Echo'("please wait")
+        do currentTerm.Disable()
+        do f() 
+        do currentTerm.Enable()
+
     /// Main interpreter
     let Main = 
-        let main (term:Terminal) (command:string)  =    
-            do if currentVoice = Unchecked.defaultof<SpeechSynthesisVoice> then initSpeech()
+        let main (term:Terminal) (command:string)  =
             currentTerm <- term
+            do if currentVoice = Unchecked.defaultof<SpeechSynthesisVoice> then initSpeech()
             match command with
+            | QuickHello _ -> sayRandom helloPhrases;
             | QuickHelp -> say "This is the quick help command"
-            | QuickVoices -> sayVoices()
             | DebugOn -> debugMode <- true; say "Debug mode is now on."  
             | DebugOff -> debugMode <- false; say "Debug mode is now off." 
-            | QuickVoice1 -> say "Quick voice 1"
-            | QuickVoice2 -> say "Quick voice 2"
             | Phrase -> 
+                do currentTerm.Echo'("please wait")
                 do term.Disable()
                 async {
                     match! Server.GetMeaning command with
-                    | HelloUser u -> term.Echo(sprintf "This is the hello intent. The user name is %s." u.Value)
-                    | Hello _ -> sayRandom helloPhrases;
-                    | _ -> term.Echo "This is the whatever intent"
+                    | HelloUser u -> say (sprintf "This is the hello intent. The user name is %s." u.Value)
+                    | _ -> term.Echo "This is the whatever intent"             
                     do term.Enable()
                 } |> Async.Start
         let mainOpt =
