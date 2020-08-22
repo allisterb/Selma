@@ -1,7 +1,7 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Web,User,Meaning,Intent,Entity,Interpreter,Resource,NLU,SC$1,CUI,SC$2,ClientExtensions,Client,SC$3,IntelliFactory,Runtime,WebSharper,List,Seq,Random,Arrays,$,console,UI,Doc,Concurrency,Utils,Unchecked,Remoting,AjaxRemotingProvider;
+ var Global,SMApp,Web,User,Meaning,Intent,Entity,Interpreter,Resource,NLU,SC$1,CUI,SC$2,ClientExtensions,SC$3,Client,SC$4,IntelliFactory,Runtime,WebSharper,List,Seq,Random,Arrays,$,console,UI,Doc,Concurrency,Utils,Unchecked,Remoting,AjaxRemotingProvider;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Web=SMApp.Web=SMApp.Web||{};
@@ -16,8 +16,9 @@
  CUI=Web.CUI=Web.CUI||{};
  SC$2=Global.StartupCode$SMApp_Web$CUI=Global.StartupCode$SMApp_Web$CUI||{};
  ClientExtensions=Web.ClientExtensions=Web.ClientExtensions||{};
+ SC$3=Global.StartupCode$SMApp_Web$ClientExtensions=Global.StartupCode$SMApp_Web$ClientExtensions||{};
  Client=Web.Client=Web.Client||{};
- SC$3=Global.StartupCode$SMApp_Web$Client=Global.StartupCode$SMApp_Web$Client||{};
+ SC$4=Global.StartupCode$SMApp_Web$Client=Global.StartupCode$SMApp_Web$Client||{};
  IntelliFactory=Global.IntelliFactory;
  Runtime=IntelliFactory&&IntelliFactory.Runtime;
  WebSharper=Global.WebSharper;
@@ -138,34 +139,36 @@
  NLU.QuickHello=function(a)
  {
   var $1;
-  switch(a)
+  switch(a==="hello"?0:a==="hey"?0:a==="yo"?0:a==="hi"?0:a==="help"?1:a==="debug on"?2:a==="debug off"?3:a.toLowerCase()==="programs"?4:5)
   {
-   case"hi":
-   case"yo":
-   case"hey":
-   case"hello":
+   case 0:
     return{
      $:0,
      $0:null
     };
-   case"help":
+   case 1:
     return{
      $:1,
      $0:null
     };
-   case"debug on":
+   case 2:
     return{
      $:2,
      $0:null
     };
-   case"debug off":
+   case 3:
     return{
      $:3,
      $0:null
     };
-   default:
+   case 4:
     return{
      $:4,
+     $0:null
+    };
+   case 5:
+    return{
+     $:5,
      $0:null
     };
   }
@@ -179,6 +182,11 @@
     return e.get_Confidence()>NLU.entityConfidenceThreshold();
    },a.get_Entities())
   }:null;
+ };
+ NLU.availablePrograms=function()
+ {
+  SC$1.$cctor();
+  return SC$1.availablePrograms;
  };
  NLU.entityConfidenceThreshold=function()
  {
@@ -205,6 +213,7 @@
   SC$1.$cctor=Global.ignore;
   SC$1.intentConfidenceThreshold=0.85;
   SC$1.entityConfidenceThreshold=0.85;
+  SC$1.availablePrograms=List.ofArray(["Depression","Arthritis"]);
  };
  CUI.helloUserPhrases=function()
  {
@@ -251,11 +260,28 @@
   b=i.get_Options();
   x.push(Runtime.CreateFuncWithThis(a),b);
  };
+ ClientExtensions["Terminal.EchoHtml'"]=function(x,text)
+ {
+  x.disable();
+  x.echo(text,ClientExtensions.rawOpt());
+  x.enable();
+ };
  ClientExtensions["Terminal.Echo'"]=function(x,text)
  {
   x.disable();
   x.echo(text);
   x.enable();
+ };
+ ClientExtensions.rawOpt=function()
+ {
+  SC$3.$cctor();
+  return SC$3.rawOpt;
+ };
+ SC$3.$cctor=function()
+ {
+  var r;
+  SC$3.$cctor=Global.ignore;
+  SC$3.rawOpt=(r={},r.raw=true,r);
  };
  Client.Term=function()
  {
@@ -274,8 +300,13 @@
  };
  Client.Main=function()
  {
-  SC$3.$cctor();
-  return SC$3.Main;
+  SC$4.$cctor();
+  return SC$4.Main;
+ };
+ Client.d=function()
+ {
+  SC$4.$cctor();
+  return SC$4.d;
  };
  Client.wait=function(f)
  {
@@ -292,8 +323,8 @@
  };
  Client.stopSpeaking=function()
  {
-  SC$3.$cctor();
-  return SC$3.stopSpeaking;
+  SC$4.$cctor();
+  return SC$4.stopSpeaking;
  };
  Client.sayRandom=function(phrases)
  {
@@ -369,62 +400,68 @@
  };
  Client.transcribe=function()
  {
-  SC$3.$cctor();
-  return SC$3.transcribe;
+  SC$4.$cctor();
+  return SC$4.transcribe;
  };
  Client.set_transcribe=function($1)
  {
-  SC$3.$cctor();
-  SC$3.transcribe=$1;
+  SC$4.$cctor();
+  SC$4.transcribe=$1;
  };
  Client.debugMode=function()
  {
-  SC$3.$cctor();
-  return SC$3.debugMode;
+  SC$4.$cctor();
+  return SC$4.debugMode;
  };
  Client.set_debugMode=function($1)
  {
-  SC$3.$cctor();
-  SC$3.debugMode=$1;
+  SC$4.$cctor();
+  SC$4.debugMode=$1;
  };
  Client.currentTerm=function()
  {
-  SC$3.$cctor();
-  return SC$3.currentTerm;
+  SC$4.$cctor();
+  return SC$4.currentTerm;
  };
  Client.set_currentTerm=function($1)
  {
-  SC$3.$cctor();
-  SC$3.currentTerm=$1;
+  SC$4.$cctor();
+  SC$4.currentTerm=$1;
  };
  Client.currentVoice=function()
  {
-  SC$3.$cctor();
-  return SC$3.currentVoice;
+  SC$4.$cctor();
+  return SC$4.currentVoice;
  };
  Client.set_currentVoice=function($1)
  {
-  SC$3.$cctor();
-  SC$3.currentVoice=$1;
+  SC$4.$cctor();
+  SC$4.currentVoice=$1;
  };
  Client.context=function()
  {
-  SC$3.$cctor();
-  return SC$3.context;
+  SC$4.$cctor();
+  return SC$4.context;
  };
- SC$3.$cctor=function()
+ SC$4.$cctor=function()
  {
   var r;
-  SC$3.$cctor=Global.ignore;
+  SC$4.$cctor=Global.ignore;
   function main(term,command)
   {
    var a,b;
    Client.set_currentTerm(term);
    Unchecked.Equals(Client.currentVoice(),null)?Client.initSpeech():void 0;
    a=NLU.QuickHello(command);
-   return a.$==1?Client.say("This is the quick help command"):a.$==2?(Client.set_debugMode(true),Client.say("Debug mode is now on.")):a.$==3?(Client.set_debugMode(false),Client.say("Debug mode is now off.")):a.$==4?(ClientExtensions["Terminal.Echo'"](Client.currentTerm(),"please wait"),term.disable(),Concurrency.Start((b=null,Concurrency.Delay(function()
+   return a.$==1?ClientExtensions["Terminal.EchoHtml'"](term,Client.d()):a.$==2?(Client.set_debugMode(true),Client.say("Debug mode is now on.")):a.$==3?(Client.set_debugMode(false),Client.say("Debug mode is now off.")):a.$==4?(Client.say("The following programs are available:"),List.iteri(function(i,p)
    {
-    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:374767805",[command]),function(a$1)
+    return Client.say((((Runtime.Curried3(function($1,$2,$3)
+    {
+     return $1(Global.String($2)+". "+Utils.toSafe($3));
+    }))(Global.id))(i))(p));
+   },NLU.availablePrograms())):a.$==5?(ClientExtensions["Terminal.Echo'"](Client.currentTerm(),"please wait"),term.disable(),Concurrency.Start((b=null,Concurrency.Delay(function()
+   {
+    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-691373952",[command]),function(a$1)
     {
      var a$2;
      a$2=NLU.HelloUser(a$1);
@@ -434,7 +471,7 @@
       {
        return $1("This is the hello intent. The user name is "+Utils.toSafe($2)+".");
       };
-     }(Global.id))(a$2.$0.get_Value())),Concurrency.Zero()):(term.echo("This is the whatever intent"),Concurrency.Zero());
+     }(Global.id))(a$2.$0.get_Value())),Concurrency.Zero()):(ClientExtensions["Terminal.Echo'"](term,"This is the whatever intent"),Concurrency.Zero());
     }),Concurrency.Delay(function()
     {
      term.enable();
@@ -442,13 +479,14 @@
     }));
    })),null)):Client.sayRandom(CUI.helloPhrases());
   }
-  SC$3.context=[];
-  SC$3.currentVoice=null;
-  SC$3.currentTerm=null;
-  SC$3.debugMode=false;
-  SC$3.transcribe=false;
-  SC$3.stopSpeaking=Global.speechSynthesis.speaking||Global.speechSynthesis.pending?Global.speechSynthesis.cancel():null;
-  SC$3.Main=new Interpreter({
+  SC$4.context=[];
+  SC$4.currentVoice=null;
+  SC$4.currentTerm=null;
+  SC$4.debugMode=false;
+  SC$4.transcribe=false;
+  SC$4.stopSpeaking=Global.speechSynthesis.speaking||Global.speechSynthesis.pending?Global.speechSynthesis.cancel():null;
+  SC$4.d="\n        <div class=\"card\" style=\"width: 18rem;\">\n        <img class=\"card-img-top\" src=\"...\" alt=\"Card image cap\">\n        <div class=\"card-body\">\n          <h5 class=\"card-title\">Card title</h5>\n          <p class=\"card-text\">Some quick example text to build on the card title and make up the bulk of the card's content.</p>\n          <a href=\"#\" class=\"btn btn-primary\">Go somewhere</a>\n        </div>\n</div>\n    ";
+  SC$4.Main=new Interpreter({
    $:0,
    $0:[function($1)
    {

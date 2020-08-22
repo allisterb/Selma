@@ -341,3 +341,4 @@ healthchecksdb
 
 /deploy/oc-deploy.cmd
 /build/oc-port-forward.cmd
+/ext/SMApp.JQueryTerminal/.ionide

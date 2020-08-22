@@ -38,7 +38,6 @@ module Client =
                 let u = new SpeechSynthesisUtterance(sprintf "Using the default speech synthesis voice.") in async { Window.SpeechSynthesis.Speak u } |> Async.Start
             else if currentVoice = Unchecked.defaultof<SpeechSynthesisVoice> then error "No speech synthesis voice is available. In order to use Selma you must install a speech synthesis voice on this device or computer."
         
-
     let say text =        
         async { 
             let u = new SpeechSynthesisUtterance(text)
@@ -65,6 +64,18 @@ module Client =
         do f() 
         do currentTerm.Enable()
 
+    let d =
+        """
+        <div class="card" style="width: 18rem;">
+        <img class="card-img-top" src="..." alt="Card image cap">
+        <div class="card-body">
+          <h5 class="card-title">Card title</h5>
+          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+          <a href="#" class="btn btn-primary">Go somewhere</a>
+        </div>
+</div>
+    """
+
     /// Main interpreter
     let Main = 
         let main (term:Terminal) (command:string)  =
@@ -72,16 +83,21 @@ module Client =
             do if currentVoice = Unchecked.defaultof<SpeechSynthesisVoice> then initSpeech()
             match command with
             | QuickHello _ -> sayRandom helloPhrases;
-            | QuickHelp -> say "This is the quick help command"
+            | QuickHelp -> 
+                term.EchoHtml' d
+                //term.EchoHtml d //"<di//say "This is the quick help command"
             | DebugOn -> debugMode <- true; say "Debug mode is now on."  
             | DebugOff -> debugMode <- false; say "Debug mode is now off." 
+            | Programs -> 
+                say "The following programs are available:"
+                availablePrograms |> List.iteri (fun i p -> sprintf "%i. %s" i p |> say)
             | Phrase -> 
                 do currentTerm.Echo'("please wait")
                 do term.Disable()
                 async {
                     match! Server.GetMeaning command with
                     | HelloUser u -> say (sprintf "This is the hello intent. The user name is %s." u.Value)
-                    | _ -> term.Echo "This is the whatever intent"             
+                    | _ -> term.Echo' "This is the whatever intent"             
                     do term.Enable()
                 } |> Async.Start
         let mainOpt =

@@ -8,6 +8,10 @@ module NLU =
 
     let mutable entityConfidenceThreshold = 0.85f
 
+    let availablePrograms = [
+        "Depression"
+        "Arthritis"
+    ]
     let (|Intent|_|) (name:string) :Meaning -> (Entity list option) =
         function
         | m when m.TopIntent.Name = name && m.TopIntent.Confidence > intentConfidenceThreshold  -> 
@@ -17,7 +21,7 @@ module NLU =
         | _ -> None
         
     /// Quick commands that can be parsed without using the NLU service
-    let (|QuickHello|QuickHelp|DebugOn|DebugOff|Phrase|) =
+    let (|QuickHello|QuickHelp|DebugOn|DebugOff|Programs|Phrase|) =
         function
         | "hello"
         | "hey"
@@ -27,6 +31,7 @@ module NLU =
         | "help" -> QuickHelp
         | "debug on" -> DebugOn
         | "debug off" -> DebugOff
+        | s when s.ToLower() = "programs" -> Programs
         | _ -> Phrase 
     
     let (|Hello|_|) =
