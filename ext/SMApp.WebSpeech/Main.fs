@@ -222,6 +222,23 @@ module Definition =
             |> WithComment "For mark events, this attribute indicates the name of the marker, as defined in SSML as the name attribute of a mark element."
         ]
 
+    let SpeechSynthesisVoiceClass =
+        Class "SpeechSynthesisVoice"
+        |=> SpeechSynthesisVoice
+        |+> Instance [
+            "voiceURI" =? T<string>
+            |> WithComment "The voiceURI attribute specifies the speech synthesis voice and the location of the speech synthesis service for this voice."
+            "name" =? T<string>
+            |> WithComment "This attribute is a human-readable name that represents the voice."
+            "lang" =? T<string>
+            |> WithComment "This attribute is a BCP 47 language tag indicating the language of the voice."
+            "localService" =? T<bool>
+            |> WithComment "This attribute is true for voices supplied by a local speech synthesizer, and is false for voices supplied by a remote speech synthesizer service."
+            "default" =? T<bool>
+            |> WithComment "Indicates whether the voice is the default voice of the given language."
+
+        ]
+
     let SpeechSynthesisUtteranceClass =
         Class "SpeechSynthesisUtterance"
         |=> SpeechSynthesisUtterance
@@ -237,6 +254,8 @@ module Definition =
             |> WithComment "This attribute specifies the language of the speech synthesis for the utterance, using a valid BCP 47 language tag."
             "voiceURI" =@ T<string>
             |> WithComment "The voiceURI attribute specifies speech synthesis voice and the location of the speech synthesis service that the web application wishes to use."
+            "voice" =@ SpeechSynthesisVoice
+            |> WithComment "The voice attribute specifies speech synthesis voice and the location of the speech synthesis service that the web application wishes to use."
             "volume" =@ T<float>
             |> WithComment "This attribute specifies the speaking volume for the utterance."
             "rate" =@ T<float>
@@ -260,22 +279,6 @@ module Definition =
             |> WithComment "Fired when the spoken utterance reaches a word or sentence boundary."
         ]
 
-    let SpeechSynthesisVoiceClass =
-        Class "SpeechSynthesisVoice"
-        |=> SpeechSynthesisVoice
-        |+> Instance [
-            "voiceURI" =? T<string>
-            |> WithComment "The voiceURI attribute specifies the speech synthesis voice and the location of the speech synthesis service for this voice."
-            "name" =? T<string>
-            |> WithComment "This attribute is a human-readable name that represents the voice."
-            "lang" =? T<string>
-            |> WithComment "This attribute is a BCP 47 language tag indicating the language of the voice."
-            "localService" =? T<bool>
-            |> WithComment "This attribute is true for voices supplied by a local speech synthesizer, and is false for voices supplied by a remote speech synthesizer service."
-            "default" =? T<bool>
-            |> WithComment "Indicates whether the voice is the default voice of the given language."
-
-        ]
     
     let SpeechSynthesisVoiceListClass =
         Class "SpeechSynthesisVoiceList"
