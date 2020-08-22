@@ -4,9 +4,9 @@ open WebSharper
 
 [<AutoOpen;JavaScript>]
 module NLU =
-    let mutable intentConfidenceThreshold = 0.8f
+    let mutable intentConfidenceThreshold = 0.85f
 
-    let mutable entityConfidenceThreshold = 0.8f
+    let mutable entityConfidenceThreshold = 0.85f
 
     let (|Intent|_|) (name:string) :Meaning -> (Entity list option) =
         function
@@ -16,13 +16,16 @@ module NLU =
                 |> Some
         | _ -> None
         
-    /// Local commands
-    let (|Help|DebugOn|DebugOff|NonLocal|) =
+    /// Quick commands that can be parsed without using the NLU service
+    let (|QuickHelp|QuickVoices|DebugOn|DebugOff|QuickVoice1|QuickVoice2|Phrase|) =
         function
-        | "help" -> Help
+        | "help" -> QuickHelp
+        | "voices" -> QuickVoices
         | "debug on" -> DebugOn
         | "debug off"-> DebugOff
-        | _ -> NonLocal 
+        | "voice 1" -> QuickVoice1
+        | "voice 2" -> QuickVoice2
+        | _ -> Phrase 
     
     let (|Hello|_|) =
         function

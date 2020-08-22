@@ -1,7 +1,7 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Web,User,Meaning,Intent,Entity,Interpreter,Resource,NLU,SC$1,CUI,SC$2,ClientExtensions,Client,SC$3,IntelliFactory,Runtime,WebSharper,List,Seq,Random,UI,Doc,Concurrency,Utils,Remoting,AjaxRemotingProvider;
+ var Global,SMApp,Web,User,Meaning,Intent,Entity,Interpreter,Resource,NLU,SC$1,CUI,SC$2,ClientExtensions,Client,SC$3,IntelliFactory,Runtime,WebSharper,List,Seq,Random,Arrays,$,UI,Doc,Utils,Concurrency,Remoting,AjaxRemotingProvider;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Web=SMApp.Web=SMApp.Web||{};
@@ -24,10 +24,12 @@
  List=WebSharper&&WebSharper.List;
  Seq=WebSharper&&WebSharper.Seq;
  Random=WebSharper&&WebSharper.Random;
+ Arrays=WebSharper&&WebSharper.Arrays;
+ $=Global.jQuery;
  UI=WebSharper&&WebSharper.UI;
  Doc=UI&&UI.Doc;
- Concurrency=WebSharper&&WebSharper.Concurrency;
  Utils=WebSharper&&WebSharper.Utils;
+ Concurrency=WebSharper&&WebSharper.Concurrency;
  Remoting=WebSharper&&WebSharper.Remoting;
  AjaxRemotingProvider=Remoting&&Remoting.AjaxRemotingProvider;
  User.New=function(UserName)
@@ -131,19 +133,28 @@
    $0:$1
   }:null;
  };
- NLU.Help=function(a)
+ NLU.QuickHelp=function(a)
  {
   return a==="help"?{
    $:0,
    $0:null
-  }:a==="debug on"?{
+  }:a==="voices"?{
    $:1,
    $0:null
-  }:a==="debug off"?{
+  }:a==="debug on"?{
    $:2,
    $0:null
-  }:{
+  }:a==="debug off"?{
    $:3,
+   $0:null
+  }:a==="voice 1"?{
+   $:4,
+   $0:null
+  }:a==="voice 2"?{
+   $:5,
+   $0:null
+  }:{
+   $:6,
    $0:null
   };
  };
@@ -180,8 +191,8 @@
  SC$1.$cctor=function()
  {
   SC$1.$cctor=Global.ignore;
-  SC$1.intentConfidenceThreshold=0.8;
-  SC$1.entityConfidenceThreshold=0.8;
+  SC$1.intentConfidenceThreshold=0.85;
+  SC$1.entityConfidenceThreshold=0.85;
  };
  CUI.helloUserPhrases=function()
  {
@@ -208,6 +219,14 @@
   SC$2.rng=new Random.New();
   SC$2.helloPhrases=List.ofArray(["Welcome!","Welcome to Selma","I am Selma. How can I help?","Hi I'm Selma, how can I help?","Hello I'm Selma, how can I help?","My name is Selma."]);
   SC$2.helloUserPhrases=List.ofArray(["Hi $user, welcome back.","Welcome $user, nice to see you again..","Hello $user","Good to see you $user."]);
+ };
+ ClientExtensions.toArray=function(a)
+ {
+  return Arrays.map(Global.id,$.makeArray(a));
+ };
+ ClientExtensions.error=function(a)
+ {
+  $.error(a);
  };
  ClientExtensions["Terminal.Push"]=function(x,i)
  {
@@ -242,18 +261,66 @@
   SC$3.$cctor();
   return SC$3.Main;
  };
- Client.speakRandomPhrase=function(phrases)
+ Client.stopSpeaking=function()
  {
-  Client.speak(CUI.getRandomPhrase(phrases));
+  SC$3.$cctor();
+  return SC$3.stopSpeaking;
  };
- Client.speak=function(text)
+ Client.sayRandom=function(phrases)
+ {
+  Client.say(CUI.getRandomPhrase(phrases));
+ };
+ Client.sayVoices=function()
+ {
+  var voices,i,$1,v;
+  voices=Global.speechSynthesis.getVoices();
+  Client.say((function($2)
+  {
+   return function($3)
+   {
+    return $2("There are currently "+Global.String($3)+" voices installed on this computer or device.");
+   };
+  }(Global.id))(voices.length));
+  for(i=0,$1=voices.length;i<=$1;i++){
+   v=voices.item(i);
+   Client.say((function($2)
+   {
+    return function($3)
+    {
+     return $2("Voice 1: "+Utils.toSafe($3)+".");
+    };
+   }(Global.id))(v.name));
+  }
+ };
+ Client.say=function(text)
  {
   var b;
-  Concurrency.Start((b=null,Concurrency.Delay(function()
-  {
-   Global.speechSynthesis.speak(new Global.SpeechSynthesisUtterance(text));
-   return Concurrency.Zero();
-  })),null);
+  if(Client.currentVoice()!==""&&Client.currentVoice()!=="None")
+   {
+    Concurrency.Start((b=null,Concurrency.Delay(function()
+    {
+     var u;
+     u=new Global.SpeechSynthesisUtterance(text);
+     u.voiceURI=Client.currentVoiceURI();
+     Global.speechSynthesis.speak(u);
+     return Concurrency.Zero();
+    })),null);
+   }
+ };
+ Client.initSpeech=function()
+ {
+  var v,voices,i,$1,v$1;
+  voices=ClientExtensions.toArray(Global.speechSynthesis.getVoices());
+  for(i=0,$1=Arrays.length(voices)-1;i<=$1;i++){
+   v$1=Arrays.get(voices,i);
+   Client.currentVoice()===""&&(v$1.name.indexOf("Microsoft Zira")!=-1||v$1.name.indexOf("English Female")!=-1)?(Client.set_currentVoice(v$1.name),Client.set_currentVoiceURI(v$1.voiceURI)):void 0;
+  }
+  Client.currentVoice()===""&&Arrays.length(voices)>0?(v=Arrays.get(voices,0),Client.set_currentVoice(v.name),Client.set_currentVoiceURI(v.voiceURI)):Client.currentVoice()===""?ClientExtensions.error("No speech synthesis voice is available. You must install a speech synthesis voice on this device or computer to use Selma."):void 0;
+ };
+ Client.context=function()
+ {
+  SC$3.$cctor();
+  return SC$3.context;
  };
  Client.transcribe=function()
  {
@@ -275,10 +342,25 @@
   SC$3.$cctor();
   SC$3.debugMode=$1;
  };
- Client.context=function()
+ Client.currentVoiceURI=function()
  {
   SC$3.$cctor();
-  return SC$3.context;
+  return SC$3.currentVoiceURI;
+ };
+ Client.set_currentVoiceURI=function($1)
+ {
+  SC$3.$cctor();
+  SC$3.currentVoiceURI=$1;
+ };
+ Client.currentVoice=function()
+ {
+  SC$3.$cctor();
+  return SC$3.currentVoice;
+ };
+ Client.set_currentVoice=function($1)
+ {
+  SC$3.$cctor();
+  SC$3.currentVoice=$1;
  };
  SC$3.$cctor=function()
  {
@@ -287,22 +369,23 @@
   function main(term,command)
   {
    var a,b;
-   a=NLU.Help(command);
-   return a.$==1?(Client.set_debugMode(true),ClientExtensions["Terminal.Echo'"](term,(function($1)
+   Client.currentVoice()===""?(Client.initSpeech(),ClientExtensions["Terminal.Echo'"](term,(function($1)
    {
     return function($2)
     {
-     return $1("Debug mode is now "+Utils.prettyPrint($2)+".");
+     return $1("Using voice "+Utils.toSafe($2)+".");
     };
-   }(Global.id))(Client.debugMode()))):a.$==2?(Client.set_debugMode(false),ClientExtensions["Terminal.Echo'"](term,(function($1)
+   }(Global.id))(Client.currentVoice()))):void 0;
+   a=NLU.QuickHelp(command);
+   return a.$==1?Client.say("This is the quick voices command."):a.$==2?(Client.set_debugMode(true),Client.say(function($1)
    {
-    return function($2)
-    {
-     return $1("Debug mode is now "+Utils.prettyPrint($2)+".");
-    };
-   }(Global.id))(Client.debugMode()))):a.$==3?(term.disable(),Concurrency.Start((b=null,Concurrency.Delay(function()
+    return $1("Debug mode is now on.");
+   }(Global.id))):a.$==3?(Client.set_debugMode(false),Client.say(function($1)
    {
-    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:1524111558",[command]),function(a$1)
+    return $1("Debug mode is now off.");
+   }(Global.id))):a.$==4?Client.say("Quick voice 1"):a.$==5?Client.say("Quick voice 2"):a.$==6?(term.disable(),Concurrency.Start((b=null,Concurrency.Delay(function()
+   {
+    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-1003314992",[command]),function(a$1)
     {
      var a$2,$1;
      a$2=NLU.HelloUser(a$1);
@@ -312,17 +395,26 @@
       {
        return $2("This is the hello intent. The user name is "+Utils.toSafe($3)+".");
       };
-     }(Global.id))(a$2.$0.get_Value())),Concurrency.Zero()):($1=NLU.Hello(a$1),$1!=null&&$1.$==1)?(Client.speakRandomPhrase(CUI.helloPhrases()),Concurrency.Zero()):(term.echo("This is the whatever intent"),Concurrency.Zero());
+     }(Global.id))(a$2.$0.get_Value())),Concurrency.Zero()):($1=NLU.Hello(a$1),$1!=null&&$1.$==1)?(Client.sayRandom(CUI.helloPhrases()),term.echo((function($2)
+     {
+      return function($3)
+      {
+       return $2(Global.String($3));
+      };
+     }(Global.id))(Global.speechSynthesis.getVoices().length)),Concurrency.Zero()):(term.echo("This is the whatever intent"),Concurrency.Zero());
     }),Concurrency.Delay(function()
     {
      term.enable();
      return Concurrency.Zero();
     }));
-   })),null)):ClientExtensions["Terminal.Echo'"](term,"This is the help commnd");
+   })),null)):Client.say("This is the quick help command");
   }
-  SC$3.context=[];
+  SC$3.currentVoice="";
+  SC$3.currentVoiceURI="";
   SC$3.debugMode=false;
   SC$3.transcribe=false;
+  SC$3.context=[];
+  SC$3.stopSpeaking=Global.speechSynthesis.speaking||Global.speechSynthesis.pending?Global.speechSynthesis.cancel():null;
   SC$3.Main=new Interpreter({
    $:0,
    $0:[function($1)
@@ -331,7 +423,7 @@
     {
      return main($1,$2);
     };
-   },(r={},r.name="Main",r.greetings="Welcome to Selma. Type hello to begin or help.",r.prompt=">",r)]
+   },(r={},r.name="Main",r.greetings="Welcome to Selma. Type hello to begin or help for more assistance.",r.prompt=">",r)]
   });
  };
 }());

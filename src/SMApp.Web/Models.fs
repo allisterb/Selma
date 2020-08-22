@@ -54,7 +54,7 @@ type CUIContext =
     | InterpreterCtx of Interpreter
     | MenuCtx of Menu
     | InputCtx of Input
-
+    
 type Skill =
     | PainManagement
     | FatigueManagement
