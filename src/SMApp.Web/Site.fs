@@ -9,6 +9,8 @@ open WebSharper.UI
 open WebSharper.UI.Html
 open WebSharper.UI.Server
 
+open SMApp.Bootstrap
+
 type Route =
     | [<EndPoint "/">] Home
     | [<EndPoint "/about">] About
@@ -27,8 +29,10 @@ module Templates =
 module Site =
     let HomePage ctx =
         Templates.Main ctx Home "Home" [
-            div [attr.id "main"] [
-                client <@ Client.Term() @>
+                                          
+                div [attr.id "main"; attr.``class`` "container"] [
+                    client <@ Client.Term() @>
+                
             ]
         ]
 

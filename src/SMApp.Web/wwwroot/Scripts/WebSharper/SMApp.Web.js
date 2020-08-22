@@ -1,9 +1,12 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Web,User,Meaning,Intent,Entity,Interpreter,Resource,NLU,SC$1,CUI,SC$2,ClientExtensions,SC$3,Client,SC$4,IntelliFactory,Runtime,WebSharper,List,Seq,Random,Arrays,$,console,UI,Doc,Concurrency,Utils,Unchecked,Remoting,AjaxRemotingProvider;
+ var Global,SMApp,Bootstrap,Controls,SC$1,Web,User,Meaning,Intent,Entity,Interpreter,Resource,NLU,SC$2,CUI,SC$3,ClientExtensions,SC$4,Client,SC$5,WebSharper,UI,Doc,List,AttrModule,IntelliFactory,Runtime,Seq,Random,Arrays,$,console,Var$1,AttrProxy,Concurrency,Utils,Unchecked,Remoting,AjaxRemotingProvider;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
+ Bootstrap=SMApp.Bootstrap=SMApp.Bootstrap||{};
+ Controls=Bootstrap.Controls=Bootstrap.Controls||{};
+ SC$1=Global.StartupCode$SMApp_Web$Bootstrap=Global.StartupCode$SMApp_Web$Bootstrap||{};
  Web=SMApp.Web=SMApp.Web||{};
  User=Web.User=Web.User||{};
  Meaning=Web.Meaning=Web.Meaning||{};
@@ -12,29 +15,104 @@
  Interpreter=Web.Interpreter=Web.Interpreter||{};
  Resource=Web.Resource=Web.Resource||{};
  NLU=Web.NLU=Web.NLU||{};
- SC$1=Global.StartupCode$SMApp_Web$NLU=Global.StartupCode$SMApp_Web$NLU||{};
+ SC$2=Global.StartupCode$SMApp_Web$NLU=Global.StartupCode$SMApp_Web$NLU||{};
  CUI=Web.CUI=Web.CUI||{};
- SC$2=Global.StartupCode$SMApp_Web$CUI=Global.StartupCode$SMApp_Web$CUI||{};
+ SC$3=Global.StartupCode$SMApp_Web$CUI=Global.StartupCode$SMApp_Web$CUI||{};
  ClientExtensions=Web.ClientExtensions=Web.ClientExtensions||{};
- SC$3=Global.StartupCode$SMApp_Web$ClientExtensions=Global.StartupCode$SMApp_Web$ClientExtensions||{};
+ SC$4=Global.StartupCode$SMApp_Web$ClientExtensions=Global.StartupCode$SMApp_Web$ClientExtensions||{};
  Client=Web.Client=Web.Client||{};
- SC$4=Global.StartupCode$SMApp_Web$Client=Global.StartupCode$SMApp_Web$Client||{};
+ SC$5=Global.StartupCode$SMApp_Web$Client=Global.StartupCode$SMApp_Web$Client||{};
+ WebSharper=Global.WebSharper;
+ UI=WebSharper&&WebSharper.UI;
+ Doc=UI&&UI.Doc;
+ List=WebSharper&&WebSharper.List;
+ AttrModule=UI&&UI.AttrModule;
  IntelliFactory=Global.IntelliFactory;
  Runtime=IntelliFactory&&IntelliFactory.Runtime;
- WebSharper=Global.WebSharper;
- List=WebSharper&&WebSharper.List;
  Seq=WebSharper&&WebSharper.Seq;
  Random=WebSharper&&WebSharper.Random;
  Arrays=WebSharper&&WebSharper.Arrays;
  $=Global.jQuery;
  console=Global.console;
- UI=WebSharper&&WebSharper.UI;
- Doc=UI&&UI.Doc;
+ Var$1=UI&&UI.Var$1;
+ AttrProxy=UI&&UI.AttrProxy;
  Concurrency=WebSharper&&WebSharper.Concurrency;
  Utils=WebSharper&&WebSharper.Utils;
  Unchecked=WebSharper&&WebSharper.Unchecked;
  Remoting=WebSharper&&WebSharper.Remoting;
  AjaxRemotingProvider=Remoting&&Remoting.AjaxRemotingProvider;
+ Controls.Radio=function(lbl,extras,target,labelExtras,targetExtras)
+ {
+  return Doc.Element("div",new List.T({
+   $:1,
+   $0:(Controls.cls())("radio"),
+   $1:extras
+  }),[Doc.Element("label",labelExtras,[Doc.Radio(targetExtras,true,target),Doc.TextNode(lbl)])]);
+ };
+ Controls.Checkbox=function(lbl,extras,target,labelExtras,targetExtras)
+ {
+  return Doc.Element("div",new List.T({
+   $:1,
+   $0:(Controls.cls())("checkbox"),
+   $1:extras
+  }),[Doc.Element("label",labelExtras,[Doc.CheckBox(targetExtras,target),Doc.TextNode(lbl)])]);
+ };
+ Controls.TextArea=function(lbl,extras,target,labelExtras,targetExtras)
+ {
+  return Doc.Element("div",new List.T({
+   $:1,
+   $0:(Controls.cls())("form-group"),
+   $1:extras
+  }),[Doc.Element("label",labelExtras,[Doc.TextNode(lbl)]),Doc.InputArea(new List.T({
+   $:1,
+   $0:(Controls.cls())("form-control"),
+   $1:targetExtras
+  }),target)]);
+ };
+ Controls.InputPassword=function(lbl,extras,target,labelExtras,targetExtras)
+ {
+  return Doc.Element("div",new List.T({
+   $:1,
+   $0:(Controls.cls())("form-group"),
+   $1:extras
+  }),[Doc.Element("label",labelExtras,[Doc.TextNode(lbl)]),Doc.PasswordBox(new List.T({
+   $:1,
+   $0:(Controls.cls())("form-control"),
+   $1:targetExtras
+  }),target)]);
+ };
+ Controls.Input=function(lbl,extras,target,labelExtras,targetExtras)
+ {
+  return Doc.Element("div",new List.T({
+   $:1,
+   $0:(Controls.cls())("form-group"),
+   $1:extras
+  }),[Doc.Element("label",labelExtras,[Doc.TextNode(lbl)]),Doc.Input(new List.T({
+   $:1,
+   $0:(Controls.cls())("form-control"),
+   $1:targetExtras
+  }),target)]);
+ };
+ Controls.Container=function(c)
+ {
+  return Doc.Element("div",[(Controls.cls())("container")],c);
+ };
+ Controls.Class=function()
+ {
+  SC$1.$cctor();
+  return SC$1.Class;
+ };
+ Controls.cls=function()
+ {
+  SC$1.$cctor();
+  return SC$1.cls;
+ };
+ SC$1.$cctor=function()
+ {
+  SC$1.$cctor=Global.ignore;
+  SC$1.cls=AttrModule.Class;
+  SC$1.Class=AttrModule.Class;
+ };
  User.New=function(UserName)
  {
   return{
@@ -185,45 +263,45 @@
  };
  NLU.availablePrograms=function()
  {
-  SC$1.$cctor();
-  return SC$1.availablePrograms;
+  SC$2.$cctor();
+  return SC$2.availablePrograms;
  };
  NLU.entityConfidenceThreshold=function()
  {
-  SC$1.$cctor();
-  return SC$1.entityConfidenceThreshold;
+  SC$2.$cctor();
+  return SC$2.entityConfidenceThreshold;
  };
  NLU.set_entityConfidenceThreshold=function($1)
  {
-  SC$1.$cctor();
-  SC$1.entityConfidenceThreshold=$1;
+  SC$2.$cctor();
+  SC$2.entityConfidenceThreshold=$1;
  };
  NLU.intentConfidenceThreshold=function()
  {
-  SC$1.$cctor();
-  return SC$1.intentConfidenceThreshold;
+  SC$2.$cctor();
+  return SC$2.intentConfidenceThreshold;
  };
  NLU.set_intentConfidenceThreshold=function($1)
  {
-  SC$1.$cctor();
-  SC$1.intentConfidenceThreshold=$1;
+  SC$2.$cctor();
+  SC$2.intentConfidenceThreshold=$1;
  };
- SC$1.$cctor=function()
+ SC$2.$cctor=function()
  {
-  SC$1.$cctor=Global.ignore;
-  SC$1.intentConfidenceThreshold=0.85;
-  SC$1.entityConfidenceThreshold=0.85;
-  SC$1.availablePrograms=List.ofArray(["Depression","Arthritis"]);
+  SC$2.$cctor=Global.ignore;
+  SC$2.intentConfidenceThreshold=0.85;
+  SC$2.entityConfidenceThreshold=0.85;
+  SC$2.availablePrograms=List.ofArray(["Depression","Arthritis"]);
  };
  CUI.helloUserPhrases=function()
  {
-  SC$2.$cctor();
-  return SC$2.helloUserPhrases;
+  SC$3.$cctor();
+  return SC$3.helloUserPhrases;
  };
  CUI.helloPhrases=function()
  {
-  SC$2.$cctor();
-  return SC$2.helloPhrases;
+  SC$3.$cctor();
+  return SC$3.helloPhrases;
  };
  CUI.getRandomPhrase=function(phrases)
  {
@@ -231,15 +309,15 @@
  };
  CUI.rng=function()
  {
-  SC$2.$cctor();
-  return SC$2.rng;
+  SC$3.$cctor();
+  return SC$3.rng;
  };
- SC$2.$cctor=function()
+ SC$3.$cctor=function()
  {
-  SC$2.$cctor=Global.ignore;
-  SC$2.rng=new Random.New();
-  SC$2.helloPhrases=List.ofArray(["Welcome!","Welcome, my name is Selma.","Welcome to Selma. How can I help?","Hello this is Selma, how can I help?","Hello, I am Selma. How can I help?","Hello, I am Selma. How may I help you now?"]);
-  SC$2.helloUserPhrases=List.ofArray(["Hi $user, welcome back.","Welcome $user, nice to see you again..","Hello $user","Good to see you $user."]);
+  SC$3.$cctor=Global.ignore;
+  SC$3.rng=new Random.New();
+  SC$3.helloPhrases=List.ofArray(["Welcome!","Welcome, my name is Selma.","Welcome to Selma. How can I help?","Hello this is Selma, how can I help?","Hello, I am Selma. How can I help?","Hello, I am Selma. How may I help you now?"]);
+  SC$3.helloUserPhrases=List.ofArray(["Hi $user, welcome back.","Welcome $user, nice to see you again..","Hello $user","Good to see you $user."]);
  };
  ClientExtensions.toArray=function(a)
  {
@@ -274,18 +352,19 @@
  };
  ClientExtensions.rawOpt=function()
  {
-  SC$3.$cctor();
-  return SC$3.rawOpt;
+  SC$4.$cctor();
+  return SC$4.rawOpt;
  };
- SC$3.$cctor=function()
+ SC$4.$cctor=function()
  {
   var r;
-  SC$3.$cctor=Global.ignore;
-  SC$3.rawOpt=(r={},r.raw=true,r);
+  SC$4.$cctor=Global.ignore;
+  SC$4.rawOpt=(r={},r.raw=true,r);
  };
  Client.Term=function()
  {
   var interpreter,options;
+  Controls.Input("Username",List.T.Empty,Var$1.Create$1("dd"),[AttrModule.Class("sr-only")],List.ofArray([AttrModule.Class("input-lg"),AttrProxy.Create("readonly","")]));
   interpreter=Runtime.ThisFunc(function(term,command)
   {
    return((Client.Main().get_Func())(term))(command);
@@ -300,13 +379,18 @@
  };
  Client.Main=function()
  {
-  SC$4.$cctor();
-  return SC$4.Main;
+  SC$5.$cctor();
+  return SC$5.Main;
+ };
+ Client.container=function()
+ {
+  SC$5.$cctor();
+  return SC$5.container;
  };
  Client.d=function()
  {
-  SC$4.$cctor();
-  return SC$4.d;
+  SC$5.$cctor();
+  return SC$5.d;
  };
  Client.wait=function(f)
  {
@@ -323,8 +407,8 @@
  };
  Client.stopSpeaking=function()
  {
-  SC$4.$cctor();
-  return SC$4.stopSpeaking;
+  SC$5.$cctor();
+  return SC$5.stopSpeaking;
  };
  Client.sayRandom=function(phrases)
  {
@@ -400,53 +484,53 @@
  };
  Client.transcribe=function()
  {
-  SC$4.$cctor();
-  return SC$4.transcribe;
+  SC$5.$cctor();
+  return SC$5.transcribe;
  };
  Client.set_transcribe=function($1)
  {
-  SC$4.$cctor();
-  SC$4.transcribe=$1;
+  SC$5.$cctor();
+  SC$5.transcribe=$1;
  };
  Client.debugMode=function()
  {
-  SC$4.$cctor();
-  return SC$4.debugMode;
+  SC$5.$cctor();
+  return SC$5.debugMode;
  };
  Client.set_debugMode=function($1)
  {
-  SC$4.$cctor();
-  SC$4.debugMode=$1;
+  SC$5.$cctor();
+  SC$5.debugMode=$1;
  };
  Client.currentTerm=function()
  {
-  SC$4.$cctor();
-  return SC$4.currentTerm;
+  SC$5.$cctor();
+  return SC$5.currentTerm;
  };
  Client.set_currentTerm=function($1)
  {
-  SC$4.$cctor();
-  SC$4.currentTerm=$1;
+  SC$5.$cctor();
+  SC$5.currentTerm=$1;
  };
  Client.currentVoice=function()
  {
-  SC$4.$cctor();
-  return SC$4.currentVoice;
+  SC$5.$cctor();
+  return SC$5.currentVoice;
  };
  Client.set_currentVoice=function($1)
  {
-  SC$4.$cctor();
-  SC$4.currentVoice=$1;
+  SC$5.$cctor();
+  SC$5.currentVoice=$1;
  };
  Client.context=function()
  {
-  SC$4.$cctor();
-  return SC$4.context;
+  SC$5.$cctor();
+  return SC$5.context;
  };
- SC$4.$cctor=function()
+ SC$5.$cctor=function()
  {
   var r;
-  SC$4.$cctor=Global.ignore;
+  SC$5.$cctor=Global.ignore;
   function main(term,command)
   {
    var a,b;
@@ -461,7 +545,7 @@
     }))(Global.id))(i))(p));
    },NLU.availablePrograms())):a.$==5?(ClientExtensions["Terminal.Echo'"](Client.currentTerm(),"please wait"),term.disable(),Concurrency.Start((b=null,Concurrency.Delay(function()
    {
-    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-691373952",[command]),function(a$1)
+    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-753496133",[command]),function(a$1)
     {
      var a$2;
      a$2=NLU.HelloUser(a$1);
@@ -479,14 +563,15 @@
     }));
    })),null)):Client.sayRandom(CUI.helloPhrases());
   }
-  SC$4.context=[];
-  SC$4.currentVoice=null;
-  SC$4.currentTerm=null;
-  SC$4.debugMode=false;
-  SC$4.transcribe=false;
-  SC$4.stopSpeaking=Global.speechSynthesis.speaking||Global.speechSynthesis.pending?Global.speechSynthesis.cancel():null;
-  SC$4.d="\n        <div class=\"card\" style=\"width: 18rem;\">\n        <img class=\"card-img-top\" src=\"...\" alt=\"Card image cap\">\n        <div class=\"card-body\">\n          <h5 class=\"card-title\">Card title</h5>\n          <p class=\"card-text\">Some quick example text to build on the card title and make up the bulk of the card's content.</p>\n          <a href=\"#\" class=\"btn btn-primary\">Go somewhere</a>\n        </div>\n</div>\n    ";
-  SC$4.Main=new Interpreter({
+  SC$5.context=[];
+  SC$5.currentVoice=null;
+  SC$5.currentTerm=null;
+  SC$5.debugMode=false;
+  SC$5.transcribe=false;
+  SC$5.stopSpeaking=Global.speechSynthesis.speaking||Global.speechSynthesis.pending?Global.speechSynthesis.cancel():null;
+  SC$5.d="\n        <div class=\"card\" style=\"width: 18rem;\">\n        <img class=\"card-img-top\" src=\"...\" alt=\"Card image cap\">\n        <div class=\"card-body\">\n          <h5 class=\"card-title\">Card title</h5>\n          <p class=\"card-text\">Some quick example text to build on the card title and make up the bulk of the card's content.</p>\n          <a href=\"#\" class=\"btn btn-primary\">Go somewhere</a>\n        </div>\n</div>\n    ";
+  SC$5.container=Controls.Container;
+  SC$5.Main=new Interpreter({
    $:0,
    $0:[function($1)
    {

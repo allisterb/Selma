@@ -13,6 +13,7 @@ open WebSharper.UI.Html
 open SMApp.JQueryTerminal
 open SMApp.WebSpeech
 
+
 [<JavaScript>]
 module Client =
          
@@ -75,6 +76,7 @@ module Client =
         </div>
 </div>
     """
+    let container = SMApp.Bootstrap.Controls.Container
 
     /// Main interpreter
     let Main = 
@@ -109,6 +111,8 @@ module Client =
         Interpreter(main, mainOpt)
     
     let Term() = 
+        let z = SMApp.Bootstrap.Controls.Input "Username" [] (Var.Create "dd", [Attr.Class "sr-only"], [Attr.Class "input-lg"; attr.readonly ""])
+        
         Terminal("#main", ThisAction<Terminal, string>(fun term command -> Main.Func term command), Main.Options) |> ignore
         context.Push(InterpreterCtx Main)
         Doc.Empty

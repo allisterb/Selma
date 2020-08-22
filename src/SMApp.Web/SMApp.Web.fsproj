@@ -5,6 +5,7 @@
     <UserSecretsId>f3ed0dc7-f978-44ae-8add-9e5bfcf8fa8a</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Bootstrap.fs" />
     <Compile Include="Models.fs" />
     <Compile Include="NLU.fs" />
     <Compile Include="CUI.fs" />
