@@ -36,7 +36,10 @@ module Client =
             if currentVoice = "" && (v.Name.Contains "Microsoft Zira" || v.Name.Contains "English Female") then
                 currentVoice <- v.Name
                 currentVoiceURI <- v.VoiceURI
-                let u = new SpeechSynthesisUtterance(sprintf "Using voice %s." currentVoice) in async { Window.SpeechSynthesis.Speak u } |> Async.Start
+                info <| sprintf "Using voice %s." currentVoice
+                let u = new SpeechSynthesisUtterance(sprintf "Using voice %s." currentVoice)  
+                u.VoiceURI <- v.VoiceURI    
+                async { Window.SpeechSynthesis.Speak u } |> Async.Start
         do if currentVoice = "" && voices.Length > 0 then
             let v = voices.[0] in
             currentVoice <- v.Name
@@ -59,6 +62,7 @@ module Client =
             sprintf "Voice %i: Name: %s Local: %A." i v.Name v.LocalService |> say
 
     let sayRandom phrases = say <| getRandomPhrase phrases    
+    
     let stopSpeaking = if Window.SpeechSynthesis.Speaking || Window.SpeechSynthesis.Pending then Window.SpeechSynthesis.Cancel()
     
     /// Main interpreter

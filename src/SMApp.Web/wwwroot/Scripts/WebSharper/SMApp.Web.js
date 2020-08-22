@@ -1,7 +1,7 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Web,User,Meaning,Intent,Entity,Interpreter,Resource,NLU,SC$1,CUI,SC$2,ClientExtensions,Client,SC$3,IntelliFactory,Runtime,WebSharper,List,Seq,Random,Arrays,$,UI,Doc,Utils,Concurrency,Remoting,AjaxRemotingProvider;
+ var Global,SMApp,Web,User,Meaning,Intent,Entity,Interpreter,Resource,NLU,SC$1,CUI,SC$2,ClientExtensions,Client,SC$3,IntelliFactory,Runtime,WebSharper,List,Seq,Random,Arrays,$,console,UI,Doc,Utils,Concurrency,Remoting,AjaxRemotingProvider;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Web=SMApp.Web=SMApp.Web||{};
@@ -26,6 +26,7 @@
  Random=WebSharper&&WebSharper.Random;
  Arrays=WebSharper&&WebSharper.Arrays;
  $=Global.jQuery;
+ console=Global.console;
  UI=WebSharper&&WebSharper.UI;
  Doc=UI&&UI.Doc;
  Utils=WebSharper&&WebSharper.Utils;
@@ -217,12 +218,16 @@
  {
   SC$2.$cctor=Global.ignore;
   SC$2.rng=new Random.New();
-  SC$2.helloPhrases=List.ofArray(["Welcome!","Welcome to Selma","I am Selma. How can I help?","Hi I'm Selma, how can I help?","Hello I'm Selma, how can I help?","My name is Selma."]);
+  SC$2.helloPhrases=List.ofArray(["Welcome!","Welcome to Selma","Welcome to Selma. How can I help?","Hello this is Selma, how can I help?","Hello how can I help?"]);
   SC$2.helloUserPhrases=List.ofArray(["Hi $user, welcome back.","Welcome $user, nice to see you again..","Hello $user","Good to see you $user."]);
  };
  ClientExtensions.toArray=function(a)
  {
   return Arrays.map(Global.id,$.makeArray(a));
+ };
+ ClientExtensions.info=function(a)
+ {
+  console.info(a);
  };
  ClientExtensions.error=function(a)
  {
@@ -309,13 +314,19 @@
   {
    var v$1,u$1,b$1;
    v$1=Arrays.get(voices,i);
-   return Client.currentVoice()===""&&(v$1.name.indexOf("Microsoft Zira")!=-1||v$1.name.indexOf("English Female")!=-1)?(Client.set_currentVoice(v$1.name),Client.set_currentVoiceURI(v$1.voiceURI),u$1=new Global.SpeechSynthesisUtterance((function($2)
+   return Client.currentVoice()===""&&(v$1.name.indexOf("Microsoft Zira")!=-1||v$1.name.indexOf("English Female")!=-1)?(Client.set_currentVoice(v$1.name),Client.set_currentVoiceURI(v$1.voiceURI),ClientExtensions.info((function($2)
    {
     return function($3)
     {
      return $2("Using voice "+Utils.toSafe($3)+".");
     };
-   }(Global.id))(Client.currentVoice())),Concurrency.Start((b$1=null,Concurrency.Delay(function()
+   }(Global.id))(Client.currentVoice())),u$1=new Global.SpeechSynthesisUtterance((function($2)
+   {
+    return function($3)
+    {
+     return $2("Using voice "+Utils.toSafe($3)+".");
+    };
+   }(Global.id))(Client.currentVoice())),u$1.voiceURI=v$1.voiceURI,Concurrency.Start((b$1=null,Concurrency.Delay(function()
    {
     Global.speechSynthesis.speak(u$1);
     return Concurrency.Zero();
@@ -382,13 +393,7 @@
   function main(term,command)
   {
    var a,b;
-   Client.currentVoice()===""?(Client.initSpeech(),ClientExtensions["Terminal.Echo'"](term,(function($1)
-   {
-    return function($2)
-    {
-     return $1("Using voice :"+Utils.toSafe($2)+".");
-    };
-   }(Global.id))(Client.currentVoice()))):void 0;
+   Client.currentVoice()===""?Client.initSpeech():void 0;
    a=NLU.QuickHelp(command);
    return a.$==1?Client.sayVoices():a.$==2?(Client.set_debugMode(true),Client.say(function($1)
    {
@@ -398,7 +403,7 @@
     return $1("Debug mode is now off.");
    }(Global.id))):a.$==4?Client.say("Quick voice 1"):a.$==5?Client.say("Quick voice 2"):a.$==6?(term.disable(),Concurrency.Start((b=null,Concurrency.Delay(function()
    {
-    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-1677929787",[command]),function(a$1)
+    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-355383926",[command]),function(a$1)
     {
      var a$2,$1;
      a$2=NLU.HelloUser(a$1);

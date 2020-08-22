@@ -17,5 +17,7 @@ module ClientExtensions =
 
     let error = JQuery.JQuery.Error
 
+    let info = Console.Info
+    
     let toArray (a : ArrayLike<'t>) =
         JQuery.MakeArray a |> Array.map (fun a -> a :?> 't)
