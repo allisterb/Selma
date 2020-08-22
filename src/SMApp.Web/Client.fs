@@ -20,6 +20,7 @@ module Client =
 
     let mutable currentVoice = ""
     let mutable currentVoiceURI = ""
+    let mutable currentVoice' = Unchecked.defaultof<SpeechSynthesisVoice>
     let mutable debugMode = false
     let mutable transcribe = false
 
@@ -36,9 +37,10 @@ module Client =
             if currentVoice = "" && (v.Name.Contains "Microsoft Zira" || v.Name.Contains "English Female") then
                 currentVoice <- v.Name
                 currentVoiceURI <- v.VoiceURI
+                currentVoice' <- v
                 info <| sprintf "Using voice %s." currentVoice
                 let u = new SpeechSynthesisUtterance(sprintf "Using voice %s." currentVoice)  
-                u.VoiceURI <- v.VoiceURI    
+                u.Voice <- v    
                 async { Window.SpeechSynthesis.Speak u } |> Async.Start
         do if currentVoice = "" && voices.Length > 0 then
             let v = voices.[0] in
@@ -50,7 +52,8 @@ module Client =
     let say text =        
         async { 
             let u = new SpeechSynthesisUtterance(text)
-            u.VoiceURI <- currentVoiceURI
+            //u.VoiceURI <- currentVoiceURI
+            u.Voice <- currentVoice'
             Window.SpeechSynthesis.Speak(u) 
         } |> Async.Start
             

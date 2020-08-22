@@ -301,7 +301,7 @@
   {
    var u;
    u=new Global.SpeechSynthesisUtterance(text);
-   u.voiceURI=Client.currentVoiceURI();
+   u.voice=Client["currentVoice'"]();
    Global.speechSynthesis.speak(u);
    return Concurrency.Zero();
   })),null);
@@ -314,7 +314,7 @@
   {
    var v$1,u$1,b$1;
    v$1=Arrays.get(voices,i);
-   return Client.currentVoice()===""&&(v$1.name.indexOf("Microsoft Zira")!=-1||v$1.name.indexOf("English Female")!=-1)?(Client.set_currentVoice(v$1.name),Client.set_currentVoiceURI(v$1.voiceURI),ClientExtensions.info((function($2)
+   return Client.currentVoice()===""&&(v$1.name.indexOf("Microsoft Zira")!=-1||v$1.name.indexOf("English Female")!=-1)?(Client.set_currentVoice(v$1.name),Client.set_currentVoiceURI(v$1.voiceURI),Client["set_currentVoice'"](v$1),ClientExtensions.info((function($2)
    {
     return function($3)
     {
@@ -326,7 +326,7 @@
     {
      return $2("Using voice "+Utils.toSafe($3)+".");
     };
-   }(Global.id))(Client.currentVoice())),u$1.voiceURI=v$1.voiceURI,Concurrency.Start((b$1=null,Concurrency.Delay(function()
+   }(Global.id))(Client.currentVoice())),u$1.voice=v$1,Concurrency.Start((b$1=null,Concurrency.Delay(function()
    {
     Global.speechSynthesis.speak(u$1);
     return Concurrency.Zero();
@@ -366,6 +366,16 @@
   SC$3.$cctor();
   SC$3.debugMode=$1;
  };
+ Client["currentVoice'"]=function()
+ {
+  SC$3.$cctor();
+  return SC$3["currentVoice'"];
+ };
+ Client["set_currentVoice'"]=function($1)
+ {
+  SC$3.$cctor();
+  SC$3["currentVoice'"]=$1;
+ };
  Client.currentVoiceURI=function()
  {
   SC$3.$cctor();
@@ -403,7 +413,7 @@
     return $1("Debug mode is now off.");
    }(Global.id))):a.$==4?Client.say("Quick voice 1"):a.$==5?Client.say("Quick voice 2"):a.$==6?(term.disable(),Concurrency.Start((b=null,Concurrency.Delay(function()
    {
-    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-355383926",[command]),function(a$1)
+    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-270733379",[command]),function(a$1)
     {
      var a$2,$1;
      a$2=NLU.HelloUser(a$1);
@@ -423,6 +433,7 @@
   }
   SC$3.currentVoice="";
   SC$3.currentVoiceURI="";
+  SC$3["currentVoice'"]=null;
   SC$3.debugMode=false;
   SC$3.transcribe=false;
   SC$3.context=[];
