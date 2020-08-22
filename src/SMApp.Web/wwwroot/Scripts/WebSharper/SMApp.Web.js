@@ -1,7 +1,7 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Web,User,Meaning,Intent,Entity,Interpreter,Resource,NLU,SC$1,CUI,SC$2,ClientExtensions,Client,SC$3,IntelliFactory,Runtime,WebSharper,List,Seq,Random,Arrays,$,console,UI,Doc,Utils,Concurrency,Remoting,AjaxRemotingProvider;
+ var Global,SMApp,Web,User,Meaning,Intent,Entity,Interpreter,Resource,NLU,SC$1,CUI,SC$2,ClientExtensions,Client,SC$3,IntelliFactory,Runtime,WebSharper,List,Seq,Random,Arrays,$,console,UI,Doc,Utils,Concurrency,Unchecked,Remoting,AjaxRemotingProvider;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Web=SMApp.Web=SMApp.Web||{};
@@ -31,6 +31,7 @@
  Doc=UI&&UI.Doc;
  Utils=WebSharper&&WebSharper.Utils;
  Concurrency=WebSharper&&WebSharper.Concurrency;
+ Unchecked=WebSharper&&WebSharper.Unchecked;
  Remoting=WebSharper&&WebSharper.Remoting;
  AjaxRemotingProvider=Remoting&&Remoting.AjaxRemotingProvider;
  User.New=function(UserName)
@@ -218,7 +219,7 @@
  {
   SC$2.$cctor=Global.ignore;
   SC$2.rng=new Random.New();
-  SC$2.helloPhrases=List.ofArray(["Welcome!","Welcome to Selma","Welcome to Selma. How can I help?","Hello this is Selma, how can I help?","Hello how can I help?"]);
+  SC$2.helloPhrases=List.ofArray(["Welcome!","Welcome, my name is Selma.","Welcome to Selma. How can I help?","Hello this is Selma, how can I help?","Hello I am Selma. How can I help?"]);
   SC$2.helloUserPhrases=List.ofArray(["Hi $user, welcome back.","Welcome $user, nice to see you again..","Hello $user","Good to see you $user."]);
  };
  ClientExtensions.toArray=function(a)
@@ -301,45 +302,33 @@
   {
    var u;
    u=new Global.SpeechSynthesisUtterance(text);
-   u.voice=Client["currentVoice'"]();
+   u.voice=Client.currentVoice();
    Global.speechSynthesis.speak(u);
    return Concurrency.Zero();
   })),null);
  };
  Client.initSpeech=function()
  {
-  var v,u,b,voices,i,$1;
+  var u,b,voices,i,$1,v;
   voices=ClientExtensions.toArray(Global.speechSynthesis.getVoices());
-  for(i=0,$1=Arrays.length(voices)-1;i<=$1;i++)(function()
-  {
-   var v$1,u$1,b$1;
-   v$1=Arrays.get(voices,i);
-   return Client.currentVoice()===""&&(v$1.name.indexOf("Microsoft Zira")!=-1||v$1.name.indexOf("English Female")!=-1)?(Client.set_currentVoice(v$1.name),Client.set_currentVoiceURI(v$1.voiceURI),Client["set_currentVoice'"](v$1),ClientExtensions.info((function($2)
+  for(i=0,$1=Arrays.length(voices)-1;i<=$1;i++){
+   v=Arrays.get(voices,i);
+   Unchecked.Equals(Client.currentVoice(),null)&&(v.name.indexOf("Microsoft Zira")!=-1||v.name.indexOf("English Female")!=-1)?(Client.set_currentVoice(v),ClientExtensions.info((function($2)
    {
     return function($3)
     {
      return $2("Using voice "+Utils.toSafe($3)+".");
     };
-   }(Global.id))(Client.currentVoice())),u$1=new Global.SpeechSynthesisUtterance((function($2)
-   {
-    return function($3)
-    {
-     return $2("Using voice "+Utils.toSafe($3)+".");
-    };
-   }(Global.id))(Client.currentVoice())),u$1.voice=v$1,Concurrency.Start((b$1=null,Concurrency.Delay(function()
-   {
-    Global.speechSynthesis.speak(u$1);
-    return Concurrency.Zero();
-   })),null)):null;
-  }());
-  Client.currentVoice()===""&&Arrays.length(voices)>0?(v=Arrays.get(voices,0),Client.set_currentVoice(v.name),Client.set_currentVoiceURI(v.voiceURI),u=new Global.SpeechSynthesisUtterance(function($2)
+   }(Global.id))(Client.currentVoice().name))):void 0;
+  }
+  Unchecked.Equals(Client.currentVoice(),null)&&Arrays.length(voices)>0?(Client.set_currentVoice(Arrays.get(voices,0)),u=new Global.SpeechSynthesisUtterance(function($2)
   {
    return $2("Using the default speech synthesis voice.");
   }(Global.id)),Concurrency.Start((b=null,Concurrency.Delay(function()
   {
    Global.speechSynthesis.speak(u);
    return Concurrency.Zero();
-  })),null)):Client.currentVoice()===""?ClientExtensions.error("No speech synthesis voice is available. In order to use Selma you must install a speech synthesis voice on this device or computer."):void 0;
+  })),null)):Unchecked.Equals(Client.currentVoice(),null)?ClientExtensions.error("No speech synthesis voice is available. In order to use Selma you must install a speech synthesis voice on this device or computer."):void 0;
  };
  Client.context=function()
  {
@@ -366,26 +355,6 @@
   SC$3.$cctor();
   SC$3.debugMode=$1;
  };
- Client["currentVoice'"]=function()
- {
-  SC$3.$cctor();
-  return SC$3["currentVoice'"];
- };
- Client["set_currentVoice'"]=function($1)
- {
-  SC$3.$cctor();
-  SC$3["currentVoice'"]=$1;
- };
- Client.currentVoiceURI=function()
- {
-  SC$3.$cctor();
-  return SC$3.currentVoiceURI;
- };
- Client.set_currentVoiceURI=function($1)
- {
-  SC$3.$cctor();
-  SC$3.currentVoiceURI=$1;
- };
  Client.currentVoice=function()
  {
   SC$3.$cctor();
@@ -403,7 +372,7 @@
   function main(term,command)
   {
    var a,b;
-   Client.currentVoice()===""?Client.initSpeech():void 0;
+   Unchecked.Equals(Client.currentVoice(),null)?Client.initSpeech():void 0;
    a=NLU.QuickHelp(command);
    return a.$==1?Client.sayVoices():a.$==2?(Client.set_debugMode(true),Client.say(function($1)
    {
@@ -413,7 +382,7 @@
     return $1("Debug mode is now off.");
    }(Global.id))):a.$==4?Client.say("Quick voice 1"):a.$==5?Client.say("Quick voice 2"):a.$==6?(term.disable(),Concurrency.Start((b=null,Concurrency.Delay(function()
    {
-    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-270733379",[command]),function(a$1)
+    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-274465762",[command]),function(a$1)
     {
      var a$2,$1;
      a$2=NLU.HelloUser(a$1);
@@ -431,9 +400,7 @@
     }));
    })),null)):Client.say("This is the quick help command");
   }
-  SC$3.currentVoice="";
-  SC$3.currentVoiceURI="";
-  SC$3["currentVoice'"]=null;
+  SC$3.currentVoice=null;
   SC$3.debugMode=false;
   SC$3.transcribe=false;
   SC$3.context=[];

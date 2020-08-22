@@ -18,9 +18,7 @@ module Client =
          
     (* CUI options *)
 
-    let mutable currentVoice = ""
-    let mutable currentVoiceURI = ""
-    let mutable currentVoice' = Unchecked.defaultof<SpeechSynthesisVoice>
+    let mutable currentVoice = Unchecked.defaultof<SpeechSynthesisVoice>
     let mutable debugMode = false
     let mutable transcribe = false
 
@@ -34,26 +32,19 @@ module Client =
         let voices = Window.SpeechSynthesis.GetVoices() |> toArray
         for i = 0 to voices.Length - 1 do
             let v = voices.[i]
-            if currentVoice = "" && (v.Name.Contains "Microsoft Zira" || v.Name.Contains "English Female") then
-                currentVoice <- v.Name
-                currentVoiceURI <- v.VoiceURI
-                currentVoice' <- v
-                info <| sprintf "Using voice %s." currentVoice
-                let u = new SpeechSynthesisUtterance(sprintf "Using voice %s." currentVoice)  
-                u.Voice <- v    
-                async { Window.SpeechSynthesis.Speak u } |> Async.Start
-        do if currentVoice = "" && voices.Length > 0 then
+            if currentVoice = Unchecked.defaultof<SpeechSynthesisVoice> && (v.Name.Contains "Microsoft Zira" || v.Name.Contains "English Female") then
+                currentVoice <- v
+                info <| sprintf "Using voice %s." currentVoice.Name
+        do if currentVoice = Unchecked.defaultof<SpeechSynthesisVoice> && voices.Length > 0 then
             let v = voices.[0] in
-            currentVoice <- v.Name
-            currentVoiceURI <- v.VoiceURI
+            currentVoice <- v
             let u = new SpeechSynthesisUtterance(sprintf "Using the default speech synthesis voice.") in async { Window.SpeechSynthesis.Speak u } |> Async.Start
-            else if currentVoice = "" then error "No speech synthesis voice is available. In order to use Selma you must install a speech synthesis voice on this device or computer."
+            else if currentVoice = Unchecked.defaultof<SpeechSynthesisVoice> then error "No speech synthesis voice is available. In order to use Selma you must install a speech synthesis voice on this device or computer."
 
     let say text =        
         async { 
             let u = new SpeechSynthesisUtterance(text)
-            //u.VoiceURI <- currentVoiceURI
-            u.Voice <- currentVoice'
+            u.Voice <- currentVoice
             Window.SpeechSynthesis.Speak(u) 
         } |> Async.Start
             
@@ -71,7 +62,7 @@ module Client =
     /// Main interpreter
     let Main = 
         let main (term:Terminal) (command:string)  =    
-            do if currentVoice = "" then 
+            do if currentVoice = Unchecked.defaultof<SpeechSynthesisVoice> then 
                 initSpeech()
             match command with
             | QuickHelp -> say "This is the quick help command"
