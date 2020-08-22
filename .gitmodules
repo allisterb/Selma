@@ -7,3 +7,6 @@
 [submodule "ext/FSharp.MongoDB"]
 	path = ext/FSharp.MongoDB
 	url = https://github.com/afshawnlotfi/FSharp.MongoDB.git
+[submodule "ext/WebSharperBootstrap"]
+	path = ext/WebSharperBootstrap
+	url = https://github.com/allisterb/WebSharperBootstrap.git
