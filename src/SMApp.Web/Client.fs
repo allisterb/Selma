@@ -16,29 +16,25 @@ open SMApp.WebSpeech
 [<JavaScript>]
 module Client =
          
-    (* CUI options *)
+    (* CUI state and options *)
 
+    let context = new Stack<CUIContext>()
     let mutable currentVoice = Unchecked.defaultof<SpeechSynthesisVoice>
+    let mutable currentTerm = Unchecked.defaultof<Terminal>
     let mutable debugMode = false
     let mutable transcribe = false
-
-    (* CUI context *)
     
-    let context = new Stack<CUIContext>()
-
     (* Speech functions *)
     
     let initSpeech() =
         let voices = Window.SpeechSynthesis.GetVoices() |> toArray
-        for i = 0 to voices.Length - 1 do
-            let v = voices.[i]
+        do voices |> Array.iter(fun v-> 
             if currentVoice = Unchecked.defaultof<SpeechSynthesisVoice> && (v.Name.Contains "Microsoft Zira" || v.Name.Contains "English Female") then
-                currentVoice <- v
-                info <| sprintf "Using voice %s." currentVoice.Name
+                currentVoice <- v; info <| sprintf "Using voice %s." currentVoice.Name
+            )
         do if currentVoice = Unchecked.defaultof<SpeechSynthesisVoice> && voices.Length > 0 then
-            let v = voices.[0] in
-            currentVoice <- v
-            let u = new SpeechSynthesisUtterance(sprintf "Using the default speech synthesis voice.") in async { Window.SpeechSynthesis.Speak u } |> Async.Start
+                let v = voices |> Array.find (fun v -> v.Default) in currentVoice <- v; info <| sprintf "Using voice %s." currentVoice.Name
+                let u = new SpeechSynthesisUtterance(sprintf "Using the default speech synthesis voice.") in async { Window.SpeechSynthesis.Speak u } |> Async.Start
             else if currentVoice = Unchecked.defaultof<SpeechSynthesisVoice> then error "No speech synthesis voice is available. In order to use Selma you must install a speech synthesis voice on this device or computer."
 
     let say text =        
@@ -47,6 +43,7 @@ module Client =
             u.Voice <- currentVoice
             Window.SpeechSynthesis.Speak(u) 
         } |> Async.Start
+        do if transcribe then currentTerm.Echo text
             
     let sayVoices() =
         let voices = Window.SpeechSynthesis.GetVoices() |> toArray
@@ -62,13 +59,13 @@ module Client =
     /// Main interpreter
     let Main = 
         let main (term:Terminal) (command:string)  =    
-            do if currentVoice = Unchecked.defaultof<SpeechSynthesisVoice> then 
-                initSpeech()
+            do if currentVoice = Unchecked.defaultof<SpeechSynthesisVoice> then initSpeech()
+            currentTerm <- term
             match command with
             | QuickHelp -> say "This is the quick help command"
             | QuickVoices -> sayVoices()
-            | DebugOn -> debugMode <- true; sprintf "Debug mode is now on." |> say 
-            | DebugOff -> debugMode <- false; sprintf "Debug mode is now off." |> say 
+            | DebugOn -> debugMode <- true; say "Debug mode is now on."  
+            | DebugOff -> debugMode <- false; say "Debug mode is now off." 
             | QuickVoice1 -> say "Quick voice 1"
             | QuickVoice2 -> say "Quick voice 2"
             | Phrase -> 
