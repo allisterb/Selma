@@ -273,23 +273,20 @@
  Client.sayVoices=function()
  {
   var voices,i,$1,v;
-  voices=Global.speechSynthesis.getVoices();
+  voices=ClientExtensions.toArray(Global.speechSynthesis.getVoices());
   Client.say((function($2)
   {
    return function($3)
    {
     return $2("There are currently "+Global.String($3)+" voices installed on this computer or device.");
    };
-  }(Global.id))(voices.length));
-  for(i=0,$1=voices.length;i<=$1;i++){
-   v=voices.item(i);
-   Client.say((function($2)
+  }(Global.id))(Arrays.length(voices)));
+  for(i=0,$1=Arrays.length(voices)-1;i<=$1;i++){
+   v=Arrays.get(voices,i);
+   Client.say(((((Runtime.Curried(function($2,$3,$4,$5)
    {
-    return function($3)
-    {
-     return $2("Voice 1: "+Utils.toSafe($3)+".");
-    };
-   }(Global.id))(v.name));
+    return $2("Voice "+Global.String($3)+": Name: "+Utils.toSafe($4)+" Local: "+Utils.prettyPrint($5)+".");
+   },4))(Global.id))(i))(v.name))(v.localService));
   }
  };
  Client.say=function(text)
@@ -306,13 +303,32 @@
  };
  Client.initSpeech=function()
  {
-  var v,voices,i,$1,v$1;
+  var v,u,b,voices,i,$1;
   voices=ClientExtensions.toArray(Global.speechSynthesis.getVoices());
-  for(i=0,$1=Arrays.length(voices)-1;i<=$1;i++){
+  for(i=0,$1=Arrays.length(voices)-1;i<=$1;i++)(function()
+  {
+   var v$1,u$1,b$1;
    v$1=Arrays.get(voices,i);
-   Client.currentVoice()===""&&(v$1.name.indexOf("Microsoft Zira")!=-1||v$1.name.indexOf("English Female")!=-1)?(Client.set_currentVoice(v$1.name),Client.set_currentVoiceURI(v$1.voiceURI)):void 0;
-  }
-  Client.currentVoice()===""&&Arrays.length(voices)>0?(v=Arrays.get(voices,0),Client.set_currentVoice(v.name),Client.set_currentVoiceURI(v.voiceURI)):Client.currentVoice()===""?ClientExtensions.error("No speech synthesis voice is available. You must install a speech synthesis voice on this device or computer to use Selma."):void 0;
+   return Client.currentVoice()===""&&(v$1.name.indexOf("Microsoft Zira")!=-1||v$1.name.indexOf("English Female")!=-1)?(Client.set_currentVoice(v$1.name),Client.set_currentVoiceURI(v$1.voiceURI),u$1=new Global.SpeechSynthesisUtterance((function($2)
+   {
+    return function($3)
+    {
+     return $2("Using voice "+Utils.toSafe($3)+".");
+    };
+   }(Global.id))(Client.currentVoice())),Concurrency.Start((b$1=null,Concurrency.Delay(function()
+   {
+    Global.speechSynthesis.speak(u$1);
+    return Concurrency.Zero();
+   })),null)):null;
+  }());
+  Client.currentVoice()===""&&Arrays.length(voices)>0?(v=Arrays.get(voices,0),Client.set_currentVoice(v.name),Client.set_currentVoiceURI(v.voiceURI),u=new Global.SpeechSynthesisUtterance(function($2)
+  {
+   return $2("Using the default speech synthesis voice.");
+  }(Global.id)),Concurrency.Start((b=null,Concurrency.Delay(function()
+  {
+   Global.speechSynthesis.speak(u);
+   return Concurrency.Zero();
+  })),null)):Client.currentVoice()===""?ClientExtensions.error("No speech synthesis voice is available. In order to use Selma you must install a speech synthesis voice on this device or computer."):void 0;
  };
  Client.context=function()
  {
@@ -370,11 +386,11 @@
    {
     return function($2)
     {
-     return $1("Using voice "+Utils.toSafe($2)+".");
+     return $1("Using voice :"+Utils.toSafe($2)+".");
     };
    }(Global.id))(Client.currentVoice()))):void 0;
    a=NLU.QuickHelp(command);
-   return a.$==1?Client.say("This is the quick voices command."):a.$==2?(Client.set_debugMode(true),Client.say(function($1)
+   return a.$==1?Client.sayVoices():a.$==2?(Client.set_debugMode(true),Client.say(function($1)
    {
     return $1("Debug mode is now on.");
    }(Global.id))):a.$==3?(Client.set_debugMode(false),Client.say(function($1)
@@ -382,7 +398,7 @@
     return $1("Debug mode is now off.");
    }(Global.id))):a.$==4?Client.say("Quick voice 1"):a.$==5?Client.say("Quick voice 2"):a.$==6?(term.disable(),Concurrency.Start((b=null,Concurrency.Delay(function()
    {
-    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-735435952",[command]),function(a$1)
+    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-1677929787",[command]),function(a$1)
     {
      var a$2,$1;
      a$2=NLU.HelloUser(a$1);
