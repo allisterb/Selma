@@ -76,6 +76,7 @@ module Client =
         </div>
 </div>
     """
+    
     let container = SMApp.Bootstrap.Controls.Container
 
     /// Main interpreter
@@ -86,8 +87,7 @@ module Client =
             match command with
             | QuickHello _ -> sayRandom helloPhrases;
             | QuickHelp -> 
-                term.EchoHtml' d
-                //term.EchoHtml d //"<di//say "This is the quick help command"
+                term.EchoHtml' <| _h.str(_h.img [_h.cls "card-img-top";_h.src "..."])
             | DebugOn -> debugMode <- true; say "Debug mode is now on."  
             | DebugOff -> debugMode <- false; say "Debug mode is now off." 
             | Programs -> 
@@ -111,8 +111,6 @@ module Client =
         Interpreter(main, mainOpt)
     
     let Term() = 
-        let z = SMApp.Bootstrap.Controls.Input "Username" [] (Var.Create "dd", [Attr.Class "sr-only"], [Attr.Class "input-lg"; attr.readonly ""])
-        
         Terminal("#main", ThisAction<Terminal, string>(fun term command -> Main.Func term command), Main.Options) |> ignore
         context.Push(InterpreterCtx Main)
         Doc.Empty

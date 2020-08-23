@@ -1,7 +1,7 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Bootstrap,Controls,SC$1,Web,User,Meaning,Intent,Entity,Interpreter,Resource,NLU,SC$2,CUI,SC$3,ClientExtensions,SC$4,Client,SC$5,WebSharper,UI,Doc,List,AttrModule,IntelliFactory,Runtime,Seq,Random,Arrays,$,console,Var$1,AttrProxy,Concurrency,Utils,Unchecked,Remoting,AjaxRemotingProvider;
+ var Global,SMApp,Bootstrap,Controls,SC$1,Web,User,Meaning,Intent,Entity,Interpreter,Resource,NLU,SC$2,CUI,SC$3,ClientExtensions,_Html,_hModule,SC$4,Client,SC$5,WebSharper,UI,Doc,List,AttrModule,IntelliFactory,Runtime,Seq,Random,Arrays,$,console,Strings,Concurrency,Utils,Unchecked,Remoting,AjaxRemotingProvider;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Bootstrap=SMApp.Bootstrap=SMApp.Bootstrap||{};
@@ -19,6 +19,8 @@
  CUI=Web.CUI=Web.CUI||{};
  SC$3=Global.StartupCode$SMApp_Web$CUI=Global.StartupCode$SMApp_Web$CUI||{};
  ClientExtensions=Web.ClientExtensions=Web.ClientExtensions||{};
+ _Html=Web._Html=Web._Html||{};
+ _hModule=Web._hModule=Web._hModule||{};
  SC$4=Global.StartupCode$SMApp_Web$ClientExtensions=Global.StartupCode$SMApp_Web$ClientExtensions||{};
  Client=Web.Client=Web.Client||{};
  SC$5=Global.StartupCode$SMApp_Web$Client=Global.StartupCode$SMApp_Web$Client||{};
@@ -34,8 +36,7 @@
  Arrays=WebSharper&&WebSharper.Arrays;
  $=Global.jQuery;
  console=Global.console;
- Var$1=UI&&UI.Var$1;
- AttrProxy=UI&&UI.AttrProxy;
+ Strings=WebSharper&&WebSharper.Strings;
  Concurrency=WebSharper&&WebSharper.Concurrency;
  Utils=WebSharper&&WebSharper.Utils;
  Unchecked=WebSharper&&WebSharper.Unchecked;
@@ -355,16 +356,374 @@
   SC$4.$cctor();
   return SC$4.rawOpt;
  };
+ _Html=Web._Html=Runtime.Class({
+  toString:function()
+  {
+   return _Html.toString(this);
+  }
+ },null,_Html);
+ _Html.toString=function(elem)
+ {
+  function toString(indent)
+  {
+   return function(elem$1)
+   {
+    var $1,spaces,tag,tag$1,p,elems,attrs;
+    spaces=Strings.replicate(indent," ");
+    switch(elem$1.$==0?elem$1.$1.$==1?elem$1.$1.$0.$==2?elem$1.$1.$1.$==0?($1=[elem$1.$1.$0.$0,elem$1.$0],1):($1=[elem$1.$1,elem$1.$0],2):($1=[elem$1.$1,elem$1.$0],2):($1=[elem$1.$1,elem$1.$0],2):elem$1.$==2?($1=elem$1.$0,3):($1=[elem$1.$0,elem$1.$1],0))
+    {
+     case 0:
+      return $1[0]+"=\""+$1[1]+"\"";
+     case 1:
+      tag=$1[1];
+      return spaces+"<"+tag+">"+$1[0]+"</"+tag+">\r\n";
+     case 2:
+      tag$1=$1[1];
+      p=List.partition(function(a)
+      {
+       return a.$==1;
+      },$1[0]);
+      elems=p[1];
+      attrs=p[0];
+      return elems.$==0?spaces+"<"+tag$1+(attrs.$===0?"":" "+Strings.concat(" ",List.ofSeq(Seq.delay(function()
+      {
+       return Seq.map(function(attr)
+       {
+        return(toString(0))(attr);
+       },attrs);
+      }))))+"/>\r\n":spaces+"<"+tag$1+(attrs.$===0?"":" "+Strings.concat(" ",List.ofSeq(Seq.delay(function()
+      {
+       return Seq.map(function(attr)
+       {
+        return(toString(0))(attr);
+       },attrs);
+      }))))+">\r\n"+Strings.concat("",List.ofSeq(Seq.delay(function()
+      {
+       return Seq.map(function(e)
+       {
+        return(toString(indent+1))(e);
+       },elems);
+      })))+spaces+"</"+tag$1+">\r\n";
+     case 3:
+      return spaces+$1+"\r\n";
+    }
+   };
+  }
+  return(toString(0))(elem);
+ };
+ _hModule.alt=function(c)
+ {
+  return new _Html({
+   $:1,
+   $0:"alt",
+   $1:c
+  });
+ };
+ _hModule.src=function(c)
+ {
+  return new _Html({
+   $:1,
+   $0:"src",
+   $1:c
+  });
+ };
+ _hModule.cls=function(c)
+ {
+  return new _Html({
+   $:1,
+   $0:"class",
+   $1:c
+  });
+ };
+ _hModule.str=function(h)
+ {
+  return _Html.toString(h);
+ };
+ _hModule.op_PercentEquals=function(name,value)
+ {
+  return new _Html({
+   $:1,
+   $0:name,
+   $1:value
+  });
+ };
+ _hModule.op_Splice=function(s)
+ {
+  var c;
+  return List.ofArray([new _Html({
+   $:2,
+   $0:(c=s,Global.String(c))
+  })]);
+ };
+ _hModule.strong=function()
+ {
+  SC$4.$cctor();
+  return SC$4.strong;
+ };
+ _hModule.h4=function()
+ {
+  SC$4.$cctor();
+  return SC$4.h4;
+ };
+ _hModule.h3=function()
+ {
+  SC$4.$cctor();
+  return SC$4.h3;
+ };
+ _hModule.h2=function()
+ {
+  SC$4.$cctor();
+  return SC$4.h2;
+ };
+ _hModule.h1=function()
+ {
+  SC$4.$cctor();
+  return SC$4.h1;
+ };
+ _hModule.li=function()
+ {
+  SC$4.$cctor();
+  return SC$4.li;
+ };
+ _hModule.ul=function()
+ {
+  SC$4.$cctor();
+  return SC$4.ul;
+ };
+ _hModule.th=function()
+ {
+  SC$4.$cctor();
+  return SC$4.th;
+ };
+ _hModule.td=function()
+ {
+  SC$4.$cctor();
+  return SC$4.td;
+ };
+ _hModule.tr=function()
+ {
+  SC$4.$cctor();
+  return SC$4.tr;
+ };
+ _hModule.a=function()
+ {
+  SC$4.$cctor();
+  return SC$4.a;
+ };
+ _hModule.p=function()
+ {
+  SC$4.$cctor();
+  return SC$4.p;
+ };
+ _hModule.area=function()
+ {
+  SC$4.$cctor();
+  return SC$4.area;
+ };
+ _hModule.map=function()
+ {
+  SC$4.$cctor();
+  return SC$4.map;
+ };
+ _hModule.img=function()
+ {
+  SC$4.$cctor();
+  return SC$4.img;
+ };
+ _hModule.tfoot=function()
+ {
+  SC$4.$cctor();
+  return SC$4.tfoot;
+ };
+ _hModule.tbody=function()
+ {
+  SC$4.$cctor();
+  return SC$4.tbody;
+ };
+ _hModule.thead=function()
+ {
+  SC$4.$cctor();
+  return SC$4.thead;
+ };
+ _hModule.table=function()
+ {
+  SC$4.$cctor();
+  return SC$4.table;
+ };
+ _hModule.span=function()
+ {
+  SC$4.$cctor();
+  return SC$4.span;
+ };
+ _hModule.section=function()
+ {
+  SC$4.$cctor();
+  return SC$4.section;
+ };
+ _hModule.br=function()
+ {
+  SC$4.$cctor();
+  return SC$4.br;
+ };
+ _hModule.div=function()
+ {
+  SC$4.$cctor();
+  return SC$4.div;
+ };
+ _hModule.body=function()
+ {
+  SC$4.$cctor();
+  return SC$4.body;
+ };
+ _hModule.style=function()
+ {
+  SC$4.$cctor();
+  return SC$4.style;
+ };
+ _hModule.title=function()
+ {
+  SC$4.$cctor();
+  return SC$4.title;
+ };
+ _hModule.head=function()
+ {
+  SC$4.$cctor();
+  return SC$4.head;
+ };
+ _hModule.html=function()
+ {
+  SC$4.$cctor();
+  return SC$4.html;
+ };
+ _hModule.elem=function(tag,content)
+ {
+  return new _Html({
+   $:0,
+   $0:tag,
+   $1:content
+  });
+ };
  SC$4.$cctor=function()
  {
   var r;
   SC$4.$cctor=Global.ignore;
   SC$4.rawOpt=(r={},r.raw=true,r);
+  SC$4.html=function(c)
+  {
+   return _hModule.elem("html",c);
+  };
+  SC$4.head=function(c)
+  {
+   return _hModule.elem("head",c);
+  };
+  SC$4.title=function(c)
+  {
+   return _hModule.elem("title",c);
+  };
+  SC$4.style=function(c)
+  {
+   return _hModule.elem("style",c);
+  };
+  SC$4.body=function(c)
+  {
+   return _hModule.elem("body",c);
+  };
+  SC$4.div=function(c)
+  {
+   return _hModule.elem("div",c);
+  };
+  SC$4.br=function(c)
+  {
+   return _hModule.elem("br",c);
+  };
+  SC$4.section=function(c)
+  {
+   return _hModule.elem("section",c);
+  };
+  SC$4.span=function(c)
+  {
+   return _hModule.elem("span",c);
+  };
+  SC$4.table=function(c)
+  {
+   return _hModule.elem("table",c);
+  };
+  SC$4.thead=function(c)
+  {
+   return _hModule.elem("thead",c);
+  };
+  SC$4.tbody=function(c)
+  {
+   return _hModule.elem("tbody",c);
+  };
+  SC$4.tfoot=function(c)
+  {
+   return _hModule.elem("tfoot",c);
+  };
+  SC$4.img=function(c)
+  {
+   return _hModule.elem("img",c);
+  };
+  SC$4.map=function(c)
+  {
+   return _hModule.elem("map",c);
+  };
+  SC$4.area=function(c)
+  {
+   return _hModule.elem("area",c);
+  };
+  SC$4.p=function(c)
+  {
+   return _hModule.elem("p",c);
+  };
+  SC$4.a=function(c)
+  {
+   return _hModule.elem("a",c);
+  };
+  SC$4.tr=function(c)
+  {
+   return _hModule.elem("tr",c);
+  };
+  SC$4.td=function(c)
+  {
+   return _hModule.elem("td",c);
+  };
+  SC$4.th=function(c)
+  {
+   return _hModule.elem("th",c);
+  };
+  SC$4.ul=function(c)
+  {
+   return _hModule.elem("ul",c);
+  };
+  SC$4.li=function(c)
+  {
+   return _hModule.elem("li",c);
+  };
+  SC$4.h1=function(c)
+  {
+   return _hModule.elem("h1",c);
+  };
+  SC$4.h2=function(c)
+  {
+   return _hModule.elem("h1",c);
+  };
+  SC$4.h3=function(c)
+  {
+   return _hModule.elem("h1",c);
+  };
+  SC$4.h4=function(c)
+  {
+   return _hModule.elem("h1",c);
+  };
+  SC$4.strong=function(c)
+  {
+   return _hModule.elem("strong",c);
+  };
  };
  Client.Term=function()
  {
   var interpreter,options;
-  Controls.Input("Username",List.T.Empty,Var$1.Create$1("dd"),[AttrModule.Class("sr-only")],List.ofArray([AttrModule.Class("input-lg"),AttrProxy.Create("readonly","")]));
   interpreter=Runtime.ThisFunc(function(term,command)
   {
    return((Client.Main().get_Func())(term))(command);
@@ -537,7 +896,7 @@
    Client.set_currentTerm(term);
    Unchecked.Equals(Client.currentVoice(),null)?Client.initSpeech():void 0;
    a=NLU.QuickHello(command);
-   return a.$==1?ClientExtensions["Terminal.EchoHtml'"](term,Client.d()):a.$==2?(Client.set_debugMode(true),Client.say("Debug mode is now on.")):a.$==3?(Client.set_debugMode(false),Client.say("Debug mode is now off.")):a.$==4?(Client.say("The following programs are available:"),List.iteri(function(i,p)
+   return a.$==1?ClientExtensions["Terminal.EchoHtml'"](term,_hModule.str((_hModule.div())(List.ofArray([(_hModule.img())(List.ofArray([_hModule.cls("card-img-top"),_hModule.src("...")]))])))):a.$==2?(Client.set_debugMode(true),Client.say("Debug mode is now on.")):a.$==3?(Client.set_debugMode(false),Client.say("Debug mode is now off.")):a.$==4?(Client.say("The following programs are available:"),List.iteri(function(i,p)
    {
     return Client.say((((Runtime.Curried3(function($1,$2,$3)
     {
@@ -545,7 +904,7 @@
     }))(Global.id))(i))(p));
    },NLU.availablePrograms())):a.$==5?(ClientExtensions["Terminal.Echo'"](Client.currentTerm(),"please wait"),term.disable(),Concurrency.Start((b=null,Concurrency.Delay(function()
    {
-    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-753496133",[command]),function(a$1)
+    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:904730489",[command]),function(a$1)
     {
      var a$2;
      a$2=NLU.HelloUser(a$1);

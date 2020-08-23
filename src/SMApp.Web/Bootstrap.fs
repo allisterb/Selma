@@ -10,17 +10,17 @@ module Resources =
     open WebSharper.Core.Resources
     
     type CSS() =
-        inherit BaseResource("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css", "bootstrap.min.css")
+        inherit BaseResource("https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css", "bootstrap.min.css")
     type PopperJS() =
         inherit BaseResource("https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd", "popper.min.js")
     type JS() =
         inherit BaseResource("https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js", "bootstrap.min.js")
 
 [<Require(typeof<Resources.CSS>);Require(typeof<JQuery.Resources.JQuery>);Require(typeof<Resources.PopperJS>);Require(typeof<Resources.JS>)>]
+
 [<JavaScript>]
 module Controls =
     
-
     let private cls = Attr.Class
 
     let Class = Attr.Class
