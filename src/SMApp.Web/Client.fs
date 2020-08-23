@@ -65,18 +65,6 @@ module Client =
         do f() 
         do currentTerm.Enable()
 
-    let d =
-        """
-        <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src="..." alt="Card image cap">
-        <div class="card-body">
-          <h5 class="card-title">Card title</h5>
-          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-          <a href="#" class="btn btn-primary">Go somewhere</a>
-        </div>
-</div>
-    """
-    
     let container = SMApp.Bootstrap.Controls.Container
 
     /// Main interpreter
@@ -87,10 +75,15 @@ module Client =
             match command with
             | QuickHello _ -> sayRandom helloPhrases;
             | QuickHelp -> 
-                term.EchoHtml' <| htm.str(htm.img [htm.cls "card-img-top";htm.src "..."])
+                //term.EchoHtml' <| htm.str(htm.img [htm.cls "card-img-top";htm.src "..."])
                 let mic = new Mic()
                 do mic.onConnecting <- (fun _ -> term.Echo' "Connecting...")
-                do mic.onError <- (fun s -> term.Echo' "Error")
+                do mic.onDisconnected <- (fun _ -> term.Echo' "Disconnected")
+                do mic.onAudioStart <- (fun _ -> term.Echo' "Audio start...")
+                do mic.onAudioEnd <- (fun _ -> term.Echo' "Audio end")
+                do mic.onReady <- (fun _ -> term.Echo' "Ready")
+                do mic.onError <- (fun s -> term.Echo' (sprintf "Error : %s" s))
+                do mic.onResult <- (fun i e -> term.Echo' (sprintf "Error : %A" i); info(e))
                 mic.Connect("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT")
             | DebugOn -> debugMode <- true; say "Debug mode is now on."  
             | DebugOff -> debugMode <- false; say "Debug mode is now off." 

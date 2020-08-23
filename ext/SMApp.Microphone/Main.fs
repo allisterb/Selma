@@ -11,13 +11,13 @@ module Definition =
                 "connect" => T<string> ^-> T<unit>
                 "start" => T<unit> ^-> T<unit>
                 "stop" => T<unit> ^-> T<unit>
-                "onaudiostart" => T<unit->unit> ^-> T<unit> |> WithSourceName "onAudioStart"
-                "onaudioend" => T<unit->unit> ^-> T<unit> |> WithSourceName "onAudioEnd"
+                "onaudiostart" =@ T<unit> ^-> T<unit> |> WithSourceName "onAudioStart"
+                "onaudioend" =@ T<unit> ^-> T<unit> |> WithSourceName "onAudioEnd"
                 "onconnecting" =@ T<unit> ^-> T<unit> |> WithSourceName "onConnecting"
-                "ondisconnected" => T<unit->unit> ^-> T<unit> |> WithSourceName "onDisconnected"
-                "onready" => T<unit->unit> ^-> T<unit> |> WithSourceName "onReady"
+                "ondisconnected" =@ T<unit> ^-> T<unit> |> WithSourceName "onDisconnected"
+                "onready" =@ T<unit> ^-> T<unit> |> WithSourceName "onReady"
                 "onerror" =@ T<string> ^-> T<unit> |> WithSourceName "onError"
-                "onresult" => T<string->obj list> ^-> T<unit> |> WithSourceName "onResult"
+                "onresult" =@ (T<string> * T<obj list>) ^-> T<unit> |> WithSourceName "onResult"
             ]
         |+> Static [
                 Constructor (T<unit>) |> WithInline "new Wit.Microphone(document.getElementById(\"microphone\"))"
@@ -26,9 +26,9 @@ module Definition =
     let Assembly =
         Assembly [
             Namespace "SMApp.Microphone.Resources" [
-                Resource "Js" "https://allisterb-selma.s3.us-east-2.amazonaws.com/microphone/js/microphone.min.js"
+                Resource "Js" "microphone/js/microphone.min.js"
                 |> AssemblyWide
-                Resource "Css" "https://allisterb-selma.s3.us-east-2.amazonaws.com/microphone/css/microphone.min.css"
+                Resource "Css" "microphone/css/microphone.min.css"
                 |> AssemblyWide
             ]
             Namespace "SMApp.Microphone" [
