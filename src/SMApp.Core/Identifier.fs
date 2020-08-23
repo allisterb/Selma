@@ -25,3 +25,13 @@ module Models =
         Sex: Sex option
         Address: Address option 
     }
+
+    type Skill =
+        | PainManagement
+        | FatigueManagement
+        | BreathingManagement
+        | EmotionsManagement
+        | Nutrition
+        | Exercise
+        | SleepManagement
+    

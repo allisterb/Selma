@@ -1,24 +1,26 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Bootstrap,Controls,SC$1,Web,User,Meaning,Intent,Entity,Interpreter,Resource,NLU,Voice,Entity$1,SC$2,CUI,SC$3,ClientExtensions,_Html,htmModule,SC$4,Client,SC$5,WebSharper,UI,Doc,List,AttrModule,IntelliFactory,Runtime,Seq,Random,Arrays,$,console,Strings,Utils,Concurrency,Unchecked,Wit,document,Remoting,AjaxRemotingProvider;
+ var Global,SMApp,Bootstrap,Controls,SC$1,Web,NLU,Intent,Trait,Voice,_Entity,Text,Meaning,Intent$1,Entity,SC$2,CUI,User,Interpreter,SC$3,ClientExtensions,_Html,htmModule,SC$4,Client,SC$5,WebSharper,UI,Doc,List,AttrModule,IntelliFactory,Runtime,Seq,Random,Arrays,$,console,Strings,Utils,Concurrency,Wit,document,Unchecked,Remoting,AjaxRemotingProvider;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Bootstrap=SMApp.Bootstrap=SMApp.Bootstrap||{};
  Controls=Bootstrap.Controls=Bootstrap.Controls||{};
  SC$1=Global.StartupCode$SMApp_Web$Bootstrap=Global.StartupCode$SMApp_Web$Bootstrap||{};
  Web=SMApp.Web=SMApp.Web||{};
- User=Web.User=Web.User||{};
- Meaning=Web.Meaning=Web.Meaning||{};
- Intent=Web.Intent=Web.Intent||{};
- Entity=Web.Entity=Web.Entity||{};
- Interpreter=Web.Interpreter=Web.Interpreter||{};
- Resource=Web.Resource=Web.Resource||{};
  NLU=Web.NLU=Web.NLU||{};
+ Intent=NLU.Intent=NLU.Intent||{};
+ Trait=NLU.Trait=NLU.Trait||{};
  Voice=NLU.Voice=NLU.Voice||{};
- Entity$1=Voice.Entity=Voice.Entity||{};
+ _Entity=Voice["Entity'"]=Voice["Entity'"]||{};
+ Text=NLU.Text=NLU.Text||{};
+ Meaning=Text.Meaning=Text.Meaning||{};
+ Intent$1=Text.Intent=Text.Intent||{};
+ Entity=Text.Entity=Text.Entity||{};
  SC$2=Global.StartupCode$SMApp_Web$NLU=Global.StartupCode$SMApp_Web$NLU||{};
  CUI=Web.CUI=Web.CUI||{};
+ User=CUI.User=CUI.User||{};
+ Interpreter=CUI.Interpreter=CUI.Interpreter||{};
  SC$3=Global.StartupCode$SMApp_Web$CUI=Global.StartupCode$SMApp_Web$CUI||{};
  ClientExtensions=Web.ClientExtensions=Web.ClientExtensions||{};
  _Html=Web._Html=Web._Html||{};
@@ -41,9 +43,9 @@
  Strings=WebSharper&&WebSharper.Strings;
  Utils=WebSharper&&WebSharper.Utils;
  Concurrency=WebSharper&&WebSharper.Concurrency;
- Unchecked=WebSharper&&WebSharper.Unchecked;
  Wit=Global.Wit;
  document=Global.document;
+ Unchecked=WebSharper&&WebSharper.Unchecked;
  Remoting=WebSharper&&WebSharper.Remoting;
  AjaxRemotingProvider=Remoting&&Remoting.AjaxRemotingProvider;
  Controls.Radio=function(lbl,extras,target,labelExtras,targetExtras)
@@ -118,13 +120,47 @@
   SC$1.cls=AttrModule.Class;
   SC$1.Class=AttrModule.Class;
  };
- User.New=function(UserName)
+ Intent.Hello={
+  $:0
+ };
+ Trait.Greetings={
+  $:0
+ };
+ _Entity.New=function(body,end,start,suggested,value)
  {
   return{
-   UserName:UserName
+   body:body,
+   end:end,
+   start:start,
+   suggested:suggested,
+   value:value
   };
  };
- Meaning=Web.Meaning=Runtime.Class({
+ Voice.Contact=function(a)
+ {
+  return!(a.contact==null)?{
+   $:1,
+   $0:{
+    $:0,
+    $0:_Entity.New(a.body,a.end,a.start,a.ff,a.value).value
+   }
+  }:null;
+ };
+ Voice.Greetings=function(a)
+ {
+  return!(a.greetings==null)&&!(a.greetings.value==null)?{
+   $:1,
+   $0:Trait.Greetings
+  }:null;
+ };
+ Voice.Hello=function(a)
+ {
+  return typeof a=="string"&&a.toLowerCase()==="default_intent"?{
+   $:1,
+   $0:Intent.Hello
+  }:null;
+ };
+ Meaning=Text.Meaning=Runtime.Class({
   get_TopIntent:function()
   {
    return List.head(List.sortBy(function(i)
@@ -145,7 +181,7 @@
    return[this.$0,this.$1];
   }
  },null,Meaning);
- Intent=Web.Intent=Runtime.Class({
+ Intent$1=Text.Intent=Runtime.Class({
   get_Confidence:function()
   {
    return(this.get_Unwrap())[1];
@@ -158,8 +194,8 @@
   {
    return[this.$0,this.$1];
   }
- },null,Intent);
- Entity=Web.Entity=Runtime.Class({
+ },null,Intent$1);
+ Entity=Text.Entity=Runtime.Class({
   get_Value:function()
   {
    return(this.get_Unwrap())[3];
@@ -181,69 +217,23 @@
    return[this.$0,this.$1,this.$2,this.$3];
   }
  },null,Entity);
- Interpreter=Web.Interpreter=Runtime.Class({
-  get_Options:function()
-  {
-   return(this.get_Unwrap())[1];
-  },
-  get_Func:function()
-  {
-   return(this.get_Unwrap())[0];
-  },
-  get_Unwrap:function()
-  {
-   return[this.$0[0],this.$0[1]];
-  }
- },null,Interpreter);
- Resource.New=function(Name,Description,Url)
- {
-  return{
-   Name:Name,
-   Description:Description,
-   Url:Url
-  };
- };
- Entity$1.New=function(body,end,start,suggested,value)
- {
-  return{
-   body:body,
-   end:end,
-   start:start,
-   suggested:suggested,
-   value:value
-  };
- };
- Voice.Contact=function(a)
- {
-  return!(a.contact==null)?{
-   $:1,
-   $0:Entity$1.New(a.body,a.end,a.start,a.ff,a.value)
-  }:null;
- };
- Voice.Greetings=function(a)
- {
-  return!(a.greetings==null)&&!(a.greetings.value==null)?{
-   $:1,
-   $0:a.greetings.value
-  }:null;
- };
- NLU.HelloUser=function(a)
+ Text.HelloUser=function(a)
  {
   var $1,a$1;
-  return(a$1=NLU.Hello(a),a$1!=null&&a$1.$==1&&(a$1.$0.$==1&&(a$1.$0.$1.$==0&&(a$1.$0.$0.get_Role()==="contact"&&($1=a$1.$0.$0,true)))))?{
+  return(a$1=Text.Hello(a),a$1!=null&&a$1.$==1&&(a$1.$0.$==1&&(a$1.$0.$1.$==0&&(a$1.$0.$0.get_Role()==="contact"&&($1=a$1.$0.$0,true)))))?{
    $:1,
    $0:$1
   }:null;
  };
- NLU.Hello=function(a)
+ Text.Hello=function(a)
  {
   var $1,a$1;
-  return a!=null&&a.$==1&&(a$1=NLU.Intent("Hello",a.$0),a$1!=null&&a$1.$==1&&($1=a$1.$0,true))?{
+  return a!=null&&a.$==1&&(a$1=Text.Intent$1("Hello",a.$0),a$1!=null&&a$1.$==1&&($1=a$1.$0,true))?{
    $:1,
    $0:$1
   }:null;
  };
- NLU.QuickHello=function(a)
+ Text.QuickHello=function(a)
  {
   var $1;
   switch(a==="hello"?0:a==="hey"?0:a==="yo"?0:a==="hi"?0:a==="help"?1:a==="debug on"?2:a==="debug off"?3:a.toLowerCase()==="programs"?4:5)
@@ -280,37 +270,32 @@
     };
   }
  };
- NLU.Intent=function(name,a)
+ Text.Intent$1=function(name,a)
  {
-  return a.get_TopIntent().get_Name()===name&&a.get_TopIntent().get_Confidence()>NLU.intentConfidenceThreshold()?{
+  return a.get_TopIntent().get_Name()===name&&a.get_TopIntent().get_Confidence()>Text.intentConfidenceThreshold()?{
    $:1,
    $0:List.filter(function(e)
    {
-    return e.get_Confidence()>NLU.entityConfidenceThreshold();
+    return e.get_Confidence()>Text.entityConfidenceThreshold();
    },a.get_Entities())
   }:null;
  };
- NLU.availablePrograms=function()
- {
-  SC$2.$cctor();
-  return SC$2.availablePrograms;
- };
- NLU.entityConfidenceThreshold=function()
+ Text.entityConfidenceThreshold=function()
  {
   SC$2.$cctor();
   return SC$2.entityConfidenceThreshold;
  };
- NLU.set_entityConfidenceThreshold=function($1)
+ Text.set_entityConfidenceThreshold=function($1)
  {
   SC$2.$cctor();
   SC$2.entityConfidenceThreshold=$1;
  };
- NLU.intentConfidenceThreshold=function()
+ Text.intentConfidenceThreshold=function()
  {
   SC$2.$cctor();
   return SC$2.intentConfidenceThreshold;
  };
- NLU.set_intentConfidenceThreshold=function($1)
+ Text.set_intentConfidenceThreshold=function($1)
  {
   SC$2.$cctor();
   SC$2.intentConfidenceThreshold=$1;
@@ -320,8 +305,31 @@
   SC$2.$cctor=Global.ignore;
   SC$2.intentConfidenceThreshold=0.85;
   SC$2.entityConfidenceThreshold=0.85;
-  SC$2.availablePrograms=List.ofArray(["Depression","Arthritis"]);
  };
+ User.New=function(UserName)
+ {
+  return{
+   UserName:UserName
+  };
+ };
+ Interpreter=CUI.Interpreter=Runtime.Class({
+  get_Options:function()
+  {
+   return(this.get_Unwrap())[2];
+  },
+  get_Text:function()
+  {
+   return(this.get_Unwrap())[1];
+  },
+  get_Voice:function()
+  {
+   return(this.get_Unwrap())[0];
+  },
+  get_Unwrap:function()
+  {
+   return[this.$0,this.$1[0],this.$1[1]];
+  }
+ },null,Interpreter);
  CUI.helloUserPhrases=function()
  {
   SC$3.$cctor();
@@ -367,7 +375,7 @@
  ClientExtensions["Terminal.Push"]=function(x,i)
  {
   var a,b;
-  a=i.get_Func();
+  a=i.get_Text();
   b=i.get_Options();
   x.push(Runtime.CreateFuncWithThis(a),b);
  };
@@ -753,19 +761,15 @@
    return htmModule.elem("strong",c);
   };
  };
- Client.Term=function()
+ Client.CUI=function()
  {
   var interpreter,options;
   interpreter=Runtime.ThisFunc(function(term,command)
   {
-   return((Client.Main().get_Func())(term))(command);
+   return((Client.Main().get_Text())(term))(command);
   });
   options=Client.Main().get_Options();
   Global.$("#main").terminal(interpreter,options);
-  Client.context().unshift({
-   $:0,
-   $0:Client.Main()
-  });
   return Doc.get_Empty();
  };
  Client.Main=function()
@@ -796,22 +800,21 @@
  };
  Client.sayVoices=function()
  {
-  var voices;
-  voices=ClientExtensions.toArray(Global.speechSynthesis.getVoices());
-  Client.say((function($1)
+  var _voices,voices;
+  _voices=Global.speechSynthesis.getVoices();
+  !(_voices==null)?(voices=ClientExtensions.toArray(_voices),Client.say((function($1)
   {
    return function($2)
    {
     return $1("There are currently "+Global.String($2)+" voices installed on this computer or device.");
    };
-  }(Global.id))(Arrays.length(voices)));
-  Arrays.iteri(function(i,v)
+  }(Global.id))(Arrays.length(voices))),Arrays.iteri(function(i,v)
   {
    return Client.say(((((Runtime.Curried(function($1,$2,$3,$4)
    {
     return $1("Voice "+Global.String($2)+". Name: "+Utils.toSafe($3)+", Local: "+Utils.prettyPrint($4)+".");
    },4))(Global.id))(i))(v.name))(v.localService));
-  },voices);
+  },voices)):void 0;
  };
  Client.say=function(text)
  {
@@ -832,11 +835,56 @@
   else
    ClientExtensions["Terminal.Echo'"](Client.currentTerm(),text);
  };
+ Client.initMic=function(m)
+ {
+  var mic,term;
+  Client.set_currentMic({
+   $:1,
+   $0:new Wit.Microphone(document.getElementById("microphone"))
+  });
+  mic=Client.currentMic().$0;
+  term=Client.currentTerm();
+  mic.onconnecting=function()
+  {
+   return ClientExtensions["Terminal.Echo'"](term,"Mic connecting...");
+  };
+  mic.ondisconnected=function()
+  {
+   return ClientExtensions["Terminal.Echo'"](term,"Mic disconnected.");
+  };
+  mic.onaudiostart=function()
+  {
+   return ClientExtensions["Terminal.Echo'"](term,"Mic audio start...");
+  };
+  mic.onaudioend=function()
+  {
+   return ClientExtensions["Terminal.Echo'"](term,"Mic audio end.");
+  };
+  mic.onerror=function(s)
+  {
+   return ClientExtensions["Terminal.Echo'"](term,(function($1)
+   {
+    return function($2)
+    {
+     return $1("Mic error : "+Utils.toSafe($2)+".");
+    };
+   }(Global.id))(s));
+  };
+  mic.onresult=function(i,e)
+  {
+   return m(mic,[i,e]);
+  };
+  mic.onready=function()
+  {
+   return ClientExtensions["Terminal.Echo'"](term,"Mic ready.");
+  };
+  mic.connect("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT");
+ };
  Client.initSpeech=function()
  {
-  var voices;
-  voices=ClientExtensions.toArray(Global.speechSynthesis.getVoices());
-  Arrays.iter(function(v)
+  var _voices,voices;
+  _voices=Global.speechSynthesis.getVoices();
+  !(_voices==null)?(voices=ClientExtensions.toArray(_voices),Arrays.iter(function(v)
   {
    if(Unchecked.Equals(Client.currentVoice(),null)&&(v.name.indexOf("Microsoft Zira")!=-1||v.name.toLowerCase().indexOf("female")!=-1))
     {
@@ -852,8 +900,7 @@
       };
      }(Global.id))(Client.currentVoice().$0.name));
     }
-  },voices);
-  Unchecked.Equals(Client.currentVoice(),null)&&Arrays.length(voices)>0?(Client.set_currentVoice({
+  },voices),Unchecked.Equals(Client.currentVoice(),null)&&Arrays.length(voices)>0?(Client.set_currentVoice({
    $:1,
    $0:Arrays.find(function(v)
    {
@@ -865,7 +912,8 @@
    {
     return $1("Using default voice "+Utils.toSafe($2)+".");
    };
-  }(Global.id))(Client.currentVoice().$0.name))):Unchecked.Equals(Client.currentVoice(),null)?ClientExtensions["Terminal.Echo'"](Client.currentTerm(),"No speech synthesis voice is available. Install speech synthesis on this device or computer to use the voice output feature of Selma."):void 0;
+  }(Global.id))(Client.currentVoice().$0.name))):void 0):void 0;
+  Unchecked.Equals(Client.currentVoice(),null)?(ClientExtensions.error("No speech synthesis voice is available."),ClientExtensions["Terminal.Echo'"](Client.currentTerm(),"No speech synthesis voice is available. Install speech synthesis on this device or computer to use the voice output feature of Selma.")):void 0;
  };
  Client.echo=function()
  {
@@ -887,6 +935,16 @@
   SC$5.$cctor();
   SC$5.debugMode=$1;
  };
+ Client.currentInterpreter=function()
+ {
+  SC$5.$cctor();
+  return SC$5.currentInterpreter;
+ };
+ Client.set_currentInterpreter=function($1)
+ {
+  SC$5.$cctor();
+  SC$5.currentInterpreter=$1;
+ };
  Client.currentTerm=function()
  {
   SC$5.$cctor();
@@ -896,6 +954,16 @@
  {
   SC$5.$cctor();
   SC$5.currentTerm=$1;
+ };
+ Client.currentMic=function()
+ {
+  SC$5.$cctor();
+  return SC$5.currentMic;
+ };
+ Client.set_currentMic=function($1)
+ {
+  SC$5.$cctor();
+  SC$5.currentMic=$1;
  };
  Client.currentVoice=function()
  {
@@ -916,53 +984,28 @@
  {
   var r;
   SC$5.$cctor=Global.ignore;
+  function _main(mic,command)
+  {
+   var e,a;
+   e=command[1];
+   ClientExtensions.info(command[0]);
+   ClientExtensions.info(e);
+   a=Voice.Greetings(e);
+   return a!=null&&a.$==1?ClientExtensions.info(a.$0):ClientExtensions.error(e);
+  }
   function main(term,command)
   {
-   var a,mic,b;
+   var a,b;
    Client.set_currentTerm(term);
    Unchecked.Equals(Client.currentVoice(),null)?Client.initSpeech():void 0;
-   a=NLU.QuickHello(command);
-   return a.$==1?(mic=new Wit.Microphone(document.getElementById("microphone")),(mic.onready=function()
+   Unchecked.Equals(Client.currentMic(),null)?Client.initMic(_main):void 0;
+   a=Text.QuickHello(command);
+   return a.$==1?Client.say("Quick help"):a.$==2?(Client.set_debugMode(true),Client.say("Debug mode is now on.")):a.$==3?(Client.set_debugMode(false),Client.say("Debug mode is now off.")):a.$==4?Client.say("The following programs are available:"):a.$==5?(ClientExtensions["Terminal.Echo'"](Client.currentTerm(),"please wait"),term.disable(),Concurrency.Start((b=null,Concurrency.Delay(function()
    {
-    return ClientExtensions["Terminal.Echo'"](term,"Ready.");
-   },mic.onconnecting=function()
-   {
-    return ClientExtensions["Terminal.Echo'"](term,"Connecting...");
-   },mic.ondisconnected=function()
-   {
-    return ClientExtensions["Terminal.Echo'"](term,"Disconnected.");
-   },mic.onaudiostart=function()
-   {
-    return ClientExtensions["Terminal.Echo'"](term,"Audio start...");
-   },mic.onaudioend=function()
-   {
-    return ClientExtensions["Terminal.Echo'"](term,"Audio end.");
-   },mic.onerror=function(s)
-   {
-    return ClientExtensions["Terminal.Echo'"](term,(function($1)
-    {
-     return function($2)
-     {
-      return $1("Error : "+Utils.toSafe($2)+".");
-     };
-    }(Global.id))(s));
-   },mic.onresult=function(i,e)
-   {
-    var a$1;
-    a$1=Voice.Greetings(e);
-    return a$1!=null&&a$1.$==1?ClientExtensions.info(a$1.$0):ClientExtensions.error(e);
-   },mic.connect("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT"))):a.$==2?(Client.set_debugMode(true),Client.say("Debug mode is now on.")):a.$==3?(Client.set_debugMode(false),Client.say("Debug mode is now off.")):a.$==4?(Client.say("The following programs are available:"),List.iteri(function(i,p)
-   {
-    return Client.say((((Runtime.Curried3(function($1,$2,$3)
-    {
-     return $1(Global.String($2)+". "+Utils.toSafe($3));
-    }))(Global.id))(i))(p));
-   },NLU.availablePrograms())):a.$==5?(ClientExtensions["Terminal.Echo'"](Client.currentTerm(),"please wait"),term.disable(),Concurrency.Start((b=null,Concurrency.Delay(function()
-   {
-    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:1266014957",[command]),function(a$1)
+    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-1380271437",[command]),function(a$1)
     {
      var a$2;
-     a$2=NLU.HelloUser(a$1);
+     a$2=Text.HelloUser(a$1);
      return a$2!=null&&a$2.$==1?(Client.say((function($1)
      {
       return function($2)
@@ -979,14 +1022,23 @@
   }
   SC$5.context=[];
   SC$5.currentVoice=null;
+  SC$5.currentMic=null;
   SC$5.currentTerm=null;
+  SC$5.currentInterpreter=null;
   SC$5.debugMode=false;
   SC$5.echo=false;
   SC$5.stopSpeaking=Global.speechSynthesis.speaking||Global.speechSynthesis.pending?Global.speechSynthesis.cancel():null;
   SC$5.container=Controls.Container;
   SC$5.Main=new Interpreter({
    $:0,
-   $0:[function($1)
+   $0:function($1)
+   {
+    return function($2)
+    {
+     return _main($1,$2);
+    };
+   },
+   $1:[function($1)
    {
     return function($2)
     {

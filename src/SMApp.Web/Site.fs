@@ -30,7 +30,7 @@ module Site =
     let HomePage ctx =
         Templates.Main ctx Home "Home" [
             div [attr.id "main"; attr.``class`` "container"] [
-                client <@ Client.Term() @>                
+                client <@ Client.CUI() @>                
             ]
         ]
 

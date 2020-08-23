@@ -36,14 +36,14 @@ module Server =
         async {
             match! witai.GetMeaning input |> Async.AwaitTask |> Async.Catch with
             | Choice1Of2 o when not(isNull(o)) -> 
-                let intents = o.Intents |> Seq.map (fun i -> Intent(i.Name, i.Confidence)) |> List.ofSeq
+                let intents = o.Intents |> Seq.map (fun i -> Text.Intent(i.Name, i.Confidence)) |> List.ofSeq
                 let entities = 
                     o.Entities 
                     |> Seq.map (fun en -> en.Value) 
                     |> Seq.concat 
-                    |> Seq.map (fun e -> Entity(e.Name, e.Confidence, e.Role, e.Value))
+                    |> Seq.map (fun e -> Text.Entity(e.Name, e.Confidence, e.Role, e.Value))
                     |> List.ofSeq
-                return Meaning(intents, entities) |> Some
+                return Text.Meaning(intents, entities) |> Some
             | _ -> debugf "Could not get Wit.ai meaning for input '{0}'." [input]; return None
         }
 
