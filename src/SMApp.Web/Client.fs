@@ -75,15 +75,14 @@ module Client =
             match command with
             | QuickHello _ -> sayRandom helloPhrases;
             | QuickHelp -> 
-                //term.EchoHtml' <| htm.str(htm.img [htm.cls "card-img-top";htm.src "..."])
                 let mic = new Mic()
+                do mic.onReady <- (fun _ -> term.Echo' "Ready.")
                 do mic.onConnecting <- (fun _ -> term.Echo' "Connecting...")
-                do mic.onDisconnected <- (fun _ -> term.Echo' "Disconnected")
+                do mic.onDisconnected <- (fun _ -> term.Echo' "Disconnected.")
                 do mic.onAudioStart <- (fun _ -> term.Echo' "Audio start...")
-                do mic.onAudioEnd <- (fun _ -> term.Echo' "Audio end")
-                do mic.onReady <- (fun _ -> term.Echo' "Ready")
-                do mic.onError <- (fun s -> term.Echo' (sprintf "Error : %s" s))
-                do mic.onResult <- (fun i e -> term.Echo' (sprintf "Error : %A" i); info(e))
+                do mic.onAudioEnd <- (fun _ -> term.Echo' "Audio end.")
+                do mic.onError <- (fun s -> term.Echo' (sprintf "Error : %s." s))
+                do mic.onResult <- (fun i e -> info (e.GetJS("intent")) ;info(i); info(e); info(e.GetJS("foo")))
                 mic.Connect("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT")
             | DebugOn -> debugMode <- true; say "Debug mode is now on."  
             | DebugOff -> debugMode <- false; say "Debug mode is now off." 

@@ -748,11 +748,6 @@
   SC$5.$cctor();
   return SC$5.container;
  };
- Client.d=function()
- {
-  SC$5.$cctor();
-  return SC$5.d;
- };
  Client.wait=function(f)
  {
   var b;
@@ -898,40 +893,36 @@
    Client.set_currentTerm(term);
    Unchecked.Equals(Client.currentVoice(),null)?Client.initSpeech():void 0;
    a=NLU.QuickHello(command);
-   return a.$==1?(mic=new Wit.Microphone(document.getElementById("microphone")),(mic.onconnecting=function()
+   return a.$==1?(mic=new Wit.Microphone(document.getElementById("microphone")),(mic.onready=function()
+   {
+    return ClientExtensions["Terminal.Echo'"](term,"Ready.");
+   },mic.onconnecting=function()
    {
     return ClientExtensions["Terminal.Echo'"](term,"Connecting...");
    },mic.ondisconnected=function()
    {
-    return ClientExtensions["Terminal.Echo'"](term,"Disconnected");
+    return ClientExtensions["Terminal.Echo'"](term,"Disconnected.");
    },mic.onaudiostart=function()
    {
     return ClientExtensions["Terminal.Echo'"](term,"Audio start...");
    },mic.onaudioend=function()
    {
-    return ClientExtensions["Terminal.Echo'"](term,"Audio end");
-   },mic.onready=function()
-   {
-    return ClientExtensions["Terminal.Echo'"](term,"Ready");
+    return ClientExtensions["Terminal.Echo'"](term,"Audio end.");
    },mic.onerror=function(s)
    {
     return ClientExtensions["Terminal.Echo'"](term,(function($1)
     {
      return function($2)
      {
-      return $1("Error : "+Utils.toSafe($2));
+      return $1("Error : "+Utils.toSafe($2)+".");
      };
     }(Global.id))(s));
    },mic.onresult=function(i,e)
    {
-    ClientExtensions["Terminal.Echo'"](term,(function($1)
-    {
-     return function($2)
-     {
-      return $1("Error : "+Utils.prettyPrint($2));
-     };
-    }(Global.id))(i));
-    return ClientExtensions.info(e);
+    ClientExtensions.info(e.intent);
+    ClientExtensions.info(i);
+    ClientExtensions.info(e);
+    return ClientExtensions.info(e.foo);
    },mic.connect("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT"))):a.$==2?(Client.set_debugMode(true),Client.say("Debug mode is now on.")):a.$==3?(Client.set_debugMode(false),Client.say("Debug mode is now off.")):a.$==4?(Client.say("The following programs are available:"),List.iteri(function(i,p)
    {
     return Client.say((((Runtime.Curried3(function($1,$2,$3)
@@ -940,7 +931,7 @@
     }))(Global.id))(i))(p));
    },NLU.availablePrograms())):a.$==5?(ClientExtensions["Terminal.Echo'"](Client.currentTerm(),"please wait"),term.disable(),Concurrency.Start((b=null,Concurrency.Delay(function()
    {
-    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:1007918667",[command]),function(a$1)
+    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-436456023",[command]),function(a$1)
     {
      var a$2;
      a$2=NLU.HelloUser(a$1);
@@ -964,7 +955,6 @@
   SC$5.debugMode=false;
   SC$5.transcribe=false;
   SC$5.stopSpeaking=Global.speechSynthesis.speaking||Global.speechSynthesis.pending?Global.speechSynthesis.cancel():null;
-  SC$5.d="\n        <div class=\"card\" style=\"width: 18rem;\">\n        <img class=\"card-img-top\" src=\"...\" alt=\"Card image cap\">\n        <div class=\"card-body\">\n          <h5 class=\"card-title\">Card title</h5>\n          <p class=\"card-text\">Some quick example text to build on the card title and make up the bulk of the card's content.</p>\n          <a href=\"#\" class=\"btn btn-primary\">Go somewhere</a>\n        </div>\n</div>\n    ";
   SC$5.container=Controls.Container;
   SC$5.Main=new Interpreter({
    $:0,

@@ -17,12 +17,12 @@ module Definition =
                 "ondisconnected" =@ T<unit> ^-> T<unit> |> WithSourceName "onDisconnected"
                 "onready" =@ T<unit> ^-> T<unit> |> WithSourceName "onReady"
                 "onerror" =@ T<string> ^-> T<unit> |> WithSourceName "onError"
-                "onresult" =@ (T<string> * T<obj list>) ^-> T<unit> |> WithSourceName "onResult"
+                "onresult" =@ (T<obj> * T<obj>) ^-> T<unit> |> WithSourceName "onResult"
             ]
         |+> Static [
                 Constructor (T<unit>) |> WithInline "new Wit.Microphone(document.getElementById(\"microphone\"))"
             ]
-
+    
     let Assembly =
         Assembly [
             Namespace "SMApp.Microphone.Resources" [
