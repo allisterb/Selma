@@ -12,7 +12,7 @@ open WebSharper.UI.Html
 
 open SMApp.JQueryTerminal
 open SMApp.WebSpeech
-
+open SMApp.Microphone
 
 [<JavaScript>]
 module Client =
@@ -88,6 +88,10 @@ module Client =
             | QuickHello _ -> sayRandom helloPhrases;
             | QuickHelp -> 
                 term.EchoHtml' <| htm.str(htm.img [htm.cls "card-img-top";htm.src "..."])
+                let mic = new Mic()
+                do mic.onConnecting <- (fun _ -> term.Echo' "Connecting...")
+                do mic.onError <- (fun s -> term.Echo' "Error")
+                mic.Connect("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT")
             | DebugOn -> debugMode <- true; say "Debug mode is now on."  
             | DebugOff -> debugMode <- false; say "Debug mode is now off." 
             | Programs -> 

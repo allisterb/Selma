@@ -11,16 +11,16 @@ module Definition =
                 "connect" => T<string> ^-> T<unit>
                 "start" => T<unit> ^-> T<unit>
                 "stop" => T<unit> ^-> T<unit>
-                "onaudiostart"=> T<unit> ^-> T<unit>
-                "onaudioend"=> T<unit> ^-> T<unit>
-                "onconnecting"=> T<unit> ^-> T<unit>
-                "ondisconnected"=> T<unit> ^-> T<unit>
-                "onready"=> T<unit> ^-> T<unit>
-                "onerror"=> T<string> ^-> T<unit>
-                "onresult"=> T<string> ^-> T<obj list> ^-> T<unit>
+                "onaudiostart" => T<unit->unit> ^-> T<unit> |> WithSourceName "onAudioStart"
+                "onaudioend" => T<unit->unit> ^-> T<unit> |> WithSourceName "onAudioEnd"
+                "onconnecting" =@ T<unit> ^-> T<unit> |> WithSourceName "onConnecting"
+                "ondisconnected" => T<unit->unit> ^-> T<unit> |> WithSourceName "onDisconnected"
+                "onready" => T<unit->unit> ^-> T<unit> |> WithSourceName "onReady"
+                "onerror" =@ T<string> ^-> T<unit> |> WithSourceName "onError"
+                "onresult" => T<string->obj list> ^-> T<unit> |> WithSourceName "onResult"
             ]
         |+> Static [
-                Constructor (T<unit>)
+                Constructor (T<unit>) |> WithInline "new Wit.Microphone(document.getElementById(\"microphone\"))"
             ]
 
     let Assembly =

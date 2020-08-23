@@ -1,7 +1,7 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Bootstrap,Controls,SC$1,Web,User,Meaning,Intent,Entity,Interpreter,Resource,NLU,SC$2,CUI,SC$3,ClientExtensions,_Html,_hModule,SC$4,Client,SC$5,WebSharper,UI,Doc,List,AttrModule,IntelliFactory,Runtime,Seq,Random,Arrays,$,console,Strings,Concurrency,Utils,Unchecked,Remoting,AjaxRemotingProvider;
+ var Global,SMApp,Bootstrap,Controls,SC$1,Web,User,Meaning,Intent,Entity,Interpreter,Resource,NLU,SC$2,CUI,SC$3,ClientExtensions,_Html,htmModule,SC$4,Client,SC$5,WebSharper,UI,Doc,List,AttrModule,IntelliFactory,Runtime,Seq,Random,Arrays,$,console,Strings,Concurrency,Utils,Unchecked,Wit,document,Remoting,AjaxRemotingProvider;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Bootstrap=SMApp.Bootstrap=SMApp.Bootstrap||{};
@@ -20,7 +20,7 @@
  SC$3=Global.StartupCode$SMApp_Web$CUI=Global.StartupCode$SMApp_Web$CUI||{};
  ClientExtensions=Web.ClientExtensions=Web.ClientExtensions||{};
  _Html=Web._Html=Web._Html||{};
- _hModule=Web._hModule=Web._hModule||{};
+ htmModule=Web.htmModule=Web.htmModule||{};
  SC$4=Global.StartupCode$SMApp_Web$ClientExtensions=Global.StartupCode$SMApp_Web$ClientExtensions||{};
  Client=Web.Client=Web.Client||{};
  SC$5=Global.StartupCode$SMApp_Web$Client=Global.StartupCode$SMApp_Web$Client||{};
@@ -40,6 +40,8 @@
  Concurrency=WebSharper&&WebSharper.Concurrency;
  Utils=WebSharper&&WebSharper.Utils;
  Unchecked=WebSharper&&WebSharper.Unchecked;
+ Wit=Global.Wit;
+ document=Global.document;
  Remoting=WebSharper&&WebSharper.Remoting;
  AjaxRemotingProvider=Remoting&&Remoting.AjaxRemotingProvider;
  Controls.Radio=function(lbl,extras,target,labelExtras,targetExtras)
@@ -411,7 +413,7 @@
   }
   return(toString(0))(elem);
  };
- _hModule.alt=function(c)
+ htmModule.alt=function(c)
  {
   return new _Html({
    $:1,
@@ -419,7 +421,7 @@
    $1:c
   });
  };
- _hModule.src=function(c)
+ htmModule.src=function(c)
  {
   return new _Html({
    $:1,
@@ -427,7 +429,7 @@
    $1:c
   });
  };
- _hModule.cls=function(c)
+ htmModule.cls=function(c)
  {
   return new _Html({
    $:1,
@@ -435,11 +437,11 @@
    $1:c
   });
  };
- _hModule.str=function(h)
+ htmModule.str=function(h)
  {
   return _Html.toString(h);
  };
- _hModule.op_PercentEquals=function(name,value)
+ htmModule.op_PercentEquals=function(name,value)
  {
   return new _Html({
    $:1,
@@ -447,7 +449,7 @@
    $1:value
   });
  };
- _hModule.op_Splice=function(s)
+ htmModule.op_Splice=function(s)
  {
   var c;
   return List.ofArray([new _Html({
@@ -455,147 +457,147 @@
    $0:(c=s,Global.String(c))
   })]);
  };
- _hModule.strong=function()
+ htmModule.strong=function()
  {
   SC$4.$cctor();
   return SC$4.strong;
  };
- _hModule.h4=function()
+ htmModule.h4=function()
  {
   SC$4.$cctor();
   return SC$4.h4;
  };
- _hModule.h3=function()
+ htmModule.h3=function()
  {
   SC$4.$cctor();
   return SC$4.h3;
  };
- _hModule.h2=function()
+ htmModule.h2=function()
  {
   SC$4.$cctor();
   return SC$4.h2;
  };
- _hModule.h1=function()
+ htmModule.h1=function()
  {
   SC$4.$cctor();
   return SC$4.h1;
  };
- _hModule.li=function()
+ htmModule.li=function()
  {
   SC$4.$cctor();
   return SC$4.li;
  };
- _hModule.ul=function()
+ htmModule.ul=function()
  {
   SC$4.$cctor();
   return SC$4.ul;
  };
- _hModule.th=function()
+ htmModule.th=function()
  {
   SC$4.$cctor();
   return SC$4.th;
  };
- _hModule.td=function()
+ htmModule.td=function()
  {
   SC$4.$cctor();
   return SC$4.td;
  };
- _hModule.tr=function()
+ htmModule.tr=function()
  {
   SC$4.$cctor();
   return SC$4.tr;
  };
- _hModule.a=function()
+ htmModule.a=function()
  {
   SC$4.$cctor();
   return SC$4.a;
  };
- _hModule.p=function()
+ htmModule.p=function()
  {
   SC$4.$cctor();
   return SC$4.p;
  };
- _hModule.area=function()
+ htmModule.area=function()
  {
   SC$4.$cctor();
   return SC$4.area;
  };
- _hModule.map=function()
+ htmModule.map=function()
  {
   SC$4.$cctor();
   return SC$4.map;
  };
- _hModule.img=function()
+ htmModule.img=function()
  {
   SC$4.$cctor();
   return SC$4.img;
  };
- _hModule.tfoot=function()
+ htmModule.tfoot=function()
  {
   SC$4.$cctor();
   return SC$4.tfoot;
  };
- _hModule.tbody=function()
+ htmModule.tbody=function()
  {
   SC$4.$cctor();
   return SC$4.tbody;
  };
- _hModule.thead=function()
+ htmModule.thead=function()
  {
   SC$4.$cctor();
   return SC$4.thead;
  };
- _hModule.table=function()
+ htmModule.table=function()
  {
   SC$4.$cctor();
   return SC$4.table;
  };
- _hModule.span=function()
+ htmModule.span=function()
  {
   SC$4.$cctor();
   return SC$4.span;
  };
- _hModule.section=function()
+ htmModule.section=function()
  {
   SC$4.$cctor();
   return SC$4.section;
  };
- _hModule.br=function()
+ htmModule.br=function()
  {
   SC$4.$cctor();
   return SC$4.br;
  };
- _hModule.div=function()
+ htmModule.div=function()
  {
   SC$4.$cctor();
   return SC$4.div;
  };
- _hModule.body=function()
+ htmModule.body=function()
  {
   SC$4.$cctor();
   return SC$4.body;
  };
- _hModule.style=function()
+ htmModule.style=function()
  {
   SC$4.$cctor();
   return SC$4.style;
  };
- _hModule.title=function()
+ htmModule.title=function()
  {
   SC$4.$cctor();
   return SC$4.title;
  };
- _hModule.head=function()
+ htmModule.head=function()
  {
   SC$4.$cctor();
   return SC$4.head;
  };
- _hModule.html=function()
+ htmModule.html=function()
  {
   SC$4.$cctor();
   return SC$4.html;
  };
- _hModule.elem=function(tag,content)
+ htmModule.elem=function(tag,content)
  {
   return new _Html({
    $:0,
@@ -610,115 +612,115 @@
   SC$4.rawOpt=(r={},r.raw=true,r);
   SC$4.html=function(c)
   {
-   return _hModule.elem("html",c);
+   return htmModule.elem("html",c);
   };
   SC$4.head=function(c)
   {
-   return _hModule.elem("head",c);
+   return htmModule.elem("head",c);
   };
   SC$4.title=function(c)
   {
-   return _hModule.elem("title",c);
+   return htmModule.elem("title",c);
   };
   SC$4.style=function(c)
   {
-   return _hModule.elem("style",c);
+   return htmModule.elem("style",c);
   };
   SC$4.body=function(c)
   {
-   return _hModule.elem("body",c);
+   return htmModule.elem("body",c);
   };
   SC$4.div=function(c)
   {
-   return _hModule.elem("div",c);
+   return htmModule.elem("div",c);
   };
   SC$4.br=function(c)
   {
-   return _hModule.elem("br",c);
+   return htmModule.elem("br",c);
   };
   SC$4.section=function(c)
   {
-   return _hModule.elem("section",c);
+   return htmModule.elem("section",c);
   };
   SC$4.span=function(c)
   {
-   return _hModule.elem("span",c);
+   return htmModule.elem("span",c);
   };
   SC$4.table=function(c)
   {
-   return _hModule.elem("table",c);
+   return htmModule.elem("table",c);
   };
   SC$4.thead=function(c)
   {
-   return _hModule.elem("thead",c);
+   return htmModule.elem("thead",c);
   };
   SC$4.tbody=function(c)
   {
-   return _hModule.elem("tbody",c);
+   return htmModule.elem("tbody",c);
   };
   SC$4.tfoot=function(c)
   {
-   return _hModule.elem("tfoot",c);
+   return htmModule.elem("tfoot",c);
   };
   SC$4.img=function(c)
   {
-   return _hModule.elem("img",c);
+   return htmModule.elem("img",c);
   };
   SC$4.map=function(c)
   {
-   return _hModule.elem("map",c);
+   return htmModule.elem("map",c);
   };
   SC$4.area=function(c)
   {
-   return _hModule.elem("area",c);
+   return htmModule.elem("area",c);
   };
   SC$4.p=function(c)
   {
-   return _hModule.elem("p",c);
+   return htmModule.elem("p",c);
   };
   SC$4.a=function(c)
   {
-   return _hModule.elem("a",c);
+   return htmModule.elem("a",c);
   };
   SC$4.tr=function(c)
   {
-   return _hModule.elem("tr",c);
+   return htmModule.elem("tr",c);
   };
   SC$4.td=function(c)
   {
-   return _hModule.elem("td",c);
+   return htmModule.elem("td",c);
   };
   SC$4.th=function(c)
   {
-   return _hModule.elem("th",c);
+   return htmModule.elem("th",c);
   };
   SC$4.ul=function(c)
   {
-   return _hModule.elem("ul",c);
+   return htmModule.elem("ul",c);
   };
   SC$4.li=function(c)
   {
-   return _hModule.elem("li",c);
+   return htmModule.elem("li",c);
   };
   SC$4.h1=function(c)
   {
-   return _hModule.elem("h1",c);
+   return htmModule.elem("h1",c);
   };
   SC$4.h2=function(c)
   {
-   return _hModule.elem("h1",c);
+   return htmModule.elem("h1",c);
   };
   SC$4.h3=function(c)
   {
-   return _hModule.elem("h1",c);
+   return htmModule.elem("h1",c);
   };
   SC$4.h4=function(c)
   {
-   return _hModule.elem("h1",c);
+   return htmModule.elem("h1",c);
   };
   SC$4.strong=function(c)
   {
-   return _hModule.elem("strong",c);
+   return htmModule.elem("strong",c);
   };
  };
  Client.Term=function()
@@ -892,11 +894,17 @@
   SC$5.$cctor=Global.ignore;
   function main(term,command)
   {
-   var a,b;
+   var a,mic,b;
    Client.set_currentTerm(term);
    Unchecked.Equals(Client.currentVoice(),null)?Client.initSpeech():void 0;
    a=NLU.QuickHello(command);
-   return a.$==1?ClientExtensions["Terminal.EchoHtml'"](term,_hModule.str((_hModule.img())(List.ofArray([_hModule.cls("card-img-top"),_hModule.src("...")])))):a.$==2?(Client.set_debugMode(true),Client.say("Debug mode is now on.")):a.$==3?(Client.set_debugMode(false),Client.say("Debug mode is now off.")):a.$==4?(Client.say("The following programs are available:"),List.iteri(function(i,p)
+   return a.$==1?(ClientExtensions["Terminal.EchoHtml'"](term,htmModule.str((htmModule.img())(List.ofArray([htmModule.cls("card-img-top"),htmModule.src("...")])))),mic=new Wit.Microphone(document.getElementById("microphone")),mic.onconnecting=function()
+   {
+    return ClientExtensions["Terminal.Echo'"](term,"Connecting...");
+   },mic.onerror=function()
+   {
+    return ClientExtensions["Terminal.Echo'"](term,"Error");
+   },mic.connect("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT")):a.$==2?(Client.set_debugMode(true),Client.say("Debug mode is now on.")):a.$==3?(Client.set_debugMode(false),Client.say("Debug mode is now off.")):a.$==4?(Client.say("The following programs are available:"),List.iteri(function(i,p)
    {
     return Client.say((((Runtime.Curried3(function($1,$2,$3)
     {
@@ -904,7 +912,7 @@
     }))(Global.id))(i))(p));
    },NLU.availablePrograms())):a.$==5?(ClientExtensions["Terminal.Echo'"](Client.currentTerm(),"please wait"),term.disable(),Concurrency.Start((b=null,Concurrency.Delay(function()
    {
-    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-1882484706",[command]),function(a$1)
+    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-2118939319",[command]),function(a$1)
     {
      var a$2;
      a$2=NLU.HelloUser(a$1);
