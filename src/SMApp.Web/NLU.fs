@@ -1,12 +1,34 @@
 ﻿namespace SMApp.Web
 
 open WebSharper
-
-[<AutoOpen;JavaScript>]
+open WebSharper.JavaScript
+[<JavaScript;AutoOpen>]
 module NLU =
     let mutable intentConfidenceThreshold = 0.85f
 
     let mutable entityConfidenceThreshold = 0.85f
+
+    [<JavaScript; RequireQualifiedAccess>]
+    module Voice =
+        type Entity = {body:string; ``end``:int; start: int; suggested:bool; value:string}
+        
+        let (|Greetings|_|):obj -> obj option =
+            function
+            | o when (o.GetJS("greetings") |> isNull |> not) && (o.GetJS("greetings").GetJS("value") |> isNull |> not) -> 
+                o.GetJS("greetings").GetJS("value") |> Some
+            | _ -> None
+
+        let (|Contact|_|):obj -> Entity option =
+            function
+            | o when o.GetJS("contact") |> isNull |> not -> 
+                {
+                    body = o.GetJS("body") :?> string 
+                    ``end``= o.GetJS("end") :?> int 
+                    start = o.GetJS "start" :?> int
+                    suggested = o.GetJS("ff") :?> bool 
+                    value= o.GetJS("value") :?> string
+                } |> Some
+            | _ -> None
 
     let availablePrograms = [
         "Depression"

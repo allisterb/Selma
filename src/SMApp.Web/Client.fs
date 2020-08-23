@@ -52,14 +52,9 @@ module Client =
             do if echo then currentTerm.Echo' text
             
     let sayVoices() =
-        let voices = Window.SpeechSynthesis.GetVoices() 
-        do if not(isNull(voices)) then
-        
-            
-            sprintf "There are currently %i voices installed on this computer or device." voices.Length |> say
-            for i = 0 to voices.Length - 1 do
-                let v = voices.[i]
-                sprintf "Voice %i. Name: %s, Local: %A." i v.Name v.LocalService |> say
+        let voices = Window.SpeechSynthesis.GetVoices() |> toArray        
+        sprintf "There are currently %i voices installed on this computer or device." voices.Length |> say
+        voices |> Array.iteri (fun i v -> sprintf "Voice %i. Name: %s, Local: %A." i v.Name v.LocalService |> say)
 
     let sayRandom phrases = say <| getRandomPhrase phrases    
     
@@ -87,7 +82,13 @@ module Client =
                 do mic.onAudioStart <- (fun _ -> term.Echo' "Audio start...")
                 do mic.onAudioEnd <- (fun _ -> term.Echo' "Audio end.")
                 do mic.onError <- (fun s -> term.Echo' (sprintf "Error : %s." s))
-                do mic.onResult <- (fun i e -> info (e.GetJS("intent")) ;info(i); info(e); info(e.GetJS("foo")))
+                do mic.onResult <- 
+                    (fun i e -> 
+                        match e with
+                        | Voice.Greetings g -> info g
+                        | _ -> error e
+                       
+                    )
                 mic.Connect("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT")
             | DebugOn -> debugMode <- true; say "Debug mode is now on."  
             | DebugOff -> debugMode <- false; say "Debug mode is now off." 

@@ -1,7 +1,7 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Bootstrap,Controls,SC$1,Web,User,Meaning,Intent,Entity,Interpreter,Resource,NLU,SC$2,CUI,SC$3,ClientExtensions,_Html,htmModule,SC$4,Client,SC$5,WebSharper,UI,Doc,List,AttrModule,IntelliFactory,Runtime,Seq,Random,Arrays,$,console,Strings,Utils,Concurrency,Unchecked,Wit,document,Remoting,AjaxRemotingProvider;
+ var Global,SMApp,Bootstrap,Controls,SC$1,Web,User,Meaning,Intent,Entity,Interpreter,Resource,NLU,Voice,Entity$1,SC$2,CUI,SC$3,ClientExtensions,_Html,htmModule,SC$4,Client,SC$5,WebSharper,UI,Doc,List,AttrModule,IntelliFactory,Runtime,Seq,Random,Arrays,$,console,Strings,Utils,Concurrency,Unchecked,Wit,document,Remoting,AjaxRemotingProvider;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Bootstrap=SMApp.Bootstrap=SMApp.Bootstrap||{};
@@ -15,6 +15,8 @@
  Interpreter=Web.Interpreter=Web.Interpreter||{};
  Resource=Web.Resource=Web.Resource||{};
  NLU=Web.NLU=Web.NLU||{};
+ Voice=NLU.Voice=NLU.Voice||{};
+ Entity$1=Voice.Entity=Voice.Entity||{};
  SC$2=Global.StartupCode$SMApp_Web$NLU=Global.StartupCode$SMApp_Web$NLU||{};
  CUI=Web.CUI=Web.CUI||{};
  SC$3=Global.StartupCode$SMApp_Web$CUI=Global.StartupCode$SMApp_Web$CUI||{};
@@ -200,6 +202,30 @@
    Description:Description,
    Url:Url
   };
+ };
+ Entity$1.New=function(body,end,start,suggested,value)
+ {
+  return{
+   body:body,
+   end:end,
+   start:start,
+   suggested:suggested,
+   value:value
+  };
+ };
+ Voice.Contact=function(a)
+ {
+  return!(a.contact==null)?{
+   $:1,
+   $0:Entity$1.New(a.body,a.end,a.start,a.ff,a.value)
+  }:null;
+ };
+ Voice.Greetings=function(a)
+ {
+  return!(a.greetings==null)&&!(a.greetings.value==null)?{
+   $:1,
+   $0:a.greetings.value
+  }:null;
  };
  NLU.HelloUser=function(a)
  {
@@ -770,27 +796,22 @@
  };
  Client.sayVoices=function()
  {
-  var voices,i,$1,v;
-  voices=Global.speechSynthesis.getVoices();
-  if(!(voices==null))
+  var voices;
+  voices=ClientExtensions.toArray(Global.speechSynthesis.getVoices());
+  Client.say((function($1)
+  {
+   return function($2)
    {
-    Client.say((function($2)
-    {
-     return function($3)
-     {
-      return $2("There are currently "+Global.String($3)+" voices installed on this computer or device.");
-     };
-    }(Global.id))(voices.length));
-    for(i=0,$1=voices.length-1;i<=$1;i++){
-     v=voices.item(i);
-     Client.say(((((Runtime.Curried(function($2,$3,$4,$5)
-     {
-      return $2("Voice "+Global.String($3)+". Name: "+Utils.toSafe($4)+", Local: "+Utils.prettyPrint($5)+".");
-     },4))(Global.id))(i))(v.name))(v.localService));
-    }
-   }
-  else
-   void 0;
+    return $1("There are currently "+Global.String($2)+" voices installed on this computer or device.");
+   };
+  }(Global.id))(Arrays.length(voices)));
+  Arrays.iteri(function(i,v)
+  {
+   return Client.say(((((Runtime.Curried(function($1,$2,$3,$4)
+   {
+    return $1("Voice "+Global.String($2)+". Name: "+Utils.toSafe($3)+", Local: "+Utils.prettyPrint($4)+".");
+   },4))(Global.id))(i))(v.name))(v.localService));
+  },voices);
  };
  Client.say=function(text)
  {
@@ -844,7 +865,7 @@
    {
     return $1("Using default voice "+Utils.toSafe($2)+".");
    };
-  }(Global.id))(Client.currentVoice().$0.name))):Unchecked.Equals(Client.currentVoice(),null)?(ClientExtensions.error("No speech synthesis voice is available."),ClientExtensions["Terminal.Echo'"](Client.currentTerm(),"No speech synthesis voice is available. Install speech synthesis on this device or computer to use the voice output feature of Selma.")):void 0;
+  }(Global.id))(Client.currentVoice().$0.name))):Unchecked.Equals(Client.currentVoice(),null)?ClientExtensions["Terminal.Echo'"](Client.currentTerm(),"No speech synthesis voice is available. Install speech synthesis on this device or computer to use the voice output feature of Selma."):void 0;
  };
  Client.echo=function()
  {
@@ -927,10 +948,9 @@
     }(Global.id))(s));
    },mic.onresult=function(i,e)
    {
-    ClientExtensions.info(e.intent);
-    ClientExtensions.info(i);
-    ClientExtensions.info(e);
-    return ClientExtensions.info(e.foo);
+    var a$1;
+    a$1=Voice.Greetings(e);
+    return a$1!=null&&a$1.$==1?ClientExtensions.info(a$1.$0):ClientExtensions.error(e);
    },mic.connect("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT"))):a.$==2?(Client.set_debugMode(true),Client.say("Debug mode is now on.")):a.$==3?(Client.set_debugMode(false),Client.say("Debug mode is now off.")):a.$==4?(Client.say("The following programs are available:"),List.iteri(function(i,p)
    {
     return Client.say((((Runtime.Curried3(function($1,$2,$3)
@@ -939,7 +959,7 @@
     }))(Global.id))(i))(p));
    },NLU.availablePrograms())):a.$==5?(ClientExtensions["Terminal.Echo'"](Client.currentTerm(),"please wait"),term.disable(),Concurrency.Start((b=null,Concurrency.Delay(function()
    {
-    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:668485347",[command]),function(a$1)
+    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:1266014957",[command]),function(a$1)
     {
      var a$2;
      a$2=NLU.HelloUser(a$1);

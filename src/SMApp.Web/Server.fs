@@ -17,8 +17,8 @@ module Server =
     let private mongodb =
             let host = Api.Config("MONGODB")
             do if host.IsEmpty() then failwith "Could not retrieve the MongoDB host using configuration key MONGODB"
-            let connectionString = sprintf "mongodb+srv://%s:%s@<%s>/test?w=majority" "eddi" "eddi" host
-            let client = new MongoDB.Driver.MongoClient(connectionString)
+            let connectionString = sprintf "mongodb+srv://%s:%s@<%s>/test?w=majority" host "eddi" "eddi"
+            let client = new MongoClient(connectionString)
             client.GetDatabase("eddi")
     let private users = mongodb.GetCollection<User>("Users")
     

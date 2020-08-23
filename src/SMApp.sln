@@ -44,6 +44,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deploy", "Deploy", "{471A2D
 		..\deploy\oc-deploy.cmd = ..\deploy\oc-deploy.cmd
 	EndProjectSection
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "SMApp.Core", "SMApp.Core\SMApp.Core.fsproj", "{4F3EB21D-99E3-4E88-858C-649AC982E417}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -86,6 +88,10 @@ Global
 		{693A2D85-8C99-48B1-9687-3DB0AECB7526}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{693A2D85-8C99-48B1-9687-3DB0AECB7526}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{693A2D85-8C99-48B1-9687-3DB0AECB7526}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F3EB21D-99E3-4E88-858C-649AC982E417}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F3EB21D-99E3-4E88-858C-649AC982E417}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F3EB21D-99E3-4E88-858C-649AC982E417}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F3EB21D-99E3-4E88-858C-649AC982E417}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
