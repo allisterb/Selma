@@ -20,10 +20,12 @@ module ClientExtensions =
         member x.EchoHtml' (text:string) = x.Disable(); x.Echo(text, rawOpt) ; x.Enable()
         member x.Push (i:Interpreter) = x.Push(i.Func, i.Options)
 
-    let error = JQuery.JQuery.Error
+    let jserror = JQuery.JQuery.Error 
 
     let info = Console.Info
     
+    let error = Console.Error
+
     let toArray (a : ArrayLike<'t>) =
         JQuery.MakeArray a |> Array.map (fun a -> a :?> 't)
 
