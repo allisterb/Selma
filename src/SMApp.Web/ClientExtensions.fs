@@ -57,11 +57,10 @@ type _Html =
       toString 0 elem
    override this.ToString() = _Html.toString this
 
-type _h = _Html
-
+type htm = _Html
 
 [<RequireQualifiedAccess; JavaScript>]
-module _h = 
+module htm = 
     let elem tag content = Elem(tag,content)
     let html = elem "html"
     let head = elem "head"

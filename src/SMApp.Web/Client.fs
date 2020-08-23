@@ -87,7 +87,7 @@ module Client =
             match command with
             | QuickHello _ -> sayRandom helloPhrases;
             | QuickHelp -> 
-                term.EchoHtml' <| _h.str(_h.img [_h.cls "card-img-top";_h.src "..."])
+                term.EchoHtml' <| htm.str(htm.img [htm.cls "card-img-top";htm.src "..."])
             | DebugOn -> debugMode <- true; say "Debug mode is now on."  
             | DebugOff -> debugMode <- false; say "Debug mode is now off." 
             | Programs -> 

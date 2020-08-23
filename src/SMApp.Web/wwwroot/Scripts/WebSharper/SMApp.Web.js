@@ -896,7 +896,7 @@
    Client.set_currentTerm(term);
    Unchecked.Equals(Client.currentVoice(),null)?Client.initSpeech():void 0;
    a=NLU.QuickHello(command);
-   return a.$==1?ClientExtensions["Terminal.EchoHtml'"](term,_hModule.str((_hModule.div())(List.ofArray([(_hModule.img())(List.ofArray([_hModule.cls("card-img-top"),_hModule.src("...")]))])))):a.$==2?(Client.set_debugMode(true),Client.say("Debug mode is now on.")):a.$==3?(Client.set_debugMode(false),Client.say("Debug mode is now off.")):a.$==4?(Client.say("The following programs are available:"),List.iteri(function(i,p)
+   return a.$==1?ClientExtensions["Terminal.EchoHtml'"](term,_hModule.str((_hModule.img())(List.ofArray([_hModule.cls("card-img-top"),_hModule.src("...")])))):a.$==2?(Client.set_debugMode(true),Client.say("Debug mode is now on.")):a.$==3?(Client.set_debugMode(false),Client.say("Debug mode is now off.")):a.$==4?(Client.say("The following programs are available:"),List.iteri(function(i,p)
    {
     return Client.say((((Runtime.Curried3(function($1,$2,$3)
     {
@@ -904,7 +904,7 @@
     }))(Global.id))(i))(p));
    },NLU.availablePrograms())):a.$==5?(ClientExtensions["Terminal.Echo'"](Client.currentTerm(),"please wait"),term.disable(),Concurrency.Start((b=null,Concurrency.Delay(function()
    {
-    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:904730489",[command]),function(a$1)
+    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-1882484706",[command]),function(a$1)
     {
      var a$2;
      a$2=NLU.HelloUser(a$1);
