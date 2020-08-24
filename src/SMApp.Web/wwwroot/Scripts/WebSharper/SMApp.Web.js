@@ -1,7 +1,7 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Bootstrap,Controls,SC$1,Web,NLU,Intent,Trait,Voice,_Entity,Text,Meaning,Intent$1,Entity,SC$2,CUIModule,User,Interpreter,SC$3,ClientExtensions,_Html,htmModule,SC$4,Main,SC$5,Client,SC$6,WebSharper,UI,Doc,List,AttrModule,IntelliFactory,Runtime,Seq,Random,Arrays,$,console,Strings,Utils,Concurrency,Wit,document,Unchecked,Remoting,AjaxRemotingProvider;
+ var Global,SMApp,Bootstrap,Controls,SC$1,Web,NLU,Intent,Trait,Voice,_Entity,Text,Meaning,Intent$1,Entity,SC$2,CUI,CUIModule,User,Interpreter,SC$3,Main,ClientExtensions,_Html,htmModule,SC$4,Client,SC$5,WebSharper,UI,Doc,List,AttrModule,IntelliFactory,Runtime,Concurrency,Seq,Random,Arrays,$,console,Strings,Utils,Wit,document,Unchecked,Remoting,AjaxRemotingProvider;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Bootstrap=SMApp.Bootstrap=SMApp.Bootstrap||{};
@@ -18,18 +18,18 @@
  Intent$1=Text.Intent=Text.Intent||{};
  Entity=Text.Entity=Text.Entity||{};
  SC$2=Global.StartupCode$SMApp_Web$NLU=Global.StartupCode$SMApp_Web$NLU||{};
+ CUI=Web.CUI=Web.CUI||{};
  CUIModule=Web.CUIModule=Web.CUIModule||{};
  User=CUIModule.User=CUIModule.User||{};
  Interpreter=CUIModule.Interpreter=CUIModule.Interpreter||{};
  SC$3=Global.StartupCode$SMApp_Web$CUI=Global.StartupCode$SMApp_Web$CUI||{};
+ Main=Web.Main=Web.Main||{};
  ClientExtensions=Web.ClientExtensions=Web.ClientExtensions||{};
  _Html=Web._Html=Web._Html||{};
  htmModule=Web.htmModule=Web.htmModule||{};
  SC$4=Global.StartupCode$SMApp_Web$ClientExtensions=Global.StartupCode$SMApp_Web$ClientExtensions||{};
- Main=Web.Main=Web.Main||{};
- SC$5=Global.StartupCode$SMApp_Web$Main=Global.StartupCode$SMApp_Web$Main||{};
  Client=Web.Client=Web.Client||{};
- SC$6=Global.StartupCode$SMApp_Web$Client=Global.StartupCode$SMApp_Web$Client||{};
+ SC$5=Global.StartupCode$SMApp_Web$Client=Global.StartupCode$SMApp_Web$Client||{};
  WebSharper=Global.WebSharper;
  UI=WebSharper&&WebSharper.UI;
  Doc=UI&&UI.Doc;
@@ -37,6 +37,7 @@
  AttrModule=UI&&UI.AttrModule;
  IntelliFactory=Global.IntelliFactory;
  Runtime=IntelliFactory&&IntelliFactory.Runtime;
+ Concurrency=WebSharper&&WebSharper.Concurrency;
  Seq=WebSharper&&WebSharper.Seq;
  Random=WebSharper&&WebSharper.Random;
  Arrays=WebSharper&&WebSharper.Arrays;
@@ -44,7 +45,6 @@
  console=Global.console;
  Strings=WebSharper&&WebSharper.Strings;
  Utils=WebSharper&&WebSharper.Utils;
- Concurrency=WebSharper&&WebSharper.Concurrency;
  Wit=Global.Wit;
  document=Global.document;
  Unchecked=WebSharper&&WebSharper.Unchecked;
@@ -121,6 +121,9 @@
   SC$1.$cctor=Global.ignore;
   SC$1.cls=AttrModule.Class;
   SC$1.Class=AttrModule.Class;
+ };
+ Intent.Patient={
+  $:3
  };
  Intent.Onboard={
   $:2
@@ -258,7 +261,7 @@
  Text.QuickHelp=function(a)
  {
   var $1;
-  return a==="help"||(a==="help me"||(a==="what's this?"||a==="hugh"))?{
+  return a==="help"||(a==="help me"||(a==="what's this?"||a==="huh"))?{
    $:1,
    $0:Intent.Help
   }:null;
@@ -306,6 +309,46 @@
   SC$2.$cctor=Global.ignore;
   SC$2.intentConfidenceThreshold=0.85;
   SC$2.entityConfidenceThreshold=0.85;
+ };
+ CUI=Web.CUI=Runtime.Class({
+  Say:function(text)
+  {
+   var m,v,b;
+   m=this.Voice;
+   m!=null&&m.$==1?(v=m.$0,Concurrency.Start((b=null,Concurrency.Delay(function()
+   {
+    var u;
+    u=new Global.SpeechSynthesisUtterance(text);
+    u.voice=v;
+    Global.speechSynthesis.speak(u);
+    return Concurrency.Zero();
+   })),null),this.Caption?this["Echo'"](text):void 0):this["Echo'"](text);
+  },
+  "EchoHtml'":function(text)
+  {
+   var rawOpt,r;
+   rawOpt=(r={},r.raw=true,r);
+   this.Term.disable();
+   this.Term.echo(text,rawOpt);
+   this.Term.enable();
+  },
+  "Echo'":function(text)
+  {
+   this.Term.disable();
+   this.Term.echo(text);
+   this.Term.enable();
+  }
+ },null,CUI);
+ CUI.New=function(Voice$1,Mic,MicState,Term,Debug,Caption)
+ {
+  return new CUI({
+   Voice:Voice$1,
+   Mic:Mic,
+   MicState:MicState,
+   Term:Term,
+   Debug:Debug,
+   Caption:Caption
+  });
  };
  User.New=function(UserName)
  {
@@ -356,6 +399,10 @@
   SC$3.rng=new Random.New();
   SC$3.helloPhrases=List.ofArray(["Welcome!","Welcome, my name is Selma.","Welcome to Selma. How can I help?","Hello this is Selma, how can I help?","Hello, I am Selma. How can I help?","Hello, I am Selma. How may I help you now?"]);
   SC$3.helloUserPhrases=List.ofArray(["Hi $user, welcome back.","Welcome $user, nice to see you again..","Hello $user","Good to see you $user."]);
+ };
+ Main.update=function(cui,context)
+ {
+  cui.Say("I'm in the Main module.");
  };
  ClientExtensions.toArray=function(a)
  {
@@ -762,28 +809,6 @@
    return htmModule.elem("strong",c);
   };
  };
- Main.updateCtx=function(cui,m)
- {
-  Main.set_context(List.append(Main.context(),List.ofArray([{
-   $:0,
-   $0:m
-  }])));
- };
- Main.context=function()
- {
-  SC$5.$cctor();
-  return SC$5.context;
- };
- Main.set_context=function($1)
- {
-  SC$5.$cctor();
-  SC$5.context=$1;
- };
- SC$5.$cctor=function()
- {
-  SC$5.$cctor=Global.ignore;
-  SC$5.context=List.T.Empty;
- };
  Client.CUI=function()
  {
   var interpreter,options;
@@ -797,13 +822,13 @@
  };
  Client.Main=function()
  {
-  SC$6.$cctor();
-  return SC$6.Main;
+  SC$5.$cctor();
+  return SC$5.Main;
  };
  Client.container=function()
  {
-  SC$6.$cctor();
-  return SC$6.container;
+  SC$5.$cctor();
+  return SC$5.container;
  };
  Client.wait=function(f)
  {
@@ -814,8 +839,8 @@
  };
  Client.stopSpeaking=function()
  {
-  SC$6.$cctor();
-  return SC$6.stopSpeaking;
+  SC$5.$cctor();
+  return SC$5.stopSpeaking;
  };
  Client.sayRandom=function(phrases)
  {
@@ -947,104 +972,105 @@
  };
  Client.echo=function()
  {
-  SC$6.$cctor();
-  return SC$6.echo;
+  SC$5.$cctor();
+  return SC$5.echo;
+ };
+ Client.update=function(m)
+ {
+  Client.set_context(List.append(List.ofArray([{
+   $:0,
+   $0:m
+  }]),Client.context()));
+  return List.ofSeq(Seq.take(Client.context().get_Length()>=5?5:Client.context().get_Length(),Client.context()));
  };
  Client.context=function()
  {
-  SC$6.$cctor();
-  return SC$6.context;
+  SC$5.$cctor();
+  return SC$5.context;
  };
  Client.set_context=function($1)
  {
-  SC$6.$cctor();
-  SC$6.context=$1;
+  SC$5.$cctor();
+  SC$5.context=$1;
  };
  Client.state=function()
  {
-  return{
-   Voice:Client.currentVoice(),
-   Mic:Client.currentMic(),
-   MicState:Client.currentMicState(),
-   Term:Client.currentTerm(),
-   Debug:Client.debugMode(),
-   Caption:Client.caption()
-  };
+  return CUI.New(Client.currentVoice(),Client.currentMic(),Client.currentMicState(),Client.currentTerm(),Client.debugMode(),Client.caption());
  };
  Client.caption=function()
  {
-  SC$6.$cctor();
-  return SC$6.caption;
+  SC$5.$cctor();
+  return SC$5.caption;
  };
  Client.set_caption=function($1)
  {
-  SC$6.$cctor();
-  SC$6.caption=$1;
+  SC$5.$cctor();
+  SC$5.caption=$1;
  };
  Client.debugMode=function()
  {
-  SC$6.$cctor();
-  return SC$6.debugMode;
+  SC$5.$cctor();
+  return SC$5.debugMode;
  };
  Client.set_debugMode=function($1)
  {
-  SC$6.$cctor();
-  SC$6.debugMode=$1;
+  SC$5.$cctor();
+  SC$5.debugMode=$1;
  };
  Client.currentInterpreter=function()
  {
-  SC$6.$cctor();
-  return SC$6.currentInterpreter;
+  SC$5.$cctor();
+  return SC$5.currentInterpreter;
  };
  Client.set_currentInterpreter=function($1)
  {
-  SC$6.$cctor();
-  SC$6.currentInterpreter=$1;
+  SC$5.$cctor();
+  SC$5.currentInterpreter=$1;
  };
  Client.currentTerm=function()
  {
-  SC$6.$cctor();
-  return SC$6.currentTerm;
+  SC$5.$cctor();
+  return SC$5.currentTerm;
  };
  Client.set_currentTerm=function($1)
  {
-  SC$6.$cctor();
-  SC$6.currentTerm=$1;
+  SC$5.$cctor();
+  SC$5.currentTerm=$1;
  };
  Client.currentMicState=function()
  {
-  SC$6.$cctor();
-  return SC$6.currentMicState;
+  SC$5.$cctor();
+  return SC$5.currentMicState;
  };
  Client.set_currentMicState=function($1)
  {
-  SC$6.$cctor();
-  SC$6.currentMicState=$1;
+  SC$5.$cctor();
+  SC$5.currentMicState=$1;
  };
  Client.currentMic=function()
  {
-  SC$6.$cctor();
-  return SC$6.currentMic;
+  SC$5.$cctor();
+  return SC$5.currentMic;
  };
  Client.set_currentMic=function($1)
  {
-  SC$6.$cctor();
-  SC$6.currentMic=$1;
+  SC$5.$cctor();
+  SC$5.currentMic=$1;
  };
  Client.currentVoice=function()
  {
-  SC$6.$cctor();
-  return SC$6.currentVoice;
+  SC$5.$cctor();
+  return SC$5.currentVoice;
  };
  Client.set_currentVoice=function($1)
  {
-  SC$6.$cctor();
-  SC$6.currentVoice=$1;
+  SC$5.$cctor();
+  SC$5.currentVoice=$1;
  };
- SC$6.$cctor=function()
+ SC$5.$cctor=function()
  {
   var r;
-  SC$6.$cctor=Global.ignore;
+  SC$5.$cctor=Global.ignore;
   function _main(mic,command)
   {
    var e,a;
@@ -1056,18 +1082,18 @@
   }
   function main(term,command)
   {
-   var $1,$2,$3,a,a$1,b;
+   var $1,$2,$3,a,a$1,x,b;
    Client.set_currentTerm(term);
    Unchecked.Equals(Client.currentVoice(),null)?Client.initSpeech():void 0;
    Unchecked.Equals(Client.currentMic(),null)?Client.initMic(_main,term):void 0;
-   return($1=Text.DebugOn(command),$1!=null&&$1.$==1)?(Client.set_debugMode(true),Client.say("Debug mode is now on.")):($2=Text.DebugOff(command),$2!=null&&$2.$==1)?(Client.set_debugMode(false),Client.say("Debug mode is now off.")):(a=Text.QuickHello(command),a!=null&&a.$==1?($3=a.$0,true):(a$1=Text.QuickHelp(command),a$1!=null&&a$1.$==1&&($3=a$1.$0,true)))?(Main.updateCtx(Client.state(),{
+   return($1=Text.DebugOn(command),$1!=null&&$1.$==1)?(Client.set_debugMode(true),Client.say("Debug mode is now on.")):($2=Text.DebugOff(command),$2!=null&&$2.$==1)?(Client.set_debugMode(false),Client.say("Debug mode is now off.")):(a=Text.QuickHello(command),a!=null&&a.$==1?($3=a.$0,true):(a$1=Text.QuickHelp(command),a$1!=null&&a$1.$==1&&($3=a$1.$0,true)))?($("$microphone").hide(),x=Client.update({
     $:0,
     $0:$3,
     $1:null,
     $2:null
-   }),Client.sayRandom(CUIModule.helloPhrases())):(ClientExtensions["Terminal.Echo'"](Client.currentTerm(),"please wait"),Concurrency.Start((b=null,Concurrency.Delay(function()
+   }),Main.update(Client.state(),x),$("#microphone").show(),Client.sayRandom(CUIModule.helloPhrases())):(ClientExtensions["Terminal.Echo'"](Client.currentTerm(),"please wait"),Concurrency.Start((b=null,Concurrency.Delay(function()
    {
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-1757206500",[command]),function(a$2)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:331037262",[command]),function(a$2)
     {
      var a$3;
      a$3=Text.HelloUser(a$2);
@@ -1081,23 +1107,23 @@
     });
    })),null));
   }
-  SC$6.currentVoice=null;
-  SC$6.currentMic=null;
-  SC$6.currentMicState={
+  SC$5.currentVoice=null;
+  SC$5.currentMic=null;
+  SC$5.currentMicState={
    $:0
   };
-  SC$6.currentTerm=null;
-  SC$6.currentInterpreter=null;
-  SC$6.debugMode=false;
-  SC$6.caption=false;
-  SC$6.context=List.T.Empty;
-  SC$6.echo=function(a)
+  SC$5.currentTerm=null;
+  SC$5.currentInterpreter=null;
+  SC$5.debugMode=false;
+  SC$5.caption=false;
+  SC$5.context=List.T.Empty;
+  SC$5.echo=function(a)
   {
    ClientExtensions["Terminal.EchoHtml'"](Client.currentTerm(),a);
   };
-  SC$6.stopSpeaking=Global.speechSynthesis.speaking||Global.speechSynthesis.pending?Global.speechSynthesis.cancel():null;
-  SC$6.container=Controls.Container;
-  SC$6.Main=new Interpreter({
+  SC$5.stopSpeaking=Global.speechSynthesis.speaking||Global.speechSynthesis.pending?Global.speechSynthesis.cancel():null;
+  SC$5.container=Controls.Container;
+  SC$5.Main=new Interpreter({
    $:0,
    $0:function($1)
    {

@@ -4,9 +4,7 @@ open WebSharper
 [<JavaScript>]
 module Main =
     
-    let mutable context: NLUContext list = [] // NLU context
-    
-    let updateCtx (cui: CUI) (m:Meaning) =
-        context <- (context @ [NLUContext m])
+    let update (cui: CUI) (context: NLUContext list) =
+        cui.Say "I'm in the Main module."
 
 

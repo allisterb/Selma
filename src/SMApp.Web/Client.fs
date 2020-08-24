@@ -38,6 +38,11 @@ module Client =
     (* NLU context *)
     let mutable context: NLUContext list = []
 
+    let update (m:Meaning) =
+        context <- ([NLUContext m] @ context)
+        let b = if context.Length >= 5 then 5 else context.Length
+        context |> List.take b
+
     let echo = currentTerm.EchoHtml'
 
     let debugEcho s = if debugMode then currentTerm.EchoHtml' s
@@ -116,9 +121,10 @@ module Client =
             | Text.DebugOn -> debugMode <- true; say "Debug mode is now on."  
             | Text.DebugOff -> debugMode <- false; say "Debug mode is now off." 
             | Text.QuickHello m 
-            | Text.QuickHelp m -> 
-                
-                Meaning(m, None, None) |> Main.updateCtx (state())
+            | Text.QuickHelp m ->
+                JQuery.JQuery.Of("$microphone").Hide() |> ignore
+                Meaning(m, None, None) |> update |> Main.update (state())
+                JQuery.JQuery.Of("#microphone").Show() |> ignore
                 sayRandom helloPhrases;
             | _-> 
                 currentTerm.Echo'("please wait")

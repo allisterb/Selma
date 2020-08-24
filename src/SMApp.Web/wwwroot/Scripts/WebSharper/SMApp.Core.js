@@ -1,0 +1,67 @@
+(function()
+{
+ "use strict";
+ var Global,SMApp,Models,Sex,Address,Name,Patient,Skill;
+ Global=self;
+ SMApp=Global.SMApp=Global.SMApp||{};
+ Models=SMApp.Models=SMApp.Models||{};
+ Sex=Models.Sex=Models.Sex||{};
+ Address=Models.Address=Models.Address||{};
+ Name=Models.Name=Models.Name||{};
+ Patient=Models.Patient=Models.Patient||{};
+ Skill=Models.Skill=Models.Skill||{};
+ Sex.Intersex={
+  $:2
+ };
+ Sex.Female={
+  $:1
+ };
+ Sex.Male={
+  $:0
+ };
+ Address.New=function(Street,Town)
+ {
+  return{
+   Street:Street,
+   Town:Town
+  };
+ };
+ Name.New=function(First,Last)
+ {
+  return{
+   First:First,
+   Last:Last
+  };
+ };
+ Patient.New=function(Id,Sex$1,Name$1,BirthDate,Address$1)
+ {
+  return{
+   Id:Id,
+   Sex:Sex$1,
+   Name:Name$1,
+   BirthDate:BirthDate,
+   Address:Address$1
+  };
+ };
+ Skill.SleepManagement={
+  $:6
+ };
+ Skill.Exercise={
+  $:5
+ };
+ Skill.Nutrition={
+  $:4
+ };
+ Skill.EmotionsManagement={
+  $:3
+ };
+ Skill.BreathingManagement={
+  $:2
+ };
+ Skill.FatigueManagement={
+  $:1
+ };
+ Skill.PainManagement={
+  $:0
+ };
+}());

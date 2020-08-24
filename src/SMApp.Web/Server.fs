@@ -6,23 +6,50 @@ open FSharp.Control
 
 open WebSharper
 open MongoDB.Driver
+open Npgsql.FSharp
 
 open SMApp
+open SMApp.Models
 open SMApp.EDDI
 
 module Server =        
-    
-    let private eddi = new EDDIApi()
+   
     let private witai = new WitApi()
-    (*
     let private mongodb =
             let host = Api.Config("MONGODB")
             do if host.IsEmpty() then failwith "Could not retrieve the MongoDB host using configuration key MONGODB"
-            let connectionString = sprintf "mongodb+srv://%s:%s@<%s>/test?w=majority" host "eddi" "eddi"
-            let client = new MongoClient(connectionString)
-            client.GetDatabase("eddi")
-    let private users = mongodb.GetCollection<User>("Users")
-    *)
+            let connectionString = sprintf "mongodb://%s:%s@<%s>/test?w=majority" host "eddi" "eddi"
+            new MongoClient(connectionString)
+        
+    let private users = mongodb.GetDatabase("eddi").GetCollection<User>("Users")
+
+    let private pgdb =
+        Sql.host (Api.Config("PGSQL"))
+        |> Sql.port 5432
+        |> Sql.username "smapp"
+        |> Sql.password "smapp"
+        |> Sql.database "smapp"
+        |> Sql.sslMode SslMode.Require
+        |> Sql.config "Pooling=true"
+        |> Sql.formatConnectionString
+        |> Sql.connect
+    
+    [<Rpc>]
+    let GetPatients() : Result<Patient list, exn> =       
+        pgdb
+        |> Sql.query "SELECT * FROM Patient"
+        |> Sql.execute (fun read ->
+        {
+            Id =  read.string("Id") |> Models.String
+            Sex = Male
+            Name = None
+            BirthDate = None
+            Address = None
+        })
+        
+
+        
+    (*
     //let u = users.FindAsync()
     [<Rpc>]
     let GetUser user = 
@@ -31,7 +58,7 @@ module Server =
             | Choice1Of2 o when not(isNull(o)) -> debugf "Found user {0}." [user]; return Some {UserName=o.Username}
             | _ -> debugf "Did not find user {0}." [user]; return None
         }
-        
+    *)  
     [<Rpc>]
     let GetMeaning input = 
         async {

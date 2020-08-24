@@ -8,8 +8,9 @@ open SMApp.JQueryTerminal
 open SMApp.WebSpeech
 open SMApp.Microphone
 
-type MicState = NotInitialized | Connecting | Disconnected | AudioStart | AudioEnd | Error of string | Result of obj*obj
+type MicState = NotInitialized | Connecting | Disconnected | AudioStart | AudioEnd | MicError of string | Result of obj*obj
 
+[<JavaScript>]
 type CUI = {
     Voice:SpeechSynthesisVoice option
     Mic: Mic option
@@ -18,6 +19,23 @@ type CUI = {
     Debug: bool
     Caption: bool
 }
+with
+    member x.Echo' (text:string) = x.Term.Disable(); x.Term.Echo text; x.Term.Enable()
+    member x.EchoHtml' (text:string) = 
+        let rawOpt = EchoOptions(Raw=true)
+        x.Term.Disable(); x.Term.Echo(text, rawOpt) ; x.Term.Enable()
+    
+    member x.Say text = 
+        match x.Voice with
+        | None -> x.Echo' text
+        | Some v ->
+            async { 
+                let u = new SpeechSynthesisUtterance(text)
+                u.Voice <- v
+                Window.SpeechSynthesis.Speak(u) 
+            } |> Async.Start
+            do if x.Caption then x.Echo' text
+
 
 [<AutoOpen;JavaScript>]
 module CUI =

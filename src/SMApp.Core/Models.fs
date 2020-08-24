@@ -4,7 +4,7 @@ open System
 
 open WebSharper
 
-[<JavaScript; AutoOpen>]
+[<JavaScript>]
 module Models =
     type Identifier =
         | Id of uint64

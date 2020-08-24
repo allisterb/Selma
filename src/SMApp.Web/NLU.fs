@@ -5,10 +5,12 @@ open WebSharper.JavaScript
 
 [<JavaScript;AutoOpen>]
 module NLU =
+
     type Intent = 
     | Hello
     | Help
     | Onboard
+    | Patient
       
     type Trait = | Greetings
     
@@ -99,8 +101,9 @@ module NLU =
             | "help"
             | "help me"
             | "what's this?"
-            | "hugh" -> Some Help
+            | "huh" -> Some Help
             | _ -> None
+        
         let (|DebugOn|_|) =
             function
             | "debug on" -> Some ()
