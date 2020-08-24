@@ -44,16 +44,16 @@ module Client =
             let voices = voices' |> toArray
             do voices |> Array.iter(fun v-> 
                 if CUI.Voice = None && (v.Name.Contains "Microsoft Zira" || v.Name.ToLower().Contains "female") then
-                    CUI <- { CUI with Voice = Some v }; debug <| sprintf "Using voice %s." CUI.Voice.Value.Name
+                    CUI <- { CUI with Voice = Some v }; CUI.Debug <| sprintf "Using voice %s." CUI.Voice.Value.Name
                 )
             do if CUI.Voice = None && voices.Length > 0 then
                 let v = voices |> Array.find (fun v -> v.Default) in 
-                CUI <- { CUI with Voice = Some v }; debug <| sprintf "Using default voice %s." CUI.Voice.Value.Name 
+                CUI <- { CUI with Voice = Some v }; CUI.Debug <| sprintf "Using default voice %s." CUI.Voice.Value.Name 
         if CUI.Voice = None then 
             error "No speech synthesis voice is available."
             CUI.Term.Echo' "No speech synthesis voice is available. Install speech synthesis on this device or computer to use the voice output feature of Selma."
         
-    let initMic m (term:Terminal) =
+    let initMic m =
         CUI <- { CUI with Mic = Some(new Mic()) }
         let mic = CUI.Mic.Value
         do mic.onConnecting <- (fun _ -> MicState <- MicConnecting; debugEcho "Mic connecting...")
@@ -62,7 +62,7 @@ module Client =
         do mic.onAudioEnd <- (fun _ -> MicState <- MicAudioEnd;debugEcho "Mic audio end.")
         do mic.onError <- (fun s -> MicState <- MicError s; debugEcho (sprintf "Mic error : %s." s))
         do mic.onReady <- (fun _ -> MicState <- MicReady; debugEcho "Mic ready.")
-        do mic.onResult <- (fun i e -> MicState <- MicResult(i,e);m mic (i,e))
+        do mic.onResult <- (fun i e -> MicState <- MicResult(i,e); m mic (i,e))
         do mic.Connect("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT")
 
     let say text =        
@@ -96,18 +96,30 @@ module Client =
 
     /// Main interpreter
     let Main =             
-        let main' (mic:Mic) (command:obj*obj) =
+        let main' (_:Mic) (command:obj*obj) =
             let i, e = command
-            info i
-            info e
-            match e with
-            | Voice.Greetings g -> info g
-            | _ -> error e
-
+            let intent = 
+                match i, e with
+                | Voice.Intent' i -> Some i
+                | _ -> None
+            let entity = 
+                match e with
+                | Voice.Entity' e -> Some [e]
+                | _ -> None
+            let _trait = 
+                match e with
+                | Voice.Trait' t -> Some t
+                | _ -> None
+            match intent with
+            | Some i -> 
+                debug i
+                Meaning(i, _trait, entity) |> updateCtx |> Main.update CUI
+            | None -> ()
+            
         let main (term:Terminal) (command:string)  =
             CUI <- { CUI with Term = term }
             do if CUI.Voice = None then initSpeech()
-            do if CUI.Mic = None then initMic main' term 
+            do if CUI.Mic = None then initMic main'  
             match command with
             (* Quick commands *)
             | Text.Blank -> say "Tell me what you want me to do or ask me a question."
@@ -115,15 +127,17 @@ module Client =
             | Text.DebugOff -> CUI <- { CUI with DebugMode = false }; say "Debug mode is now off." 
             | Text.QuickHello m 
             | Text.QuickHelp m 
-            | Text.QuickPrograms m -> m |> updateCtx |> Main.update CUI
+            | Text.QuickPrograms m -> 
+                debug m
+                m |> updateCtx |> Main.update CUI
             | _->         
                 async {
                     match! Server.GetMeaning command with
-                    | Text.HelloUser m -> m |> updateCtx |> Main.update CUI
+                    | Some m -> 
+                        debug m
+                        Meaning(Intent(m.TopIntent.Name, Some m.TopIntent.Confidence), None, None) |> updateCtx |> Main.update CUI
                     | _ -> term.Echo' "Sorry I did not understand what you said."             
                 } |> CUI.Wait
-            
-
         let mainOpt =
             Options(
                 Name="Main", 
