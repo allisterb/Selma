@@ -18,23 +18,15 @@ open SMApp.Microphone
 module Client =
     
     (* CUI state *)
-    let mutable currentVoice:SpeechSynthesisVoice option = None
-    let mutable currentMic: Mic option = None
-    let mutable currentMicState: MicState = NotInitialized
-    let mutable currentTerm = Unchecked.defaultof<Terminal>
-    let mutable currentInterpreter = Unchecked.defaultof<Interpreter>
-    let mutable debugMode = false
-    let mutable caption = false
-    
-    let state () = {
-        Voice = currentVoice
-        Mic = currentMic
-        MicState = currentMicState
-        Term = currentTerm
-        Debug = debugMode
-        Caption = caption
+    let mutable CUI = {
+        Voice = None
+        Mic = None
+        MicState = MicNotInitialized
+        Term = Unchecked.defaultof<Terminal>
+        Debug = false
+        Caption = false
     }
-
+        
     (* NLU context *)
     let mutable context: NLUContext list = []
 
@@ -43,29 +35,29 @@ module Client =
         let b = if context.Length >= 5 then 5 else context.Length
         context |> List.take b
 
-    let echo = currentTerm.EchoHtml'
+    let echo = CUI.Term.EchoHtml'
 
-    let debugEcho s = if debugMode then currentTerm.EchoHtml' s
+    let debugEcho s = if CUI.Debug then CUI.Term.EchoHtml' s
 
     let initSpeech() =
         let voices' = Window.SpeechSynthesis.GetVoices()
         do if not(isNull(voices')) then
             let voices = voices' |> toArray
             do voices |> Array.iter(fun v-> 
-                if currentVoice = None && (v.Name.Contains "Microsoft Zira" || v.Name.ToLower().Contains "female") then
-                    currentVoice <- Some v; info <| sprintf "Using voice %s." currentVoice.Value.Name
+                if CUI.Voice = None && (v.Name.Contains "Microsoft Zira" || v.Name.ToLower().Contains "female") then
+                    CUI <- { CUI with Voice = Some v }; info <| sprintf "Using voice %s." CUI.Voice.Value.Name
                 )
-            do if currentVoice = None && voices.Length > 0 then
+            do if CUI.Voice = None && voices.Length > 0 then
                 let v = voices |> Array.find (fun v -> v.Default) in 
-                currentVoice <- Some v; info <| sprintf "Using default voice %s." currentVoice.Value.Name 
-        if currentVoice = None then 
+                CUI <- { CUI with Voice = Some v }; info <| sprintf "Using default voice %s." CUI.Voice.Value.Name 
+        if CUI.Voice = None then 
             error "No speech synthesis voice is available."
-            currentTerm.Echo' "No speech synthesis voice is available. Install speech synthesis on this device or computer to use the voice output feature of Selma."
+            CUI.Term.Echo' "No speech synthesis voice is available. Install speech synthesis on this device or computer to use the voice output feature of Selma."
         
     let initMic m (term:Terminal) =
-        currentMic <- Some(new Mic())
-        let mic = currentMic.Value
-        do mic.onConnecting <- (fun _ -> currentMicState<- Connecting; debugEcho "Mic connecting...")
+        CUI <- { CUI with Mic = Some(new Mic()) }
+        let mic = CUI.Mic.Value
+        do mic.onConnecting <- (fun _ -> CUI <- { CUI with MicState = MicConnecting }; debugEcho "Mic connecting...")
         do mic.onDisconnected <- (fun _ -> debugEcho "Mic disconnected.")
         do mic.onAudioStart <- (fun _ -> debugEcho "Mic audio start...")
         do mic.onAudioEnd <- (fun _ -> debugEcho "Mic audio end.")
@@ -75,15 +67,15 @@ module Client =
         do mic.Connect("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT")
 
     let say text =        
-        match currentVoice with
-        | None -> currentTerm.Echo' text
+        match CUI.Voice with
+        | None -> CUI.Term.Echo' text
         | Some v ->
             async { 
                 let u = new SpeechSynthesisUtterance(text)
                 u.Voice <- v
                 Window.SpeechSynthesis.Speak(u) 
             } |> Async.Start
-            do if caption then currentTerm.Echo' text
+            do if CUI.Caption then CUI.Term.Echo' text
             
     let sayVoices() =
         let voices' = Window.SpeechSynthesis.GetVoices()
@@ -98,8 +90,8 @@ module Client =
     
     let wait (f:unit -> unit) =
         do 
-            currentTerm.Echo'("please wait")
-            currentTerm.Disable();f();currentTerm.Enable()
+            CUI.Term.Echo'("please wait")
+            CUI.Term.Disable();f();CUI.Term.Enable()
 
     let container = SMApp.Bootstrap.Controls.Container
 
@@ -114,20 +106,20 @@ module Client =
             | _ -> error e
             
         let main (term:Terminal) (command:string)  =
-            currentTerm <- term
-            do if currentVoice = None then initSpeech()
-            do if currentMic = None then initMic main' term 
+            CUI <- { CUI with Term = term }
+            do if CUI.Voice = None then initSpeech()
+            do if CUI.Mic = None then initMic main' term 
             match command with
-            | Text.DebugOn -> debugMode <- true; say "Debug mode is now on."  
-            | Text.DebugOff -> debugMode <- false; say "Debug mode is now off." 
+            | Text.DebugOn -> CUI <- { CUI with Debug = true }; say "Debug mode is now on."  
+            | Text.DebugOff -> CUI <- { CUI with Debug = false }; say "Debug mode is now off." 
             | Text.QuickHello m 
             | Text.QuickHelp m ->
-                JQuery.JQuery.Of("$microphone").Hide() |> ignore
-                Meaning(m, None, None) |> update |> Main.update (state())
+                JQuery.JQuery.Of("#microphone").Hide() |> ignore
+                Meaning(m, None, None) |> update |> Main.update CUI
                 JQuery.JQuery.Of("#microphone").Show() |> ignore
                 sayRandom helloPhrases;
             | _-> 
-                currentTerm.Echo'("please wait")
+                CUI.Term.Echo'("please wait")
                 async {
                     match! Server.GetMeaning command with
                     | Text.HelloUser u -> say (sprintf "This is the hello intent. The user name is %s." u.Value)
@@ -143,6 +135,6 @@ module Client =
               
         Interpreter(main', (main, mainOpt))
     
-    let CUI() =
+    let run() =
         Terminal("#main", ThisAction<Terminal, string>(fun term command -> Main.Text term command), Main.Options) |> ignore 
         Doc.Empty

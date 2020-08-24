@@ -809,7 +809,7 @@
    return htmModule.elem("strong",c);
   };
  };
- Client.CUI=function()
+ Client.run=function()
  {
   var interpreter,options;
   interpreter=Runtime.ThisFunc(function(term,command)
@@ -832,10 +832,10 @@
  };
  Client.wait=function(f)
  {
-  ClientExtensions["Terminal.Echo'"](Client.currentTerm(),"please wait");
-  Client.currentTerm().disable();
+  ClientExtensions["Terminal.Echo'"](Client.CUI().Term,"please wait");
+  Client.CUI().Term.disable();
   f();
-  Client.currentTerm().enable();
+  Client.CUI().Term.enable();
  };
  Client.stopSpeaking=function()
  {
@@ -866,36 +866,30 @@
  };
  Client.say=function(text)
  {
-  var $1,v,b;
-  if($1=Client.currentVoice(),$1!=null&&$1.$==1)
-   {
-    v=Client.currentVoice().$0;
-    Concurrency.Start((b=null,Concurrency.Delay(function()
-    {
-     var u;
-     u=new Global.SpeechSynthesisUtterance(text);
-     u.voice=v;
-     Global.speechSynthesis.speak(u);
-     return Concurrency.Zero();
-    })),null);
-    Client.caption()?ClientExtensions["Terminal.Echo'"](Client.currentTerm(),text):void 0;
-   }
-  else
-   ClientExtensions["Terminal.Echo'"](Client.currentTerm(),text);
+  var m,v,b;
+  m=Client.CUI().Voice;
+  m!=null&&m.$==1?(v=m.$0,Concurrency.Start((b=null,Concurrency.Delay(function()
+  {
+   var u;
+   u=new Global.SpeechSynthesisUtterance(text);
+   u.voice=v;
+   Global.speechSynthesis.speak(u);
+   return Concurrency.Zero();
+  })),null),Client.CUI().Caption?ClientExtensions["Terminal.Echo'"](Client.CUI().Term,text):void 0):ClientExtensions["Terminal.Echo'"](Client.CUI().Term,text);
  };
  Client.initMic=function(m,term)
  {
-  var mic;
-  Client.set_currentMic({
+  var M,mic;
+  Client.set_CUI((M={
    $:1,
    $0:new Wit.Microphone(document.getElementById("microphone"))
-  });
-  mic=Client.currentMic().$0;
+  },CUI.New(Client.CUI().Voice,M,Client.CUI().MicState,Client.CUI().Term,Client.CUI().Debug,Client.CUI().Caption)));
+  mic=Client.CUI().Mic.$0;
   mic.onconnecting=function()
   {
-   Client.set_currentMicState({
+   Client.set_CUI(CUI.New(Client.CUI().Voice,Client.CUI().Mic,{
     $:1
-   });
+   },Client.CUI().Term,Client.CUI().Debug,Client.CUI().Caption));
    return Client.debugEcho("Mic connecting...");
   };
   mic.ondisconnected=function()
@@ -936,39 +930,39 @@
   _voices=Global.speechSynthesis.getVoices();
   !(_voices==null)?(voices=ClientExtensions.toArray(_voices),Arrays.iter(function(v)
   {
-   if(Unchecked.Equals(Client.currentVoice(),null)&&(v.name.indexOf("Microsoft Zira")!=-1||v.name.toLowerCase().indexOf("female")!=-1))
+   if(Unchecked.Equals(Client.CUI().Voice,null)&&(v.name.indexOf("Microsoft Zira")!=-1||v.name.toLowerCase().indexOf("female")!=-1))
     {
-     Client.set_currentVoice({
+     Client.set_CUI(CUI.New({
       $:1,
       $0:v
-     });
+     },Client.CUI().Mic,Client.CUI().MicState,Client.CUI().Term,Client.CUI().Debug,Client.CUI().Caption));
      ClientExtensions.info((function($1)
      {
       return function($2)
       {
        return $1("Using voice "+Utils.toSafe($2)+".");
       };
-     }(Global.id))(Client.currentVoice().$0.name));
+     }(Global.id))(Client.CUI().Voice.$0.name));
     }
-  },voices),Unchecked.Equals(Client.currentVoice(),null)&&Arrays.length(voices)>0?(Client.set_currentVoice({
+  },voices),Unchecked.Equals(Client.CUI().Voice,null)&&Arrays.length(voices)>0?(Client.set_CUI(CUI.New({
    $:1,
    $0:Arrays.find(function(v)
    {
     return v["default"];
    },voices)
-  }),ClientExtensions.info((function($1)
+  },Client.CUI().Mic,Client.CUI().MicState,Client.CUI().Term,Client.CUI().Debug,Client.CUI().Caption)),ClientExtensions.info((function($1)
   {
    return function($2)
    {
     return $1("Using default voice "+Utils.toSafe($2)+".");
    };
-  }(Global.id))(Client.currentVoice().$0.name))):void 0):void 0;
-  Unchecked.Equals(Client.currentVoice(),null)?(ClientExtensions.error("No speech synthesis voice is available."),ClientExtensions["Terminal.Echo'"](Client.currentTerm(),"No speech synthesis voice is available. Install speech synthesis on this device or computer to use the voice output feature of Selma.")):void 0;
+  }(Global.id))(Client.CUI().Voice.$0.name))):void 0):void 0;
+  Unchecked.Equals(Client.CUI().Voice,null)?(ClientExtensions.error("No speech synthesis voice is available."),ClientExtensions["Terminal.Echo'"](Client.CUI().Term,"No speech synthesis voice is available. Install speech synthesis on this device or computer to use the voice output feature of Selma.")):void 0;
  };
  Client.debugEcho=function(s)
  {
-  if(Client.debugMode())
-   ClientExtensions["Terminal.EchoHtml'"](Client.currentTerm(),s);
+  if(Client.CUI().Debug)
+   ClientExtensions["Terminal.EchoHtml'"](Client.CUI().Term,s);
  };
  Client.echo=function()
  {
@@ -993,83 +987,19 @@
   SC$5.$cctor();
   SC$5.context=$1;
  };
- Client.state=function()
- {
-  return CUI.New(Client.currentVoice(),Client.currentMic(),Client.currentMicState(),Client.currentTerm(),Client.debugMode(),Client.caption());
- };
- Client.caption=function()
+ Client.CUI=function()
  {
   SC$5.$cctor();
-  return SC$5.caption;
+  return SC$5.CUI;
  };
- Client.set_caption=function($1)
+ Client.set_CUI=function($1)
  {
   SC$5.$cctor();
-  SC$5.caption=$1;
- };
- Client.debugMode=function()
- {
-  SC$5.$cctor();
-  return SC$5.debugMode;
- };
- Client.set_debugMode=function($1)
- {
-  SC$5.$cctor();
-  SC$5.debugMode=$1;
- };
- Client.currentInterpreter=function()
- {
-  SC$5.$cctor();
-  return SC$5.currentInterpreter;
- };
- Client.set_currentInterpreter=function($1)
- {
-  SC$5.$cctor();
-  SC$5.currentInterpreter=$1;
- };
- Client.currentTerm=function()
- {
-  SC$5.$cctor();
-  return SC$5.currentTerm;
- };
- Client.set_currentTerm=function($1)
- {
-  SC$5.$cctor();
-  SC$5.currentTerm=$1;
- };
- Client.currentMicState=function()
- {
-  SC$5.$cctor();
-  return SC$5.currentMicState;
- };
- Client.set_currentMicState=function($1)
- {
-  SC$5.$cctor();
-  SC$5.currentMicState=$1;
- };
- Client.currentMic=function()
- {
-  SC$5.$cctor();
-  return SC$5.currentMic;
- };
- Client.set_currentMic=function($1)
- {
-  SC$5.$cctor();
-  SC$5.currentMic=$1;
- };
- Client.currentVoice=function()
- {
-  SC$5.$cctor();
-  return SC$5.currentVoice;
- };
- Client.set_currentVoice=function($1)
- {
-  SC$5.$cctor();
-  SC$5.currentVoice=$1;
+  SC$5.CUI=$1;
  };
  SC$5.$cctor=function()
  {
-  var r;
+  var o,r;
   SC$5.$cctor=Global.ignore;
   function _main(mic,command)
   {
@@ -1082,18 +1012,18 @@
   }
   function main(term,command)
   {
-   var $1,$2,$3,a,a$1,x,b;
-   Client.set_currentTerm(term);
-   Unchecked.Equals(Client.currentVoice(),null)?Client.initSpeech():void 0;
-   Unchecked.Equals(Client.currentMic(),null)?Client.initMic(_main,term):void 0;
-   return($1=Text.DebugOn(command),$1!=null&&$1.$==1)?(Client.set_debugMode(true),Client.say("Debug mode is now on.")):($2=Text.DebugOff(command),$2!=null&&$2.$==1)?(Client.set_debugMode(false),Client.say("Debug mode is now off.")):(a=Text.QuickHello(command),a!=null&&a.$==1?($3=a.$0,true):(a$1=Text.QuickHelp(command),a$1!=null&&a$1.$==1&&($3=a$1.$0,true)))?($("$microphone").hide(),x=Client.update({
+   var $1,$2,$3,a,a$1,c,b;
+   Client.set_CUI(CUI.New(Client.CUI().Voice,Client.CUI().Mic,Client.CUI().MicState,term,Client.CUI().Debug,Client.CUI().Caption));
+   Unchecked.Equals(Client.CUI().Voice,null)?Client.initSpeech():void 0;
+   Unchecked.Equals(Client.CUI().Mic,null)?Client.initMic(_main,term):void 0;
+   return($1=Text.DebugOn(command),$1!=null&&$1.$==1)?(Client.set_CUI(CUI.New(Client.CUI().Voice,Client.CUI().Mic,Client.CUI().MicState,Client.CUI().Term,true,Client.CUI().Caption)),Client.say("Debug mode is now on.")):($2=Text.DebugOff(command),$2!=null&&$2.$==1)?(Client.set_CUI(CUI.New(Client.CUI().Voice,Client.CUI().Mic,Client.CUI().MicState,Client.CUI().Term,false,Client.CUI().Caption)),Client.say("Debug mode is now off.")):(a=Text.QuickHello(command),a!=null&&a.$==1?($3=a.$0,true):(a$1=Text.QuickHelp(command),a$1!=null&&a$1.$==1&&($3=a$1.$0,true)))?($("#microphone").hide(),c=Client.update({
     $:0,
     $0:$3,
     $1:null,
     $2:null
-   }),Main.update(Client.state(),x),$("#microphone").show(),Client.sayRandom(CUIModule.helloPhrases())):(ClientExtensions["Terminal.Echo'"](Client.currentTerm(),"please wait"),Concurrency.Start((b=null,Concurrency.Delay(function()
+   }),Main.update(Client.CUI(),c),$("#microphone").show(),Client.sayRandom(CUIModule.helloPhrases())):(ClientExtensions["Terminal.Echo'"](Client.CUI().Term,"please wait"),Concurrency.Start((b=null,Concurrency.Delay(function()
    {
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:331037262",[command]),function(a$2)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-357839468",[command]),function(a$2)
     {
      var a$3;
      a$3=Text.HelloUser(a$2);
@@ -1107,20 +1037,14 @@
     });
    })),null));
   }
-  SC$5.currentVoice=null;
-  SC$5.currentMic=null;
-  SC$5.currentMicState={
+  SC$5.CUI=CUI.New(null,null,{
    $:0
-  };
-  SC$5.currentTerm=null;
-  SC$5.currentInterpreter=null;
-  SC$5.debugMode=false;
-  SC$5.caption=false;
+  },null,false,false);
   SC$5.context=List.T.Empty;
-  SC$5.echo=function(a)
+  SC$5.echo=(o=Client.CUI().Term,function(a)
   {
-   ClientExtensions["Terminal.EchoHtml'"](Client.currentTerm(),a);
-  };
+   ClientExtensions["Terminal.EchoHtml'"](o,a);
+  });
   SC$5.stopSpeaking=Global.speechSynthesis.speaking||Global.speechSynthesis.pending?Global.speechSynthesis.cancel():null;
   SC$5.container=Controls.Container;
   SC$5.Main=new Interpreter({

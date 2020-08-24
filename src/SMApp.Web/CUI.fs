@@ -8,7 +8,7 @@ open SMApp.JQueryTerminal
 open SMApp.WebSpeech
 open SMApp.Microphone
 
-type MicState = NotInitialized | Connecting | Disconnected | AudioStart | AudioEnd | MicError of string | Result of obj*obj
+type MicState = MicNotInitialized | MicConnecting | MicDisconnected | MicAudioStart | MicAudioEnd | MicError of string | MicResult of obj*obj
 
 [<JavaScript>]
 type CUI = {

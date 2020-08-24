@@ -15,14 +15,13 @@ open SMApp.EDDI
 module Server =        
    
     let private witai = new WitApi()
+    
     let private mongodb =
             let host = Api.Config("MONGODB")
             do if host.IsEmpty() then failwith "Could not retrieve the MongoDB host using configuration key MONGODB"
             let connectionString = sprintf "mongodb://%s:%s@<%s>/test?w=majority" host "eddi" "eddi"
             new MongoClient(connectionString)
         
-    let private users = mongodb.GetDatabase("eddi").GetCollection<User>("Users")
-
     let private pgdb =
         Sql.host (Api.Config("PGSQL"))
         |> Sql.port 5432
@@ -33,6 +32,10 @@ module Server =
         |> Sql.config "Pooling=true"
         |> Sql.formatConnectionString
         |> Sql.connect
+
+    let private users = mongodb.GetDatabase("eddi").GetCollection<User>("Users")
+
+    //infof "Got {0} users. " [users.CountDocuments(FilterDefinitionBuilder().Empty)]
     
     [<Rpc>]
     let GetPatients() : Result<Patient list, exn> =       
