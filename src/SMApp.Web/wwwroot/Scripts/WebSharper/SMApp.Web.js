@@ -1,7 +1,7 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Web,ClientExtensions,_Html,htmModule,SC$1,Bootstrap,Controls,SC$2,NLU,Intent,Trait,Meaning,Voice,_Entity,Text,Meaning$1,Intent$1,Entity,SC$3,CUI,CUIModule,User,Interpreter,SC$4,Main,Client,SC$5,WebSharper,Arrays,$,console,IntelliFactory,Runtime,Strings,List,Seq,UI,Doc,AttrModule,Utils,Concurrency,Random,Remoting,AjaxRemotingProvider,Wit,document,Unchecked;
+ var Global,SMApp,Web,ClientExtensions,_Html,htmModule,SC$1,Bootstrap,Controls,SC$2,NLU,Intent,Trait,Meaning,NLUContext,Voice,_Entity,Text,Meaning$1,Intent$1,Entity,SC$3,CUI,CUIModule,User,Interpreter,SC$4,Main,Client,SC$5,SMApp$Web_GeneratedPrintf,WebSharper,Arrays,$,Utils,console,IntelliFactory,Runtime,Strings,List,Seq,UI,Doc,AttrModule,Concurrency,Random,Remoting,AjaxRemotingProvider,Wit,document,Unchecked;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Web=SMApp.Web=SMApp.Web||{};
@@ -16,6 +16,7 @@
  Intent=NLU.Intent=NLU.Intent||{};
  Trait=NLU.Trait=NLU.Trait||{};
  Meaning=NLU.Meaning=NLU.Meaning||{};
+ NLUContext=NLU.NLUContext=NLU.NLUContext||{};
  Voice=NLU.Voice=NLU.Voice||{};
  _Entity=Voice["Entity'"]=Voice["Entity'"]||{};
  Text=NLU.Text=NLU.Text||{};
@@ -31,9 +32,11 @@
  Main=Web.Main=Web.Main||{};
  Client=Web.Client=Web.Client||{};
  SC$5=Global.StartupCode$SMApp_Web$Client=Global.StartupCode$SMApp_Web$Client||{};
+ SMApp$Web_GeneratedPrintf=Global.SMApp$Web_GeneratedPrintf=Global.SMApp$Web_GeneratedPrintf||{};
  WebSharper=Global.WebSharper;
  Arrays=WebSharper&&WebSharper.Arrays;
  $=Global.jQuery;
+ Utils=WebSharper&&WebSharper.Utils;
  console=Global.console;
  IntelliFactory=Global.IntelliFactory;
  Runtime=IntelliFactory&&IntelliFactory.Runtime;
@@ -43,7 +46,6 @@
  UI=WebSharper&&WebSharper.UI;
  Doc=UI&&UI.Doc;
  AttrModule=UI&&UI.AttrModule;
- Utils=WebSharper&&WebSharper.Utils;
  Concurrency=WebSharper&&WebSharper.Concurrency;
  Random=WebSharper&&WebSharper.Random;
  Remoting=WebSharper&&WebSharper.Remoting;
@@ -54,6 +56,16 @@
  ClientExtensions.toArray=function(a)
  {
   return Arrays.map(Global.id,$.makeArray(a));
+ };
+ ClientExtensions.debug=function(text)
+ {
+  ClientExtensions.info((function($1)
+  {
+   return function($2)
+   {
+    return $1("DEBUG: "+Utils.toSafe($2));
+   };
+  }(Global.id))(text));
  };
  ClientExtensions.error=function(a)
  {
@@ -537,6 +549,13 @@
   $:0
  };
  Meaning=NLU.Meaning=Runtime.Class({
+  toString:function()
+  {
+   return((((Runtime.Curried(function($1,$2,$3,$4)
+   {
+    return $1("Intent: "+SMApp$Web_GeneratedPrintf.p($2)+". Trait: "+SMApp$Web_GeneratedPrintf.p$1($3)+". Entities: "+SMApp$Web_GeneratedPrintf.p$3($4));
+   },4))(Global.id))(this.get_Intent()))(this.get_Trait()))(this.get_Entities());
+  },
   get_Entities:function()
   {
    return(this.Unwrap())[2];
@@ -554,6 +573,20 @@
    return[this.$0,this.$1,this.$2];
   }
  },null,Meaning);
+ NLUContext=NLU.NLUContext=Runtime.Class({
+  toString:function()
+  {
+   return Global.String(this.get_Meaning());
+  },
+  get_Meaning:function()
+  {
+   return this.Unwrap();
+  },
+  Unwrap:function()
+  {
+   return this.$0;
+  }
+ },null,NLUContext);
  _Entity.New=function(body,end,start,suggested,value)
  {
   return{
@@ -786,10 +819,10 @@
     return Concurrency.Zero();
    })),null),this.Caption?this["Echo'"](text):void 0):this["Echo'"](text);
   },
-  DebugEcho:function(text)
+  Debug:function(text)
   {
-   if(this.Debug)
-    this["EchoHtml'"](text);
+   ClientExtensions.debug(text);
+   this.DebugMode?this["EchoHtml'"](text):void 0;
   },
   "EchoHtml'":function(text)
   {
@@ -806,13 +839,13 @@
    this.Term.enable();
   }
  },null,CUI);
- CUI.New=function(Voice$1,Mic,Term,Debug,Caption)
+ CUI.New=function(Voice$1,Mic,Term,DebugMode,Caption)
  {
   return new CUI({
    Voice:Voice$1,
    Mic:Mic,
    Term:Term,
-   Debug:Debug,
+   DebugMode:DebugMode,
    Caption:Caption
   });
  };
@@ -869,18 +902,27 @@
  Main.update=function(cui,context)
  {
   var b;
-  cui.Say("I'm in the Main module.");
+  cui.Debug((function($1)
+  {
+   return function($2)
+   {
+    return $1("Main update ctx: "+Utils.printList(function($3)
+    {
+     return SMApp$Web_GeneratedPrintf.p$5($3);
+    },$2)+".");
+   };
+  }(Global.id))(context));
   context.$==1?context.$0.$0.get_Intent().$===3?cui.Wait((b=null,Concurrency.Delay(function()
   {
-   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetPatients:-1849607121",[]),function(a)
+   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetPatients:1526692069",[]),function(a)
    {
-    return a.$==1?(cui.DebugEcho((function($1)
+    return a.$==1?(cui.Debug((function($1)
     {
      return function($2)
      {
       return $1("Error "+Utils.toSafe($2));
      };
-    }(Global.id))(a.$0)),Concurrency.Zero()):(cui.DebugEcho((function($1)
+    }(Global.id))(a.$0)),Concurrency.Zero()):(cui.Debug((function($1)
     {
      return function($2)
      {
@@ -964,7 +1006,7 @@
   Client.set_CUI((M={
    $:1,
    $0:new Wit.Microphone(document.getElementById("microphone"))
-  },CUI.New(Client.CUI().Voice,M,Client.CUI().Term,Client.CUI().Debug,Client.CUI().Caption)));
+  },CUI.New(Client.CUI().Voice,M,Client.CUI().Term,Client.CUI().DebugMode,Client.CUI().Caption)));
   mic=Client.CUI().Mic.$0;
   mic.onconnecting=function()
   {
@@ -1016,7 +1058,7 @@
      Client.set_CUI(CUI.New({
       $:1,
       $0:v
-     },Client.CUI().Mic,Client.CUI().Term,Client.CUI().Debug,Client.CUI().Caption));
+     },Client.CUI().Mic,Client.CUI().Term,Client.CUI().DebugMode,Client.CUI().Caption));
      ClientExtensions.info((function($1)
      {
       return function($2)
@@ -1031,7 +1073,7 @@
    {
     return v["default"];
    },voices)
-  },Client.CUI().Mic,Client.CUI().Term,Client.CUI().Debug,Client.CUI().Caption)),ClientExtensions.info((function($1)
+  },Client.CUI().Mic,Client.CUI().Term,Client.CUI().DebugMode,Client.CUI().Caption)),ClientExtensions.info((function($1)
   {
    return function($2)
    {
@@ -1042,12 +1084,13 @@
  };
  Client.updateCtx=function(m)
  {
-  var _this;
+  var _this,ps;
   _this=Client.Context();
-  _this.splice.apply(_this,[0,0,{
+  ps=[new NLUContext({
    $:0,
    $0:m
-  }]);
+  })];
+  _this.splice.apply(_this,[0,0].concat(ps));
   return List.ofSeq(Seq.take(Arrays.length(Client.Context())>=5?5:Arrays.length(Client.Context()),Client.Context()));
  };
  Client.Context=function()
@@ -1067,7 +1110,7 @@
  };
  Client.debugEcho=function(s)
  {
-  if(Client.CUI().Debug)
+  if(Client.CUI().DebugMode)
    ClientExtensions["Terminal.EchoHtml'"](Client.CUI().Term,s);
  };
  Client.echo=function()
@@ -1101,7 +1144,7 @@
   function main(term,command)
   {
    var $1,$2,$3,a,a$1,a$2,c,b;
-   Client.set_CUI(CUI.New(Client.CUI().Voice,Client.CUI().Mic,term,Client.CUI().Debug,Client.CUI().Caption));
+   Client.set_CUI(CUI.New(Client.CUI().Voice,Client.CUI().Mic,term,Client.CUI().DebugMode,Client.CUI().Caption));
    Unchecked.Equals(Client.CUI().Voice,null)?Client.initSpeech():void 0;
    Unchecked.Equals(Client.CUI().Mic,null)?Client.initMic(_main,term):void 0;
    return($1=Text.DebugOn(command),$1!=null&&$1.$==1)?(Client.set_CUI(CUI.New(Client.CUI().Voice,Client.CUI().Mic,Client.CUI().Term,true,Client.CUI().Caption)),Client.say("Debug mode is now on.")):($2=Text.DebugOff(command),$2!=null&&$2.$==1)?(Client.set_CUI(CUI.New(Client.CUI().Voice,Client.CUI().Mic,Client.CUI().Term,false,Client.CUI().Caption)),Client.say("Debug mode is now off.")):(a=Text.QuickHello(command),a!=null&&a.$==1?($3=a.$0,true):(a$1=Text.QuickHelp(command),a$1!=null&&a$1.$==1?($3=a$1.$0,true):(a$2=Text.QuickPrograms(command),a$2!=null&&a$2.$==1&&($3=a$2.$0,true))))?(c=Client.updateCtx(new Meaning({
@@ -1111,7 +1154,7 @@
     $2:null
    })),Main.update(Client.CUI(),c)):Client.CUI().Wait((b=null,Concurrency.Delay(function()
    {
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:1775380100",[command]),function(a$3)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-922870759",[command]),function(a$3)
     {
      var a$4;
      a$4=Text.HelloUser(a$3);
@@ -1153,5 +1196,36 @@
     };
    },(r={},r.name="Main",r.greetings="Welcome to Selma. Type hello to begin or help for more assistance.",r.prompt=">",r)]
   });
+ };
+ SMApp$Web_GeneratedPrintf.p$3=function($1)
+ {
+  return $1==null?"null":"Some "+Utils.printList(function($2)
+  {
+   return SMApp$Web_GeneratedPrintf.p$4($2);
+  },$1.$0);
+ };
+ SMApp$Web_GeneratedPrintf.p$4=function($1)
+ {
+  return"Contact "+Utils.prettyPrint($1.$0);
+ };
+ SMApp$Web_GeneratedPrintf.p$1=function($1)
+ {
+  return $1==null?"null":"Some "+SMApp$Web_GeneratedPrintf.p$2($1.$0);
+ };
+ SMApp$Web_GeneratedPrintf.p$2=function($1)
+ {
+  return"Greetings";
+ };
+ SMApp$Web_GeneratedPrintf.p=function($1)
+ {
+  return $1.$==3?"Programs":$1.$==2?"Onboard":$1.$==1?"Help":"Hello";
+ };
+ SMApp$Web_GeneratedPrintf.p$5=function($1)
+ {
+  return"NLUContext "+SMApp$Web_GeneratedPrintf.p$6($1.$0);
+ };
+ SMApp$Web_GeneratedPrintf.p$6=function($1)
+ {
+  return"Meaning ("+SMApp$Web_GeneratedPrintf.p($1.$0)+", "+SMApp$Web_GeneratedPrintf.p$1($1.$1)+", "+SMApp$Web_GeneratedPrintf.p$3($1.$2)+")";
  };
 }());

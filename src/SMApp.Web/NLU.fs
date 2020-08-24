@@ -22,8 +22,12 @@ module NLU =
         member x.Intent = let i, t, el = x.Unwrap() in i
         member x.Trait = let i, t, el = x.Unwrap() in t
         member x.Entities = let i, t, el = x.Unwrap() in el
+        override x.ToString() = sprintf "Intent: %A. Trait: %A. Entities: %A" x.Intent x.Trait x.Entities
 
-    type NLUContext = NLUContext of Meaning
+    type NLUContext = NLUContext of Meaning with
+        member x.Unwrap() = match x with NLUContext(m) -> m
+        member x.Meaning = let m = x.Unwrap() in m
+        override x.ToString() = x.Meaning.ToString() 
 
     [<RequireQualifiedAccess>]
     module Voice =

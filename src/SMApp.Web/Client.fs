@@ -21,12 +21,12 @@ module Client =
         Voice = None
         Mic = None
         Term = Unchecked.defaultof<Terminal>
-        Debug = false
+        DebugMode = false
         Caption = false
     }
 
     let echo = CUI.Term.EchoHtml'
-    let debugEcho s = if CUI.Debug then CUI.Term.EchoHtml' s
+    let debugEcho s = if CUI.DebugMode then CUI.Term.EchoHtml' s
     
     let mutable MicState = MicNotInitialized
 
@@ -110,8 +110,8 @@ module Client =
             do if CUI.Voice = None then initSpeech()
             do if CUI.Mic = None then initMic main' term 
             match command with
-            | Text.DebugOn -> CUI <- { CUI with Debug = true }; say "Debug mode is now on."  
-            | Text.DebugOff -> CUI <- { CUI with Debug = false }; say "Debug mode is now off." 
+            | Text.DebugOn -> CUI <- { CUI with DebugMode = true }; say "Debug mode is now on."  
+            | Text.DebugOff -> CUI <- { CUI with DebugMode = false }; say "Debug mode is now off." 
             | Text.QuickHello m 
             | Text.QuickHelp m 
             | Text.QuickPrograms m -> Meaning(m, None, None) |> updateCtx |> Main.update CUI

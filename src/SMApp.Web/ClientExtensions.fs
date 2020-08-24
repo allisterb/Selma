@@ -25,6 +25,8 @@ module ClientExtensions =
     
     let error = Console.Error
 
+    let debug text = info <| sprintf "DEBUG: %s" text
+    
     let toArray (a : ArrayLike<'t>) =
         JQuery.MakeArray a |> Array.map (fun a -> a :?> 't)
 

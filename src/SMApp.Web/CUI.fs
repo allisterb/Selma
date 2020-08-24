@@ -15,15 +15,18 @@ type CUI = {
     Voice:SpeechSynthesisVoice option
     Mic: Mic option
     Term: Terminal
-    Debug: bool
+    DebugMode: bool
     Caption: bool
 }
 with
     member x.Echo' (text:string) = x.Term.Disable(); x.Term.Echo text; x.Term.Enable()
+    
     member x.EchoHtml' (text:string) = 
         let rawOpt = EchoOptions(Raw=true)
-        x.Term.Disable(); x.Term.Echo(text, rawOpt) ; x.Term.Enable()
-    member x.DebugEcho text = if x.Debug then x.EchoHtml' text
+        x.Term.Disable(); x.Term.Echo(text, rawOpt); x.Term.Enable()
+    
+    member x.Debug text = debug text; if x.DebugMode then x.EchoHtml' text
+    
     member x.Say text = 
         match x.Voice with
         | None -> x.Echo' text
@@ -34,6 +37,7 @@ with
                 Window.SpeechSynthesis.Speak(u) 
             } |> Async.Start
             do if x.Caption then x.Echo' text    
+    
     member x.Wait (f:unit -> unit) =
         do 
             x.Echo'("please wait")
