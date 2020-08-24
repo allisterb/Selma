@@ -872,15 +872,21 @@
   cui.Say("I'm in the Main module.");
   context.$==1?context.$0.$0.get_Intent().$===3?cui.Wait((b=null,Concurrency.Delay(function()
   {
-   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetPatients:1596745484",[]),function(a)
+   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetPatients:-1849607121",[]),function(a)
    {
-    return a.$==1?(cui.Say((function($1)
+    return a.$==1?(cui.DebugEcho((function($1)
     {
      return function($2)
      {
-      return $1("I did not get the patients. Error "+Utils.toSafe($2));
+      return $1("Error "+Utils.toSafe($2));
      };
-    }(Global.id))(a.$0)),Concurrency.Zero()):(cui.Say("I got the patients"),Concurrency.Zero());
+    }(Global.id))(a.$0)),Concurrency.Zero()):(cui.DebugEcho((function($1)
+    {
+     return function($2)
+     {
+      return $1("Got "+Global.String($2)+" patients.");
+     };
+    }(Global.id))(a.$0.get_Length())),Concurrency.Zero());
    });
   }))):void 0:void 0;
  };
@@ -1036,21 +1042,18 @@
  };
  Client.updateCtx=function(m)
  {
-  Client.set_context(List.append(List.ofArray([{
+  var _this;
+  _this=Client.Context();
+  _this.splice.apply(_this,[0,0,{
    $:0,
    $0:m
-  }]),Client.context()));
-  return List.ofSeq(Seq.take(Client.context().get_Length()>=5?5:Client.context().get_Length(),Client.context()));
+  }]);
+  return List.ofSeq(Seq.take(Arrays.length(Client.Context())>=5?5:Arrays.length(Client.Context()),Client.Context()));
  };
- Client.context=function()
+ Client.Context=function()
  {
   SC$5.$cctor();
-  return SC$5.context;
- };
- Client.set_context=function($1)
- {
-  SC$5.$cctor();
-  SC$5.context=$1;
+  return SC$5.Context;
  };
  Client.MicState=function()
  {
@@ -1108,7 +1111,7 @@
     $2:null
    })),Main.update(Client.CUI(),c)):Client.CUI().Wait((b=null,Concurrency.Delay(function()
    {
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:976018238",[command]),function(a$3)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:1775380100",[command]),function(a$3)
     {
      var a$4;
      a$4=Text.HelloUser(a$3);
@@ -1130,7 +1133,7 @@
   SC$5.MicState={
    $:0
   };
-  SC$5.context=List.T.Empty;
+  SC$5.Context=[];
   SC$5.stopSpeaking=Global.speechSynthesis.speaking||Global.speechSynthesis.pending?Global.speechSynthesis.cancel():null;
   SC$5.container=Controls.Container;
   SC$5.Main=new Interpreter({

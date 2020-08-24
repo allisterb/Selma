@@ -10,7 +10,6 @@ open Npgsql.FSharp
 
 open SMApp
 open SMApp.Models
-open SMApp.EDDI
 
 module Server =        
    
@@ -28,7 +27,7 @@ module Server =
         |> Sql.username "smapp"
         |> Sql.password "smapp"
         |> Sql.database "smapp"
-        |> Sql.sslMode SslMode.Require
+        |> Sql.sslMode SslMode.Prefer
         |> Sql.config "Pooling=true"
         |> Sql.formatConnectionString
         |> Sql.connect
@@ -40,7 +39,7 @@ module Server =
     [<Rpc>]
     let GetPatients() : Async<Result<Patient list, string>> = 
         pgdb
-        |> Sql.query "SELECT * FROM Patient"
+        |> Sql.query "SELECT * FROM patient"
         |> Sql.executeAsync (fun read ->
         {
             Id =  read.string("Id") |> Models.String

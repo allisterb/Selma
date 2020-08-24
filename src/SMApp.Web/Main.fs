@@ -10,8 +10,8 @@ module Main =
             async { 
                 let! p = Server.GetPatients()
                 match p with
-                | Ok r -> cui.Say "I got the patients"
-                | Error s -> cui.Say <| sprintf "I did not get the patients. Error %s" s
+                | Ok r -> cui.DebugEcho <| sprintf "Got %i patients." r.Length
+                | Error s -> cui.DebugEcho <| sprintf "Error %s" s
             } |> cui.Wait 
         | _ -> ()
 

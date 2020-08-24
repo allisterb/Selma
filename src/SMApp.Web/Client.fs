@@ -17,7 +17,6 @@ open SMApp.Microphone
 [<JavaScript>]
 module Client =
    
-    (* CUI state *)
     let mutable CUI = {
         Voice = None
         Mic = None
@@ -28,17 +27,16 @@ module Client =
 
     let echo = CUI.Term.EchoHtml'
     let debugEcho s = if CUI.Debug then CUI.Term.EchoHtml' s
-
-    (* Mic state *)    
-    let mutable MicState:MicState = MicNotInitialized
+    
+    let mutable MicState = MicNotInitialized
 
     (* NLU context *)
-    let mutable context: NLUContext list = []
+    let Context = new List<NLUContext>()
 
     let updateCtx (m:Meaning) =
-        context <- ([NLUContext m] @ context)
-        let b = if context.Length >= 5 then 5 else context.Length
-        context |> List.take b
+        do Context.Insert(0, NLUContext(m))
+        let b = if Context.Count >= 5 then 5 else Context.Count
+        Context |> Seq.take b |> List.ofSeq 
 
     (* Initialize speech and mic *)
     let initSpeech() =
