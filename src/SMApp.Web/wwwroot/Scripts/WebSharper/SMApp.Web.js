@@ -1,7 +1,7 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Web,ClientExtensions,_Html,htmModule,SC$1,Bootstrap,Controls,SC$2,NLU,Intent,Trait,Meaning,NLUContext,Voice,_Entity,Text,Meaning$1,Intent$1,Entity,SC$3,CUI,CUIModule,User,Interpreter,SC$4,Main,Client,SC$5,SMApp$Web_GeneratedPrintf,WebSharper,Arrays,$,Utils,console,IntelliFactory,Runtime,Strings,List,Seq,UI,Doc,AttrModule,Concurrency,Random,Remoting,AjaxRemotingProvider,Wit,document,Unchecked;
+ var Global,SMApp,Web,ClientExtensions,_Html,htmModule,SC$1,Bootstrap,Controls,SC$2,NLU,Intent,Trait,Meaning,Voice,_Entity,Text,_Meaning,Intent$1,Entity,SC$3,CUI,CUIModule,User,Interpreter,SC$4,Main,Client,SC$5,SMApp$Web_GeneratedPrintf,WebSharper,Arrays,$,Utils,console,IntelliFactory,Runtime,Strings,List,Seq,UI,Doc,AttrModule,Concurrency,Random,Remoting,AjaxRemotingProvider,Wit,document,Unchecked;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Web=SMApp.Web=SMApp.Web||{};
@@ -16,11 +16,10 @@
  Intent=NLU.Intent=NLU.Intent||{};
  Trait=NLU.Trait=NLU.Trait||{};
  Meaning=NLU.Meaning=NLU.Meaning||{};
- NLUContext=NLU.NLUContext=NLU.NLUContext||{};
  Voice=NLU.Voice=NLU.Voice||{};
  _Entity=Voice["Entity'"]=Voice["Entity'"]||{};
  Text=NLU.Text=NLU.Text||{};
- Meaning$1=Text.Meaning=Text.Meaning||{};
+ _Meaning=Text["Meaning'"]=Text["Meaning'"]||{};
  Intent$1=Text.Intent=Text.Intent||{};
  Entity=Text.Entity=Text.Entity||{};
  SC$3=Global.StartupCode$SMApp_Web$NLU=Global.StartupCode$SMApp_Web$NLU||{};
@@ -533,7 +532,7 @@
   SC$2.cls=AttrModule.Class;
   SC$2.Class=AttrModule.Class;
  };
- Intent.Programs={
+ Intent.Program={
   $:3
  };
  Intent.Onboard={
@@ -573,20 +572,6 @@
    return[this.$0,this.$1,this.$2];
   }
  },null,Meaning);
- NLUContext=NLU.NLUContext=Runtime.Class({
-  toString:function()
-  {
-   return Global.String(this.get_Meaning());
-  },
-  get_Meaning:function()
-  {
-   return this.Unwrap();
-  },
-  Unwrap:function()
-  {
-   return this.$0;
-  }
- },null,NLUContext);
  _Entity.New=function(body,end,start,suggested,value)
  {
   return{
@@ -602,7 +587,7 @@
   return!(a.contact==null)?{
    $:1,
    $0:{
-    $:0,
+    $:1,
     $0:_Entity.New(a.body,a.end,a.start,a.ff,a.value).value
    }
   }:null;
@@ -621,7 +606,7 @@
    $0:Intent.Hello
   }:null;
  };
- Meaning$1=Text.Meaning=Runtime.Class({
+ _Meaning=Text["Meaning'"]=Runtime.Class({
   get_TopIntent:function()
   {
    return List.head(List.sortBy(function(i)
@@ -641,7 +626,7 @@
   {
    return[this.$0,this.$1];
   }
- },null,Meaning$1);
+ },null,_Meaning);
  Intent$1=Text.Intent=Runtime.Class({
   get_Confidence:function()
   {
@@ -681,17 +666,33 @@
  Text.HelloUser=function(a)
  {
   var $1,a$1;
-  return(a$1=Text.Hello(a),a$1!=null&&a$1.$==1&&(a$1.$0.$==1&&(a$1.$0.$1.$==0&&(a$1.$0.$0.get_Role()==="contact"&&($1=a$1.$0.$0,true)))))?{
+  return a!=null&&a.$==1&&(a$1=Text.Intent$1("Hello",a.$0),a$1!=null&&a$1.$==1&&(a$1.$0.$==1&&(a$1.$0.$1.$==0&&($1=a$1.$0.$0,true))))?{
    $:1,
-   $0:$1
+   $0:new Meaning({
+    $:0,
+    $0:Intent.Hello,
+    $1:null,
+    $2:{
+     $:1,
+     $0:List.ofArray([{
+      $:0,
+      $0:$1.get_Name()
+     }])
+    }
+   })
   }:null;
  };
  Text.Hello=function(a)
  {
   var $1,a$1;
-  return a!=null&&a.$==1&&(a$1=Text.Intent$1("Hello",a.$0),a$1!=null&&a$1.$==1&&($1=a$1.$0,true))?{
+  return a!=null&&a.$==1&&(a$1=Text.Intent$1("Hello",a.$0),a$1!=null&&a$1.$==1&&a$1.$0.$==0)?{
    $:1,
-   $0:$1
+   $0:new Meaning({
+    $:0,
+    $0:Intent.Hello,
+    $1:null,
+    $2:null
+   })
   }:null;
  };
  Text.Intent$1=function(name,a)
@@ -728,7 +729,12 @@
  {
   return a==="programs"?{
    $:1,
-   $0:Intent.Programs
+   $0:new Meaning({
+    $:0,
+    $0:Intent.Program,
+    $1:null,
+    $2:null
+   })
   }:null;
  };
  Text.QuickHelp=function(a)
@@ -736,7 +742,12 @@
   var $1;
   return a==="help"||(a==="help me"||(a==="what's this?"||a==="huh"))?{
    $:1,
-   $0:Intent.Help
+   $0:new Meaning({
+    $:0,
+    $0:Intent.Help,
+    $1:null,
+    $2:null
+   })
   }:null;
  };
  Text.QuickHello=function(a)
@@ -744,7 +755,12 @@
   var $1;
   return a==="hello"||(a==="hey"||(a==="yo"||a==="hi"))?{
    $:1,
-   $0:Intent.Hello
+   $0:new Meaning({
+    $:0,
+    $0:Intent.Hello,
+    $1:null,
+    $2:null
+   })
   }:null;
  };
  Text.DebugOff=function(a)
@@ -757,6 +773,13 @@
  Text.DebugOn=function(a)
  {
   return a==="debug on"?{
+   $:1,
+   $0:null
+  }:null;
+ };
+ Text.Blank=function(a)
+ {
+  return a===""?{
    $:1,
    $0:null
   }:null;
@@ -901,36 +924,45 @@
  };
  Main.update=function(cui,context)
  {
-  var b;
-  cui.Debug((function($1)
+  var b,$1;
+  cui.Debug((function($2)
   {
-   return function($2)
+   return function($3)
    {
-    return $1("Main update ctx: "+Utils.printList(function($3)
+    return $2("Main update ctx: "+Utils.printList(function($4)
     {
-     return SMApp$Web_GeneratedPrintf.p$5($3);
-    },$2)+".");
+     return SMApp$Web_GeneratedPrintf.p$5($4);
+    },$3)+".");
    };
   }(Global.id))(context));
-  context.$==1?context.$0.$0.get_Intent().$===3?cui.Wait((b=null,Concurrency.Delay(function()
+  context.$==1?context.$0.$0.$==3?context.$0.$1==null?context.$0.$2==null?cui.Wait((b=null,Concurrency.Delay(function()
   {
-   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetPatients:1526692069",[]),function(a)
+   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetPatients:-464888707",[]),function(a)
    {
-    return a.$==1?(cui.Debug((function($1)
+    return a.$==1?(cui.Debug((function($2)
     {
-     return function($2)
+     return function($3)
      {
-      return $1("Error "+Utils.toSafe($2));
+      return $2("Error "+Utils.toSafe($3));
      };
-    }(Global.id))(a.$0)),Concurrency.Zero()):(cui.Debug((function($1)
+    }(Global.id))(a.$0)),Concurrency.Zero()):(cui.Debug((function($2)
     {
-     return function($2)
+     return function($3)
      {
-      return $1("Got "+Global.String($2)+" patients.");
+      return $2("Got "+Global.String($3)+" patients.");
      };
     }(Global.id))(a.$0.get_Length())),Concurrency.Zero());
    });
-  }))):void 0:void 0;
+  }))):void 0:void 0:context.$0.$0.$==0?context.$0.$1==null?($1=context.$0.$2,$1!=null&&$1.$==1)?context.$0.$2.$0.$==1?context.$0.$2.$0.$0.$==0?context.$0.$2.$0.$1.$==0?cui.Say((function($2)
+  {
+   return function($3)
+   {
+    return $2("Hello "+Utils.toSafe($3));
+   };
+  }(Global.id))(context.$0.$2.$0.$0.$0)):void 0:void 0:void 0:cui.Say(function($2)
+  {
+   return $2("Hello. My name is Selma. What's yours?");
+  }(Global.id)):void 0:void 0:void 0;
  };
  Client.run=function()
  {
@@ -1017,18 +1049,31 @@
   };
   mic.ondisconnected=function()
   {
+   Client.set_MicState({
+    $:2
+   });
    return Client.debugEcho("Mic disconnected.");
   };
   mic.onaudiostart=function()
   {
+   Client.set_MicState({
+    $:3
+   });
    return Client.debugEcho("Mic audio start...");
   };
   mic.onaudioend=function()
   {
+   Client.set_MicState({
+    $:4
+   });
    return Client.debugEcho("Mic audio end.");
   };
   mic.onerror=function(s)
   {
+   Client.set_MicState({
+    $:6,
+    $0:s
+   });
    return Client.debugEcho((function($1)
    {
     return function($2)
@@ -1039,10 +1084,18 @@
   };
   mic.onready=function()
   {
+   Client.set_MicState({
+    $:5
+   });
    return Client.debugEcho("Mic ready.");
   };
   mic.onresult=function(i,e)
   {
+   Client.set_MicState({
+    $:7,
+    $0:i,
+    $1:e
+   });
    return m(mic,[i,e]);
   };
   mic.connect("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT");
@@ -1059,7 +1112,7 @@
       $:1,
       $0:v
      },Client.CUI().Mic,Client.CUI().Term,Client.CUI().DebugMode,Client.CUI().Caption));
-     ClientExtensions.info((function($1)
+     ClientExtensions.debug((function($1)
      {
       return function($2)
       {
@@ -1073,7 +1126,7 @@
    {
     return v["default"];
    },voices)
-  },Client.CUI().Mic,Client.CUI().Term,Client.CUI().DebugMode,Client.CUI().Caption)),ClientExtensions.info((function($1)
+  },Client.CUI().Mic,Client.CUI().Term,Client.CUI().DebugMode,Client.CUI().Caption)),ClientExtensions.debug((function($1)
   {
    return function($2)
    {
@@ -1084,13 +1137,9 @@
  };
  Client.updateCtx=function(m)
  {
-  var _this,ps;
+  var _this;
   _this=Client.Context();
-  ps=[new NLUContext({
-   $:0,
-   $0:m
-  })];
-  _this.splice.apply(_this,[0,0].concat(ps));
+  _this.splice.apply(_this,[0,0,m]);
   return List.ofSeq(Seq.take(Arrays.length(Client.Context())>=5?5:Arrays.length(Client.Context()),Client.Context()));
  };
  Client.Context=function()
@@ -1143,28 +1192,17 @@
   }
   function main(term,command)
   {
-   var $1,$2,$3,a,a$1,a$2,c,b;
+   var $1,$2,$3,$4,a,a$1,a$2,c,b;
    Client.set_CUI(CUI.New(Client.CUI().Voice,Client.CUI().Mic,term,Client.CUI().DebugMode,Client.CUI().Caption));
    Unchecked.Equals(Client.CUI().Voice,null)?Client.initSpeech():void 0;
    Unchecked.Equals(Client.CUI().Mic,null)?Client.initMic(_main,term):void 0;
-   return($1=Text.DebugOn(command),$1!=null&&$1.$==1)?(Client.set_CUI(CUI.New(Client.CUI().Voice,Client.CUI().Mic,Client.CUI().Term,true,Client.CUI().Caption)),Client.say("Debug mode is now on.")):($2=Text.DebugOff(command),$2!=null&&$2.$==1)?(Client.set_CUI(CUI.New(Client.CUI().Voice,Client.CUI().Mic,Client.CUI().Term,false,Client.CUI().Caption)),Client.say("Debug mode is now off.")):(a=Text.QuickHello(command),a!=null&&a.$==1?($3=a.$0,true):(a$1=Text.QuickHelp(command),a$1!=null&&a$1.$==1?($3=a$1.$0,true):(a$2=Text.QuickPrograms(command),a$2!=null&&a$2.$==1&&($3=a$2.$0,true))))?(c=Client.updateCtx(new Meaning({
-    $:0,
-    $0:$3,
-    $1:null,
-    $2:null
-   })),Main.update(Client.CUI(),c)):Client.CUI().Wait((b=null,Concurrency.Delay(function()
+   return($1=Text.Blank(command),$1!=null&&$1.$==1)?Client.say("Tell me what you want me to do or ask me a question."):($2=Text.DebugOn(command),$2!=null&&$2.$==1)?(Client.set_CUI(CUI.New(Client.CUI().Voice,Client.CUI().Mic,Client.CUI().Term,true,Client.CUI().Caption)),Client.say("Debug mode is now on.")):($3=Text.DebugOff(command),$3!=null&&$3.$==1)?(Client.set_CUI(CUI.New(Client.CUI().Voice,Client.CUI().Mic,Client.CUI().Term,false,Client.CUI().Caption)),Client.say("Debug mode is now off.")):(a=Text.QuickHello(command),a!=null&&a.$==1?($4=a.$0,true):(a$1=Text.QuickHelp(command),a$1!=null&&a$1.$==1?($4=a$1.$0,true):(a$2=Text.QuickPrograms(command),a$2!=null&&a$2.$==1&&($4=a$2.$0,true))))?(c=Client.updateCtx($4),Main.update(Client.CUI(),c)):Client.CUI().Wait((b=null,Concurrency.Delay(function()
    {
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-922870759",[command]),function(a$3)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:1209023047",[command]),function(a$3)
     {
-     var a$4;
+     var a$4,c$1;
      a$4=Text.HelloUser(a$3);
-     return a$4!=null&&a$4.$==1?(Client.say((function($4)
-     {
-      return function($5)
-      {
-       return $4("This is the hello intent. The user name is "+Utils.toSafe($5)+".");
-      };
-     }(Global.id))(a$4.$0.get_Value())),Concurrency.Zero()):(ClientExtensions["Terminal.Echo'"](term,"This is the whatever intent"),Concurrency.Zero());
+     return a$4!=null&&a$4.$==1?(c$1=Client.updateCtx(a$4.$0),Main.update(Client.CUI(),c$1),Concurrency.Zero()):(ClientExtensions["Terminal.Echo'"](term,"Sorry I did not understand what you said."),Concurrency.Zero());
     });
    })));
   }
@@ -1206,7 +1244,7 @@
  };
  SMApp$Web_GeneratedPrintf.p$4=function($1)
  {
-  return"Contact "+Utils.prettyPrint($1.$0);
+  return $1.$==1?"Contact "+Utils.prettyPrint($1.$0):"User "+Utils.prettyPrint($1.$0);
  };
  SMApp$Web_GeneratedPrintf.p$1=function($1)
  {
@@ -1218,13 +1256,9 @@
  };
  SMApp$Web_GeneratedPrintf.p=function($1)
  {
-  return $1.$==3?"Programs":$1.$==2?"Onboard":$1.$==1?"Help":"Hello";
+  return $1.$==3?"Program":$1.$==2?"Onboard":$1.$==1?"Help":"Hello";
  };
  SMApp$Web_GeneratedPrintf.p$5=function($1)
- {
-  return"NLUContext "+SMApp$Web_GeneratedPrintf.p$6($1.$0);
- };
- SMApp$Web_GeneratedPrintf.p$6=function($1)
  {
   return"Meaning ("+SMApp$Web_GeneratedPrintf.p($1.$0)+", "+SMApp$Web_GeneratedPrintf.p$1($1.$1)+", "+SMApp$Web_GeneratedPrintf.p$3($1.$2)+")";
  };

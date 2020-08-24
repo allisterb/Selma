@@ -74,7 +74,7 @@ module Server =
                     |> Seq.concat 
                     |> Seq.map (fun e -> Text.Entity(e.Name, e.Confidence, e.Role, e.Value))
                     |> List.ofSeq
-                return Text.Meaning(intents, entities) |> Some
+                return Text.Meaning'(intents, entities) |> Some
             | _ -> debugf "Could not get Wit.ai meaning for input '{0}'." [input]; return None
         }
 

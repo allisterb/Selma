@@ -7,14 +7,15 @@ open WebSharper.JavaScript
 module NLU =
 
     type Intent = 
-    | Hello
-    | Help
-    | Onboard
-    | Programs
+    | Hello 
+    | Help 
+    | Onboard 
+    | Program 
       
-    type Trait = | Greetings
+    and Trait = | Greetings
     
-    type Entity =
+    and Entity =
+    | User of string
     | Contact of string
 
     type Meaning = Meaning of Intent * Trait option * Entity list option with
@@ -23,11 +24,6 @@ module NLU =
         member x.Trait = let i, t, el = x.Unwrap() in t
         member x.Entities = let i, t, el = x.Unwrap() in el
         override x.ToString() = sprintf "Intent: %A. Trait: %A. Entities: %A" x.Intent x.Trait x.Entities
-
-    type NLUContext = NLUContext of Meaning with
-        member x.Unwrap() = match x with NLUContext(m) -> m
-        member x.Meaning = let m = x.Unwrap() in m
-        override x.ToString() = x.Meaning.ToString() 
 
     [<RequireQualifiedAccess>]
     module Voice =
@@ -59,6 +55,11 @@ module NLU =
 
     [<RequireQualifiedAccess>]
     module Text =
+        let (|Blank|_|) =
+            function
+            | "" -> Some()
+            | _ -> None
+
         let (|DebugOn|_|) =
             function
             | "debug on" -> Some ()
@@ -74,7 +75,7 @@ module NLU =
             | "hello"
             | "hey"
             | "yo"
-            | "hi" -> Some Hello
+            | "hi" -> Meaning(Hello, None, None) |> Some
             | _ -> None
 
         let (|QuickHelp|_|) =
@@ -82,18 +83,18 @@ module NLU =
             | "help"
             | "help me"
             | "what's this?"
-            | "huh" -> Some Help
+            | "huh" -> Meaning(Help, None, None) |> Some 
             | _ -> None    
 
         let (|QuickPrograms|_|) =
             function
-            | "programs" -> Some Programs
+            | "programs" -> Meaning(Program, None, None) |> Some
             | _ -> None
 
         [<JavaScript>]
-        type Meaning = Meaning of Intent list * Entity list
+        type Meaning' = Meaning' of Intent list * Entity list
         with 
-            member x.Unwrap = match x with | Meaning(i, e)-> i, e
+            member x.Unwrap = match x with | Meaning'(i, e)-> i, e
             member x.Intents = let (i, e) = x.Unwrap in i
             member x.Entities = let (i, e) = x.Unwrap in e
             member x.TopIntent = x.Intents |> List.sortBy (fun i -> i.Confidence) |> List.head
@@ -118,7 +119,7 @@ module NLU =
 
         let mutable entityConfidenceThreshold = 0.85f
         
-        let (|Intent|_|) (name:string) :Meaning -> (Entity list option) =
+        let (|Intent|_|) (name:string) :Meaning' -> (Entity list option) =
             function
             | m when m.TopIntent.Name = name && m.TopIntent.Confidence > intentConfidenceThreshold  -> 
                     m.Entities 
@@ -128,10 +129,10 @@ module NLU =
         
         let (|Hello|_|) =
             function
-            | Some(Intent "Hello" e) -> Some e
+            | Some(Intent "Hello" []) -> Meaning(Intent.Hello, None, None) |> Some
             | _ -> None
 
         let (|HelloUser|_|) =
             function
-            | Hello (e::[]) when e.Role = "contact" -> Some e
+            | Some(Intent "Hello" [e]) -> let user = e.Name |> User in Meaning(Hello, None, Some [user]) |> Some
             | _ -> None

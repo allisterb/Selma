@@ -30,10 +30,10 @@ module Client =
     let mutable MicState = MicNotInitialized
 
     (* NLU context *)
-    let Context = new List<NLUContext>()
+    let Context = new List<Meaning>()
 
     let updateCtx (m:Meaning) =
-        do Context.Insert(0, NLUContext(m))
+        do Context.Insert(0, m)
         let b = if Context.Count >= 5 then 5 else Context.Count
         Context |> Seq.take b |> List.ofSeq 
 
@@ -95,7 +95,7 @@ module Client =
     let container = SMApp.Bootstrap.Controls.Container
 
     /// Main interpreter
-    let Main = 
+    let Main =             
         let main' (mic:Mic) (command:obj*obj) =
             let i, e = command
             info i
@@ -103,24 +103,27 @@ module Client =
             match e with
             | Voice.Greetings g -> info g
             | _ -> error e
-            
+
         let main (term:Terminal) (command:string)  =
             CUI <- { CUI with Term = term }
             do if CUI.Voice = None then initSpeech()
             do if CUI.Mic = None then initMic main' term 
             match command with
+            (* Quick commands *)
+            | Text.Blank -> say "Tell me what you want me to do or ask me a question."
             | Text.DebugOn -> CUI <- { CUI with DebugMode = true }; say "Debug mode is now on."  
             | Text.DebugOff -> CUI <- { CUI with DebugMode = false }; say "Debug mode is now off." 
             | Text.QuickHello m 
             | Text.QuickHelp m 
-            | Text.QuickPrograms m -> Meaning(m, None, None) |> updateCtx |> Main.update CUI
+            | Text.QuickPrograms m -> m |> updateCtx |> Main.update CUI
             | _->         
                 async {
                     match! Server.GetMeaning command with
-                    | Text.HelloUser u -> say (sprintf "This is the hello intent. The user name is %s." u.Value)
-                    | _ -> term.Echo' "This is the whatever intent"             
+                    | Text.HelloUser m -> m |> updateCtx |> Main.update CUI
+                    | _ -> term.Echo' "Sorry I did not understand what you said."             
                 } |> CUI.Wait
             
+
         let mainOpt =
             Options(
                 Name="Main", 
