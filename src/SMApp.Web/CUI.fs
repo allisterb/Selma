@@ -4,6 +4,21 @@ open System
 
 open WebSharper
 
+open SMApp.JQueryTerminal
+open SMApp.WebSpeech
+open SMApp.Microphone
+
+type MicState = NotInitialized | Connecting | Disconnected | AudioStart | AudioEnd | Error of string | Result of obj*obj
+
+type CUI = {
+    Voice:SpeechSynthesisVoice option
+    Mic: Mic option
+    MicState: MicState 
+    Term: Terminal
+    Debug: bool
+    Caption: bool
+}
+
 [<AutoOpen;JavaScript>]
 module CUI =
     /// Basic user information for app authentication.
@@ -20,6 +35,7 @@ module CUI =
         member x.Voice = let v, i, o = x.Unwrap in v
         member x.Text = let v, i, o = x.Unwrap in i
         member x.Options = let v, i, o = x.Unwrap in o
+    
     
     let rng = Random()
     

@@ -16,19 +16,32 @@ open SMApp.Microphone
 
 [<JavaScript>]
 module Client =
-    let context = new Stack<NLUContext>() // NLU context
-
+    
     (* CUI state *)
-
     let mutable currentVoice:SpeechSynthesisVoice option = None
     let mutable currentMic: Mic option = None
+    let mutable currentMicState: MicState = NotInitialized
     let mutable currentTerm = Unchecked.defaultof<Terminal>
     let mutable currentInterpreter = Unchecked.defaultof<Interpreter>
     let mutable debugMode = false
-    let mutable echo = false
+    let mutable caption = false
     
-    (* Speech functions *)
-    
+    let state () = {
+        Voice = currentVoice
+        Mic = currentMic
+        MicState = currentMicState
+        Term = currentTerm
+        Debug = debugMode
+        Caption = caption
+    }
+
+    (* NLU context *)
+    let mutable context: NLUContext list = []
+
+    let echo = currentTerm.EchoHtml'
+
+    let debugEcho s = if debugMode then currentTerm.EchoHtml' s
+
     let initSpeech() =
         let voices' = Window.SpeechSynthesis.GetVoices()
         do if not(isNull(voices')) then
@@ -44,17 +57,16 @@ module Client =
             error "No speech synthesis voice is available."
             currentTerm.Echo' "No speech synthesis voice is available. Install speech synthesis on this device or computer to use the voice output feature of Selma."
         
-    let initMic m =
+    let initMic m (term:Terminal) =
         currentMic <- Some(new Mic())
         let mic = currentMic.Value
-        let term = currentTerm
-        do mic.onConnecting <- (fun _ -> term.Echo' "Mic connecting...")
-        do mic.onDisconnected <- (fun _ -> term.Echo' "Mic disconnected.")
-        do mic.onAudioStart <- (fun _ -> term.Echo' "Mic audio start...")
-        do mic.onAudioEnd <- (fun _ -> term.Echo' "Mic audio end.")
-        do mic.onError <- (fun s -> term.Echo' (sprintf "Mic error : %s." s))
+        do mic.onConnecting <- (fun _ -> currentMicState<- Connecting; debugEcho "Mic connecting...")
+        do mic.onDisconnected <- (fun _ -> debugEcho "Mic disconnected.")
+        do mic.onAudioStart <- (fun _ -> debugEcho "Mic audio start...")
+        do mic.onAudioEnd <- (fun _ -> debugEcho "Mic audio end.")
+        do mic.onError <- (fun s -> debugEcho (sprintf "Mic error : %s." s))
+        do mic.onReady <- (fun _ -> debugEcho "Mic ready.")
         do mic.onResult <- (fun i e -> m mic (i,e))
-        do mic.onReady <- (fun _ -> term.Echo' "Mic ready.")
         do mic.Connect("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT")
 
     let say text =        
@@ -66,7 +78,7 @@ module Client =
                 u.Voice <- v
                 Window.SpeechSynthesis.Speak(u) 
             } |> Async.Start
-            do if echo then currentTerm.Echo' text
+            do if caption then currentTerm.Echo' text
             
     let sayVoices() =
         let voices' = Window.SpeechSynthesis.GetVoices()
@@ -95,27 +107,25 @@ module Client =
             match e with
             | Voice.Greetings g -> info g
             | _ -> error e
-
+            
         let main (term:Terminal) (command:string)  =
             currentTerm <- term
             do if currentVoice = None then initSpeech()
-            do if currentMic = None then initMic main' 
+            do if currentMic = None then initMic main' term 
             match command with
-            | Text.QuickHello _ -> sayRandom helloPhrases;
-            | Text.QuickHelp -> say "Quick help"
             | Text.DebugOn -> debugMode <- true; say "Debug mode is now on."  
             | Text.DebugOff -> debugMode <- false; say "Debug mode is now off." 
-            | Text.Programs -> 
-                say "The following programs are available:"
-                //availablePrograms |> List.iteri (fun i p -> sprintf "%i. %s" i p |> say)
-            | Text.Phrase -> 
-                do currentTerm.Echo'("please wait")
-                do term.Disable()
+            | Text.QuickHello m 
+            | Text.QuickHelp m -> 
+                
+                Meaning(m, None, None) |> Main.updateCtx (state())
+                sayRandom helloPhrases;
+            | _-> 
+                currentTerm.Echo'("please wait")
                 async {
                     match! Server.GetMeaning command with
                     | Text.HelloUser u -> say (sprintf "This is the hello intent. The user name is %s." u.Value)
                     | _ -> term.Echo' "This is the whatever intent"             
-                    do term.Enable()
                 } |> Async.Start
             
         let mainOpt =
@@ -127,6 +137,6 @@ module Client =
               
         Interpreter(main', (main, mainOpt))
     
-    let CUI() = 
-        Terminal("#main", ThisAction<Terminal, string>(fun term command -> Main.Text term command), Main.Options) |> ignore
+    let CUI() =
+        Terminal("#main", ThisAction<Terminal, string>(fun term command -> Main.Text term command), Main.Options) |> ignore 
         Doc.Empty

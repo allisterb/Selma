@@ -46,5 +46,3 @@ module Site =
             match route with
             | Home -> HomePage ctx
             | About -> AboutPage ctx
-    
-        

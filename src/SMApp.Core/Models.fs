@@ -22,7 +22,9 @@ module Models =
 
     type Patient = {
         Id: Identifier    
-        Sex: Sex option
+        Sex: Sex 
+        Name: Name option
+        BirthDate: DateTime option
         Address: Address option 
     }
 

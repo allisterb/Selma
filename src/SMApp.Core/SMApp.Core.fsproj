@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Identifier.fs" />
+    <Compile Include="Models.fs" />
   </ItemGroup>
 
   <ItemGroup>

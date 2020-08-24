@@ -10,6 +10,7 @@
     <Compile Include="CUI.fs" />
     <Compile Include="Server.fs" />
     <Compile Include="ClientExtensions.fs" />
+    <Compile Include="Main.fs" />
     <Compile Include="Client.fs" />
     <Compile Include="Site.fs" />
     <Compile Include="Startup.fs" />

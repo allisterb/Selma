@@ -14,6 +14,7 @@ module Server =
     
     let private eddi = new EDDIApi()
     let private witai = new WitApi()
+    (*
     let private mongodb =
             let host = Api.Config("MONGODB")
             do if host.IsEmpty() then failwith "Could not retrieve the MongoDB host using configuration key MONGODB"
@@ -21,7 +22,7 @@ module Server =
             let client = new MongoClient(connectionString)
             client.GetDatabase("eddi")
     let private users = mongodb.GetCollection<User>("Users")
-    
+    *)
     //let u = users.FindAsync()
     [<Rpc>]
     let GetUser user = 

@@ -5,7 +5,10 @@ open WebSharper.JavaScript
 
 [<JavaScript;AutoOpen>]
 module NLU =
-    type Intent = | Hello
+    type Intent = 
+    | Hello
+    | Help
+    | Onboard
       
     type Trait = | Greetings
     
@@ -74,7 +77,6 @@ module NLU =
 
         let mutable entityConfidenceThreshold = 0.85f
         
-        
         let (|Intent|_|) (name:string) :Meaning -> (Entity list option) =
             function
             | m when m.TopIntent.Name = name && m.TopIntent.Confidence > intentConfidenceThreshold  -> 
@@ -83,19 +85,31 @@ module NLU =
                     |> Some
             | _ -> None
         
-        /// Quick commands that can be parsed without using the NLU service
-        let (|QuickHello|QuickHelp|DebugOn|DebugOff|Programs|Phrase|) =
+        
+        let (|QuickHello|_|) =
             function
             | "hello"
             | "hey"
             | "yo"
-            | "hi" ->
-                    QuickHello
-            | "help" -> QuickHelp
-            | "debug on" -> DebugOn
-            | "debug off" -> DebugOff
-            | s when s.ToLower() = "programs" -> Programs
-            | _ -> Phrase 
+            | "hi" -> Some Hello
+            | _ -> None
+
+        let (|QuickHelp|_|) =
+            function
+            | "help"
+            | "help me"
+            | "what's this?"
+            | "hugh" -> Some Help
+            | _ -> None
+        let (|DebugOn|_|) =
+            function
+            | "debug on" -> Some ()
+            | _ -> None
+
+        let (|DebugOff|_|) =
+            function
+            | "debug off" -> Some ()
+            | _ -> None
     
         let (|Hello|_|) =
             function
