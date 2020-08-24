@@ -16,7 +16,7 @@ open SMApp.Microphone
 
 [<JavaScript>]
 module Client =
-    
+   
     (* CUI state *)
     let mutable CUI = {
         Voice = None
@@ -25,6 +25,9 @@ module Client =
         Debug = false
         Caption = false
     }
+
+    let echo = CUI.Term.EchoHtml'
+    let debugEcho s = if CUI.Debug then CUI.Term.EchoHtml' s
 
     (* Mic state *)    
     let mutable MicState:MicState = MicNotInitialized
@@ -37,10 +40,7 @@ module Client =
         let b = if context.Length >= 5 then 5 else context.Length
         context |> List.take b
 
-    let echo = CUI.Term.EchoHtml'
-
-    let debugEcho s = if CUI.Debug then CUI.Term.EchoHtml' s
-
+    (* Initialize speech and mic *)
     let initSpeech() =
         let voices' = Window.SpeechSynthesis.GetVoices()
         do if not(isNull(voices')) then
@@ -117,13 +117,12 @@ module Client =
             | Text.QuickHello m 
             | Text.QuickHelp m 
             | Text.QuickPrograms m -> Meaning(m, None, None) |> updateCtx |> Main.update CUI
-            | _-> 
-                CUI.Term.Echo'("please wait")
+            | _->         
                 async {
                     match! Server.GetMeaning command with
                     | Text.HelloUser u -> say (sprintf "This is the hello intent. The user name is %s." u.Value)
                     | _ -> term.Echo' "This is the whatever intent"             
-                } |> Async.Start
+                } |> CUI.Wait
             
         let mainOpt =
             Options(

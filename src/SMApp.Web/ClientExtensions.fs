@@ -18,8 +18,7 @@ module ClientExtensions =
     type Terminal with
         member x.Echo' (text:string) = x.Disable(); x.Echo text; x.Enable()
         member x.EchoHtml' (text:string) = x.Disable(); x.Echo(text, rawOpt) ; x.Enable()
-        member x.Push (i:Interpreter) = x.Push(i.Text, i.Options)
-
+      
     let jserror = JQuery.JQuery.Error 
 
     let info = Console.Info

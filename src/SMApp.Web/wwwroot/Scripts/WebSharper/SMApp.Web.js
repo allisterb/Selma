@@ -1,13 +1,17 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Bootstrap,Controls,SC$1,Web,NLU,Intent,Trait,Meaning,Voice,_Entity,Text,Meaning$1,Intent$1,Entity,SC$2,CUI,CUIModule,User,Interpreter,SC$3,Main,ClientExtensions,_Html,htmModule,SC$4,Client,SC$5,WebSharper,UI,Doc,List,AttrModule,IntelliFactory,Runtime,Concurrency,Seq,Random,Remoting,AjaxRemotingProvider,Arrays,$,console,Strings,Utils,Wit,document,Unchecked;
+ var Global,SMApp,Web,ClientExtensions,_Html,htmModule,SC$1,Bootstrap,Controls,SC$2,NLU,Intent,Trait,Meaning,Voice,_Entity,Text,Meaning$1,Intent$1,Entity,SC$3,CUI,CUIModule,User,Interpreter,SC$4,Main,Client,SC$5,WebSharper,Arrays,$,console,IntelliFactory,Runtime,Strings,List,Seq,UI,Doc,AttrModule,Utils,Concurrency,Random,Remoting,AjaxRemotingProvider,Wit,document,Unchecked;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
+ Web=SMApp.Web=SMApp.Web||{};
+ ClientExtensions=Web.ClientExtensions=Web.ClientExtensions||{};
+ _Html=Web._Html=Web._Html||{};
+ htmModule=Web.htmModule=Web.htmModule||{};
+ SC$1=Global.StartupCode$SMApp_Web$ClientExtensions=Global.StartupCode$SMApp_Web$ClientExtensions||{};
  Bootstrap=SMApp.Bootstrap=SMApp.Bootstrap||{};
  Controls=Bootstrap.Controls=Bootstrap.Controls||{};
- SC$1=Global.StartupCode$SMApp_Web$Bootstrap=Global.StartupCode$SMApp_Web$Bootstrap||{};
- Web=SMApp.Web=SMApp.Web||{};
+ SC$2=Global.StartupCode$SMApp_Web$Bootstrap=Global.StartupCode$SMApp_Web$Bootstrap||{};
  NLU=Web.NLU=Web.NLU||{};
  Intent=NLU.Intent=NLU.Intent||{};
  Trait=NLU.Trait=NLU.Trait||{};
@@ -18,39 +22,433 @@
  Meaning$1=Text.Meaning=Text.Meaning||{};
  Intent$1=Text.Intent=Text.Intent||{};
  Entity=Text.Entity=Text.Entity||{};
- SC$2=Global.StartupCode$SMApp_Web$NLU=Global.StartupCode$SMApp_Web$NLU||{};
+ SC$3=Global.StartupCode$SMApp_Web$NLU=Global.StartupCode$SMApp_Web$NLU||{};
  CUI=Web.CUI=Web.CUI||{};
  CUIModule=Web.CUIModule=Web.CUIModule||{};
  User=CUIModule.User=CUIModule.User||{};
  Interpreter=CUIModule.Interpreter=CUIModule.Interpreter||{};
- SC$3=Global.StartupCode$SMApp_Web$CUI=Global.StartupCode$SMApp_Web$CUI||{};
+ SC$4=Global.StartupCode$SMApp_Web$CUI=Global.StartupCode$SMApp_Web$CUI||{};
  Main=Web.Main=Web.Main||{};
- ClientExtensions=Web.ClientExtensions=Web.ClientExtensions||{};
- _Html=Web._Html=Web._Html||{};
- htmModule=Web.htmModule=Web.htmModule||{};
- SC$4=Global.StartupCode$SMApp_Web$ClientExtensions=Global.StartupCode$SMApp_Web$ClientExtensions||{};
  Client=Web.Client=Web.Client||{};
  SC$5=Global.StartupCode$SMApp_Web$Client=Global.StartupCode$SMApp_Web$Client||{};
  WebSharper=Global.WebSharper;
- UI=WebSharper&&WebSharper.UI;
- Doc=UI&&UI.Doc;
- List=WebSharper&&WebSharper.List;
- AttrModule=UI&&UI.AttrModule;
- IntelliFactory=Global.IntelliFactory;
- Runtime=IntelliFactory&&IntelliFactory.Runtime;
- Concurrency=WebSharper&&WebSharper.Concurrency;
- Seq=WebSharper&&WebSharper.Seq;
- Random=WebSharper&&WebSharper.Random;
- Remoting=WebSharper&&WebSharper.Remoting;
- AjaxRemotingProvider=Remoting&&Remoting.AjaxRemotingProvider;
  Arrays=WebSharper&&WebSharper.Arrays;
  $=Global.jQuery;
  console=Global.console;
+ IntelliFactory=Global.IntelliFactory;
+ Runtime=IntelliFactory&&IntelliFactory.Runtime;
  Strings=WebSharper&&WebSharper.Strings;
+ List=WebSharper&&WebSharper.List;
+ Seq=WebSharper&&WebSharper.Seq;
+ UI=WebSharper&&WebSharper.UI;
+ Doc=UI&&UI.Doc;
+ AttrModule=UI&&UI.AttrModule;
  Utils=WebSharper&&WebSharper.Utils;
+ Concurrency=WebSharper&&WebSharper.Concurrency;
+ Random=WebSharper&&WebSharper.Random;
+ Remoting=WebSharper&&WebSharper.Remoting;
+ AjaxRemotingProvider=Remoting&&Remoting.AjaxRemotingProvider;
  Wit=Global.Wit;
  document=Global.document;
  Unchecked=WebSharper&&WebSharper.Unchecked;
+ ClientExtensions.toArray=function(a)
+ {
+  return Arrays.map(Global.id,$.makeArray(a));
+ };
+ ClientExtensions.error=function(a)
+ {
+  console.error(a);
+ };
+ ClientExtensions.info=function(a)
+ {
+  console.info(a);
+ };
+ ClientExtensions.jserror=function(a)
+ {
+  $.error(a);
+ };
+ ClientExtensions["Terminal.EchoHtml'"]=function(x,text)
+ {
+  x.disable();
+  x.echo(text,ClientExtensions.rawOpt());
+  x.enable();
+ };
+ ClientExtensions["Terminal.Echo'"]=function(x,text)
+ {
+  x.disable();
+  x.echo(text);
+  x.enable();
+ };
+ ClientExtensions.rawOpt=function()
+ {
+  SC$1.$cctor();
+  return SC$1.rawOpt;
+ };
+ _Html=Web._Html=Runtime.Class({
+  toString:function()
+  {
+   return _Html.toString(this);
+  }
+ },null,_Html);
+ _Html.toString=function(elem)
+ {
+  function toString(indent)
+  {
+   return function(elem$1)
+   {
+    var $1,spaces,tag,tag$1,p,elems,attrs;
+    spaces=Strings.replicate(indent," ");
+    switch(elem$1.$==0?elem$1.$1.$==1?elem$1.$1.$0.$==2?elem$1.$1.$1.$==0?($1=[elem$1.$1.$0.$0,elem$1.$0],1):($1=[elem$1.$1,elem$1.$0],2):($1=[elem$1.$1,elem$1.$0],2):($1=[elem$1.$1,elem$1.$0],2):elem$1.$==2?($1=elem$1.$0,3):($1=[elem$1.$0,elem$1.$1],0))
+    {
+     case 0:
+      return $1[0]+"=\""+$1[1]+"\"";
+     case 1:
+      tag=$1[1];
+      return spaces+"<"+tag+">"+$1[0]+"</"+tag+">\r\n";
+     case 2:
+      tag$1=$1[1];
+      p=List.partition(function(a)
+      {
+       return a.$==1;
+      },$1[0]);
+      elems=p[1];
+      attrs=p[0];
+      return elems.$==0?spaces+"<"+tag$1+(attrs.$===0?"":" "+Strings.concat(" ",List.ofSeq(Seq.delay(function()
+      {
+       return Seq.map(function(attr)
+       {
+        return(toString(0))(attr);
+       },attrs);
+      }))))+"/>\r\n":spaces+"<"+tag$1+(attrs.$===0?"":" "+Strings.concat(" ",List.ofSeq(Seq.delay(function()
+      {
+       return Seq.map(function(attr)
+       {
+        return(toString(0))(attr);
+       },attrs);
+      }))))+">\r\n"+Strings.concat("",List.ofSeq(Seq.delay(function()
+      {
+       return Seq.map(function(e)
+       {
+        return(toString(indent+1))(e);
+       },elems);
+      })))+spaces+"</"+tag$1+">\r\n";
+     case 3:
+      return spaces+$1+"\r\n";
+    }
+   };
+  }
+  return(toString(0))(elem);
+ };
+ htmModule.alt=function(c)
+ {
+  return new _Html({
+   $:1,
+   $0:"alt",
+   $1:c
+  });
+ };
+ htmModule.src=function(c)
+ {
+  return new _Html({
+   $:1,
+   $0:"src",
+   $1:c
+  });
+ };
+ htmModule.cls=function(c)
+ {
+  return new _Html({
+   $:1,
+   $0:"class",
+   $1:c
+  });
+ };
+ htmModule.str=function(h)
+ {
+  return _Html.toString(h);
+ };
+ htmModule.op_PercentEquals=function(name,value)
+ {
+  return new _Html({
+   $:1,
+   $0:name,
+   $1:value
+  });
+ };
+ htmModule.op_Splice=function(s)
+ {
+  var c;
+  return List.ofArray([new _Html({
+   $:2,
+   $0:(c=s,Global.String(c))
+  })]);
+ };
+ htmModule.strong=function()
+ {
+  SC$1.$cctor();
+  return SC$1.strong;
+ };
+ htmModule.h4=function()
+ {
+  SC$1.$cctor();
+  return SC$1.h4;
+ };
+ htmModule.h3=function()
+ {
+  SC$1.$cctor();
+  return SC$1.h3;
+ };
+ htmModule.h2=function()
+ {
+  SC$1.$cctor();
+  return SC$1.h2;
+ };
+ htmModule.h1=function()
+ {
+  SC$1.$cctor();
+  return SC$1.h1;
+ };
+ htmModule.li=function()
+ {
+  SC$1.$cctor();
+  return SC$1.li;
+ };
+ htmModule.ul=function()
+ {
+  SC$1.$cctor();
+  return SC$1.ul;
+ };
+ htmModule.th=function()
+ {
+  SC$1.$cctor();
+  return SC$1.th;
+ };
+ htmModule.td=function()
+ {
+  SC$1.$cctor();
+  return SC$1.td;
+ };
+ htmModule.tr=function()
+ {
+  SC$1.$cctor();
+  return SC$1.tr;
+ };
+ htmModule.a=function()
+ {
+  SC$1.$cctor();
+  return SC$1.a;
+ };
+ htmModule.p=function()
+ {
+  SC$1.$cctor();
+  return SC$1.p;
+ };
+ htmModule.area=function()
+ {
+  SC$1.$cctor();
+  return SC$1.area;
+ };
+ htmModule.map=function()
+ {
+  SC$1.$cctor();
+  return SC$1.map;
+ };
+ htmModule.img=function()
+ {
+  SC$1.$cctor();
+  return SC$1.img;
+ };
+ htmModule.tfoot=function()
+ {
+  SC$1.$cctor();
+  return SC$1.tfoot;
+ };
+ htmModule.tbody=function()
+ {
+  SC$1.$cctor();
+  return SC$1.tbody;
+ };
+ htmModule.thead=function()
+ {
+  SC$1.$cctor();
+  return SC$1.thead;
+ };
+ htmModule.table=function()
+ {
+  SC$1.$cctor();
+  return SC$1.table;
+ };
+ htmModule.span=function()
+ {
+  SC$1.$cctor();
+  return SC$1.span;
+ };
+ htmModule.section=function()
+ {
+  SC$1.$cctor();
+  return SC$1.section;
+ };
+ htmModule.br=function()
+ {
+  SC$1.$cctor();
+  return SC$1.br;
+ };
+ htmModule.div=function()
+ {
+  SC$1.$cctor();
+  return SC$1.div;
+ };
+ htmModule.body=function()
+ {
+  SC$1.$cctor();
+  return SC$1.body;
+ };
+ htmModule.style=function()
+ {
+  SC$1.$cctor();
+  return SC$1.style;
+ };
+ htmModule.title=function()
+ {
+  SC$1.$cctor();
+  return SC$1.title;
+ };
+ htmModule.head=function()
+ {
+  SC$1.$cctor();
+  return SC$1.head;
+ };
+ htmModule.html=function()
+ {
+  SC$1.$cctor();
+  return SC$1.html;
+ };
+ htmModule.elem=function(tag,content)
+ {
+  return new _Html({
+   $:0,
+   $0:tag,
+   $1:content
+  });
+ };
+ SC$1.$cctor=function()
+ {
+  var r;
+  SC$1.$cctor=Global.ignore;
+  SC$1.rawOpt=(r={},r.raw=true,r);
+  SC$1.html=function(c)
+  {
+   return htmModule.elem("html",c);
+  };
+  SC$1.head=function(c)
+  {
+   return htmModule.elem("head",c);
+  };
+  SC$1.title=function(c)
+  {
+   return htmModule.elem("title",c);
+  };
+  SC$1.style=function(c)
+  {
+   return htmModule.elem("style",c);
+  };
+  SC$1.body=function(c)
+  {
+   return htmModule.elem("body",c);
+  };
+  SC$1.div=function(c)
+  {
+   return htmModule.elem("div",c);
+  };
+  SC$1.br=function(c)
+  {
+   return htmModule.elem("br",c);
+  };
+  SC$1.section=function(c)
+  {
+   return htmModule.elem("section",c);
+  };
+  SC$1.span=function(c)
+  {
+   return htmModule.elem("span",c);
+  };
+  SC$1.table=function(c)
+  {
+   return htmModule.elem("table",c);
+  };
+  SC$1.thead=function(c)
+  {
+   return htmModule.elem("thead",c);
+  };
+  SC$1.tbody=function(c)
+  {
+   return htmModule.elem("tbody",c);
+  };
+  SC$1.tfoot=function(c)
+  {
+   return htmModule.elem("tfoot",c);
+  };
+  SC$1.img=function(c)
+  {
+   return htmModule.elem("img",c);
+  };
+  SC$1.map=function(c)
+  {
+   return htmModule.elem("map",c);
+  };
+  SC$1.area=function(c)
+  {
+   return htmModule.elem("area",c);
+  };
+  SC$1.p=function(c)
+  {
+   return htmModule.elem("p",c);
+  };
+  SC$1.a=function(c)
+  {
+   return htmModule.elem("a",c);
+  };
+  SC$1.tr=function(c)
+  {
+   return htmModule.elem("tr",c);
+  };
+  SC$1.td=function(c)
+  {
+   return htmModule.elem("td",c);
+  };
+  SC$1.th=function(c)
+  {
+   return htmModule.elem("th",c);
+  };
+  SC$1.ul=function(c)
+  {
+   return htmModule.elem("ul",c);
+  };
+  SC$1.li=function(c)
+  {
+   return htmModule.elem("li",c);
+  };
+  SC$1.h1=function(c)
+  {
+   return htmModule.elem("h1",c);
+  };
+  SC$1.h2=function(c)
+  {
+   return htmModule.elem("h1",c);
+  };
+  SC$1.h3=function(c)
+  {
+   return htmModule.elem("h1",c);
+  };
+  SC$1.h4=function(c)
+  {
+   return htmModule.elem("h1",c);
+  };
+  SC$1.strong=function(c)
+  {
+   return htmModule.elem("strong",c);
+  };
+ };
  Controls.Radio=function(lbl,extras,target,labelExtras,targetExtras)
  {
   return Doc.Element("div",new List.T({
@@ -109,19 +507,19 @@
  };
  Controls.Class=function()
  {
-  SC$1.$cctor();
-  return SC$1.Class;
+  SC$2.$cctor();
+  return SC$2.Class;
  };
  Controls.cls=function()
  {
-  SC$1.$cctor();
-  return SC$1.cls;
+  SC$2.$cctor();
+  return SC$2.cls;
  };
- SC$1.$cctor=function()
+ SC$2.$cctor=function()
  {
-  SC$1.$cctor=Global.ignore;
-  SC$1.cls=AttrModule.Class;
-  SC$1.Class=AttrModule.Class;
+  SC$2.$cctor=Global.ignore;
+  SC$2.cls=AttrModule.Class;
+  SC$2.Class=AttrModule.Class;
  };
  Intent.Programs={
   $:3
@@ -275,23 +673,23 @@
  };
  Text.entityConfidenceThreshold=function()
  {
-  SC$2.$cctor();
-  return SC$2.entityConfidenceThreshold;
+  SC$3.$cctor();
+  return SC$3.entityConfidenceThreshold;
  };
  Text.set_entityConfidenceThreshold=function($1)
  {
-  SC$2.$cctor();
-  SC$2.entityConfidenceThreshold=$1;
+  SC$3.$cctor();
+  SC$3.entityConfidenceThreshold=$1;
  };
  Text.intentConfidenceThreshold=function()
  {
-  SC$2.$cctor();
-  return SC$2.intentConfidenceThreshold;
+  SC$3.$cctor();
+  return SC$3.intentConfidenceThreshold;
  };
  Text.set_intentConfidenceThreshold=function($1)
  {
-  SC$2.$cctor();
-  SC$2.intentConfidenceThreshold=$1;
+  SC$3.$cctor();
+  SC$3.intentConfidenceThreshold=$1;
  };
  Text.QuickPrograms=function(a)
  {
@@ -330,13 +728,51 @@
    $0:null
   }:null;
  };
- SC$2.$cctor=function()
+ SC$3.$cctor=function()
  {
-  SC$2.$cctor=Global.ignore;
-  SC$2.intentConfidenceThreshold=0.85;
-  SC$2.entityConfidenceThreshold=0.85;
+  SC$3.$cctor=Global.ignore;
+  SC$3.intentConfidenceThreshold=0.85;
+  SC$3.entityConfidenceThreshold=0.85;
  };
  CUI=Web.CUI=Runtime.Class({
+  get_StopSpeaking:function()
+  {
+   if(Global.speechSynthesis.speaking||Global.speechSynthesis.pending)
+    Global.speechSynthesis.cancel();
+  },
+  SayVoices:function()
+  {
+   var $this,_voices,voices;
+   $this=this;
+   _voices=Global.speechSynthesis.getVoices();
+   !(_voices==null)?(voices=ClientExtensions.toArray(_voices),$this.Say((function($1)
+   {
+    return function($2)
+    {
+     return $1("There are currently "+Global.String($2)+" voices installed on this computer or device.");
+    };
+   }(Global.id))(Arrays.length(voices))),Arrays.iteri(function(i,v)
+   {
+    return $this.Say(((((Runtime.Curried(function($1,$2,$3,$4)
+    {
+     return $1("Voice "+Global.String($2)+". Name: "+Utils.toSafe($3)+", Local: "+Utils.prettyPrint($4)+".");
+    },4))(Global.id))(i))(v.name))(v.localService));
+   },voices)):void 0;
+  },
+  Wait:function(f)
+  {
+   this.Wait$1(function()
+   {
+    Concurrency.Start(f,null);
+   });
+  },
+  Wait$1:function(f)
+  {
+   this["Echo'"]("please wait");
+   this.Term.disable();
+   f();
+   this.Term.enable();
+  },
   Say:function(text)
   {
    var m,v,b;
@@ -349,6 +785,11 @@
     Global.speechSynthesis.speak(u);
     return Concurrency.Zero();
    })),null),this.Caption?this["Echo'"](text):void 0):this["Echo'"](text);
+  },
+  DebugEcho:function(text)
+  {
+   if(this.Debug)
+    this["EchoHtml'"](text);
   },
   "EchoHtml'":function(text)
   {
@@ -401,13 +842,13 @@
  },null,Interpreter);
  CUIModule.helloUserPhrases=function()
  {
-  SC$3.$cctor();
-  return SC$3.helloUserPhrases;
+  SC$4.$cctor();
+  return SC$4.helloUserPhrases;
  };
  CUIModule.helloPhrases=function()
  {
-  SC$3.$cctor();
-  return SC$3.helloPhrases;
+  SC$4.$cctor();
+  return SC$4.helloPhrases;
  };
  CUIModule.getRandomPhrase=function(phrases)
  {
@@ -415,432 +856,33 @@
  };
  CUIModule.rng=function()
  {
-  SC$3.$cctor();
-  return SC$3.rng;
+  SC$4.$cctor();
+  return SC$4.rng;
  };
- SC$3.$cctor=function()
+ SC$4.$cctor=function()
  {
-  SC$3.$cctor=Global.ignore;
-  SC$3.rng=new Random.New();
-  SC$3.helloPhrases=List.ofArray(["Welcome!","Welcome, my name is Selma.","Welcome to Selma. How can I help?","Hello this is Selma, how can I help?","Hello, I am Selma. How can I help?","Hello, I am Selma. How may I help you now?"]);
-  SC$3.helloUserPhrases=List.ofArray(["Hi $user, welcome back.","Welcome $user, nice to see you again..","Hello $user","Good to see you $user."]);
+  SC$4.$cctor=Global.ignore;
+  SC$4.rng=new Random.New();
+  SC$4.helloPhrases=List.ofArray(["Welcome!","Welcome, my name is Selma.","Welcome to Selma. How can I help?","Hello this is Selma, how can I help?","Hello, I am Selma. How can I help?","Hello, I am Selma. How may I help you now?"]);
+  SC$4.helloUserPhrases=List.ofArray(["Hi $user, welcome back.","Welcome $user, nice to see you again..","Hello $user","Good to see you $user."]);
  };
  Main.update=function(cui,context)
  {
   var b;
   cui.Say("I'm in the Main module.");
-  context.$==1?context.$0.$0.get_Intent().$===3?Concurrency.Start((b=null,Concurrency.Delay(function()
+  context.$==1?context.$0.$0.get_Intent().$===3?cui.Wait((b=null,Concurrency.Delay(function()
   {
-   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetPatients:1355593010",[]),function(a)
+   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetPatients:1596745484",[]),function(a)
    {
-    return a.$==0?(cui.Say("I got the patients"),Concurrency.Zero()):(cui.Say(" I did not"),Concurrency.Zero());
-   });
-  })),null):void 0:void 0;
- };
- ClientExtensions.toArray=function(a)
- {
-  return Arrays.map(Global.id,$.makeArray(a));
- };
- ClientExtensions.error=function(a)
- {
-  console.error(a);
- };
- ClientExtensions.info=function(a)
- {
-  console.info(a);
- };
- ClientExtensions.jserror=function(a)
- {
-  $.error(a);
- };
- ClientExtensions["Terminal.Push"]=function(x,i)
- {
-  var a,b;
-  a=i.get_Text();
-  b=i.get_Options();
-  x.push(Runtime.CreateFuncWithThis(a),b);
- };
- ClientExtensions["Terminal.EchoHtml'"]=function(x,text)
- {
-  x.disable();
-  x.echo(text,ClientExtensions.rawOpt());
-  x.enable();
- };
- ClientExtensions["Terminal.Echo'"]=function(x,text)
- {
-  x.disable();
-  x.echo(text);
-  x.enable();
- };
- ClientExtensions.rawOpt=function()
- {
-  SC$4.$cctor();
-  return SC$4.rawOpt;
- };
- _Html=Web._Html=Runtime.Class({
-  toString:function()
-  {
-   return _Html.toString(this);
-  }
- },null,_Html);
- _Html.toString=function(elem)
- {
-  function toString(indent)
-  {
-   return function(elem$1)
-   {
-    var $1,spaces,tag,tag$1,p,elems,attrs;
-    spaces=Strings.replicate(indent," ");
-    switch(elem$1.$==0?elem$1.$1.$==1?elem$1.$1.$0.$==2?elem$1.$1.$1.$==0?($1=[elem$1.$1.$0.$0,elem$1.$0],1):($1=[elem$1.$1,elem$1.$0],2):($1=[elem$1.$1,elem$1.$0],2):($1=[elem$1.$1,elem$1.$0],2):elem$1.$==2?($1=elem$1.$0,3):($1=[elem$1.$0,elem$1.$1],0))
+    return a.$==1?(cui.Say((function($1)
     {
-     case 0:
-      return $1[0]+"=\""+$1[1]+"\"";
-     case 1:
-      tag=$1[1];
-      return spaces+"<"+tag+">"+$1[0]+"</"+tag+">\r\n";
-     case 2:
-      tag$1=$1[1];
-      p=List.partition(function(a)
-      {
-       return a.$==1;
-      },$1[0]);
-      elems=p[1];
-      attrs=p[0];
-      return elems.$==0?spaces+"<"+tag$1+(attrs.$===0?"":" "+Strings.concat(" ",List.ofSeq(Seq.delay(function()
-      {
-       return Seq.map(function(attr)
-       {
-        return(toString(0))(attr);
-       },attrs);
-      }))))+"/>\r\n":spaces+"<"+tag$1+(attrs.$===0?"":" "+Strings.concat(" ",List.ofSeq(Seq.delay(function()
-      {
-       return Seq.map(function(attr)
-       {
-        return(toString(0))(attr);
-       },attrs);
-      }))))+">\r\n"+Strings.concat("",List.ofSeq(Seq.delay(function()
-      {
-       return Seq.map(function(e)
-       {
-        return(toString(indent+1))(e);
-       },elems);
-      })))+spaces+"</"+tag$1+">\r\n";
-     case 3:
-      return spaces+$1+"\r\n";
-    }
-   };
-  }
-  return(toString(0))(elem);
- };
- htmModule.alt=function(c)
- {
-  return new _Html({
-   $:1,
-   $0:"alt",
-   $1:c
-  });
- };
- htmModule.src=function(c)
- {
-  return new _Html({
-   $:1,
-   $0:"src",
-   $1:c
-  });
- };
- htmModule.cls=function(c)
- {
-  return new _Html({
-   $:1,
-   $0:"class",
-   $1:c
-  });
- };
- htmModule.str=function(h)
- {
-  return _Html.toString(h);
- };
- htmModule.op_PercentEquals=function(name,value)
- {
-  return new _Html({
-   $:1,
-   $0:name,
-   $1:value
-  });
- };
- htmModule.op_Splice=function(s)
- {
-  var c;
-  return List.ofArray([new _Html({
-   $:2,
-   $0:(c=s,Global.String(c))
-  })]);
- };
- htmModule.strong=function()
- {
-  SC$4.$cctor();
-  return SC$4.strong;
- };
- htmModule.h4=function()
- {
-  SC$4.$cctor();
-  return SC$4.h4;
- };
- htmModule.h3=function()
- {
-  SC$4.$cctor();
-  return SC$4.h3;
- };
- htmModule.h2=function()
- {
-  SC$4.$cctor();
-  return SC$4.h2;
- };
- htmModule.h1=function()
- {
-  SC$4.$cctor();
-  return SC$4.h1;
- };
- htmModule.li=function()
- {
-  SC$4.$cctor();
-  return SC$4.li;
- };
- htmModule.ul=function()
- {
-  SC$4.$cctor();
-  return SC$4.ul;
- };
- htmModule.th=function()
- {
-  SC$4.$cctor();
-  return SC$4.th;
- };
- htmModule.td=function()
- {
-  SC$4.$cctor();
-  return SC$4.td;
- };
- htmModule.tr=function()
- {
-  SC$4.$cctor();
-  return SC$4.tr;
- };
- htmModule.a=function()
- {
-  SC$4.$cctor();
-  return SC$4.a;
- };
- htmModule.p=function()
- {
-  SC$4.$cctor();
-  return SC$4.p;
- };
- htmModule.area=function()
- {
-  SC$4.$cctor();
-  return SC$4.area;
- };
- htmModule.map=function()
- {
-  SC$4.$cctor();
-  return SC$4.map;
- };
- htmModule.img=function()
- {
-  SC$4.$cctor();
-  return SC$4.img;
- };
- htmModule.tfoot=function()
- {
-  SC$4.$cctor();
-  return SC$4.tfoot;
- };
- htmModule.tbody=function()
- {
-  SC$4.$cctor();
-  return SC$4.tbody;
- };
- htmModule.thead=function()
- {
-  SC$4.$cctor();
-  return SC$4.thead;
- };
- htmModule.table=function()
- {
-  SC$4.$cctor();
-  return SC$4.table;
- };
- htmModule.span=function()
- {
-  SC$4.$cctor();
-  return SC$4.span;
- };
- htmModule.section=function()
- {
-  SC$4.$cctor();
-  return SC$4.section;
- };
- htmModule.br=function()
- {
-  SC$4.$cctor();
-  return SC$4.br;
- };
- htmModule.div=function()
- {
-  SC$4.$cctor();
-  return SC$4.div;
- };
- htmModule.body=function()
- {
-  SC$4.$cctor();
-  return SC$4.body;
- };
- htmModule.style=function()
- {
-  SC$4.$cctor();
-  return SC$4.style;
- };
- htmModule.title=function()
- {
-  SC$4.$cctor();
-  return SC$4.title;
- };
- htmModule.head=function()
- {
-  SC$4.$cctor();
-  return SC$4.head;
- };
- htmModule.html=function()
- {
-  SC$4.$cctor();
-  return SC$4.html;
- };
- htmModule.elem=function(tag,content)
- {
-  return new _Html({
-   $:0,
-   $0:tag,
-   $1:content
-  });
- };
- SC$4.$cctor=function()
- {
-  var r;
-  SC$4.$cctor=Global.ignore;
-  SC$4.rawOpt=(r={},r.raw=true,r);
-  SC$4.html=function(c)
-  {
-   return htmModule.elem("html",c);
-  };
-  SC$4.head=function(c)
-  {
-   return htmModule.elem("head",c);
-  };
-  SC$4.title=function(c)
-  {
-   return htmModule.elem("title",c);
-  };
-  SC$4.style=function(c)
-  {
-   return htmModule.elem("style",c);
-  };
-  SC$4.body=function(c)
-  {
-   return htmModule.elem("body",c);
-  };
-  SC$4.div=function(c)
-  {
-   return htmModule.elem("div",c);
-  };
-  SC$4.br=function(c)
-  {
-   return htmModule.elem("br",c);
-  };
-  SC$4.section=function(c)
-  {
-   return htmModule.elem("section",c);
-  };
-  SC$4.span=function(c)
-  {
-   return htmModule.elem("span",c);
-  };
-  SC$4.table=function(c)
-  {
-   return htmModule.elem("table",c);
-  };
-  SC$4.thead=function(c)
-  {
-   return htmModule.elem("thead",c);
-  };
-  SC$4.tbody=function(c)
-  {
-   return htmModule.elem("tbody",c);
-  };
-  SC$4.tfoot=function(c)
-  {
-   return htmModule.elem("tfoot",c);
-  };
-  SC$4.img=function(c)
-  {
-   return htmModule.elem("img",c);
-  };
-  SC$4.map=function(c)
-  {
-   return htmModule.elem("map",c);
-  };
-  SC$4.area=function(c)
-  {
-   return htmModule.elem("area",c);
-  };
-  SC$4.p=function(c)
-  {
-   return htmModule.elem("p",c);
-  };
-  SC$4.a=function(c)
-  {
-   return htmModule.elem("a",c);
-  };
-  SC$4.tr=function(c)
-  {
-   return htmModule.elem("tr",c);
-  };
-  SC$4.td=function(c)
-  {
-   return htmModule.elem("td",c);
-  };
-  SC$4.th=function(c)
-  {
-   return htmModule.elem("th",c);
-  };
-  SC$4.ul=function(c)
-  {
-   return htmModule.elem("ul",c);
-  };
-  SC$4.li=function(c)
-  {
-   return htmModule.elem("li",c);
-  };
-  SC$4.h1=function(c)
-  {
-   return htmModule.elem("h1",c);
-  };
-  SC$4.h2=function(c)
-  {
-   return htmModule.elem("h1",c);
-  };
-  SC$4.h3=function(c)
-  {
-   return htmModule.elem("h1",c);
-  };
-  SC$4.h4=function(c)
-  {
-   return htmModule.elem("h1",c);
-  };
-  SC$4.strong=function(c)
-  {
-   return htmModule.elem("strong",c);
-  };
+     return function($2)
+     {
+      return $1("I did not get the patients. Error "+Utils.toSafe($2));
+     };
+    }(Global.id))(a.$0)),Concurrency.Zero()):(cui.Say("I got the patients"),Concurrency.Zero());
+   });
+  }))):void 0:void 0;
  };
  Client.run=function()
  {
@@ -992,16 +1034,6 @@
   }(Global.id))(Client.CUI().Voice.$0.name))):void 0):void 0;
   Unchecked.Equals(Client.CUI().Voice,null)?(ClientExtensions.error("No speech synthesis voice is available."),ClientExtensions["Terminal.Echo'"](Client.CUI().Term,"No speech synthesis voice is available. Install speech synthesis on this device or computer to use the voice output feature of Selma.")):void 0;
  };
- Client.debugEcho=function(s)
- {
-  if(Client.CUI().Debug)
-   ClientExtensions["Terminal.EchoHtml'"](Client.CUI().Term,s);
- };
- Client.echo=function()
- {
-  SC$5.$cctor();
-  return SC$5.echo;
- };
  Client.updateCtx=function(m)
  {
   Client.set_context(List.append(List.ofArray([{
@@ -1029,6 +1061,16 @@
  {
   SC$5.$cctor();
   SC$5.MicState=$1;
+ };
+ Client.debugEcho=function(s)
+ {
+  if(Client.CUI().Debug)
+   ClientExtensions["Terminal.EchoHtml'"](Client.CUI().Term,s);
+ };
+ Client.echo=function()
+ {
+  SC$5.$cctor();
+  return SC$5.echo;
  };
  Client.CUI=function()
  {
@@ -1064,9 +1106,9 @@
     $0:$3,
     $1:null,
     $2:null
-   })),Main.update(Client.CUI(),c)):(ClientExtensions["Terminal.Echo'"](Client.CUI().Term,"please wait"),Concurrency.Start((b=null,Concurrency.Delay(function()
+   })),Main.update(Client.CUI(),c)):Client.CUI().Wait((b=null,Concurrency.Delay(function()
    {
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:1075237027",[command]),function(a$3)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:976018238",[command]),function(a$3)
     {
      var a$4;
      a$4=Text.HelloUser(a$3);
@@ -1078,17 +1120,17 @@
       };
      }(Global.id))(a$4.$0.get_Value())),Concurrency.Zero()):(ClientExtensions["Terminal.Echo'"](term,"This is the whatever intent"),Concurrency.Zero());
     });
-   })),null));
+   })));
   }
   SC$5.CUI=CUI.New(null,null,null,false,false);
-  SC$5.MicState={
-   $:0
-  };
-  SC$5.context=List.T.Empty;
   SC$5.echo=(o=Client.CUI().Term,function(a)
   {
    ClientExtensions["Terminal.EchoHtml'"](o,a);
   });
+  SC$5.MicState={
+   $:0
+  };
+  SC$5.context=List.T.Empty;
   SC$5.stopSpeaking=Global.speechSynthesis.speaking||Global.speechSynthesis.pending?Global.speechSynthesis.cancel():null;
   SC$5.container=Controls.Container;
   SC$5.Main=new Interpreter({

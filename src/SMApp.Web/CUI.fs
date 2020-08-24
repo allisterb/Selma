@@ -23,7 +23,7 @@ with
     member x.EchoHtml' (text:string) = 
         let rawOpt = EchoOptions(Raw=true)
         x.Term.Disable(); x.Term.Echo(text, rawOpt) ; x.Term.Enable()
-    
+    member x.DebugEcho text = if x.Debug then x.EchoHtml' text
     member x.Say text = 
         match x.Voice with
         | None -> x.Echo' text
@@ -33,8 +33,21 @@ with
                 u.Voice <- v
                 Window.SpeechSynthesis.Speak(u) 
             } |> Async.Start
-            do if x.Caption then x.Echo' text
+            do if x.Caption then x.Echo' text    
+    member x.Wait (f:unit -> unit) =
+        do 
+            x.Echo'("please wait")
+            x.Term.Disable();f();x.Term.Enable()
+    member x.Wait(f:Async<unit>) = x.Wait(fun _ -> f |> Async.Start)
+    
+    member x.SayVoices() =
+        let voices' = Window.SpeechSynthesis.GetVoices()
+        do if not(isNull(voices')) then
+            let voices = voices' |> toArray    
+            sprintf "There are currently %i voices installed on this computer or device." voices.Length |> x.Say
+            voices |> Array.iteri (fun i v -> sprintf "Voice %i. Name: %s, Local: %A." i v.Name v.LocalService |> x.Say)
 
+    member x.StopSpeaking = if Window.SpeechSynthesis.Speaking || Window.SpeechSynthesis.Pending then Window.SpeechSynthesis.Cancel()
 
 [<AutoOpen;JavaScript>]
 module CUI =
