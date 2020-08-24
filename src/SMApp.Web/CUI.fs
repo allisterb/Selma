@@ -14,7 +14,6 @@ type MicState = MicNotInitialized | MicConnecting | MicDisconnected | MicAudioSt
 type CUI = {
     Voice:SpeechSynthesisVoice option
     Mic: Mic option
-    MicState: MicState 
     Term: Terminal
     Debug: bool
     Caption: bool

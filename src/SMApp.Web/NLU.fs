@@ -10,14 +10,18 @@ module NLU =
     | Hello
     | Help
     | Onboard
-    | Patient
+    | Programs
       
     type Trait = | Greetings
     
     type Entity =
     | Contact of string
 
-    type Meaning = Meaning of Intent * Trait option * Entity list option
+    type Meaning = Meaning of Intent * Trait option * Entity list option with
+        member x.Unwrap() = match x with Meaning(i, t, el) -> i, t, el
+        member x.Intent = let i, t, el = x.Unwrap() in i
+        member x.Trait = let i, t, el = x.Unwrap() in t
+        member x.Entities = let i, t, el = x.Unwrap() in el
 
     type NLUContext = NLUContext of Meaning
 
@@ -51,6 +55,37 @@ module NLU =
 
     [<RequireQualifiedAccess>]
     module Text =
+        let (|DebugOn|_|) =
+            function
+            | "debug on" -> Some ()
+            | _ -> None
+
+        let (|DebugOff|_|) =
+            function
+            | "debug off" -> Some ()
+            | _ -> None
+
+        let (|QuickHello|_|) =
+            function
+            | "hello"
+            | "hey"
+            | "yo"
+            | "hi" -> Some Hello
+            | _ -> None
+
+        let (|QuickHelp|_|) =
+            function
+            | "help"
+            | "help me"
+            | "what's this?"
+            | "huh" -> Some Help
+            | _ -> None    
+
+        let (|QuickPrograms|_|) =
+            function
+            | "programs" -> Some Programs
+            | _ -> None
+
         [<JavaScript>]
         type Meaning = Meaning of Intent list * Entity list
         with 
@@ -87,33 +122,6 @@ module NLU =
                     |> Some
             | _ -> None
         
-        
-        let (|QuickHello|_|) =
-            function
-            | "hello"
-            | "hey"
-            | "yo"
-            | "hi" -> Some Hello
-            | _ -> None
-
-        let (|QuickHelp|_|) =
-            function
-            | "help"
-            | "help me"
-            | "what's this?"
-            | "huh" -> Some Help
-            | _ -> None
-        
-        let (|DebugOn|_|) =
-            function
-            | "debug on" -> Some ()
-            | _ -> None
-
-        let (|DebugOff|_|) =
-            function
-            | "debug off" -> Some ()
-            | _ -> None
-    
         let (|Hello|_|) =
             function
             | Some(Intent "Hello" e) -> Some e
@@ -121,5 +129,5 @@ module NLU =
 
         let (|HelloUser|_|) =
             function
-            | Hello (e::[]) when  e.Role = "contact" -> Some e
+            | Hello (e::[]) when e.Role = "contact" -> Some e
             | _ -> None

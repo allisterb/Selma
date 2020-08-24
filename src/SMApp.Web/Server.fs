@@ -33,23 +33,24 @@ module Server =
         |> Sql.formatConnectionString
         |> Sql.connect
 
-    let private users = mongodb.GetDatabase("eddi").GetCollection<User>("Users")
+    //let private users = mongodb.GetDatabase("eddi").GetCollection<User>("Users")
 
     //infof "Got {0} users. " [users.CountDocuments(FilterDefinitionBuilder().Empty)]
     
     [<Rpc>]
-    let GetPatients() : Result<Patient list, exn> =       
+    let GetPatients() : Async<Result<Patient list, string>> = 
         pgdb
         |> Sql.query "SELECT * FROM Patient"
-        |> Sql.execute (fun read ->
+        |> Sql.executeAsync (fun read ->
         {
             Id =  read.string("Id") |> Models.String
             Sex = Male
             Name = None
             BirthDate = None
             Address = None
-        })
-        
+        }) 
+        |> Async.map(function | Ok r -> Ok r | Error exn -> Error(exn.Message))
+         
 
         
     (*

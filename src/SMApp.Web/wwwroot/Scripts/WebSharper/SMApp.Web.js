@@ -1,7 +1,7 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Bootstrap,Controls,SC$1,Web,NLU,Intent,Trait,Voice,_Entity,Text,Meaning,Intent$1,Entity,SC$2,CUI,CUIModule,User,Interpreter,SC$3,Main,ClientExtensions,_Html,htmModule,SC$4,Client,SC$5,WebSharper,UI,Doc,List,AttrModule,IntelliFactory,Runtime,Concurrency,Seq,Random,Arrays,$,console,Strings,Utils,Wit,document,Unchecked,Remoting,AjaxRemotingProvider;
+ var Global,SMApp,Bootstrap,Controls,SC$1,Web,NLU,Intent,Trait,Meaning,Voice,_Entity,Text,Meaning$1,Intent$1,Entity,SC$2,CUI,CUIModule,User,Interpreter,SC$3,Main,ClientExtensions,_Html,htmModule,SC$4,Client,SC$5,WebSharper,UI,Doc,List,AttrModule,IntelliFactory,Runtime,Concurrency,Seq,Random,Remoting,AjaxRemotingProvider,Arrays,$,console,Strings,Utils,Wit,document,Unchecked;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Bootstrap=SMApp.Bootstrap=SMApp.Bootstrap||{};
@@ -11,10 +11,11 @@
  NLU=Web.NLU=Web.NLU||{};
  Intent=NLU.Intent=NLU.Intent||{};
  Trait=NLU.Trait=NLU.Trait||{};
+ Meaning=NLU.Meaning=NLU.Meaning||{};
  Voice=NLU.Voice=NLU.Voice||{};
  _Entity=Voice["Entity'"]=Voice["Entity'"]||{};
  Text=NLU.Text=NLU.Text||{};
- Meaning=Text.Meaning=Text.Meaning||{};
+ Meaning$1=Text.Meaning=Text.Meaning||{};
  Intent$1=Text.Intent=Text.Intent||{};
  Entity=Text.Entity=Text.Entity||{};
  SC$2=Global.StartupCode$SMApp_Web$NLU=Global.StartupCode$SMApp_Web$NLU||{};
@@ -40,6 +41,8 @@
  Concurrency=WebSharper&&WebSharper.Concurrency;
  Seq=WebSharper&&WebSharper.Seq;
  Random=WebSharper&&WebSharper.Random;
+ Remoting=WebSharper&&WebSharper.Remoting;
+ AjaxRemotingProvider=Remoting&&Remoting.AjaxRemotingProvider;
  Arrays=WebSharper&&WebSharper.Arrays;
  $=Global.jQuery;
  console=Global.console;
@@ -48,8 +51,6 @@
  Wit=Global.Wit;
  document=Global.document;
  Unchecked=WebSharper&&WebSharper.Unchecked;
- Remoting=WebSharper&&WebSharper.Remoting;
- AjaxRemotingProvider=Remoting&&Remoting.AjaxRemotingProvider;
  Controls.Radio=function(lbl,extras,target,labelExtras,targetExtras)
  {
   return Doc.Element("div",new List.T({
@@ -122,7 +123,7 @@
   SC$1.cls=AttrModule.Class;
   SC$1.Class=AttrModule.Class;
  };
- Intent.Patient={
+ Intent.Programs={
   $:3
  };
  Intent.Onboard={
@@ -137,6 +138,24 @@
  Trait.Greetings={
   $:0
  };
+ Meaning=NLU.Meaning=Runtime.Class({
+  get_Entities:function()
+  {
+   return(this.Unwrap())[2];
+  },
+  get_Trait:function()
+  {
+   return(this.Unwrap())[1];
+  },
+  get_Intent:function()
+  {
+   return(this.Unwrap())[0];
+  },
+  Unwrap:function()
+  {
+   return[this.$0,this.$1,this.$2];
+  }
+ },null,Meaning);
  _Entity.New=function(body,end,start,suggested,value)
  {
   return{
@@ -171,7 +190,7 @@
    $0:Intent.Hello
   }:null;
  };
- Meaning=Text.Meaning=Runtime.Class({
+ Meaning$1=Text.Meaning=Runtime.Class({
   get_TopIntent:function()
   {
    return List.head(List.sortBy(function(i)
@@ -191,7 +210,7 @@
   {
    return[this.$0,this.$1];
   }
- },null,Meaning);
+ },null,Meaning$1);
  Intent$1=Text.Intent=Runtime.Class({
   get_Confidence:function()
   {
@@ -244,36 +263,6 @@
    $0:$1
   }:null;
  };
- Text.DebugOff=function(a)
- {
-  return a==="debug off"?{
-   $:1,
-   $0:null
-  }:null;
- };
- Text.DebugOn=function(a)
- {
-  return a==="debug on"?{
-   $:1,
-   $0:null
-  }:null;
- };
- Text.QuickHelp=function(a)
- {
-  var $1;
-  return a==="help"||(a==="help me"||(a==="what's this?"||a==="huh"))?{
-   $:1,
-   $0:Intent.Help
-  }:null;
- };
- Text.QuickHello=function(a)
- {
-  var $1;
-  return a==="hello"||(a==="hey"||(a==="yo"||a==="hi"))?{
-   $:1,
-   $0:Intent.Hello
-  }:null;
- };
  Text.Intent$1=function(name,a)
  {
   return a.get_TopIntent().get_Name()===name&&a.get_TopIntent().get_Confidence()>Text.intentConfidenceThreshold()?{
@@ -303,6 +292,43 @@
  {
   SC$2.$cctor();
   SC$2.intentConfidenceThreshold=$1;
+ };
+ Text.QuickPrograms=function(a)
+ {
+  return a==="programs"?{
+   $:1,
+   $0:Intent.Programs
+  }:null;
+ };
+ Text.QuickHelp=function(a)
+ {
+  var $1;
+  return a==="help"||(a==="help me"||(a==="what's this?"||a==="huh"))?{
+   $:1,
+   $0:Intent.Help
+  }:null;
+ };
+ Text.QuickHello=function(a)
+ {
+  var $1;
+  return a==="hello"||(a==="hey"||(a==="yo"||a==="hi"))?{
+   $:1,
+   $0:Intent.Hello
+  }:null;
+ };
+ Text.DebugOff=function(a)
+ {
+  return a==="debug off"?{
+   $:1,
+   $0:null
+  }:null;
+ };
+ Text.DebugOn=function(a)
+ {
+  return a==="debug on"?{
+   $:1,
+   $0:null
+  }:null;
  };
  SC$2.$cctor=function()
  {
@@ -339,12 +365,11 @@
    this.Term.enable();
   }
  },null,CUI);
- CUI.New=function(Voice$1,Mic,MicState,Term,Debug,Caption)
+ CUI.New=function(Voice$1,Mic,Term,Debug,Caption)
  {
   return new CUI({
    Voice:Voice$1,
    Mic:Mic,
-   MicState:MicState,
    Term:Term,
    Debug:Debug,
    Caption:Caption
@@ -402,7 +427,15 @@
  };
  Main.update=function(cui,context)
  {
+  var b;
   cui.Say("I'm in the Main module.");
+  context.$==1?context.$0.$0.get_Intent().$===3?Concurrency.Start((b=null,Concurrency.Delay(function()
+  {
+   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetPatients:1355593010",[]),function(a)
+   {
+    return a.$==0?(cui.Say("I got the patients"),Concurrency.Zero()):(cui.Say(" I did not"),Concurrency.Zero());
+   });
+  })),null):void 0:void 0;
  };
  ClientExtensions.toArray=function(a)
  {
@@ -883,13 +916,13 @@
   Client.set_CUI((M={
    $:1,
    $0:new Wit.Microphone(document.getElementById("microphone"))
-  },CUI.New(Client.CUI().Voice,M,Client.CUI().MicState,Client.CUI().Term,Client.CUI().Debug,Client.CUI().Caption)));
+  },CUI.New(Client.CUI().Voice,M,Client.CUI().Term,Client.CUI().Debug,Client.CUI().Caption)));
   mic=Client.CUI().Mic.$0;
   mic.onconnecting=function()
   {
-   Client.set_CUI(CUI.New(Client.CUI().Voice,Client.CUI().Mic,{
+   Client.set_MicState({
     $:1
-   },Client.CUI().Term,Client.CUI().Debug,Client.CUI().Caption));
+   });
    return Client.debugEcho("Mic connecting...");
   };
   mic.ondisconnected=function()
@@ -935,7 +968,7 @@
      Client.set_CUI(CUI.New({
       $:1,
       $0:v
-     },Client.CUI().Mic,Client.CUI().MicState,Client.CUI().Term,Client.CUI().Debug,Client.CUI().Caption));
+     },Client.CUI().Mic,Client.CUI().Term,Client.CUI().Debug,Client.CUI().Caption));
      ClientExtensions.info((function($1)
      {
       return function($2)
@@ -950,7 +983,7 @@
    {
     return v["default"];
    },voices)
-  },Client.CUI().Mic,Client.CUI().MicState,Client.CUI().Term,Client.CUI().Debug,Client.CUI().Caption)),ClientExtensions.info((function($1)
+  },Client.CUI().Mic,Client.CUI().Term,Client.CUI().Debug,Client.CUI().Caption)),ClientExtensions.info((function($1)
   {
    return function($2)
    {
@@ -969,7 +1002,7 @@
   SC$5.$cctor();
   return SC$5.echo;
  };
- Client.update=function(m)
+ Client.updateCtx=function(m)
  {
   Client.set_context(List.append(List.ofArray([{
    $:0,
@@ -986,6 +1019,16 @@
  {
   SC$5.$cctor();
   SC$5.context=$1;
+ };
+ Client.MicState=function()
+ {
+  SC$5.$cctor();
+  return SC$5.MicState;
+ };
+ Client.set_MicState=function($1)
+ {
+  SC$5.$cctor();
+  SC$5.MicState=$1;
  };
  Client.CUI=function()
  {
@@ -1012,34 +1055,35 @@
   }
   function main(term,command)
   {
-   var $1,$2,$3,a,a$1,c,b;
-   Client.set_CUI(CUI.New(Client.CUI().Voice,Client.CUI().Mic,Client.CUI().MicState,term,Client.CUI().Debug,Client.CUI().Caption));
+   var $1,$2,$3,a,a$1,a$2,c,b;
+   Client.set_CUI(CUI.New(Client.CUI().Voice,Client.CUI().Mic,term,Client.CUI().Debug,Client.CUI().Caption));
    Unchecked.Equals(Client.CUI().Voice,null)?Client.initSpeech():void 0;
    Unchecked.Equals(Client.CUI().Mic,null)?Client.initMic(_main,term):void 0;
-   return($1=Text.DebugOn(command),$1!=null&&$1.$==1)?(Client.set_CUI(CUI.New(Client.CUI().Voice,Client.CUI().Mic,Client.CUI().MicState,Client.CUI().Term,true,Client.CUI().Caption)),Client.say("Debug mode is now on.")):($2=Text.DebugOff(command),$2!=null&&$2.$==1)?(Client.set_CUI(CUI.New(Client.CUI().Voice,Client.CUI().Mic,Client.CUI().MicState,Client.CUI().Term,false,Client.CUI().Caption)),Client.say("Debug mode is now off.")):(a=Text.QuickHello(command),a!=null&&a.$==1?($3=a.$0,true):(a$1=Text.QuickHelp(command),a$1!=null&&a$1.$==1&&($3=a$1.$0,true)))?($("#microphone").hide(),c=Client.update({
+   return($1=Text.DebugOn(command),$1!=null&&$1.$==1)?(Client.set_CUI(CUI.New(Client.CUI().Voice,Client.CUI().Mic,Client.CUI().Term,true,Client.CUI().Caption)),Client.say("Debug mode is now on.")):($2=Text.DebugOff(command),$2!=null&&$2.$==1)?(Client.set_CUI(CUI.New(Client.CUI().Voice,Client.CUI().Mic,Client.CUI().Term,false,Client.CUI().Caption)),Client.say("Debug mode is now off.")):(a=Text.QuickHello(command),a!=null&&a.$==1?($3=a.$0,true):(a$1=Text.QuickHelp(command),a$1!=null&&a$1.$==1?($3=a$1.$0,true):(a$2=Text.QuickPrograms(command),a$2!=null&&a$2.$==1&&($3=a$2.$0,true))))?(c=Client.updateCtx(new Meaning({
     $:0,
     $0:$3,
     $1:null,
     $2:null
-   }),Main.update(Client.CUI(),c),$("#microphone").show(),Client.sayRandom(CUIModule.helloPhrases())):(ClientExtensions["Terminal.Echo'"](Client.CUI().Term,"please wait"),Concurrency.Start((b=null,Concurrency.Delay(function()
+   })),Main.update(Client.CUI(),c)):(ClientExtensions["Terminal.Echo'"](Client.CUI().Term,"please wait"),Concurrency.Start((b=null,Concurrency.Delay(function()
    {
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-357839468",[command]),function(a$2)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:1075237027",[command]),function(a$3)
     {
-     var a$3;
-     a$3=Text.HelloUser(a$2);
-     return a$3!=null&&a$3.$==1?(Client.say((function($4)
+     var a$4;
+     a$4=Text.HelloUser(a$3);
+     return a$4!=null&&a$4.$==1?(Client.say((function($4)
      {
       return function($5)
       {
        return $4("This is the hello intent. The user name is "+Utils.toSafe($5)+".");
       };
-     }(Global.id))(a$3.$0.get_Value())),Concurrency.Zero()):(ClientExtensions["Terminal.Echo'"](term,"This is the whatever intent"),Concurrency.Zero());
+     }(Global.id))(a$4.$0.get_Value())),Concurrency.Zero()):(ClientExtensions["Terminal.Echo'"](term,"This is the whatever intent"),Concurrency.Zero());
     });
    })),null));
   }
-  SC$5.CUI=CUI.New(null,null,{
+  SC$5.CUI=CUI.New(null,null,null,false,false);
+  SC$5.MicState={
    $:0
-  },null,false,false);
+  };
   SC$5.context=List.T.Empty;
   SC$5.echo=(o=Client.CUI().Term,function(a)
   {

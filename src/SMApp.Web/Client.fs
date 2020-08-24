@@ -21,16 +21,18 @@ module Client =
     let mutable CUI = {
         Voice = None
         Mic = None
-        MicState = MicNotInitialized
         Term = Unchecked.defaultof<Terminal>
         Debug = false
         Caption = false
     }
-        
+
+    (* Mic state *)    
+    let mutable MicState:MicState = MicNotInitialized
+
     (* NLU context *)
     let mutable context: NLUContext list = []
 
-    let update (m:Meaning) =
+    let updateCtx (m:Meaning) =
         context <- ([NLUContext m] @ context)
         let b = if context.Length >= 5 then 5 else context.Length
         context |> List.take b
@@ -57,7 +59,7 @@ module Client =
     let initMic m (term:Terminal) =
         CUI <- { CUI with Mic = Some(new Mic()) }
         let mic = CUI.Mic.Value
-        do mic.onConnecting <- (fun _ -> CUI <- { CUI with MicState = MicConnecting }; debugEcho "Mic connecting...")
+        do mic.onConnecting <- (fun _ -> MicState <- MicConnecting; debugEcho "Mic connecting...")
         do mic.onDisconnected <- (fun _ -> debugEcho "Mic disconnected.")
         do mic.onAudioStart <- (fun _ -> debugEcho "Mic audio start...")
         do mic.onAudioEnd <- (fun _ -> debugEcho "Mic audio end.")
@@ -113,11 +115,8 @@ module Client =
             | Text.DebugOn -> CUI <- { CUI with Debug = true }; say "Debug mode is now on."  
             | Text.DebugOff -> CUI <- { CUI with Debug = false }; say "Debug mode is now off." 
             | Text.QuickHello m 
-            | Text.QuickHelp m ->
-                JQuery.JQuery.Of("#microphone").Hide() |> ignore
-                Meaning(m, None, None) |> update |> Main.update CUI
-                JQuery.JQuery.Of("#microphone").Show() |> ignore
-                sayRandom helloPhrases;
+            | Text.QuickHelp m 
+            | Text.QuickPrograms m -> Meaning(m, None, None) |> updateCtx |> Main.update CUI
             | _-> 
                 CUI.Term.Echo'("please wait")
                 async {
