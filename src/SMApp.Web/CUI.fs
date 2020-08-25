@@ -25,7 +25,7 @@ with
         let rawOpt = EchoOptions(Raw=true)
         x.Term.Disable(); x.Term.Echo(text, rawOpt); x.Term.Enable()
     
-    member x.Debug text = debug text; if x.DebugMode then x.EchoHtml' text
+    member x.Debug m = debug m; if x.DebugMode then x.EchoHtml' m
     
     member x.Say text = 
         match x.Voice with

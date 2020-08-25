@@ -25,7 +25,10 @@ module Client =
         Caption = false
     }
     let echo = CUI.Term.EchoHtml'
-    let debugEcho s = if CUI.DebugMode then CUI.Term.EchoHtml' s
+    let debug m = 
+        let text' = sprintf "Client: %A" m in
+        ClientExtensions.debug text'
+        if CUI.DebugMode then echo text'
     
     let mutable MicState = MicNotInitialized
 
@@ -44,11 +47,11 @@ module Client =
             let voices = voices' |> toArray
             do voices |> Array.iter(fun v-> 
                 if CUI.Voice = None && (v.Name.Contains "Microsoft Zira" || v.Name.ToLower().Contains "female") then
-                    CUI <- { CUI with Voice = Some v }; CUI.Debug <| sprintf "Using voice %s." CUI.Voice.Value.Name
+                    CUI <- { CUI with Voice = Some v }; debug <| sprintf "Using voice %s." CUI.Voice.Value.Name
                 )
             do if CUI.Voice = None && voices.Length > 0 then
                 let v = voices |> Array.find (fun v -> v.Default) in 
-                CUI <- { CUI with Voice = Some v }; CUI.Debug <| sprintf "Using default voice %s." CUI.Voice.Value.Name 
+                CUI <- { CUI with Voice = Some v }; debug <| sprintf "Using default voice %s." CUI.Voice.Value.Name 
         if CUI.Voice = None then 
             error "No speech synthesis voice is available."
             CUI.Term.Echo' "No speech synthesis voice is available. Install speech synthesis on this device or computer to use the voice output feature of Selma."
@@ -56,12 +59,12 @@ module Client =
     let initMic m =
         CUI <- { CUI with Mic = Some(new Mic()) }
         let mic = CUI.Mic.Value
-        do mic.onConnecting <- (fun _ -> MicState <- MicConnecting; debugEcho "Mic connecting...")
-        do mic.onDisconnected <- (fun _ -> MicState <- MicDisconnected;debugEcho "Mic disconnected.")
-        do mic.onAudioStart <- (fun _ -> MicState <- MicAudioStart;debugEcho "Mic audio start...")
-        do mic.onAudioEnd <- (fun _ -> MicState <- MicAudioEnd;debugEcho "Mic audio end.")
-        do mic.onError <- (fun s -> MicState <- MicError s; debugEcho (sprintf "Mic error : %s." s))
-        do mic.onReady <- (fun _ -> MicState <- MicReady; debugEcho "Mic ready.")
+        do mic.onConnecting <- (fun _ -> MicState <- MicConnecting; debug "Mic connecting...")
+        do mic.onDisconnected <- (fun _ -> MicState <- MicDisconnected;debug "Mic disconnected.")
+        do mic.onAudioStart <- (fun _ -> MicState <- MicAudioStart;debug "Mic audio start...")
+        do mic.onAudioEnd <- (fun _ -> MicState <- MicAudioEnd;debug "Mic audio end.")
+        do mic.onError <- (fun s -> MicState <- MicError s; debug (sprintf "Mic error : %s." s))
+        do mic.onReady <- (fun _ -> MicState <- MicReady; debug "Mic ready.")
         do mic.onResult <- (fun i e -> MicState <- MicResult(i,e); m mic (i,e))
         do mic.Connect("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT")
 
@@ -112,7 +115,7 @@ module Client =
                 | _ -> None
             match intent with
             | Some i -> 
-                debug i
+                debug <| sprintf "Voice: %A" i
                 Meaning(i, _trait, entity) |> updateCtx |> Main.update CUI
             | None -> ()
             
@@ -128,13 +131,13 @@ module Client =
             | Text.QuickHello m 
             | Text.QuickHelp m 
             | Text.QuickPrograms m -> 
-                debug m
+                debug <| sprintf "Text: %A" m
                 m |> updateCtx |> Main.update CUI
             | _->         
                 async {
                     match! Server.GetMeaning command with
                     | Some m -> 
-                        debug m
+                        debug <| sprintf "VOICE: TEXT: %A" m
                         Meaning(Intent(m.TopIntent.Name, Some m.TopIntent.Confidence), None, None) |> updateCtx |> Main.update CUI
                     | _ -> term.Echo' "Sorry I did not understand what you said."             
                 } |> CUI.Wait
