@@ -107,6 +107,7 @@ module Client =
     let Main =             
         let main' (_:Mic) (command:obj*obj) =
             let i, e = command
+            debug <| sprintf "Voice: %A %A" i e
             let intent = 
                 match i, e with
                 | Voice.Intent' i -> Some i
@@ -119,11 +120,11 @@ module Client =
                 match e with
                 | Voice.Trait' t -> Some t
                 | _ -> None
-            match intent with
-            | Some i -> 
-                debug <| sprintf "Voice: %A" i
-                Meaning(i, _trait, entity) |> updateCtx |> Main.update CUI
-            | None -> ()
+            match (intent, entity, _trait) with
+            | None, None, None -> ()
+            | _ -> 
+                debug <| sprintf "Voice: %A %A %A" intent entity _trait
+                Meaning(intent, _trait, entity) |> updateCtx |> Main.update CUI
             
         let main (term:Terminal) (command:string)  =
             CUI <- { CUI with Term = term }
@@ -147,14 +148,13 @@ module Client =
                         debug <| sprintf "Text: no intent."; 
                         term.Echo' "Sorry I did not understand what you said."
                     | Some (Text.Meaning'([],  e)) ->
-                        debug <| sprintf "Text: no intent. entities: %A." e
-                        term.Echo' "Sorry I did not understand what you said."
+                        debug <| sprintf "Text: no intent. Entities: %A." e
                     | Some (Text.Meaning'(intents,  []) as m) ->
                         debug <| sprintf "Text: Intents: %A. No entities." intents
-                        Meaning(Intent(m.TopIntent.Name, Some m.TopIntent.Confidence), None, None) |> updateCtx |> Main.update CUI
+                        Meaning(Some (Intent(m.TopIntent.Name, Some m.TopIntent.Confidence)), None, None) |> updateCtx |> Main.update CUI
                     | Some (Text.Meaning'(intents,  entities) as m) ->
                         debug <| sprintf "Text: intents: %A. entities: %A." intents entities
-                        Meaning(Intent(m.TopIntent.Name, Some m.TopIntent.Confidence), None, 
+                        Meaning(Some(Intent(m.TopIntent.Name, Some m.TopIntent.Confidence)), None, 
                             entities 
                             |> List.map (fun e -> Entity(e.Name, e.Value, Some e.Confidence)) 
                             |> Some) 

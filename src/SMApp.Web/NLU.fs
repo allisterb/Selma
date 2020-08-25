@@ -28,7 +28,7 @@ module NLU =
             member x.Confidence = let (_, _, c) = x.Unwrap in c
             override x.ToString() = sprintf "Entity(%s, %s, %A)" x.Name x.Value x.Confidence
 
-    type Meaning = Meaning of Intent * Trait option * Entity list option with
+    type Meaning = Meaning of Intent option * Trait option * Entity list option with
         member x.Unwrap() = match x with Meaning(i, t, el) -> i, t, el
         member x.Intent = let i, t, el = x.Unwrap() in i
         member x.Trait = let i, t, el = x.Unwrap() in t
@@ -76,7 +76,7 @@ module NLU =
             | "hello"
             | "hey"
             | "yo"
-            | "hi" -> Meaning(Intent("hello", None), None, None) |> Some
+            | "hi" -> Meaning(Some(Intent("hello", None)), None, None) |> Some
             | _ -> None
 
         let (|QuickHelp|_|) =
@@ -84,12 +84,12 @@ module NLU =
             | "help"
             | "help me"
             | "what's this?"
-            | "huh" -> Meaning(Intent("help", None), None, None) |> Some 
+            | "huh" -> Meaning(Some(Intent("help", None)), None, None) |> Some 
             | _ -> None    
 
         let (|QuickPrograms|_|) =
             function
-            | "programs" -> Meaning(Intent("Program", None), None, None) |> Some
+            | "programs" -> Meaning(Some(Intent("Program", None)), None, None) |> Some
             | _ -> None
 
         [<JavaScript>]
@@ -122,7 +122,10 @@ module NLU =
         
         let (|Intent'|_|) :Meaning'->(Meaning option) =
             function
+            | Meaning'([], entities) when entities.Length > 0 -> 
+                let entities' = entities |> List.where(fun e -> e.Confidence > entityConfidenceThreshold) |> List.map(fun e -> Entity(e.Name |> toLower, e.Value |> toLower, Some(e.Confidence)))
+                Meaning(None, None, Some entities') |> Some
             | m when m.TopIntent.Confidence > intentConfidenceThreshold  -> 
                     let entities = m.Entities |> List.where(fun e -> e.Confidence > entityConfidenceThreshold) |> List.map(fun e -> Entity(e.Name |> toLower, e.Value |> toLower, Some(e.Confidence))) 
-                    Meaning(Intent(m.TopIntent.Name |> toLower, Some m.TopIntent.Confidence), None, if entities.Length = 0 then None else Some(entities)) |> Some
+                    Meaning(Some(Intent(m.TopIntent.Name |> toLower, Some m.TopIntent.Confidence)), None, if entities.Length = 0 then None else Some(entities)) |> Some
             | _ -> None        
