@@ -41,17 +41,17 @@ module NLU =
         
         let (|Entity'|_|)  :obj -> Entity option =
             function
-            | o when o.GetJS("contact") |> isNull |> not -> Entity("contact", o.GetJS("contact").GetJS("value") :?> string, None) |> Some
+            | o when o.GetJS("contact") |> isNull |> not -> Entity("contact", o.GetJS("contact").GetJS("value") :?> string |> toLower, None) |> Some
             | _ -> None
 
         let (|Trait'|_|) : obj -> Trait option =
             function
-            | o when o.GetJS("greetings") |> isNull |> not -> Trait("greetings", o.GetJS("contact").GetJS("value") :?> string) |> Some
+            | o when o.GetJS("greetings") |> isNull |> not -> Trait("greetings", o.GetJS("contact").GetJS("value") :?> string |> toLower) |> Some
             | _ -> None
 
         let (|Intent'|_|) :(obj * obj) -> Intent option =
             function
-            | i, o when o.GetJS("intent") |> isNull |> not -> Intent(o.GetJS("intent").GetJS("value") :?> string, None) |> Some
+            | i, o when o.GetJS("intent") |> isNull |> not -> Intent(o.GetJS("intent").GetJS("value") :?> string |> toLower, None) |> Some
             | _ -> None
 
     [<RequireQualifiedAccess>]
@@ -123,6 +123,6 @@ module NLU =
         let (|Intent'|_|) :Meaning'->(Meaning option) =
             function
             | m when m.TopIntent.Confidence > intentConfidenceThreshold  -> 
-                    let entities = m.Entities |> List.where(fun e -> e.Confidence > entityConfidenceThreshold) |> List.map(fun e -> Entity(e.Name, e.Value, Some(e.Confidence))) 
-                    Meaning(Intent(m.TopIntent.Name, Some m.TopIntent.Confidence), None, if entities.Length = 0 then None else Some(entities)) |> Some
+                    let entities = m.Entities |> List.where(fun e -> e.Confidence > entityConfidenceThreshold) |> List.map(fun e -> Entity(e.Name |> toLower, e.Value |> toLower, Some(e.Confidence))) 
+                    Meaning(Intent(m.TopIntent.Name |> toLower, Some m.TopIntent.Confidence), None, if entities.Length = 0 then None else Some(entities)) |> Some
             | _ -> None        

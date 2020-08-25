@@ -30,6 +30,8 @@ module ClientExtensions =
     let toArray (a : ArrayLike<'t>) =
         JQuery.MakeArray a |> Array.map (fun a -> a :?> 't)
 
+    let toLower (s:string) = s.ToLower()
+
 [<JavaScript>]
 type _Html =
    | Elem of string * _Html list

@@ -1,9 +1,12 @@
 ﻿namespace SMApp.Web
 
 open WebSharper
+
 [<JavaScript>]
 module Main =
+    
     let debug m = sprintf "Main: %A" m |> ClientExtensions.debug
+    
     let update (cui: CUI) (context: Meaning list) =
         debug <| sprintf "Update context with %A." context
         match context with

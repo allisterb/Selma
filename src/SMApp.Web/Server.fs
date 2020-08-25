@@ -36,22 +36,6 @@ module Server =
 
     //infof "Got {0} users. " [users.CountDocuments(FilterDefinitionBuilder().Empty)]
     
-    [<Rpc>]
-    let GetPatients() : Async<Result<Patient list, string>> = 
-        pgdb
-        |> Sql.query "SELECT * FROM patient"
-        |> Sql.executeAsync (fun read ->
-        {
-            Id =  read.string("Id") |> Models.String
-            Sex = Male
-            Name = None
-            BirthDate = None
-            Address = None
-        }) 
-        |> Async.map(function | Ok r -> Ok r | Error exn -> Error(exn.Message))
-         
-
-        
     (*
     //let u = users.FindAsync()
     [<Rpc>]
@@ -75,7 +59,21 @@ module Server =
                     |> Seq.map (fun e -> Text.Entity'(e.Name, e.Confidence, e.Role, e.Value))
                     |> List.ofSeq
                 return Text.Meaning'(intents, entities) |> Some
-            | _ -> debugf "Could not get Wit.ai meaning for input '{0}'." [input]; return None
+            | Choice2Of2 exn -> errf "Could not get Wit.ai meaning for input '{0}'. Exception: {1}" [input; exn.Message]; return None
+            | _ -> errf "Could not get Wit.ai meaning for input '{0}'. Exception: {1}" [input]; return None
         }
 
-        
+    [<Rpc>]
+    let GetPatients() : Async<Result<Patient list, string>> = 
+        pgdb
+        |> Sql.query "SELECT * FROM patient"
+        |> Sql.executeAsync (fun read ->
+        {
+            Id =  read.string("Id") |> Models.String
+            Sex = Male
+            Name = None
+            BirthDate = None
+            Address = None
+        }) 
+        |> Async.map(function | Ok r -> Ok r | Error exn -> Error(exn.Message))
+    

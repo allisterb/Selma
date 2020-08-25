@@ -65,7 +65,13 @@ module Client =
         do mic.onAudioEnd <- (fun _ -> MicState <- MicAudioEnd;debug "Mic audio end.")
         do mic.onError <- (fun s -> MicState <- MicError s; debug (sprintf "Mic error : %s." s))
         do mic.onReady <- (fun _ -> MicState <- MicReady; debug "Mic ready.")
-        do mic.onResult <- (fun i e -> MicState <- MicResult(i,e); m mic (i,e))
+        do mic.onResult <- (fun i e -> 
+            if not (isNull i || isNull e) then 
+                MicState <- MicResult(i,e) 
+                debug <| sprintf "Mic result: %A %A." i e; m mic (i,e)
+            else 
+                debug "Mic: No result returned."
+            )
         do mic.Connect("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT")
 
     let say text =        
@@ -107,7 +113,7 @@ module Client =
                 | _ -> None
             let entity = 
                 match e with
-                | Voice.Entity' e -> Some [e]
+                | Voice.Entity' entity -> Some [entity]
                 | _ -> None
             let _trait = 
                 match e with
@@ -131,23 +137,38 @@ module Client =
             | Text.QuickHello m 
             | Text.QuickHelp m 
             | Text.QuickPrograms m -> 
-                debug <| sprintf "Text: %A" m
+                debug <| sprintf "Quick Text: %A." m
                 m |> updateCtx |> Main.update CUI
+            (* Use the NLU service for everything else *)
             | _->         
                 async {
                     match! Server.GetMeaning command with
-                    | Some m -> 
-                        debug <| sprintf "VOICE: TEXT: %A" m
+                    | Some (Text.Meaning'([],  [])) -> 
+                        debug <| sprintf "Text: no intent."; 
+                        term.Echo' "Sorry I did not understand what you said."
+                    | Some (Text.Meaning'([],  e)) ->
+                        debug <| sprintf "Text: no intent. entities: %A." e
+                        term.Echo' "Sorry I did not understand what you said."
+                    | Some (Text.Meaning'(intents,  []) as m) ->
+                        debug <| sprintf "Text: Intents: %A. No entities." intents
                         Meaning(Intent(m.TopIntent.Name, Some m.TopIntent.Confidence), None, None) |> updateCtx |> Main.update CUI
-                    | _ -> term.Echo' "Sorry I did not understand what you said."             
+                    | Some (Text.Meaning'(intents,  entities) as m) ->
+                        debug <| sprintf "Text: intents: %A. entities: %A." intents entities
+                        Meaning(Intent(m.TopIntent.Name, Some m.TopIntent.Confidence), None, 
+                            entities 
+                            |> List.map (fun e -> Entity(e.Name, e.Value, Some e.Confidence)) 
+                            |> Some) 
+                            |> updateCtx |> Main.update CUI
+                    | None -> 
+                        debug "Text: Did not receive a response from the server." 
+                        term.Echo' "Sorry I did not understand what you said."
                 } |> CUI.Wait
         let mainOpt =
             Options(
                 Name="Main", 
                 Greetings = "Welcome to Selma. Type hello to begin or help for more assistance.",
                 Prompt =">"
-            )
-              
+            )       
         Interpreter(main', (main, mainOpt))
     
     let run() =

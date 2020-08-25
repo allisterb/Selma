@@ -53,6 +53,10 @@
  Unchecked=WebSharper&&WebSharper.Unchecked;
  Remoting=WebSharper&&WebSharper.Remoting;
  AjaxRemotingProvider=Remoting&&Remoting.AjaxRemotingProvider;
+ ClientExtensions.toLower=function(s)
+ {
+  return s.toLowerCase();
+ };
  ClientExtensions.toArray=function(a)
  {
   return Arrays.map(Global.id,$.makeArray(a));
@@ -642,7 +646,7 @@
    $:1,
    $0:new Intent({
     $:0,
-    $0:a$1.intent.value,
+    $0:ClientExtensions.toLower(a$1.intent.value),
     $1:null
    })
   }:null;
@@ -654,7 +658,7 @@
    $0:new Trait({
     $:0,
     $0:"greetings",
-    $1:a.contact.value
+    $1:ClientExtensions.toLower(a.contact.value)
    })
   }:null;
  };
@@ -665,7 +669,7 @@
    $0:new Entity({
     $:0,
     $0:"contact",
-    $1:a.contact.value,
+    $1:ClientExtensions.toLower(a.contact.value),
     $2:null
    })
   }:null;
@@ -734,8 +738,8 @@
   {
    return new Entity({
     $:0,
-    $0:e.get_Name(),
-    $1:e.get_Value(),
+    $0:ClientExtensions.toLower(e.get_Name()),
+    $1:ClientExtensions.toLower(e.get_Value()),
     $2:{
      $:1,
      $0:e.get_Confidence()
@@ -750,7 +754,7 @@
     $:0,
     $0:new Intent({
      $:0,
-     $0:a.get_TopIntent().get_Name(),
+     $0:ClientExtensions.toLower(a.get_TopIntent().get_Name()),
      $1:{
       $:1,
       $0:a.get_TopIntent().get_Confidence()
@@ -895,7 +899,7 @@
   },
   Wait$1:function(f)
   {
-   this["Echo'"]("please wait");
+   this["Echo'"]("please wait...");
    this.Term.disable();
    f();
    this.Term.enable();
@@ -996,11 +1000,11 @@
  Main.update=function(cui,context)
  {
   var $1;
-  ClientExtensions.debug((function($2)
+  Main.debug((function($2)
   {
    return function($3)
    {
-    return $2("Main: update ctx with: "+Utils.printList(function($4)
+    return $2("Update context with "+Utils.printList(function($4)
     {
      return SMApp$Web_GeneratedPrintf.p$2($4);
     },$3)+".");
@@ -1016,6 +1020,16 @@
   {
    return $2("Hello. My name is Selma. What's yours?");
   }(Global.id)):void 0:void 0:void 0:void 0;
+ };
+ Main.debug=function(m)
+ {
+  ClientExtensions.debug((function($1)
+  {
+   return function($2)
+   {
+    return $1("Main: "+Utils.prettyPrint($2));
+   };
+  }(Global.id))(m));
  };
  Client.run=function()
  {
@@ -1144,36 +1158,36 @@
   };
   mic.onresult=function(i,e)
   {
-   Client.set_MicState({
+   return!(i==null||e==null)?(Client.set_MicState({
     $:7,
     $0:i,
     $1:e
-   });
-   return m(mic,[i,e]);
+   }),Client.debug((((Runtime.Curried3(function($1,$2,$3)
+   {
+    return $1("Mic result: "+Utils.prettyPrint($2)+" "+Utils.prettyPrint($3)+".");
+   }))(Global.id))(i))(e)),m(mic,[i,e])):Client.debug("Mic: No result returned.");
   };
   mic.connect("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT");
  };
  Client.initSpeech=function()
  {
-  var _voices,voices,a;
+  var _voices,voices;
   _voices=Global.speechSynthesis.getVoices();
   !(_voices==null)?(voices=ClientExtensions.toArray(_voices),Arrays.iter(function(v)
   {
-   var a$1;
    if(Unchecked.Equals(Client.CUI().Voice,null)&&(v.name.indexOf("Microsoft Zira")!=-1||v.name.toLowerCase().indexOf("female")!=-1))
     {
      Client.set_CUI(CUI.New({
       $:1,
       $0:v
      },Client.CUI().Mic,Client.CUI().Term,Client.CUI().DebugMode,Client.CUI().Caption));
-     a$1=(function($1)
+     Client.debug((function($1)
      {
       return function($2)
       {
        return $1("Using voice "+Utils.toSafe($2)+".");
       };
-     }(Global.id))(Client.CUI().Voice.$0.name);
-     Client.CUI().Debug(a$1);
+     }(Global.id))(Client.CUI().Voice.$0.name));
     }
   },voices),Unchecked.Equals(Client.CUI().Voice,null)&&Arrays.length(voices)>0?(Client.set_CUI(CUI.New({
    $:1,
@@ -1181,13 +1195,13 @@
    {
     return v["default"];
    },voices)
-  },Client.CUI().Mic,Client.CUI().Term,Client.CUI().DebugMode,Client.CUI().Caption)),a=(function($1)
+  },Client.CUI().Mic,Client.CUI().Term,Client.CUI().DebugMode,Client.CUI().Caption)),Client.debug((function($1)
   {
    return function($2)
    {
     return $1("Using default voice "+Utils.toSafe($2)+".");
    };
-  }(Global.id))(Client.CUI().Voice.$0.name),Client.CUI().Debug(a)):void 0):void 0;
+  }(Global.id))(Client.CUI().Voice.$0.name))):void 0):void 0;
   Unchecked.Equals(Client.CUI().Voice,null)?(ClientExtensions.error("No speech synthesis voice is available."),ClientExtensions["Terminal.Echo'"](Client.CUI().Term,"No speech synthesis voice is available. Install speech synthesis on this device or computer to use the voice output feature of Selma.")):void 0;
  };
  Client.updateCtx=function(m)
@@ -1283,20 +1297,35 @@
    {
     return function($6)
     {
-     return $5("Text: "+SMApp$Web_GeneratedPrintf.p$2($6));
+     return $5("Quick Text: "+SMApp$Web_GeneratedPrintf.p$2($6)+".");
     };
    }(Global.id))($4)),c=Client.updateCtx($4),Main.update(Client.CUI(),c)):Client.CUI().Wait((b=null,Concurrency.Delay(function()
    {
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-982368618",[command]),function(a$3)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:1222434221",[command]),function(a$3)
     {
-     var m,c$1;
-     return a$3!=null&&a$3.$==1?(m=a$3.$0,(Client.debug((function($5)
+     var m,c$1,entities,m$1,c$2;
+     return a$3==null?(Client.debug("Text: Did not receive a response from the server."),ClientExtensions["Terminal.Echo'"](term,"Sorry I did not understand what you said."),Concurrency.Zero()):a$3.$0.$0.$==0?a$3.$0.$1.$==0?(Client.debug(function($5)
+     {
+      return $5("Text: no intent.");
+     }(Global.id)),ClientExtensions["Terminal.Echo'"](term,"Sorry I did not understand what you said."),Concurrency.Zero()):(Client.debug((function($5)
      {
       return function($6)
       {
-       return $5("VOICE: TEXT: "+SMApp$Web_GeneratedPrintf.p$7($6));
+       return $5("Text: no intent. entities: "+Utils.printList(function($7)
+       {
+        return SMApp$Web_GeneratedPrintf.p$7($7);
+       },$6)+".");
       };
-     }(Global.id))(m)),c$1=Client.updateCtx(new Meaning({
+     }(Global.id))(a$3.$0.$1)),ClientExtensions["Terminal.Echo'"](term,"Sorry I did not understand what you said."),Concurrency.Zero()):a$3.$0.$1.$==0?(m=a$3.$0,(Client.debug((function($5)
+     {
+      return function($6)
+      {
+       return $5("Text: Intents: "+Utils.printList(function($7)
+       {
+        return SMApp$Web_GeneratedPrintf.p$8($7);
+       },$6)+". No entities.");
+      };
+     }(Global.id))(a$3.$0.$0)),c$1=Client.updateCtx(new Meaning({
       $:0,
       $0:new Intent({
        $:0,
@@ -1308,7 +1337,42 @@
       }),
       $1:null,
       $2:null
-     })),Main.update(Client.CUI(),c$1),Concurrency.Zero())):(ClientExtensions["Terminal.Echo'"](term,"Sorry I did not understand what you said."),Concurrency.Zero());
+     })),Main.update(Client.CUI(),c$1),Concurrency.Zero())):(entities=a$3.$0.$1,(m$1=a$3.$0,(Client.debug((((Runtime.Curried3(function($5,$6,$7)
+     {
+      return $5("Text: intents: "+Utils.printList(function($8)
+      {
+       return SMApp$Web_GeneratedPrintf.p$8($8);
+      },$6)+". entities: "+Utils.printList(function($8)
+      {
+       return SMApp$Web_GeneratedPrintf.p$7($8);
+      },$7)+".");
+     }))(Global.id))(a$3.$0.$0))(entities)),c$2=Client.updateCtx(new Meaning({
+      $:0,
+      $0:new Intent({
+       $:0,
+       $0:m$1.get_TopIntent().get_Name(),
+       $1:{
+        $:1,
+        $0:m$1.get_TopIntent().get_Confidence()
+       }
+      }),
+      $1:null,
+      $2:{
+       $:1,
+       $0:List.map(function(e)
+       {
+        return new Entity({
+         $:0,
+         $0:e.get_Name(),
+         $1:e.get_Value(),
+         $2:{
+          $:1,
+          $0:e.get_Confidence()
+         }
+        });
+       },entities)
+      }
+     })),Main.update(Client.CUI(),c$2),Concurrency.Zero())));
     });
    })));
   }
@@ -1372,22 +1436,12 @@
  {
   return"Meaning ("+SMApp$Web_GeneratedPrintf.p($1.$0)+", "+SMApp$Web_GeneratedPrintf.p$3($1.$1)+", "+SMApp$Web_GeneratedPrintf.p$5($1.$2)+")";
  };
- SMApp$Web_GeneratedPrintf.p$8=function($1)
- {
-  return"Intent' ("+Utils.prettyPrint($1.$0)+", "+Utils.prettyPrint($1.$1)+")";
- };
- SMApp$Web_GeneratedPrintf.p$9=function($1)
+ SMApp$Web_GeneratedPrintf.p$7=function($1)
  {
   return"Entity' ("+Utils.prettyPrint($1.$0)+", "+Utils.prettyPrint($1.$1)+", "+Utils.prettyPrint($1.$2)+", "+Utils.prettyPrint($1.$3)+")";
  };
- SMApp$Web_GeneratedPrintf.p$7=function($1)
+ SMApp$Web_GeneratedPrintf.p$8=function($1)
  {
-  return"Meaning' ("+Utils.printList(function($2)
-  {
-   return SMApp$Web_GeneratedPrintf.p$8($2);
-  },$1.$0)+", "+Utils.printList(function($2)
-  {
-   return SMApp$Web_GeneratedPrintf.p$9($2);
-  },$1.$1)+")";
+  return"Intent' ("+Utils.prettyPrint($1.$0)+", "+Utils.prettyPrint($1.$1)+")";
  };
 }());

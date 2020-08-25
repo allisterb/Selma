@@ -40,8 +40,9 @@ with
     
     member x.Wait (f:unit -> unit) =
         do 
-            x.Echo'("please wait")
+            x.Echo'("please wait...")
             x.Term.Disable();f();x.Term.Enable()
+    
     member x.Wait(f:Async<unit>) = x.Wait(fun _ -> f |> Async.Start)
     
     member x.SayVoices() =
