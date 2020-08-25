@@ -16,7 +16,7 @@ open SMApp.Microphone
 
 [<JavaScript>]
 module Client =
-   
+   (* CUI state *)
     let mutable CUI = {
         Voice = None
         Mic = None
@@ -26,12 +26,14 @@ module Client =
     }    
     let mutable MicState = MicNotInitialized
     let mutable OpState: OpState option = None
-    
-    let echo = CUI.Term.EchoHtml'
+    let Props = new Dictionary<string, obj>()
+
+    (* Messages *)
+    let msgs = Stack<string>()
     let debug m = 
         let text' = sprintf "Client: %A" m in
         ClientExtensions.debug text'
-        if CUI.DebugMode then echo text'
+        if CUI.DebugMode then CUI.Term.EchoHtml' text'
 
     (* NLU context *)
     let Context = new Stack<Meaning>()
@@ -75,16 +77,18 @@ module Client =
         do mic.Connect("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT")
 
     let say text =        
+        msgs.Push text
         match CUI.Voice with
-        | None -> CUI.Term.Echo' text
+        | None -> 
+            CUI.Term.Echo' text
         | Some v ->
             async { 
                 let u = new SpeechSynthesisUtterance(text)
                 u.Voice <- v
-                Window.SpeechSynthesis.Speak(u) 
+                Window.SpeechSynthesis.Speak(u)
+                do if CUI.Caption then CUI.Term.Echo' text
             } |> Async.Start
-            do if CUI.Caption then CUI.Term.Echo' text
-            
+
     let sayVoices() =
         let voices' = Window.SpeechSynthesis.GetVoices()
         do if not(isNull(voices')) then
@@ -126,7 +130,7 @@ module Client =
                 debug <| sprintf "Voice: %A %A %A" intent _trait entity
                 match OpState with
                 | Some Lang -> say "I'm still working on understanding your last message."
-                | Some _ | None -> Meaning(intent, _trait, entity) |> pushCtx |> Main.update CUI
+                | Some _ | None -> Meaning(intent, _trait, entity) |> pushCtx |> Main.update CUI Props msgs
                 
         let main (term:Terminal) (command:string)  =
             CUI <- { CUI with Term = term }
@@ -149,7 +153,7 @@ module Client =
                     | Text.QuickHelp m 
                     | Text.QuickPrograms m -> 
                         debug <| sprintf "Quick Text: %A." m
-                        m |> pushCtx |> Main.update CUI
+                        m |> pushCtx |> Main.update CUI Props msgs
                     (* Use the NLU service for everything else *)
                     | _->         
                         async {
@@ -157,7 +161,7 @@ module Client =
                             match! Server.GetMeaning command with
                             | Text.HasMeaning m -> 
                                 debug <| sprintf "Text: %A %A %A" m.Intent m.Trait m.Entities
-                                m |> pushCtx |> Main.update CUI
+                                m |> pushCtx |> Main.update CUI Props msgs
                             | _ -> 
                                 debug "Text: Did not receive a response from the server." 
                                 term.Echo' "Sorry I did not understand what you said."
