@@ -14,50 +14,6 @@ type MicState = MicNotInitialized | MicConnecting | MicDisconnected | MicAudioSt
 
 type OpState = | Lang | User
 
-[<JavaScript>]
-type CUI = {
-    Voice:SpeechSynthesisVoice option
-    Mic: Mic option
-    Term: Terminal
-    DebugMode: bool
-    Caption: bool
-}
-with
-    member x.Echo' (text:string) = x.Term.Disable(); x.Term.Echo text; x.Term.Enable()
-    
-    member x.EchoHtml' (text:string) = 
-        let rawOpt = EchoOptions(Raw=true)
-        x.Term.Disable(); x.Term.Echo(text, rawOpt); x.Term.Enable()
-    
-    member x.Debug m = debug m; if x.DebugMode then x.EchoHtml' m
-    
-    member x.Say text = 
-        match x.Voice with
-        | None -> x.Echo' text
-        | Some v ->
-            async { 
-                let u = new SpeechSynthesisUtterance(text)
-                u.Voice <- v
-                Window.SpeechSynthesis.Speak(u) 
-            } |> Async.Start
-            do if x.Caption then x.Echo' text    
-    
-    member x.Wait (f:unit -> unit) =
-        do 
-            x.Echo'("please wait...")
-            x.Term.Pause();f();x.Term.Resume()
-    
-    member x.Wait(f:Async<unit>) = x.Wait(fun _ -> f |> Async.Start)
-    
-    member x.SayVoices() =
-        let voices' = Window.SpeechSynthesis.GetVoices()
-        do if not(isNull(voices')) then
-            let voices = voices' |> toArray    
-            sprintf "There are currently %i voices installed on this computer or device." voices.Length |> x.Say
-            voices |> Array.iteri (fun i v -> sprintf "Voice %i. Name: %s, Local: %A." i v.Name v.LocalService |> x.Say)
-
-    member x.StopSpeaking = if Window.SpeechSynthesis.Speaking || Window.SpeechSynthesis.Pending then Window.SpeechSynthesis.Cancel()
-
 [<AutoOpen;JavaScript>]
 module CUI =
     /// Basic user information for app authentication.
@@ -74,12 +30,18 @@ module CUI =
         member x.Voice = let v, i, o = x.Unwrap in v
         member x.Text = let v, i, o = x.Unwrap in i
         member x.Options = let v, i, o = x.Unwrap in o
-    
-    
+   
     let rng = Random()
     
     let getRandomPhrase (phrases:List<'t>) = phrases |> List.item(rng.Next(0, phrases.Length))
     
+    let waitRetrievePhrases = [
+        "Ok, let me check that. for you"
+        "Please wait while I check that."
+        "Wait while I get that."
+        "Ok let me see if I can find that."
+    ]
+
     let helloPhrases = [
         "Welcome!"
         "Welcome, my name is Selma."
@@ -95,4 +57,49 @@ module CUI =
         "Hello $user"
         "Good to see you $user."
     ]
+
+    type CUI = {
+        Voice:SpeechSynthesisVoice option
+        Mic: Mic option
+        Term: Terminal
+        DebugMode: bool
+        Caption: bool
+    }
+    with
+        member x.Echo' (text:string) = x.Term.Disable(); x.Term.Echo text; x.Term.Enable()
+    
+        member x.EchoHtml' (text:string) = 
+            let rawOpt = EchoOptions(Raw=true)
+            x.Term.Disable(); x.Term.Echo(text, rawOpt); x.Term.Enable()
+    
+        member x.Debug m = debug m; if x.DebugMode then x.EchoHtml' m
+    
+        member x.Say text = 
+            match x.Voice with
+            | None -> x.Echo' text
+            | Some v ->
+                async { 
+                    let u = new SpeechSynthesisUtterance(text)
+                    u.Voice <- v
+                    Window.SpeechSynthesis.Speak(u) 
+                } |> Async.Start
+                do if x.Caption then x.Echo' text
+    
+        member x.sayRandom phrases = x.Say <| getRandomPhrase phrases
+        
+        member x.Wait (f:unit -> unit) =
+            do 
+                x.Echo'("please wait...")
+                x.Term.Pause();f();x.Term.Resume()
+    
+        member x.Wait(f:Async<unit>) = x.Wait(fun _ -> f |> Async.Start)
+    
+        member x.SayVoices() =
+            let voices' = Window.SpeechSynthesis.GetVoices()
+            do if not(isNull(voices')) then
+                let voices = voices' |> toArray    
+                sprintf "There are currently %i voices installed on this computer or device." voices.Length |> x.Say
+                voices |> Array.iteri (fun i v -> sprintf "Voice %i. Name: %s, Local: %A." i v.Name v.LocalService |> x.Say)
+
+        member x.StopSpeaking = if Window.SpeechSynthesis.Speaking || Window.SpeechSynthesis.Pending then Window.SpeechSynthesis.Cancel()
 

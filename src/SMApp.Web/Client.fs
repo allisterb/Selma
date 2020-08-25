@@ -34,12 +34,11 @@ module Client =
         if CUI.DebugMode then echo text'
 
     (* NLU context *)
-    let Context = new List<Meaning>()
+    let Context = new Stack<Meaning>()
 
-    let updateCtx (m:Meaning) =
-        do Context.Insert(0, m)
-        let b = if Context.Count >= 5 then 5 else Context.Count
-        Context |> Seq.take b |> List.ofSeq 
+    let pushCtx (m:Meaning) =
+        do Context.Push m
+        Context
 
     (* Initialize speech and mic *)
     let initSpeech() =
@@ -124,13 +123,17 @@ module Client =
             match (intent, _trait, entity) with
             | None, None, None -> ()
             | _ -> 
-                debug <| sprintf "Voice: %A %A %A" intent _trait entity 
-                Meaning(intent, _trait, entity) |> updateCtx |> Main.update CUI
-            
+                debug <| sprintf "Voice: %A %A %A" intent _trait entity
+                match OpState with
+                | Some Lang -> say "I'm still working on understanding your last message."
+                | Some _ | None -> Meaning(intent, _trait, entity) |> pushCtx |> Main.update CUI
+                
         let main (term:Terminal) (command:string)  =
             CUI <- { CUI with Term = term }
-            do if CUI.Voice = None then initSpeech()
-            do if CUI.Mic = None then initMic main'  
+            do if CUI.Voice = None then 
+                initSpeech()
+            do if CUI.Mic = None then 
+                initMic main'
             match command with
             (* Quick commands *)
             | Text.Blank -> say "Tell me what you want me to do or ask me a question."
@@ -146,7 +149,7 @@ module Client =
                     | Text.QuickHelp m 
                     | Text.QuickPrograms m -> 
                         debug <| sprintf "Quick Text: %A." m
-                        m |> updateCtx |> Main.update CUI
+                        m |> pushCtx |> Main.update CUI
                     (* Use the NLU service for everything else *)
                     | _->         
                         async {
@@ -154,7 +157,7 @@ module Client =
                             match! Server.GetMeaning command with
                             | Text.HasMeaning m -> 
                                 debug <| sprintf "Text: %A %A %A" m.Intent m.Trait m.Entities
-                                m |> updateCtx |> Main.update CUI
+                                m |> pushCtx |> Main.update CUI
                             | _ -> 
                                 debug "Text: Did not receive a response from the server." 
                                 term.Echo' "Sorry I did not understand what you said."
@@ -163,7 +166,7 @@ module Client =
         let mainOpt =
             Options(
                 Name="Main", 
-                Greetings = "Welcome to Selma. Type hello to begin or help for more assistance.",
+                Greetings = "Welcome to Selma. Enter 'hello my name is...(you)' to begin and initialize speech or help for more assistance.",
                 Prompt =">"
             )       
         Interpreter(main', (main, mainOpt))
