@@ -23,14 +23,15 @@ module Client =
         Term = Unchecked.defaultof<Terminal>
         DebugMode = false
         Caption = false
-    }
+    }    
+    let mutable MicState = MicNotInitialized
+    let mutable OpState: OpState option = None
+    
     let echo = CUI.Term.EchoHtml'
     let debug m = 
         let text' = sprintf "Client: %A" m in
         ClientExtensions.debug text'
         if CUI.DebugMode then echo text'
-    
-    let mutable MicState = MicNotInitialized
 
     (* NLU context *)
     let Context = new List<Meaning>()
@@ -135,22 +136,30 @@ module Client =
             | Text.Blank -> say "Tell me what you want me to do or ask me a question."
             | Text.DebugOn -> CUI <- { CUI with DebugMode = true }; say "Debug mode is now on."  
             | Text.DebugOff -> CUI <- { CUI with DebugMode = false }; say "Debug mode is now off." 
-            | Text.QuickHello m 
-            | Text.QuickHelp m 
-            | Text.QuickPrograms m -> 
-                debug <| sprintf "Quick Text: %A." m
-                m |> updateCtx |> Main.update CUI
-            (* Use the NLU service for everything else *)
-            | _->         
-                async {
-                    match! Server.GetMeaning command with
-                    | Text.HasMeaning m -> 
-                        debug <| sprintf "Text: %A %A %A" m.Intent m.Trait m.Entities
+            | _ ->
+                match OpState with
+                | Some Lang -> say "I'm still working on understanding your last message."
+                | Some _
+                | None ->
+                    match command with
+                    | Text.QuickHello m 
+                    | Text.QuickHelp m 
+                    | Text.QuickPrograms m -> 
+                        debug <| sprintf "Quick Text: %A." m
                         m |> updateCtx |> Main.update CUI
-                    | _ -> 
-                        debug "Text: Did not receive a response from the server." 
-                        term.Echo' "Sorry I did not understand what you said."
-                } |> CUI.Wait
+                    (* Use the NLU service for everything else *)
+                    | _->         
+                        async {
+                            OpState <- Some Lang
+                            match! Server.GetMeaning command with
+                            | Text.HasMeaning m -> 
+                                debug <| sprintf "Text: %A %A %A" m.Intent m.Trait m.Entities
+                                m |> updateCtx |> Main.update CUI
+                            | _ -> 
+                                debug "Text: Did not receive a response from the server." 
+                                term.Echo' "Sorry I did not understand what you said."
+                            OpState <- None
+                        } |> CUI.Wait
         let mainOpt =
             Options(
                 Name="Main", 

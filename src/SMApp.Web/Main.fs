@@ -24,10 +24,9 @@ module Main =
         | Meaning(Intent "hello", None, None)::[] -> 
             cui.Say <| sprintf "Hello. My name is Selma. What's yours?" 
         | Meaning(Intent "hello", _, Some [Entity "contact" u])::_ ->            
-            cui.Wait(fun _ -> 
-                match Server.GetUser u  with
-                | Some user -> say <| sprintf "Hello %s" u
-                | None -> say "Sorry I did not find that user."
-            )
-        //| Meaning "hello" (Meaning "hello" x) -> cui.Say <| sprintf "Hello %s" u.Name
+            async { 
+                match! Server.GetUserAsync2 u with 
+                | Some u -> say <| sprintf "Hello %s" u.Name
+                | None _ -> say "Sorry I did not find that user."
+            } |> Async.Start 
         | _ -> ()

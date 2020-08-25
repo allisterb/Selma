@@ -1,5 +1,6 @@
 namespace SMApp.Web
 
+open System
 open System.Collections.Generic;
 open System.Linq
 
@@ -24,14 +25,12 @@ type _User = {
     displayName:string
 }
 
-[<AllowNullLiteral>]
-type __User() = 
-    member val Id = Unchecked.defaultof<BsonObjectId> with get, set
-    member val username = Unchecked.defaultof<string> with get, set
-    member val password = Unchecked.defaultof<string> with get, set
-    member val salt = Unchecked.defaultof<string> with get, set
-    member val email = Unchecked.defaultof<string> with get, set
-    member val displayName = Unchecked.defaultof<string> with get, set
+
+type ``user`` = {
+    user_name:string
+    last_logged_in: DateTime option
+}
+    
 
 module Server =        
    
@@ -42,7 +41,9 @@ module Server =
             do if host.IsEmpty() then failwith "Could not retrieve the MongoDB host using configuration key MONGODB"
             let connectionString = sprintf "mongodb://%s:%s@<%s>/test?w=majority" host "eddi" "eddi"
             new MongoClient(connectionString)
-        
+    
+    let private mongodb_users = mongodb.GetDatabase("eddi").GetCollection<``user``>("users")
+    
     let private pgdb =
         Sql.host (Api.Config("PGSQL"))
         |> Sql.port 5432
@@ -54,35 +55,47 @@ module Server =
         |> Sql.formatConnectionString
         |> Sql.connect
 
-    let private users = mongodb.GetDatabase("eddi").GetCollection<__User>("users")
+    
     
     [<Rpc>]
     let GetUser (user:string) = 
-        
         use op = beginOp <| sprintf "Find user %s" user
-        match users.Find(fun (u:__User) -> u.username = user).FirstOrDefault() with
-        | o when not(isNull(o)) -> 
-            op.Complete() 
-            Some {Name=o.username}
-        | _ -> 
-            op.Complete()
-            debugf "Did not find user {0}." [user]; 
+        try
+            match mongodb_users.Find(fun (u:``user``) -> u.user_name = user).First() with
+            | o -> 
+                op.Complete() 
+                Some {Name=o.user_name}
+            | _ -> 
+                op.Complete()
+                debugf "Did not find user {0}." [user]; 
+                None
+        with _ -> 
+            debugf "Did not find user {0}." [user];
             None
-        
+
     [<Rpc>]
     let GetUserAsync (user:string) = 
         async {
             use op = beginOp <| sprintf "Find user %s" user
-            match! users.Find(Builders.Filter.Where(fun (u:__User) -> u.username = user)).FirstAsync() |> Async.AwaitTask |> Async.Catch with
+            match! mongodb_users.Find(Builders.Filter.Where(fun (u:``user``) -> u.user_name = user)).FirstAsync() |> Async.AwaitTask |> Async.Catch with
             | Choice1Of2 o -> 
                 op.Complete() 
-                return Some {Name=o.username}
+                return Some {Name=o.user_name}
             | _ -> 
                 op.Complete()
                 debugf "Did not find user {0}." [user]; return None
         }
 
-    
+    [<Rpc>]
+    let GetUserAsync2(user:string) : Async<User option> = 
+        pgdb
+        |> (Sql.query <| sprintf "SELECT * FROM selma_user WHERE user_name='%s'" user)
+        |> Sql.executeAsync (fun read ->
+        {
+            Name =  read.string("user_name") 
+        }) 
+        |> Async.map(function | Ok (u)  -> (if u.Length > 0 then Some u.Head else None) | Error exn -> err(exn.Message); None)
+
     [<Rpc>]
     let GetMeaning input = 
         async {

@@ -1054,7 +1054,7 @@
  };
  Main.update=function(cui,context)
  {
-  var $1,$2,$3,$4,a,u;
+  var $1,$2,$3,$4,a,u,b;
   function say(a$1)
   {
    cui.Say(a$1);
@@ -1072,19 +1072,19 @@
   context.$==1&&(($2=Main.Intent("hello",context.$0.$0),$2!=null&&$2.$==1)&&(context.$0.$1==null&&(context.$0.$2==null&&context.$1.$==0)))?cui.Say(function($5)
   {
    return $5("Hello. My name is Selma. What's yours?");
-  }(Global.id)):context.$==1?($3=Main.Intent("hello",context.$0.$0),$3!=null&&$3.$==1)?($4=context.$0.$2,$4!=null&&$4.$==1)?context.$0.$2.$0.$==1?(a=Main.Entity("contact",context.$0.$2.$0.$0),a!=null&&a.$==1?context.$0.$2.$0.$1.$==0?(u=a.$0,cui.Wait$1(function()
+  }(Global.id)):context.$==1?($3=Main.Intent("hello",context.$0.$0),$3!=null&&$3.$==1)?($4=context.$0.$2,$4!=null&&$4.$==1)?context.$0.$2.$0.$==1?(a=Main.Entity("contact",context.$0.$2.$0.$0),a!=null&&a.$==1?context.$0.$2.$0.$1.$==0?(u=a.$0,Concurrency.Start((b=null,Concurrency.Delay(function()
   {
-   if((new AjaxRemotingProvider.New()).Sync("SMApp.Web:SMApp.Web.Server.GetUser:-2021950038",[u])==null)
-    say("Sorry I did not find that user.");
-   else
-    say((function($5)
+   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetUserAsync2:-641865754",[u]),function(a$1)
+   {
+    return a$1==null?(say("Sorry I did not find that user."),Concurrency.Zero()):(say((function($5)
     {
      return function($6)
      {
       return $5("Hello "+Utils.toSafe($6));
      };
-    }(Global.id))(u));
-  })):void 0:void 0):void 0:void 0:void 0:void 0;
+    }(Global.id))(a$1.$0.Name)),Concurrency.Zero());
+   });
+  })),null)):void 0:void 0):void 0:void 0:void 0:void 0;
  };
  Main.Entity=function(n,a)
  {
@@ -1296,16 +1296,6 @@
   SC$5.$cctor();
   return SC$5.Context;
  };
- Client.MicState=function()
- {
-  SC$5.$cctor();
-  return SC$5.MicState;
- };
- Client.set_MicState=function($1)
- {
-  SC$5.$cctor();
-  SC$5.MicState=$1;
- };
  Client.debug=function(m)
  {
   var _text;
@@ -1323,6 +1313,26 @@
  {
   SC$5.$cctor();
   return SC$5.echo;
+ };
+ Client.OpState=function()
+ {
+  SC$5.$cctor();
+  return SC$5.OpState;
+ };
+ Client.set_OpState=function($1)
+ {
+  SC$5.$cctor();
+  SC$5.OpState=$1;
+ };
+ Client.MicState=function()
+ {
+  SC$5.$cctor();
+  return SC$5.MicState;
+ };
+ Client.set_MicState=function($1)
+ {
+  SC$5.$cctor();
+  SC$5.MicState=$1;
  };
  Client.CUI=function()
  {
@@ -1371,37 +1381,48 @@
   }
   function main(term,command)
   {
-   var $1,$2,$3,$4,a,a$1,a$2,c,b;
+   var $1,$2,$3,$4,$5,a,a$1,a$2,c,b;
    Client.set_CUI(CUI.New(Client.CUI().Voice,Client.CUI().Mic,term,Client.CUI().DebugMode,Client.CUI().Caption));
    Unchecked.Equals(Client.CUI().Voice,null)?Client.initSpeech():void 0;
    Unchecked.Equals(Client.CUI().Mic,null)?Client.initMic(_main):void 0;
-   return($1=Text.Blank(command),$1!=null&&$1.$==1)?Client.say("Tell me what you want me to do or ask me a question."):($2=Text.DebugOn(command),$2!=null&&$2.$==1)?(Client.set_CUI(CUI.New(Client.CUI().Voice,Client.CUI().Mic,Client.CUI().Term,true,Client.CUI().Caption)),Client.say("Debug mode is now on.")):($3=Text.DebugOff(command),$3!=null&&$3.$==1)?(Client.set_CUI(CUI.New(Client.CUI().Voice,Client.CUI().Mic,Client.CUI().Term,false,Client.CUI().Caption)),Client.say("Debug mode is now off.")):(a=Text.QuickHello(command),a!=null&&a.$==1?($4=a.$0,true):(a$1=Text.QuickHelp(command),a$1!=null&&a$1.$==1?($4=a$1.$0,true):(a$2=Text.QuickPrograms(command),a$2!=null&&a$2.$==1&&($4=a$2.$0,true))))?(Client.debug((function($5)
+   return($1=Text.Blank(command),$1!=null&&$1.$==1)?Client.say("Tell me what you want me to do or ask me a question."):($2=Text.DebugOn(command),$2!=null&&$2.$==1)?(Client.set_CUI(CUI.New(Client.CUI().Voice,Client.CUI().Mic,Client.CUI().Term,true,Client.CUI().Caption)),Client.say("Debug mode is now on.")):($3=Text.DebugOff(command),$3!=null&&$3.$==1)?(Client.set_CUI(CUI.New(Client.CUI().Voice,Client.CUI().Mic,Client.CUI().Term,false,Client.CUI().Caption)),Client.say("Debug mode is now off.")):(Client.OpState()==null?false:Client.OpState().$0.$==0)?Client.say("I'm still working on understanding your last message."):(a=Text.QuickHello(command),a!=null&&a.$==1?($5=a.$0,true):(a$1=Text.QuickHelp(command),a$1!=null&&a$1.$==1?($5=a$1.$0,true):(a$2=Text.QuickPrograms(command),a$2!=null&&a$2.$==1&&($5=a$2.$0,true))))?(Client.debug((function($6)
    {
-    return function($6)
+    return function($7)
     {
-     return $5("Quick Text: "+SMApp$Web_GeneratedPrintf.p$7($6)+".");
+     return $6("Quick Text: "+SMApp$Web_GeneratedPrintf.p$7($7)+".");
     };
-   }(Global.id))($4)),c=Client.updateCtx($4),Main.update(Client.CUI(),c)):Client.CUI().Wait((b=null,Concurrency.Delay(function()
+   }(Global.id))($5)),c=Client.updateCtx($5),Main.update(Client.CUI(),c)):Client.CUI().Wait((b=null,Concurrency.Delay(function()
    {
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:1078194810",[command]),function(a$3)
+    Client.set_OpState({
+     $:1,
+     $0:{
+      $:0
+     }
+    });
+    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:484413790",[command]),function(a$3)
     {
      var a$4,m,c$1;
      a$4=Text.HasMeaning(a$3);
-     return a$4!=null&&a$4.$==1?(m=a$4.$0,(Client.debug(((((Runtime.Curried(function($5,$6,$7,$8)
+     return a$4!=null&&a$4.$==1?(m=a$4.$0,(Client.debug(((((Runtime.Curried(function($6,$7,$8,$9)
      {
-      return $5("Text: "+SMApp$Web_GeneratedPrintf.p($6)+" "+SMApp$Web_GeneratedPrintf.p$3($7)+" "+SMApp$Web_GeneratedPrintf.p$5($8));
+      return $6("Text: "+SMApp$Web_GeneratedPrintf.p($7)+" "+SMApp$Web_GeneratedPrintf.p$3($8)+" "+SMApp$Web_GeneratedPrintf.p$5($9));
      },4))(Global.id))(m.get_Intent()))(m.get_Trait()))(m.get_Entities())),c$1=Client.updateCtx(m),Main.update(Client.CUI(),c$1),Concurrency.Zero())):(Client.debug("Text: Did not receive a response from the server."),ClientExtensions["Terminal.Echo'"](term,"Sorry I did not understand what you said."),Concurrency.Zero());
-    });
+    }),Concurrency.Delay(function()
+    {
+     Client.set_OpState(null);
+     return Concurrency.Zero();
+    }));
    })));
   }
   SC$5.CUI=CUI.New(null,null,null,false,false);
+  SC$5.MicState={
+   $:0
+  };
+  SC$5.OpState=null;
   SC$5.echo=(o=Client.CUI().Term,function(a)
   {
    ClientExtensions["Terminal.EchoHtml'"](o,a);
   });
-  SC$5.MicState={
-   $:0
-  };
   SC$5.Context=[];
   SC$5.stopSpeaking=Global.speechSynthesis.speaking||Global.speechSynthesis.pending?Global.speechSynthesis.cancel():null;
   SC$5.container=Controls.Container;

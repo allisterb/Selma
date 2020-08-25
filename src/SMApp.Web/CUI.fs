@@ -12,6 +12,8 @@ open SMApp.Microphone
 
 type MicState = MicNotInitialized | MicConnecting | MicDisconnected | MicAudioStart | MicAudioEnd | MicReady | MicError of string | MicResult of obj*obj
 
+type OpState = | Lang | User
+
 [<JavaScript>]
 type CUI = {
     Voice:SpeechSynthesisVoice option
