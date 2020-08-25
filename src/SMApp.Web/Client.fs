@@ -112,18 +112,18 @@ module Client =
                 match i, e with
                 | Voice.Intent' i -> Some i
                 | _ -> None
-            let entity = 
-                match e with
-                | Voice.Entity' entity -> Some [entity]
-                | _ -> None
             let _trait = 
                 match e with
                 | Voice.Trait' t -> Some t
                 | _ -> None
-            match (intent, entity, _trait) with
+            let entity = 
+                match e with
+                | Voice.Entity' entity -> Some [entity]
+                | _ -> None
+            match (intent, _trait, entity) with
             | None, None, None -> ()
             | _ -> 
-                debug <| sprintf "Voice: %A %A %A" intent entity _trait
+                debug <| sprintf "Voice: %A %A %A" intent _trait entity 
                 Meaning(intent, _trait, entity) |> updateCtx |> Main.update CUI
             
         let main (term:Terminal) (command:string)  =
@@ -144,22 +144,10 @@ module Client =
             | _->         
                 async {
                     match! Server.GetMeaning command with
-                    | Some (Text.Meaning'([],  [])) -> 
-                        debug <| sprintf "Text: no intent."; 
-                        term.Echo' "Sorry I did not understand what you said."
-                    | Some (Text.Meaning'([],  e)) ->
-                        debug <| sprintf "Text: no intent. Entities: %A." e
-                    | Some (Text.Meaning'(intents,  []) as m) ->
-                        debug <| sprintf "Text: Intents: %A. No entities." intents
-                        Meaning(Some (Intent(m.TopIntent.Name, Some m.TopIntent.Confidence)), None, None) |> updateCtx |> Main.update CUI
-                    | Some (Text.Meaning'(intents,  entities) as m) ->
-                        debug <| sprintf "Text: intents: %A. entities: %A." intents entities
-                        Meaning(Some(Intent(m.TopIntent.Name, Some m.TopIntent.Confidence)), None, 
-                            entities 
-                            |> List.map (fun e -> Entity(e.Name, e.Value, Some e.Confidence)) 
-                            |> Some) 
-                            |> updateCtx |> Main.update CUI
-                    | None -> 
+                    | Text.HasMeaning m -> 
+                        debug <| sprintf "Text: %A %A %A" m.Intent m.Trait m.Entities
+                        m |> updateCtx |> Main.update CUI
+                    | _ -> 
                         debug "Text: Did not receive a response from the server." 
                         term.Echo' "Sorry I did not understand what you said."
                 } |> CUI.Wait

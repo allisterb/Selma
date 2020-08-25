@@ -4,6 +4,8 @@ open System
 
 open WebSharper
 
+open MongoDB.Bson
+
 open SMApp.JQueryTerminal
 open SMApp.WebSpeech
 open SMApp.Microphone
@@ -41,7 +43,7 @@ with
     member x.Wait (f:unit -> unit) =
         do 
             x.Echo'("please wait...")
-            x.Term.Disable();f();x.Term.Enable()
+            x.Term.Pause();f();x.Term.Resume()
     
     member x.Wait(f:Async<unit>) = x.Wait(fun _ -> f |> Async.Start)
     
@@ -59,7 +61,7 @@ module CUI =
     /// Basic user information for app authentication.
     [<JavaScript>]
     type User = {
-        UserName: string
+        Name:string
     }
     
     /// Interprets input entered by the user using voice or the terminal.

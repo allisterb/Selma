@@ -39,7 +39,7 @@ module NLU =
     module Voice =
         type Entity' = {body:string; ``end``:int; start: int; suggested:bool; value:string}
         
-        let (|Entity'|_|)  :obj -> Entity option =
+        let (|Entity'|_|)  :obj->Entity option =
             function
             | o when o.GetJS("contact") |> isNull |> not -> Entity("contact", o.GetJS("contact").GetJS("value") :?> string |> toLower, None) |> Some
             | _ -> None
@@ -120,12 +120,19 @@ module NLU =
 
         let mutable entityConfidenceThreshold = 0.85f
         
-        let (|Intent'|_|) :Meaning'->(Meaning option) =
+        let (|HasMeaning|_|) :Meaning' option ->(Meaning option) =
             function
-            | Meaning'([], entities) when entities.Length > 0 -> 
-                let entities' = entities |> List.where(fun e -> e.Confidence > entityConfidenceThreshold) |> List.map(fun e -> Entity(e.Name |> toLower, e.Value |> toLower, Some(e.Confidence)))
+            | Some(Meaning'([], entities)) when entities.Length > 0 -> 
+                let entities' = 
+                    entities |> List.where(fun e -> e.Confidence > entityConfidenceThreshold) 
+                    |> List.map(fun e -> Entity(e.Role |> toLower, e.Value, Some(e.Confidence)))
                 Meaning(None, None, Some entities') |> Some
-            | m when m.TopIntent.Confidence > intentConfidenceThreshold  -> 
-                    let entities = m.Entities |> List.where(fun e -> e.Confidence > entityConfidenceThreshold) |> List.map(fun e -> Entity(e.Name |> toLower, e.Value |> toLower, Some(e.Confidence))) 
-                    Meaning(Some(Intent(m.TopIntent.Name |> toLower, Some m.TopIntent.Confidence)), None, if entities.Length = 0 then None else Some(entities)) |> Some
+            | Some(Meaning'(intents, [])) as m when m.Value.TopIntent.Confidence > intentConfidenceThreshold  -> 
+                    Meaning(Some(Intent(m.Value.TopIntent.Name |> toLower, Some m.Value.TopIntent.Confidence)), None, None) |> Some
+            | Some(Meaning'(intents, entities)) as m when m.Value.TopIntent.Confidence > intentConfidenceThreshold  -> 
+                    let entities = 
+                        m.Value.Entities |> 
+                        List.where(fun e -> e.Confidence > entityConfidenceThreshold) 
+                        |> List.map(fun e -> Entity(e.Role |> toLower, e.Value, Some(e.Confidence))) 
+                    Meaning(Some(Intent(m.Value.TopIntent.Name |> toLower, Some m.Value.TopIntent.Confidence)), None, Some(entities)) |> Some
             | _ -> None        

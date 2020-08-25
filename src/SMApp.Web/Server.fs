@@ -1,15 +1,37 @@
 namespace SMApp.Web
 
 open System.Collections.Generic;
+open System.Linq
 
 open FSharp.Control
 
 open WebSharper
 open MongoDB.Driver
+open MongoDB.Bson
+open MongoDB.Driver.Linq
+open FSharp.MongoDB
 open Npgsql.FSharp
 
 open SMApp
 open SMApp.Models
+
+type _User = {
+    Id: BsonObjectId
+    username: string
+    password: string
+    salt:string
+    email:string
+    displayName:string
+}
+
+[<AllowNullLiteral>]
+type __User() = 
+    member val Id = Unchecked.defaultof<BsonObjectId> with get, set
+    member val username = Unchecked.defaultof<string> with get, set
+    member val password = Unchecked.defaultof<string> with get, set
+    member val salt = Unchecked.defaultof<string> with get, set
+    member val email = Unchecked.defaultof<string> with get, set
+    member val displayName = Unchecked.defaultof<string> with get, set
 
 module Server =        
    
@@ -32,20 +54,35 @@ module Server =
         |> Sql.formatConnectionString
         |> Sql.connect
 
-    //let private users = mongodb.GetDatabase("eddi").GetCollection<User>("Users")
-
-    //infof "Got {0} users. " [users.CountDocuments(FilterDefinitionBuilder().Empty)]
+    let private users = mongodb.GetDatabase("eddi").GetCollection<__User>("users")
     
-    (*
-    //let u = users.FindAsync()
     [<Rpc>]
-    let GetUser user = 
+    let GetUser (user:string) = 
+        
+        use op = beginOp <| sprintf "Find user %s" user
+        match users.Find(fun (u:__User) -> u.username = user).FirstOrDefault() with
+        | o when not(isNull(o)) -> 
+            op.Complete() 
+            Some {Name=o.username}
+        | _ -> 
+            op.Complete()
+            debugf "Did not find user {0}." [user]; 
+            None
+        
+    [<Rpc>]
+    let GetUserAsync (user:string) = 
         async {
-            match! eddi.GetUser user |> Async.AwaitTask |> Async.Catch with
-            | Choice1Of2 o when not(isNull(o)) -> debugf "Found user {0}." [user]; return Some {UserName=o.Username}
-            | _ -> debugf "Did not find user {0}." [user]; return None
+            use op = beginOp <| sprintf "Find user %s" user
+            match! users.Find(Builders.Filter.Where(fun (u:__User) -> u.username = user)).FirstAsync() |> Async.AwaitTask |> Async.Catch with
+            | Choice1Of2 o -> 
+                op.Complete() 
+                return Some {Name=o.username}
+            | _ -> 
+                op.Complete()
+                debugf "Did not find user {0}." [user]; return None
         }
-    *)  
+
+    
     [<Rpc>]
     let GetMeaning input = 
         async {

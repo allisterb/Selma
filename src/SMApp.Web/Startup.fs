@@ -25,7 +25,8 @@ type Startup() =
 
     member this.Configure(app: IApplicationBuilder, env: IHostingEnvironment) =
         if env.IsDevelopment() then app.UseDeveloperExceptionPage() |> ignore
-        FSharp.MongoDB.SerializationProviderModule.Register()
+        do FSharp.MongoDB.SerializationProviderModule.Register()
+        do FSharp.MongoDB.Conventions.ConventionsModule.Register()
         app.UseAuthentication()
             .UseStaticFiles()
             .UseWebSharper()
