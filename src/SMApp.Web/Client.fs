@@ -92,7 +92,7 @@ module Client =
             sprintf "There are currently %i voices installed on this computer or device." voices.Length |> say
             voices |> Array.iteri (fun i v -> sprintf "Voice %i. Name: %s, Local: %A." i v.Name v.LocalService |> say)
 
-    let sayRandom phrases = say <| getRandomPhrase phrases    
+    let sayRandom t phrases = say <| getRandomPhrase phrases t
     
     let stopSpeaking = if Window.SpeechSynthesis.Speaking || Window.SpeechSynthesis.Pending then Window.SpeechSynthesis.Cancel()
     

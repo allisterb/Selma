@@ -33,13 +33,13 @@ module CUI =
    
     let rng = Random()
     
-    let getRandomPhrase (phrases:List<'t>) = phrases |> List.item(rng.Next(0, phrases.Length))
+    let getRandomPhrase (phrases:List<string>) r = phrases |> List.item(rng.Next(0, phrases.Length)) |> replace_tok "$0" r
     
     let waitRetrievePhrases = [
-        "Ok, let me check that. for you"
-        "Please wait while I check that."
-        "Wait while I get that."
-        "Ok let me see if I can find that."
+        "Ok, let me check that $0 for you"
+        "Please wait while I check that $0 for you."
+        "Wait while I check that $0."
+        "Ok let me see if I can find that $0."
     ]
 
     let helloPhrases = [
@@ -52,10 +52,10 @@ module CUI =
     ]
 
     let helloUserPhrases = [
-        "Hi $user, welcome back."
-        "Welcome $user, nice to see you again.."
-        "Hello $user"
-        "Good to see you $user."
+        "Hi $0, welcome back."
+        "Welcome $0, nice to see you again.."
+        "Hello $0"
+        "Good to see you $0."
     ]
 
     type CUI = {
@@ -85,7 +85,7 @@ module CUI =
                 } |> Async.Start
                 do if x.Caption then x.Echo' text
     
-        member x.sayRandom phrases = x.Say <| getRandomPhrase phrases
+        member x.sayRandom phrases t = x.Say <| getRandomPhrase phrases t
         
         member x.Wait (f:unit -> unit) =
             do 

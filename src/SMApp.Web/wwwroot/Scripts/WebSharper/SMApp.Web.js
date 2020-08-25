@@ -1,7 +1,7 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Web,ClientExtensions,_Html,htmModule,SC$1,Bootstrap,Controls,SC$2,NLU,Intent,Trait,Entity,Meaning,Voice,_Entity,Text,_Meaning,_Intent,_Entity$1,SC$3,CUI,User,Interpreter,CUI$1,SC$4,Main,Client,SC$5,SMApp$Web_GeneratedPrintf,WebSharper,Arrays,$,Utils,console,IntelliFactory,Runtime,Strings,List,Seq,UI,Doc,AttrModule,Concurrency,Random,Remoting,AjaxRemotingProvider,Wit,document,Unchecked;
+ var Global,SMApp,Web,ClientExtensions,_Html,htmModule,SC$1,Bootstrap,Controls,SC$2,NLU,Intent,Trait,Entity,Meaning,Voice,_Entity,Text,_Meaning,_Intent,_Entity$1,SC$3,CUI,User,Interpreter,CUI$1,SC$4,Main,Client,SC$5,SMApp$Web_GeneratedPrintf,WebSharper,Strings,Arrays,$,Utils,console,IntelliFactory,Runtime,List,Seq,UI,Doc,AttrModule,Concurrency,Random,Remoting,AjaxRemotingProvider,Wit,document,Unchecked;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Web=SMApp.Web=SMApp.Web||{};
@@ -34,13 +34,13 @@
  SC$5=Global.StartupCode$SMApp_Web$Client=Global.StartupCode$SMApp_Web$Client||{};
  SMApp$Web_GeneratedPrintf=Global.SMApp$Web_GeneratedPrintf=Global.SMApp$Web_GeneratedPrintf||{};
  WebSharper=Global.WebSharper;
+ Strings=WebSharper&&WebSharper.Strings;
  Arrays=WebSharper&&WebSharper.Arrays;
  $=Global.jQuery;
  Utils=WebSharper&&WebSharper.Utils;
  console=Global.console;
  IntelliFactory=Global.IntelliFactory;
  Runtime=IntelliFactory&&IntelliFactory.Runtime;
- Strings=WebSharper&&WebSharper.Strings;
  List=WebSharper&&WebSharper.List;
  Seq=WebSharper&&WebSharper.Seq;
  UI=WebSharper&&WebSharper.UI;
@@ -53,6 +53,10 @@
  Wit=Global.Wit;
  document=Global.document;
  Unchecked=WebSharper&&WebSharper.Unchecked;
+ ClientExtensions.replace_tok=function(token,value,s)
+ {
+  return Strings.Replace(s,token,value);
+ };
  ClientExtensions.toLower=function(s)
  {
   return s.toLowerCase();
@@ -983,9 +987,9 @@
    f();
    this.Term.resume();
   },
-  sayRandom:function(phrases)
+  sayRandom:function(phrases,t)
   {
-   this.Say(CUI.getRandomPhrase(phrases));
+   this.Say(CUI.getRandomPhrase(phrases,t));
   },
   Say:function(text)
   {
@@ -1045,9 +1049,9 @@
   SC$4.$cctor();
   return SC$4.waitRetrievePhrases;
  };
- CUI.getRandomPhrase=function(phrases)
+ CUI.getRandomPhrase=function(phrases,r)
  {
-  return Seq.nth(CUI.rng().Next(0,phrases.get_Length()),phrases);
+  return ClientExtensions.replace_tok("$0",r,Seq.nth(CUI.rng().Next(0,phrases.get_Length()),phrases));
  };
  CUI.rng=function()
  {
@@ -1058,43 +1062,52 @@
  {
   SC$4.$cctor=Global.ignore;
   SC$4.rng=new Random.New();
-  SC$4.waitRetrievePhrases=List.ofArray(["Ok, let me check that. for you","Please wait while I check that.","Wait while I get that.","Ok let me see if I can find that."]);
+  SC$4.waitRetrievePhrases=List.ofArray(["Ok, let me check that $0 for you","Please wait while I check that $0 for you.","Wait while I check that $0.","Ok let me see if I can find that $0."]);
   SC$4.helloPhrases=List.ofArray(["Welcome!","Welcome, my name is Selma.","Welcome to Selma. How can I help?","Hello this is Selma, how can I help?","Hello, I am Selma. How can I help?","Hello, I am Selma. How may I help you now?"]);
-  SC$4.helloUserPhrases=List.ofArray(["Hi $user, welcome back.","Welcome $user, nice to see you again..","Hello $user","Good to see you $user."]);
+  SC$4.helloUserPhrases=List.ofArray(["Hi $0, welcome back.","Welcome $0, nice to see you again..","Hello $0","Good to see you $0."]);
  };
  Main.update=function(cui,context)
  {
-  var b,m,$1,$2,$3,$4,$5,a,$6,a$1,a$2,$7,$8,a$3,$9,$10,a$4,$11,b$1;
+  var $1,$2,$3,$4,$5,a,$6,a$1,a$2,$7,$8,a$3,$9,$10,a$4,$11,b,b$1,m,f,$12;
   function say(a$5)
   {
    cui.Say(a$5);
   }
-  b=context.length>=5?5:context.length;
-  Main.debug((function($12)
+  b$1=context.length>=5?5:context.length;
+  Main.debug((function($13)
   {
-   return function($13)
+   return function($14)
    {
-    return $12("Current context: "+Utils.prettyPrint($13)+".");
+    return $13("Current context: "+Utils.prettyPrint($14)+".");
    };
   }(Global.id))(context));
-  m=List.ofSeq(Seq.take(b,context));
-  m.$==1&&(($2=Main.Intent("hello",m.$0.$0),$2!=null&&$2.$==1)&&(m.$0.$1==null&&(m.$0.$2==null&&m.$1.$==0)))?(context.shift(),cui.Say(function($12)
-  {
-   return $12("Hello. My name is Selma. What's yours?");
-  }(Global.id))):m.$==1&&(($4=Main.Intent("hello",m.$0.$0),$4!=null&&$4.$==1)?m.$0.$1==null?($5=m.$0.$2,$5!=null&&$5.$==1)&&(m.$0.$2.$0.$==1&&(a=Main.Entity("contact",m.$0.$2.$0.$0),a!=null&&a.$==1?m.$0.$2.$0.$1.$==0&&(m.$1.$==1?($6=Main.Intent("hello",m.$1.$0.$0),$6!=null&&$6.$==1)&&(m.$1.$0.$1==null&&(m.$1.$0.$2==null&&(m.$1.$1.$==0&&(a$1=Main.Entity("contact",m.$0.$2.$0.$0),a$1!=null&&a$1.$==1&&($3=a$1.$0,true))))):($3=a.$0,true)):(a$2=Main.Entity("contact",m.$0.$2.$0.$0),a$2!=null&&a$2.$==1&&(m.$0.$2.$0.$1.$==0&&(m.$1.$==1&&(($7=Main.Intent("hello",m.$1.$0.$0),$7!=null&&$7.$==1)&&(m.$1.$0.$1==null&&(m.$1.$0.$2==null&&(m.$1.$1.$==0&&($3=a$2.$0,true)))))))))):($8=m.$0.$2,$8!=null&&$8.$==1)&&(m.$0.$2.$0.$==1&&(a$3=Main.Entity("contact",m.$0.$2.$0.$0),a$3!=null&&a$3.$==1&&(m.$0.$2.$0.$1.$==0&&(m.$1.$==1&&(($9=Main.Intent("hello",m.$1.$0.$0),$9!=null&&$9.$==1)&&(m.$1.$0.$1==null&&(m.$1.$0.$2==null&&(m.$1.$1.$==0&&($3=a$3.$0,true))))))))):($10=m.$0.$2,$10!=null&&$10.$==1)&&(m.$0.$2.$0.$==1&&(a$4=Main.Entity("contact",m.$0.$2.$0.$0),a$4!=null&&a$4.$==1&&(m.$0.$2.$0.$1.$==0&&(m.$1.$==1&&(($11=Main.Intent("hello",m.$1.$0.$0),$11!=null&&$11.$==1)&&(m.$1.$0.$1==null&&(m.$1.$0.$2==null&&(m.$1.$1.$==0&&($3=a$4.$0,true))))))))))?(context.shift(),context.shift(),Concurrency.Start((b$1=null,Concurrency.Delay(function()
-  {
-   cui.sayRandom(CUI.waitRetrievePhrases());
-   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetUser2:-1896787513",[$3]),function(a$5)
+  m=List.ofSeq(Seq.take(b$1,context));
+  if(m.$==1&&(($2=Main.Intent("hello",m.$0.$0),$2!=null&&$2.$==1)&&(m.$0.$1==null&&(m.$0.$2==null&&m.$1.$==0))))
+   cui.Say(function($13)
    {
-    return a$5==null?(say("Sorry I did not find that user."),Concurrency.Zero()):(say((function($12)
+    return $13("Hello. My name is Selma. What's yours?");
+   }(Global.id));
+  else
+   if(m.$==1&&(($4=Main.Intent("hello",m.$0.$0),$4!=null&&$4.$==1)?m.$0.$1==null?($5=m.$0.$2,$5!=null&&$5.$==1)&&(m.$0.$2.$0.$==1&&(a=Main.Entity("contact",m.$0.$2.$0.$0),a!=null&&a.$==1?m.$0.$2.$0.$1.$==0&&(m.$1.$==1?($6=Main.Intent("hello",m.$1.$0.$0),$6!=null&&$6.$==1)&&(m.$1.$0.$1==null&&(m.$1.$0.$2==null&&(m.$1.$1.$==0&&(a$1=Main.Entity("contact",m.$0.$2.$0.$0),a$1!=null&&a$1.$==1&&($3=a$1.$0,true))))):($3=a.$0,true)):(a$2=Main.Entity("contact",m.$0.$2.$0.$0),a$2!=null&&a$2.$==1&&(m.$0.$2.$0.$1.$==0&&(m.$1.$==1&&(($7=Main.Intent("hello",m.$1.$0.$0),$7!=null&&$7.$==1)&&(m.$1.$0.$1==null&&(m.$1.$0.$2==null&&(m.$1.$1.$==0&&($3=a$2.$0,true)))))))))):($8=m.$0.$2,$8!=null&&$8.$==1)&&(m.$0.$2.$0.$==1&&(a$3=Main.Entity("contact",m.$0.$2.$0.$0),a$3!=null&&a$3.$==1&&(m.$0.$2.$0.$1.$==0&&(m.$1.$==1&&(($9=Main.Intent("hello",m.$1.$0.$0),$9!=null&&$9.$==1)&&(m.$1.$0.$1==null&&(m.$1.$0.$2==null&&(m.$1.$1.$==0&&($3=a$3.$0,true))))))))):($10=m.$0.$2,$10!=null&&$10.$==1)&&(m.$0.$2.$0.$==1&&(a$4=Main.Entity("contact",m.$0.$2.$0.$0),a$4!=null&&a$4.$==1&&(m.$0.$2.$0.$1.$==0&&(m.$1.$==1&&(($11=Main.Intent("hello",m.$1.$0.$0),$11!=null&&$11.$==1)&&(m.$1.$0.$1==null&&(m.$1.$0.$2==null&&(m.$1.$1.$==0&&($3=a$4.$0,true)))))))))))
     {
-     return function($13)
+     for(f=1,$12=2;f<=$12;f++)context.shift();
+     Concurrency.Start((b=null,Concurrency.Delay(function()
      {
-      return $12("Hello "+Utils.toSafe($13));
-     };
-    }(Global.id))(a$5.$0.Name)),Concurrency.Zero());
-   });
-  })),null)):void 0;
+      cui.sayRandom(CUI.waitRetrievePhrases(),"user name");
+      return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetUser2:1208830310",[$3]),function(a$5)
+      {
+       return a$5==null?(say("Sorry I did not find that user."),Concurrency.Zero()):(say((function($13)
+       {
+        return function($14)
+        {
+         return $13("Hello "+Utils.toSafe($14));
+        };
+       }(Global.id))(a$5.$0.Name)),Concurrency.Zero());
+      });
+     })),null);
+    }
+   else
+    void 0;
  };
  Main.Entity=function(n,a)
  {
@@ -1154,9 +1167,9 @@
   SC$5.$cctor();
   return SC$5.stopSpeaking;
  };
- Client.sayRandom=function(phrases)
+ Client.sayRandom=function(t,phrases)
  {
-  Client.say(CUI.getRandomPhrase(phrases));
+  Client.say(CUI.getRandomPhrase(phrases,t));
  };
  Client.sayVoices=function()
  {
@@ -1407,7 +1420,7 @@
       $:0
      }
     });
-    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-343103119",[command]),function(a$3)
+    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:65282759",[command]),function(a$3)
     {
      var a$4,m,c$1;
      a$4=Text.HasMeaning(a$3);

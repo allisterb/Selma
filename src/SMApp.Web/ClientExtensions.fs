@@ -32,6 +32,8 @@ module ClientExtensions =
 
     let toLower (s:string) = s.ToLower()
 
+    let replace_tok (token:string) (value:string) (s:string) = s.Replace(token, value)
+
 [<JavaScript>]
 type _Html =
    | Elem of string * _Html list
