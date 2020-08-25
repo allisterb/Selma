@@ -1054,37 +1054,37 @@
  };
  Main.update=function(cui,context)
  {
-  var $1,$2,$3,$4,a,u,b;
-  function say(a$1)
+  var $1,$2,$3,$4,$5,a,$6,a$1,a$2,$7,$8,a$3,$9,$10,a$4,$11,b;
+  function say(a$5)
   {
-   cui.Say(a$1);
+   cui.Say(a$5);
   }
-  Main.debug((function($5)
+  Main.debug((function($12)
   {
-   return function($6)
+   return function($13)
    {
-    return $5("Current context: "+Utils.printList(function($7)
+    return $12("Current context: "+Utils.printList(function($14)
     {
-     return SMApp$Web_GeneratedPrintf.p$7($7);
-    },$6)+".");
+     return SMApp$Web_GeneratedPrintf.p$7($14);
+    },$13)+".");
    };
   }(Global.id))(context));
-  context.$==1&&(($2=Main.Intent("hello",context.$0.$0),$2!=null&&$2.$==1)&&(context.$0.$1==null&&(context.$0.$2==null&&context.$1.$==0)))?cui.Say(function($5)
+  context.$==1&&(($2=Main.Intent("hello",context.$0.$0),$2!=null&&$2.$==1)&&(context.$0.$1==null&&(context.$0.$2==null&&context.$1.$==0)))?cui.Say(function($12)
   {
-   return $5("Hello. My name is Selma. What's yours?");
-  }(Global.id)):context.$==1?($3=Main.Intent("hello",context.$0.$0),$3!=null&&$3.$==1)?($4=context.$0.$2,$4!=null&&$4.$==1)?context.$0.$2.$0.$==1?(a=Main.Entity("contact",context.$0.$2.$0.$0),a!=null&&a.$==1?context.$0.$2.$0.$1.$==0?(u=a.$0,Concurrency.Start((b=null,Concurrency.Delay(function()
+   return $12("Hello. My name is Selma. What's yours?");
+  }(Global.id)):context.$==1&&(($4=Main.Intent("hello",context.$0.$0),$4!=null&&$4.$==1)?context.$0.$1==null?($5=context.$0.$2,$5!=null&&$5.$==1)&&(context.$0.$2.$0.$==1&&(a=Main.Entity("contact",context.$0.$2.$0.$0),a!=null&&a.$==1?context.$0.$2.$0.$1.$==0&&(context.$1.$==1?($6=Main.Intent("hello",context.$1.$0.$0),$6!=null&&$6.$==1)&&(context.$1.$0.$1==null&&(context.$1.$0.$2==null&&(context.$1.$1.$==0&&(a$1=Main.Entity("contact",context.$0.$2.$0.$0),a$1!=null&&a$1.$==1&&($3=a$1.$0,true))))):($3=a.$0,true)):(a$2=Main.Entity("contact",context.$0.$2.$0.$0),a$2!=null&&a$2.$==1&&(context.$0.$2.$0.$1.$==0&&(context.$1.$==1&&(($7=Main.Intent("hello",context.$1.$0.$0),$7!=null&&$7.$==1)&&(context.$1.$0.$1==null&&(context.$1.$0.$2==null&&(context.$1.$1.$==0&&($3=a$2.$0,true)))))))))):($8=context.$0.$2,$8!=null&&$8.$==1)&&(context.$0.$2.$0.$==1&&(a$3=Main.Entity("contact",context.$0.$2.$0.$0),a$3!=null&&a$3.$==1&&(context.$0.$2.$0.$1.$==0&&(context.$1.$==1&&(($9=Main.Intent("hello",context.$1.$0.$0),$9!=null&&$9.$==1)&&(context.$1.$0.$1==null&&(context.$1.$0.$2==null&&(context.$1.$1.$==0&&($3=a$3.$0,true))))))))):($10=context.$0.$2,$10!=null&&$10.$==1)&&(context.$0.$2.$0.$==1&&(a$4=Main.Entity("contact",context.$0.$2.$0.$0),a$4!=null&&a$4.$==1&&(context.$0.$2.$0.$1.$==0&&(context.$1.$==1&&(($11=Main.Intent("hello",context.$1.$0.$0),$11!=null&&$11.$==1)&&(context.$1.$0.$1==null&&(context.$1.$0.$2==null&&(context.$1.$1.$==0&&($3=a$4.$0,true))))))))))?Concurrency.Start((b=null,Concurrency.Delay(function()
   {
-   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetUserAsync2:-641865754",[u]),function(a$1)
+   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetUser2:1139258252",[$3]),function(a$5)
    {
-    return a$1==null?(say("Sorry I did not find that user."),Concurrency.Zero()):(say((function($5)
+    return a$5==null?(say("Sorry I did not find that user."),Concurrency.Zero()):(say((function($12)
     {
-     return function($6)
+     return function($13)
      {
-      return $5("Hello "+Utils.toSafe($6));
+      return $12("Hello "+Utils.toSafe($13));
      };
-    }(Global.id))(a$1.$0.Name)),Concurrency.Zero());
+    }(Global.id))(a$5.$0.Name)),Concurrency.Zero());
    });
-  })),null)):void 0:void 0):void 0:void 0:void 0:void 0;
+  })),null):void 0;
  };
  Main.Entity=function(n,a)
  {
@@ -1399,7 +1399,7 @@
       $:0
      }
     });
-    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:484413790",[command]),function(a$3)
+    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-169037753",[command]),function(a$3)
     {
      var a$4,m,c$1;
      a$4=Text.HasMeaning(a$3);

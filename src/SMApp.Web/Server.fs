@@ -55,26 +55,8 @@ module Server =
         |> Sql.formatConnectionString
         |> Sql.connect
 
-    
-    
     [<Rpc>]
     let GetUser (user:string) = 
-        use op = beginOp <| sprintf "Find user %s" user
-        try
-            match mongodb_users.Find(fun (u:``user``) -> u.user_name = user).First() with
-            | o -> 
-                op.Complete() 
-                Some {Name=o.user_name}
-            | _ -> 
-                op.Complete()
-                debugf "Did not find user {0}." [user]; 
-                None
-        with _ -> 
-            debugf "Did not find user {0}." [user];
-            None
-
-    [<Rpc>]
-    let GetUserAsync (user:string) = 
         async {
             use op = beginOp <| sprintf "Find user %s" user
             match! mongodb_users.Find(Builders.Filter.Where(fun (u:``user``) -> u.user_name = user)).FirstAsync() |> Async.AwaitTask |> Async.Catch with
@@ -87,7 +69,7 @@ module Server =
         }
 
     [<Rpc>]
-    let GetUserAsync2(user:string) : Async<User option> = 
+    let GetUser2(user:string) : Async<User option> = 
         pgdb
         |> (Sql.query <| sprintf "SELECT * FROM selma_user WHERE user_name='%s'" user)
         |> Sql.executeAsync (fun read ->

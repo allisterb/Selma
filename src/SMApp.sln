@@ -44,6 +44,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{08D21D7A-6
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deploy", "Deploy", "{471A2D10-FC79-4425-92A4-CF8234D86D1E}"
 	ProjectSection(SolutionItems) = preProject
+		..\deploy\oc-deploy-build.cmd = ..\deploy\oc-deploy-build.cmd
 		..\deploy\oc-deploy.cmd = ..\deploy\oc-deploy.cmd
 	EndProjectSection
 EndProject
