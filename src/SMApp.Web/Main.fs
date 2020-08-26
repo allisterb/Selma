@@ -6,22 +6,11 @@ open WebSharper
 
 [<JavaScript>]
 module Main =
-    
     let debug m = sprintf "Main: %A" m |> ClientExtensions.debug
     
-    let history = new Stack<Meaning>()
+    let questions = new Stack<Question>()
 
-    let (|Intent|_|) n = 
-        function
-        | Some(Intent (i, _)) when i = n -> Some ()
-        | _ -> None
-        
-    let (|Entity|_|) (n:string) :Entity->string option = 
-        function
-        | entity when entity.Name = n -> Some entity.Value
-        | _ -> None
-
-    let update (cui: CUI) (props: Dictionary<string, obj>) (msgs:Stack<string>) (context: Stack<Meaning>) =
+    let update (cui: CUI) (props: Dictionary<string, obj>) (responses:Stack<string>) (context: Stack<Meaning>) =
         
         let hasProp k = props.ContainsKey k
         
@@ -45,13 +34,19 @@ module Main =
             | m when hasProp "user" -> m.Unwrap() |> Some 
             | _ -> None
 
+        let (|Question|_|) :(Intent option * Trait option * Entity list option) -> (Intent option * Trait option * Entity list option) option  =
+            let matchp m = match questions.Peek() with | Question(m', _) when m = m' -> true | _ -> false
+            function
+            | m when questions.Count > 0 && matchp(Meaning(m)) ->  Some m
+            | _ -> None
+
         let say t = 
-            msgs.Push(t.ToString())
+            responses.Push(t.ToString())
             cui.Say t
 
         let sayRandom p v  = 
             let t = getRandomPhrase p v
-            msgs.Push(t) |> ignore
+            responses.Push(t) |> ignore
             cui.Say t
         
         let sayRandom' p = sayRandom p ""
@@ -70,10 +65,16 @@ module Main =
         
         let pop n = for _ in 1..n do context.Pop() |> ignore
         
+        let popq = questions.Pop() |> ignore
+
+        let push' (q:Meaning list) (r:string) = questions.Push(Question(q.Head, r))
+
         debug <| sprintf "Current context: %A." context
 
         (* Interpreter logic begins here *)
         match context |> Seq.take b |> List.ofSeq with
+        
+        (* User login *)
         | AnonUser(Intent "hello", None, None)::[] -> 
             sayRandom' helloPhrases
         
@@ -93,6 +94,21 @@ module Main =
             getUser u
             pop  2
 
+        (* User switch *)
+        | User(Intent "hello", None, Some [Entity "contact" u])::[] as q ->
+            say "Are you sure you want to switch users?"
+            push' q "Are you sure you want to switch users?"
+            
+        | User(Intent "yes", None, None)::User(Question(Intent "hello", None, Some [Entity "contact" u]))::[] ->
+            getUser u
+            pop 2
+            popq
+
+        | User(Intent "no", None, None)::User(Question(Intent "hello", None, Some [Entity "contact" _]))::[] ->
+            pop 2
+            popq
+
         | _ -> 
             pop 1 |> ignore
             say "Sorry I didn't understand what you meant."
+            if questions.Count > 0 then let q = questions.Peek() in q.Response |> say

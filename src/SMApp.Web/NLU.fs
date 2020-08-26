@@ -35,6 +35,24 @@ module NLU =
         member x.Entities = let i, t, el = x.Unwrap() in el
         override x.ToString() = sprintf "%A %A. %A" x.Intent x.Trait x.Entities
 
+    type Question = Question of Meaning * string
+        with 
+            member x.Unwrap() = match x with | Question(m, r)->(m, r)
+            member x.Meaning = x.Unwrap() |> fst
+            member x.Response = x.Unwrap() |> snd
+
+    let (|Intent|_|) n = 
+        function
+        | Some(Intent (i, _)) when i = n -> Some ()
+        | _ -> None
+        
+    let (|Entity|_|) (n:string) :Entity->string option = 
+        function
+        | entity when entity.Name = n -> Some entity.Value
+        | _ -> None
+
+    let (|Yes|_|) = function | Meaning(Intent "yes", None, None) -> Some () |  _ -> None
+
     [<RequireQualifiedAccess>]
     module Voice =
         type Entity' = {body:string; ``end``:int; start: int; suggested:bool; value:string}

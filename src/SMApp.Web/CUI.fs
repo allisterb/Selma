@@ -14,23 +14,6 @@ type OpState = | Lang | User
 
 [<AutoOpen;JavaScript>]
 module CUI =
-    /// Basic user information for app authentication.
-    [<JavaScript>]
-    type User = {
-        Name:string
-    }
-    with 
-        override x.ToString() = x.Name
-
-    /// Interprets input entered by the user using voice or the terminal.
-    [<JavaScript>]
-    type Interpreter = Interpreter of (SMApp.Microphone.Mic -> (obj*obj) -> unit) * ((SMApp.JQueryTerminal.Terminal->string->unit) * SMApp.JQueryTerminal.Options)
-        with
-        member x.Unwrap = match x with | Interpreter(v, (i, o)) -> v, i, o
-        member x.Voice = let v, i, o = x.Unwrap in v
-        member x.Text = let v, i, o = x.Unwrap in i
-        member x.Options = let v, i, o = x.Unwrap in o
-   
     let rng = Random()
     
     let getRandomPhrase (phrases:List<string>) r = phrases |> List.item(rng.Next(0, phrases.Length)) |> replace_tok "$0" r
@@ -63,7 +46,22 @@ module CUI =
     let helpPhrases = [
         "What can I help you with $0?"
     ]
+    
+    /// Basic user information for app authentication.
+    type User = {
+        Name:string
+    }
+    with 
+        override x.ToString() = x.Name
 
+    /// Interprets input entered by the user using voice or the terminal.
+    type Interpreter = Interpreter of (SMApp.Microphone.Mic -> (obj*obj) -> unit) * ((SMApp.JQueryTerminal.Terminal->string->unit) * SMApp.JQueryTerminal.Options)
+        with
+        member x.Unwrap = match x with | Interpreter(v, (i, o)) -> v, i, o
+        member x.Voice = let v, i, o = x.Unwrap in v
+        member x.Text = let v, i, o = x.Unwrap in i
+        member x.Options = let v, i, o = x.Unwrap in o
+   
     type CUI = {
         Voice:SpeechSynthesisVoice option
         Mic: Mic option
@@ -108,4 +106,3 @@ module CUI =
                 voices |> Array.iteri (fun i v -> sprintf "Voice %i. Name: %s, Local: %A." i v.Name v.LocalService |> x.Say)
 
         member x.StopSpeaking = if Window.SpeechSynthesis.Speaking || Window.SpeechSynthesis.Pending then Window.SpeechSynthesis.Cancel()
-

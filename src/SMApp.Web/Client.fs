@@ -28,8 +28,6 @@ module Client =
     let mutable OpState: OpState option = None
     let Props = new Dictionary<string, obj>()
 
-    (* Messages *)
-    let Msgs = Stack<string>()
     let debug m = 
         let text' = sprintf "Client: %A" m in
         ClientExtensions.debug text'
@@ -37,7 +35,7 @@ module Client =
 
     (* NLU context *)
     let Context = new Stack<Meaning>()
-
+    let Responses = Stack<string>()
     let pushCtx (m:Meaning) =
         do Context.Push m
         Context
@@ -57,7 +55,6 @@ module Client =
         if CUI.Voice = None then 
             error "No speech synthesis voice is available."
             CUI.Term.Echo' "No speech synthesis voice is available. Install speech synthesis on this device or computer to use the voice output feature of Selma."
-        
     let initMic m =
         CUI <- { CUI with Mic = Some(new Mic()) }
         let mic = CUI.Mic.Value
@@ -77,7 +74,7 @@ module Client =
         do mic.Connect("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT")
 
     let say text =        
-        Msgs.Push text
+        Responses.Push text
         match CUI.Voice with
         | None -> 
             CUI.Term.Echo' text
@@ -97,8 +94,6 @@ module Client =
             voices |> Array.iteri (fun i v -> sprintf "Voice %i. Name: %s, Local: %A." i v.Name v.LocalService |> say)
 
     let sayRandom t phrases = say <| getRandomPhrase phrases t
-    
-    let stopSpeaking = if Window.SpeechSynthesis.Speaking || Window.SpeechSynthesis.Pending then Window.SpeechSynthesis.Cancel()
     
     let wait (f:unit -> unit) =
         do 
@@ -130,7 +125,7 @@ module Client =
                 debug <| sprintf "Voice: %A %A %A" intent _trait entity
                 match OpState with
                 | Some Lang -> say "I'm still working on understanding your last message."
-                | Some _ | None -> Meaning(intent, _trait, entity) |> pushCtx |> Main.update CUI Props Msgs
+                | Some _ | None -> Meaning(intent, _trait, entity) |> pushCtx |> Main.update CUI Props Responses
                 
         let main (term:Terminal) (command:string)  =
             CUI <- { CUI with Term = term }
@@ -153,7 +148,7 @@ module Client =
                     | Text.QuickHelp m 
                     | Text.QuickPrograms m -> 
                         debug <| sprintf "Quick Text: %A." m
-                        m |> pushCtx |> Main.update CUI Props Msgs
+                        m |> pushCtx |> Main.update CUI Props Responses
                     (* Use the NLU service for everything else *)
                     | _->         
                         async {
@@ -161,7 +156,7 @@ module Client =
                             match! Server.GetMeaning command with
                             | Text.HasMeaning m -> 
                                 debug <| sprintf "Text: %A %A %A" m.Intent m.Trait m.Entities
-                                m |> pushCtx |> Main.update CUI Props Msgs
+                                m |> pushCtx |> Main.update CUI Props Responses
                             | _ -> 
                                 debug "Text: Did not receive a response from the server." 
                                 term.Echo' "Sorry I did not understand what you said."
