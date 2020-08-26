@@ -35,7 +35,9 @@ module Client =
 
     (* NLU context *)
     let Context = new Stack<Meaning>()
+    let Questions = new Stack<Question>()
     let Responses = Stack<string>()
+
     let pushCtx (m:Meaning) =
         do Context.Push m
         Context
@@ -73,8 +75,7 @@ module Client =
             )
         do mic.Connect("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT")
 
-    let say text =        
-        Responses.Push text
+    let say' text =        
         match CUI.Voice with
         | None -> 
             CUI.Term.Echo' text
@@ -86,12 +87,16 @@ module Client =
                 do if CUI.Caption then CUI.Term.Echo' text
             } |> Async.Start
 
+    let say text =
+        Responses.Push text
+        say' text
+
     let sayVoices() =
         let voices' = Window.SpeechSynthesis.GetVoices()
         do if not(isNull(voices')) then
             let voices = voices' |> toArray    
-            sprintf "There are currently %i voices installed on this computer or device." voices.Length |> say
-            voices |> Array.iteri (fun i v -> sprintf "Voice %i. Name: %s, Local: %A." i v.Name v.LocalService |> say)
+            sprintf "There are currently %i voices installed on this computer or device." voices.Length |> say'
+            voices |> Array.iteri (fun i v -> sprintf "Voice %i. Name: %s, Local: %A." i v.Name v.LocalService |> say')
 
     let sayRandom t phrases = say <| getRandomPhrase phrases t
     
@@ -124,8 +129,8 @@ module Client =
             | _ -> 
                 debug <| sprintf "Voice: %A %A %A" intent _trait entity
                 match OpState with
-                | Some Lang -> say "I'm still working on understanding your last message."
-                | Some _ | None -> Meaning(intent, _trait, entity) |> pushCtx |> Main.update CUI Props Responses
+                | Some Lang -> say' "I'm still working on understanding your last message."
+                | Some _ | None -> Meaning(intent, _trait, entity) |> pushCtx |> Main.update CUI Props Questions Responses
                 
         let main (term:Terminal) (command:string)  =
             CUI <- { CUI with Term = term }
@@ -135,20 +140,22 @@ module Client =
                 initMic main'
             match command with
             (* Quick commands *)
-            | Text.Blank -> say "Tell me what you want me to do or ask me a question."
-            | Text.DebugOn -> CUI <- { CUI with DebugMode = true }; say "Debug mode is now on."  
-            | Text.DebugOff -> CUI <- { CUI with DebugMode = false }; say "Debug mode is now off." 
+            | Text.Blank -> say' "Tell me what you want me to do or ask me a question."
+            | Text.DebugOn -> CUI <- { CUI with DebugMode = true }; say' "Debug mode is now on."  
+            | Text.DebugOff -> CUI <- { CUI with DebugMode = false }; say' "Debug mode is now off." 
             | _ ->
                 match OpState with
-                | Some Lang -> say "I'm still working on understanding your last message."
+                | Some Lang -> say' "I'm still working on understanding your last message."
                 | Some _
                 | None ->
                     match command with
                     | Text.QuickHello m 
                     | Text.QuickHelp m 
+                    | Text.QuickYes m
+                    | Text.QuickNo m
                     | Text.QuickPrograms m -> 
                         debug <| sprintf "Quick Text: %A." m
-                        m |> pushCtx |> Main.update CUI Props Responses
+                        m |> pushCtx |> Main.update CUI Props Questions Responses
                     (* Use the NLU service for everything else *)
                     | _->         
                         async {
@@ -156,7 +163,7 @@ module Client =
                             match! Server.GetMeaning command with
                             | Text.HasMeaning m -> 
                                 debug <| sprintf "Text: %A %A %A" m.Intent m.Trait m.Entities
-                                m |> pushCtx |> Main.update CUI Props Responses
+                                m |> pushCtx |> Main.update CUI Props Questions Responses
                             | _ -> 
                                 debug "Text: Did not receive a response from the server." 
                                 term.Echo' "Sorry I did not understand what you said."

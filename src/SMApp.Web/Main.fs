@@ -8,9 +8,7 @@ open WebSharper
 module Main =
     let debug m = sprintf "Main: %A" m |> ClientExtensions.debug
     
-    let questions = new Stack<Question>()
-
-    let update (cui: CUI) (props: Dictionary<string, obj>) (responses:Stack<string>) (context: Stack<Meaning>) =
+    let update (cui: CUI) (props: Dictionary<string, obj>) (questions:Stack<Question>) (responses:Stack<string>) (context: Stack<Meaning>) =
         
         let hasProp k = props.ContainsKey k
         
@@ -40,9 +38,11 @@ module Main =
             | m when questions.Count > 0 && matchp(Meaning(m)) ->  Some m
             | _ -> None
 
-        let say t = 
-            responses.Push(t.ToString())
-            cui.Say t
+        let say' t = cui.Say t
+        
+        let say t =
+            responses.Push t
+            say' t
 
         let sayRandom p v  = 
             let t = getRandomPhrase p v
@@ -65,11 +65,12 @@ module Main =
         
         let pop n = for _ in 1..n do context.Pop() |> ignore
         
-        let popq = questions.Pop() |> ignore
+        let popq() = questions.Pop() |> ignore
 
         let push' (q:Meaning list) (r:string) = questions.Push(Question(q.Head, r))
 
         debug <| sprintf "Current context: %A." context
+        debug <| sprintf "Previous questions: %A." questions
 
         (* Interpreter logic begins here *)
         match context |> Seq.take b |> List.ofSeq with
@@ -98,15 +99,16 @@ module Main =
         | User(Intent "hello", None, Some [Entity "contact" u])::[] as q ->
             say "Are you sure you want to switch users?"
             push' q "Are you sure you want to switch users?"
+            debug <| sprintf "Add question: %A." (questions.Peek())
             
         | User(Intent "yes", None, None)::User(Question(Intent "hello", None, Some [Entity "contact" u]))::[] ->
             getUser u
             pop 2
-            popq
+            popq()
 
         | User(Intent "no", None, None)::User(Question(Intent "hello", None, Some [Entity "contact" _]))::[] ->
             pop 2
-            popq
+            popq()
 
         | _ -> 
             pop 1 |> ignore
