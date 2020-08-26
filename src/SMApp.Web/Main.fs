@@ -56,7 +56,7 @@ module Main =
                 do sayRandom waitRetrievePhrases "user name"
                 match! Server.GetUser2 u with 
                 | Some u -> 
-                    props.Add("user", u)
+                    if hasProp "user" then props.["user"] <- u else props.Add("user", u)
                     sayRandom helloUserPhrases <| sprintf "%A" props.["user"]
                 | None _ -> say <| sprintf "Sorry I did not find the user name %s." u
             } |> Async.Start 

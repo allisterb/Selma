@@ -8,12 +8,9 @@ open SMApp.JQueryTerminal
 open SMApp.WebSpeech
 open SMApp.Microphone
 
-type MicState = MicNotInitialized | MicConnecting | MicDisconnected | MicAudioStart | MicAudioEnd | MicReady | MicError of string | MicResult of obj * obj
-
-type OpState = | Lang | User
-
 [<AutoOpen;JavaScript>]
 module CUI =
+    
     let rng = Random()
     
     let getRandomPhrase (phrases:List<string>) r = phrases |> List.item(rng.Next(0, phrases.Length)) |> replace_tok "$0" r
@@ -38,8 +35,8 @@ module CUI =
 
     let helloUserPhrases = [
         "Hi $0, welcome back."
-        "Welcome $0, nice to see you again.."
-        "Hello $0"
+        "Welcome $0, nice to see you again."
+        "Hello $0."
         "Good to see you $0."
     ]
 
@@ -54,7 +51,10 @@ module CUI =
     with 
         override x.ToString() = x.Name
 
-    /// Interprets input entered by the user using voice or the terminal.
+    type MicState = MicNotInitialized | MicConnecting | MicDisconnected | MicAudioStart | MicAudioEnd | MicReady | MicError of string | MicResult of obj * obj
+    
+    type OpState = | Lang | User
+    
     type Interpreter = Interpreter of (SMApp.Microphone.Mic -> (obj*obj) -> unit) * ((SMApp.JQueryTerminal.Terminal->string->unit) * SMApp.JQueryTerminal.Options)
         with
         member x.Unwrap = match x with | Interpreter(v, (i, o)) -> v, i, o

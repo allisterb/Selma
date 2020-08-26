@@ -166,7 +166,7 @@ module Client =
                                 m |> pushCtx |> Main.update CUI Props Questions Responses
                             | _ -> 
                                 debug "Text: Did not receive a response from the server." 
-                                term.Echo' "Sorry I did not understand what you said."
+                                say' "Sorry I did not understand what you said."
                             OpState <- None
                         } |> CUI.Wait
         let mainOpt =

@@ -40,6 +40,7 @@ module NLU =
             member x.Unwrap() = match x with | Question(m, r)->(m, r)
             member x.Meaning = x.Unwrap() |> fst
             member x.Response = x.Unwrap() |> snd
+            override x.ToString() = sprintf "(%A,%A)" x.Meaning x.Response
 
     let (|Intent|_|) n = 
         function
@@ -131,7 +132,7 @@ module NLU =
             | "no way" 
             | "nah" 
             | "don't do it" 
-            | "stop" -> Meaning(Some(Intent("yes", None)), None, None) |> Some 
+            | "stop" -> Meaning(Some(Intent("no", None)), None, None) |> Some 
             | _ -> None
 
         let (|QuickPrograms|_|) =

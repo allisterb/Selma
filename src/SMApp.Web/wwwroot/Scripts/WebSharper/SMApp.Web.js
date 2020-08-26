@@ -1,7 +1,7 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Web,ClientExtensions,_Html,htmModule,SC$1,Bootstrap,Controls,SC$2,NLU,Intent,Trait,Entity,Meaning,Question,Voice,_Entity,Text,_Meaning,_Intent,_Entity$1,SC$3,CUI,User,Interpreter,CUI$1,SC$4,Main,Client,SC$5,SMApp$Web_GeneratedPrintf,WebSharper,Strings,Arrays,$,Utils,console,IntelliFactory,Runtime,List,Seq,UI,Doc,AttrModule,Concurrency,Random,Unchecked,Remoting,AjaxRemotingProvider,Wit,document,Collections,Dictionary;
+ var Global,SMApp,Web,ClientExtensions,_Html,htmModule,SC$1,Bootstrap,Controls,SC$2,NLU,Intent,Trait,Entity,Meaning,Question,Voice,_Entity,Text,_Meaning,_Intent,_Entity$1,SC$3,CUI,User,MicState,OpState,Interpreter,CUI$1,SC$4,Main,Client,SC$5,SMApp$Web_GeneratedPrintf,WebSharper,Strings,Arrays,$,Utils,console,IntelliFactory,Runtime,List,Seq,UI,Doc,AttrModule,Concurrency,Random,Unchecked,Remoting,AjaxRemotingProvider,Wit,document,Collections,Dictionary;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Web=SMApp.Web=SMApp.Web||{};
@@ -27,6 +27,8 @@
  SC$3=Global.StartupCode$SMApp_Web$NLU=Global.StartupCode$SMApp_Web$NLU||{};
  CUI=Web.CUI=Web.CUI||{};
  User=CUI.User=CUI.User||{};
+ MicState=CUI.MicState=CUI.MicState||{};
+ OpState=CUI.OpState=CUI.OpState||{};
  Interpreter=CUI.Interpreter=CUI.Interpreter||{};
  CUI$1=CUI.CUI=CUI.CUI||{};
  SC$4=Global.StartupCode$SMApp_Web$CUI=Global.StartupCode$SMApp_Web$CUI||{};
@@ -638,6 +640,13 @@
   }
  },null,Meaning);
  Question=NLU.Question=Runtime.Class({
+  toString:function()
+  {
+   return(((Runtime.Curried3(function($1,$2,$3)
+   {
+    return $1("("+SMApp$Web_GeneratedPrintf.p$7($2)+","+Utils.prettyPrint($3)+")");
+   }))(Global.id))(this.get_Meaning()))(this.get_Response());
+  },
   get_Response:function()
   {
    return(this.Unwrap())[1];
@@ -1016,6 +1025,30 @@
    Name:Name
   });
  };
+ MicState.MicReady={
+  $:5
+ };
+ MicState.MicAudioEnd={
+  $:4
+ };
+ MicState.MicAudioStart={
+  $:3
+ };
+ MicState.MicDisconnected={
+  $:2
+ };
+ MicState.MicConnecting={
+  $:1
+ };
+ MicState.MicNotInitialized={
+  $:0
+ };
+ OpState.User={
+  $:1
+ };
+ OpState.Lang={
+  $:0
+ };
  Interpreter=CUI.Interpreter=Runtime.Class({
   get_Options:function()
   {
@@ -1209,21 +1242,26 @@
    Concurrency.Start((b$1=null,Concurrency.Delay(function()
    {
     sayRandom(CUI.waitRetrievePhrases(),"user name");
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetUser2:-1582576757",[u]),function(a$19)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetUser2:-1843439372",[u]),function(a$19)
     {
+     var u$1;
      return a$19==null?(say((function($27)
      {
       return function($28)
       {
        return $27("Sorry I did not find the user name "+Utils.toSafe($28)+".");
       };
-     }(Global.id))(u)),Concurrency.Zero()):(props.Add("user",a$19.$0),sayRandom(CUI.helloUserPhrases(),(function($27)
+     }(Global.id))(u)),Concurrency.Zero()):(u$1=a$19.$0,Concurrency.Combine(hasProp("user")?(props.set_Item("user",u$1),Concurrency.Zero()):(props.Add("user",u$1),Concurrency.Zero()),Concurrency.Delay(function()
      {
-      return function($28)
+      sayRandom(CUI.helloUserPhrases(),(function($27)
       {
-       return $27(Utils.prettyPrint($28));
-      };
-     }(Global.id))(props.get_Item("user"))),Concurrency.Zero());
+       return function($28)
+       {
+        return $27(Utils.prettyPrint($28));
+       };
+      }(Global.id))(props.get_Item("user")));
+      return Concurrency.Zero();
+     })));
     });
    })),null);
   }
@@ -1371,30 +1409,22 @@
   mic=Client.CUI().Mic.$0;
   mic.onconnecting=function()
   {
-   Client.set_MicState({
-    $:1
-   });
+   Client.set_MicState(MicState.MicConnecting);
    return Client.debug("Mic connecting...");
   };
   mic.ondisconnected=function()
   {
-   Client.set_MicState({
-    $:2
-   });
+   Client.set_MicState(MicState.MicDisconnected);
    return Client.debug("Mic disconnected.");
   };
   mic.onaudiostart=function()
   {
-   Client.set_MicState({
-    $:3
-   });
+   Client.set_MicState(MicState.MicAudioStart);
    return Client.debug("Mic audio start...");
   };
   mic.onaudioend=function()
   {
-   Client.set_MicState({
-    $:4
-   });
+   Client.set_MicState(MicState.MicAudioEnd);
    return Client.debug("Mic audio end.");
   };
   mic.onerror=function(s)
@@ -1413,9 +1443,7 @@
   };
   mic.onready=function()
   {
-   Client.set_MicState({
-    $:5
-   });
+   Client.set_MicState(MicState.MicReady);
    return Client.debug("Mic ready.");
   };
   mic.onresult=function(i,e)
@@ -1585,18 +1613,16 @@
    {
     Client.set_OpState({
      $:1,
-     $0:{
-      $:0
-     }
+     $0:OpState.Lang
     });
-    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:880623687",[command]),function(a$5)
+    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:2114236851",[command]),function(a$5)
     {
      var a$6,m,c$1;
      a$6=Text.HasMeaning(a$5);
      return a$6!=null&&a$6.$==1?(m=a$6.$0,(Client.debug(((((Runtime.Curried(function($6,$7,$8,$9)
      {
       return $6("Text: "+SMApp$Web_GeneratedPrintf.p($7)+" "+SMApp$Web_GeneratedPrintf.p$3($8)+" "+SMApp$Web_GeneratedPrintf.p$5($9));
-     },4))(Global.id))(m.get_Intent()))(m.get_Trait()))(m.get_Entities())),c$1=Client.pushCtx(m),Main.update(Client.CUI(),Client.Props(),Client.Questions(),Client.Responses(),c$1),Concurrency.Zero())):(Client.debug("Text: Did not receive a response from the server."),ClientExtensions["Terminal.Echo'"](term,"Sorry I did not understand what you said."),Concurrency.Zero());
+     },4))(Global.id))(m.get_Intent()))(m.get_Trait()))(m.get_Entities())),c$1=Client.pushCtx(m),Main.update(Client.CUI(),Client.Props(),Client.Questions(),Client.Responses(),c$1),Concurrency.Zero())):(Client.debug("Text: Did not receive a response from the server."),Client["say'"]("Sorry I did not understand what you said."),Concurrency.Zero());
     }),Concurrency.Delay(function()
     {
      Client.set_OpState(null);
@@ -1605,9 +1631,7 @@
    })));
   }
   SC$5.CUI=CUI$1.New(null,null,null,false,false);
-  SC$5.MicState={
-   $:0
-  };
+  SC$5.MicState=MicState.MicNotInitialized;
   SC$5.OpState=null;
   SC$5.Props=new Dictionary.New$5();
   SC$5.Context=[];
