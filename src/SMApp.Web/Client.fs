@@ -25,7 +25,7 @@ module Client =
         Caption = false
     }    
     let mutable MicState = MicNotInitialized
-    let mutable OpState: OpState option = None
+    let mutable ClientState: ClientState option = None
     let Props = new Dictionary<string, obj>()
 
     let debug m = 
@@ -37,8 +37,7 @@ module Client =
     let Context = new Stack<Meaning>()
     let Questions = new Stack<Question>()
     let Responses = Stack<string>()
-
-    let pushCtx (m:Meaning) =
+    let pushContext (m:Meaning) =
         do Context.Push m
         Context
 
@@ -128,9 +127,9 @@ module Client =
             | None, None, None -> ()
             | _ -> 
                 debug <| sprintf "Voice: %A %A %A" intent _trait entity
-                match OpState with
-                | Some Lang -> say' "I'm still working on understanding your last message."
-                | Some _ | None -> Meaning(intent, _trait, entity) |> pushCtx |> Main.update CUI Props Questions Responses
+                match ClientState with
+                | Some LangOp -> say' "I'm still working on understanding your last message."
+                | Some _ | None -> Meaning(intent, _trait, entity) |> pushContext |> Main.update CUI Props Questions Responses
                 
         let main (term:Terminal) (command:string)  =
             CUI <- { CUI with Term = term }
@@ -144,8 +143,8 @@ module Client =
             | Text.DebugOn -> CUI <- { CUI with DebugMode = true }; say' "Debug mode is now on."  
             | Text.DebugOff -> CUI <- { CUI with DebugMode = false }; say' "Debug mode is now off." 
             | _ ->
-                match OpState with
-                | Some Lang -> say' "I'm still working on understanding your last message."
+                match ClientState with
+                | Some LangOp -> say' "I'm still working on understanding your last message."
                 | Some _
                 | None ->
                     match command with
@@ -155,19 +154,19 @@ module Client =
                     | Text.QuickNo m
                     | Text.QuickPrograms m -> 
                         debug <| sprintf "Quick Text: %A." m
-                        m |> pushCtx |> Main.update CUI Props Questions Responses
+                        m |> pushContext |> Main.update CUI Props Questions Responses
                     (* Use the NLU service for everything else *)
                     | _->         
                         async {
-                            OpState <- Some Lang
+                            ClientState <- Some LangOp
                             match! Server.GetMeaning command with
                             | Text.HasMeaning m -> 
                                 debug <| sprintf "Text: %A %A %A" m.Intent m.Trait m.Entities
-                                m |> pushCtx |> Main.update CUI Props Questions Responses
+                                m |> pushContext |> Main.update CUI Props Questions Responses
                             | _ -> 
                                 debug "Text: Did not receive a response from the server." 
                                 say' "Sorry I did not understand what you said."
-                            OpState <- None
+                            ClientState <- None
                         } |> CUI.Wait
         let mainOpt =
             Options(

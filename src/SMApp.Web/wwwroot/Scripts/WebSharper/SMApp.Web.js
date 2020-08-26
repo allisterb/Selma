@@ -894,7 +894,7 @@
      $:1,
      $0:new Intent({
       $:0,
-      $0:"yes",
+      $0:"no",
       $1:null
      })
     },
@@ -1192,7 +1192,7 @@
   SC$4.rng=new Random.New();
   SC$4.waitRetrievePhrases=List.ofArray(["Ok, let me check that $0 for you","Please wait while I check that $0 for you.","Wait while I check that $0.","Ok let me see if I can find that $0."]);
   SC$4.helloPhrases=List.ofArray(["Welcome!","Welcome, my name is Selma.","Welcome to Selma. How can I help?","Hello this is Selma, how can I help?","Hello, I am Selma. How can I help?","Hello, I am Selma. How may I help you now?"]);
-  SC$4.helloUserPhrases=List.ofArray(["Hi $0, welcome back.","Welcome $0, nice to see you again..","Hello $0","Good to see you $0."]);
+  SC$4.helloUserPhrases=List.ofArray(["Hi $0, welcome back.","Welcome $0, nice to see you again.","Hello $0.","Good to see you $0."]);
   SC$4.helpPhrases=List.ofArray(["What can I help you with $0?"]);
  };
  Main.update=function(cui,props,questions,responses,context)
@@ -1242,7 +1242,7 @@
    Concurrency.Start((b$1=null,Concurrency.Delay(function()
    {
     sayRandom(CUI.waitRetrievePhrases(),"user name");
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetUser2:-1843439372",[u]),function(a$19)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetUser2:-2119606811",[u]),function(a$19)
     {
      var u$1;
      return a$19==null?(say((function($27)
@@ -1615,7 +1615,7 @@
      $:1,
      $0:OpState.Lang
     });
-    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:2114236851",[command]),function(a$5)
+    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-1765228222",[command]),function(a$5)
     {
      var a$6,m,c$1;
      a$6=Text.HasMeaning(a$5);

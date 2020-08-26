@@ -17,15 +17,13 @@ module Resources =
         inherit BaseResource("https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js", "bootstrap.min.js")
 
 [<Require(typeof<Resources.CSS>);Require(typeof<JQuery.Resources.JQuery>);Require(typeof<Resources.PopperJS>);Require(typeof<Resources.JS>)>]
-
 [<JavaScript>]
 module Controls =
     
     let private cls = Attr.Class
 
-    let Class = Attr.Class
-    
     let Container c = div (cls "container"::[]) c
+    
     let Input lbl extras (target, labelExtras, targetExtras) =
         div (cls "form-group" :: extras) [
             label labelExtras [text lbl]

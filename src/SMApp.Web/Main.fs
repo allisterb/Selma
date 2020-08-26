@@ -69,20 +69,25 @@ module Main =
 
         let push' (q:Meaning list) (r:string) = questions.Push(Question(q.Head, r))
 
+        let question q r =
+            push' q r; say r
+            debug <| sprintf "Added question: %A." (questions.Peek())
+
         debug <| sprintf "Current context: %A." context
         debug <| sprintf "Previous questions: %A." questions
 
         (* Interpreter logic begins here *)
         match context |> Seq.take b |> List.ofSeq with
         
-        (* User login *)
+        (* Hello *)
         | AnonUser(Intent "hello", None, None)::[] -> 
             sayRandom' helloPhrases
-        
+
         | User(Intent "hello", None, None)::[] -> 
             sayRandom helloUserPhrases <| sprintf "%A" props.["user"]
             pop 1
-            
+
+        (* User login *)                    
         | AnonUser(Intent "hello", None, Some [Entity "contact" u])::[] ->
             getUser u
             pop 1
@@ -97,9 +102,7 @@ module Main =
 
         (* User switch *)
         | User(Intent "hello", None, Some [Entity "contact" u])::[] as q ->
-            say "Are you sure you want to switch users?"
-            push' q "Are you sure you want to switch users?"
-            debug <| sprintf "Add question: %A." (questions.Peek())
+            question q "Are you sure you want to switch users?"
             
         | User(Intent "yes", None, None)::User(Question(Intent "hello", None, Some [Entity "contact" u]))::[] ->
             getUser u
