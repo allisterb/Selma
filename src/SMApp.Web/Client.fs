@@ -29,7 +29,7 @@ module Client =
     let Props = new Dictionary<string, obj>()
 
     (* Messages *)
-    let msgs = Stack<string>()
+    let Msgs = Stack<string>()
     let debug m = 
         let text' = sprintf "Client: %A" m in
         ClientExtensions.debug text'
@@ -77,7 +77,7 @@ module Client =
         do mic.Connect("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT")
 
     let say text =        
-        msgs.Push text
+        Msgs.Push text
         match CUI.Voice with
         | None -> 
             CUI.Term.Echo' text
@@ -130,7 +130,7 @@ module Client =
                 debug <| sprintf "Voice: %A %A %A" intent _trait entity
                 match OpState with
                 | Some Lang -> say "I'm still working on understanding your last message."
-                | Some _ | None -> Meaning(intent, _trait, entity) |> pushCtx |> Main.update CUI Props msgs
+                | Some _ | None -> Meaning(intent, _trait, entity) |> pushCtx |> Main.update CUI Props Msgs
                 
         let main (term:Terminal) (command:string)  =
             CUI <- { CUI with Term = term }
@@ -153,7 +153,7 @@ module Client =
                     | Text.QuickHelp m 
                     | Text.QuickPrograms m -> 
                         debug <| sprintf "Quick Text: %A." m
-                        m |> pushCtx |> Main.update CUI Props msgs
+                        m |> pushCtx |> Main.update CUI Props Msgs
                     (* Use the NLU service for everything else *)
                     | _->         
                         async {
@@ -161,7 +161,7 @@ module Client =
                             match! Server.GetMeaning command with
                             | Text.HasMeaning m -> 
                                 debug <| sprintf "Text: %A %A %A" m.Intent m.Trait m.Entities
-                                m |> pushCtx |> Main.update CUI Props msgs
+                                m |> pushCtx |> Main.update CUI Props Msgs
                             | _ -> 
                                 debug "Text: Did not receive a response from the server." 
                                 term.Echo' "Sorry I did not understand what you said."

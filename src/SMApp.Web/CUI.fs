@@ -4,8 +4,6 @@ open System
 
 open WebSharper
 
-open MongoDB.Bson
-
 open SMApp.JQueryTerminal
 open SMApp.WebSpeech
 open SMApp.Microphone
@@ -21,7 +19,9 @@ module CUI =
     type User = {
         Name:string
     }
-    
+    with 
+        override x.ToString() = x.Name
+
     /// Interprets input entered by the user using voice or the terminal.
     [<JavaScript>]
     type Interpreter = Interpreter of (SMApp.Microphone.Mic -> (obj*obj) -> unit) * ((SMApp.JQueryTerminal.Terminal->string->unit) * SMApp.JQueryTerminal.Options)
@@ -35,6 +35,8 @@ module CUI =
     
     let getRandomPhrase (phrases:List<string>) r = phrases |> List.item(rng.Next(0, phrases.Length)) |> replace_tok "$0" r
     
+    let getRandomPhrase' (phrases:List<string>)  = phrases |> List.item(rng.Next(0, phrases.Length)) |> replace_tok "$0" ""
+
     let waitRetrievePhrases = [
         "Ok, let me check that $0 for you"
         "Please wait while I check that $0 for you."
@@ -56,6 +58,10 @@ module CUI =
         "Welcome $0, nice to see you again.."
         "Hello $0"
         "Good to see you $0."
+    ]
+
+    let helpPhrases = [
+        "What can I help you with $0?"
     ]
 
     type CUI = {

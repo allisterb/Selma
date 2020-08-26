@@ -25,13 +25,11 @@ type _User = {
     displayName:string
 }
 
-
 type ``user`` = {
     user_name:string
     last_logged_in: DateTime option
 }
     
-
 module Server =        
    
     let private witai = new WitApi()

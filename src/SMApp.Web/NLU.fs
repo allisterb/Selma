@@ -87,6 +87,35 @@ module NLU =
             | "huh" -> Meaning(Some(Intent("help", None)), None, None) |> Some 
             | _ -> None    
 
+        let (|QuickYes|_|) =
+            function
+            | "yes"
+            | "YES"
+            | "Yes"
+            | "YEs"
+            | "Yes"
+            | "ok"
+            | "sure"
+            | "yeah" 
+            | "yep" 
+            | "uh huh" 
+            | "go ahead" 
+            | "go" -> Meaning(Some(Intent("yes", None)), None, None) |> Some 
+            | _ -> None
+
+        let (|QuickNo|_|) =
+            function
+            | "no"
+            | "NO"
+            | "No"
+            | "no"
+            | "nope"          
+            | "no way" 
+            | "nah" 
+            | "don't do it" 
+            | "stop" -> Meaning(Some(Intent("yes", None)), None, None) |> Some 
+            | _ -> None
+
         let (|QuickPrograms|_|) =
             function
             | "programs" -> Meaning(Some(Intent("Program", None)), None, None) |> Some
