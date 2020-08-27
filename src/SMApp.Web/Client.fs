@@ -41,8 +41,10 @@ module Client =
     let pushContext (m:Meaning) = Context.Push m; Context
 
     (* Initialize speech and mic *)
-    let initSpeech(t:int) =
-        let voices = Window.SpeechSynthesis.GetVoices() |> toArray         
+    let synth = Window.SpeechSynthesis
+
+    let initSpeech() =
+        let voices = synth.GetVoices() |> toArray         
         do voices |> Array.iter(fun v-> 
             if CUI.Voice = None && (v.Name.Contains "Microsoft Zira" || v.Name.ToLower().Contains "female") then
                 CUI <- { CUI with Voice = Some v }; debug <| sprintf "Using voice %s." CUI.Voice.Value.Name
@@ -50,7 +52,7 @@ module Client =
         if CUI.Voice = None && voices.Length > 0 then
             let v = voices |> Array.find (fun v -> v.Default) in 
             CUI <- { CUI with Voice = Some v }; debug <| sprintf "Using default voice %s." CUI.Voice.Value.Name 
-        else if CUI.Voice = None && t > 1 then 
+        else if CUI.Voice = None then 
             error "No speech synthesis voice is available."
             echo "No speech synthesis voice is available. Install speech synthesis on this device or computer to use the voice output feature of Selma."
     
@@ -62,7 +64,7 @@ module Client =
         do mic.onAudioStart <- (fun _ -> MicState <- MicAudioStart;debug "Mic audio start...")
         do mic.onAudioEnd <- (fun _ -> MicState <- MicAudioEnd;debug "Mic audio end.")
         do mic.onError <- (fun s -> MicState <- MicError s; debug (sprintf "Mic error : %s." s))
-        do mic.onReady <- (fun _ -> MicState <- MicReady; if CUI.Voice = None then initSpeech(2); debug "Mic ready.")
+        do mic.onReady <- (fun _ -> MicState <- MicReady; debug "Mic ready.")
         do mic.onResult <- (fun i e -> 
             if not (isNull i || isNull e) then 
                 MicState <- MicResult(i,e) 
@@ -130,8 +132,7 @@ module Client =
         let main (term:Terminal) (command:string)  =
             CUI <- { CUI with Term = term }
             do if CUI.Mic = None then initMic main' term
-            do if CUI.Voice = None then initSpeech 0
-            do if CUI.Voice = None then initSpeech 1
+            do if CUI.Voice = None then initSpeech ()
             match command with
             (* Quick commands *)
             | Text.Blank -> say' "Tell me what you want me to do or ask me a question."

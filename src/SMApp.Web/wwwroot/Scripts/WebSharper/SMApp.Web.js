@@ -1249,7 +1249,7 @@
    Concurrency.Start((b$1=null,Concurrency.Delay(function()
    {
     sayRandom(CUI.waitRetrievePhrases(),"user name");
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetUser2:-400069009",[u]),function(a$18)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetUser2:-539855299",[u]),function(a$18)
     {
      var u$1;
      return a$18==null?(say((function($28)
@@ -1452,7 +1452,7 @@
   mic.onready=function()
   {
    Client.set_MicState(MicState.MicReady);
-   return Unchecked.Equals(Client.CUI().Voice,null)?(Client.initSpeech(2),Client.debug("Mic ready.")):null;
+   return Client.debug("Mic ready.");
   };
   mic.onresult=function(i,e)
   {
@@ -1467,10 +1467,10 @@
   };
   mic.connect("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT");
  };
- Client.initSpeech=function(t)
+ Client.initSpeech=function()
  {
   var voices;
-  voices=ClientExtensions.toArray(Global.speechSynthesis.getVoices());
+  voices=ClientExtensions.toArray(Client.synth().getVoices());
   Arrays.iter(function(v)
   {
    if(Unchecked.Equals(Client.CUI().Voice,null)&&(v.name.indexOf("Microsoft Zira")!=-1||v.name.toLowerCase().indexOf("female")!=-1))
@@ -1500,7 +1500,12 @@
    {
     return $1("Using default voice "+Utils.toSafe($2)+".");
    };
-  }(Global.id))(Client.CUI().Voice.$0.name))):Unchecked.Equals(Client.CUI().Voice,null)&&t>1?(ClientExtensions.error("No speech synthesis voice is available."),Client.echo("No speech synthesis voice is available. Install speech synthesis on this device or computer to use the voice output feature of Selma.")):void 0;
+  }(Global.id))(Client.CUI().Voice.$0.name))):Unchecked.Equals(Client.CUI().Voice,null)?(ClientExtensions.error("No speech synthesis voice is available."),Client.echo("No speech synthesis voice is available. Install speech synthesis on this device or computer to use the voice output feature of Selma.")):void 0;
+ };
+ Client.synth=function()
+ {
+  SC$5.$cctor();
+  return SC$5.synth;
  };
  Client.pushContext=function(m)
  {
@@ -1615,8 +1620,7 @@
    var $1,$2,$3,$4,$5,$6,a,a$1,a$2,a$3,a$4,c,b;
    Client.set_CUI(CUI$1.New(Client.CUI().Voice,Client.CUI().Mic,term,Client.CUI().DebugMode,Client.CUI().Caption));
    Unchecked.Equals(Client.CUI().Mic,null)?Client.initMic(_main,term):void 0;
-   Unchecked.Equals(Client.CUI().Voice,null)?Client.initSpeech(0):void 0;
-   Unchecked.Equals(Client.CUI().Voice,null)?Client.initSpeech(1):void 0;
+   Unchecked.Equals(Client.CUI().Voice,null)?Client.initSpeech():void 0;
    return($1=Text.Blank(command),$1!=null&&$1.$==1)?Client["say'"]("Tell me what you want me to do or ask me a question."):($2=Text.DebugOn(command),$2!=null&&$2.$==1)?(Client.set_CUI(CUI$1.New(Client.CUI().Voice,Client.CUI().Mic,Client.CUI().Term,true,Client.CUI().Caption)),Client["say'"]("Debug mode is now on.")):($3=Text.DebugOff(command),$3!=null&&$3.$==1)?(Client.set_CUI(CUI$1.New(Client.CUI().Voice,Client.CUI().Mic,Client.CUI().Term,false,Client.CUI().Caption)),Client["say'"]("Debug mode is now off.")):($4=Text.Voices(command),$4!=null&&$4.$==1)?Client.sayVoices():(Client.ClientState()==null?false:Client.ClientState().$0.$==0)?Client["say'"]("I'm still working on understanding your last message."):(a=Text.QuickHello(command),a!=null&&a.$==1?($6=a.$0,true):(a$1=Text.QuickHelp(command),a$1!=null&&a$1.$==1?($6=a$1.$0,true):(a$2=Text.QuickYes(command),a$2!=null&&a$2.$==1?($6=a$2.$0,true):(a$3=Text.QuickNo(command),a$3!=null&&a$3.$==1?($6=a$3.$0,true):(a$4=Text.QuickPrograms(command),a$4!=null&&a$4.$==1&&($6=a$4.$0,true))))))?(Client.debug((function($7)
    {
     return function($8)
@@ -1629,7 +1633,7 @@
      $:1,
      $0:ClientState.LangOp
     });
-    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:1019244237",[command]),function(a$5)
+    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-301318401",[command]),function(a$5)
     {
      var a$6,m,c$1;
      a$6=Text.HasMeaning(a$5);
@@ -1651,6 +1655,7 @@
   SC$5.Context=[];
   SC$5.Questions=[];
   SC$5.Responses=[];
+  SC$5.synth=Global.speechSynthesis;
   SC$5.container=Controls.Container;
   SC$5.Main=new Interpreter({
    $:0,
