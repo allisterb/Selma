@@ -54,6 +54,8 @@ module NLU =
 
     let (|Yes|_|) = function | Meaning(Intent "yes", None, None) -> Some () |  _ -> None
 
+    let (|No|_|) = function | Meaning(Intent "no", None, None) -> Some () |  _ -> None
+
     [<RequireQualifiedAccess>]
     module Voice =
         type Entity' = {body:string; ``end``:int; start: int; suggested:bool; value:string}
@@ -88,6 +90,11 @@ module NLU =
         let (|DebugOff|_|) =
             function
             | "debug off" -> Some ()
+            | _ -> None
+
+        let (|Voices|_|) =
+            function
+            | "voices" -> Some ()
             | _ -> None
 
         let (|QuickHello|_|) =
@@ -175,12 +182,15 @@ module NLU =
                     entities |> List.where(fun e -> e.Confidence > entityConfidenceThreshold) 
                     |> List.map(fun e -> Entity(e.Role |> toLower, e.Value, Some(e.Confidence)))
                 Meaning(None, None, Some entities') |> Some
-            | Some(Meaning'(intents, [])) as m when m.Value.TopIntent.Confidence > intentConfidenceThreshold  -> 
+
+            | Some(Meaning'(intents, [])) as m when intents.Length > 0 && m.Value.TopIntent.Confidence > intentConfidenceThreshold  -> 
                     Meaning(Some(Intent(m.Value.TopIntent.Name |> toLower, Some m.Value.TopIntent.Confidence)), None, None) |> Some
-            | Some(Meaning'(intents, entities)) as m when m.Value.TopIntent.Confidence > intentConfidenceThreshold  -> 
+            
+            | Some(Meaning'(intents, entities)) as m when intents.Length > 0 && entities.Length > 0 && m.Value.TopIntent.Confidence > intentConfidenceThreshold  -> 
                     let entities = 
                         m.Value.Entities |> 
                         List.where(fun e -> e.Confidence > entityConfidenceThreshold) 
                         |> List.map(fun e -> Entity(e.Role |> toLower, e.Value, Some(e.Confidence))) 
                     Meaning(Some(Intent(m.Value.TopIntent.Name |> toLower, Some m.Value.TopIntent.Confidence)), None, Some(entities)) |> Some
+            
             | _ -> None        

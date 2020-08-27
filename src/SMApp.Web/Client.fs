@@ -23,40 +23,38 @@ module Client =
         Term = Unchecked.defaultof<Terminal>
         DebugMode = false
         Caption = false
-    }    
+    }
     let mutable MicState = MicNotInitialized
     let mutable ClientState: ClientState option = None
     let Props = new Dictionary<string, obj>()
 
+    let echo m = do if not(isNull(CUI.Term)) then CUI.Term.EchoHtml' m 
     let debug m = 
-        let text' = sprintf "Client: %A" m in
-        ClientExtensions.debug text'
-        if CUI.DebugMode then CUI.Term.EchoHtml' text'
-
+        let text = sprintf "Client: %A" m in
+        ClientExtensions.debug text
+        if CUI.DebugMode then echo text
+       
     (* NLU context *)
     let Context = new Stack<Meaning>()
     let Questions = new Stack<Question>()
-    let Responses = Stack<string>()
-    let pushContext (m:Meaning) =
-        do Context.Push m
-        Context
+    let Responses = new Stack<string>()
+    let pushContext (m:Meaning) = Context.Push m; Context
 
     (* Initialize speech and mic *)
-    let initSpeech() =
-        let voices' = Window.SpeechSynthesis.GetVoices()
-        do if not(isNull(voices')) then
-            let voices = voices' |> toArray
-            do voices |> Array.iter(fun v-> 
-                if CUI.Voice = None && (v.Name.Contains "Microsoft Zira" || v.Name.ToLower().Contains "female") then
-                    CUI <- { CUI with Voice = Some v }; debug <| sprintf "Using voice %s." CUI.Voice.Value.Name
-                )
-            do if CUI.Voice = None && voices.Length > 0 then
-                let v = voices |> Array.find (fun v -> v.Default) in 
-                CUI <- { CUI with Voice = Some v }; debug <| sprintf "Using default voice %s." CUI.Voice.Value.Name 
-        if CUI.Voice = None then 
+    let initSpeech(t:int) =
+        let voices = Window.SpeechSynthesis.GetVoices() |> toArray         
+        do voices |> Array.iter(fun v-> 
+            if CUI.Voice = None && (v.Name.Contains "Microsoft Zira" || v.Name.ToLower().Contains "female") then
+                CUI <- { CUI with Voice = Some v }; debug <| sprintf "Using voice %s." CUI.Voice.Value.Name
+            )
+        if CUI.Voice = None && voices.Length > 0 then
+            let v = voices |> Array.find (fun v -> v.Default) in 
+            CUI <- { CUI with Voice = Some v }; debug <| sprintf "Using default voice %s." CUI.Voice.Value.Name 
+        else if CUI.Voice = None && t > 1 then 
             error "No speech synthesis voice is available."
-            CUI.Term.Echo' "No speech synthesis voice is available. Install speech synthesis on this device or computer to use the voice output feature of Selma."
-    let initMic m =
+            echo "No speech synthesis voice is available. Install speech synthesis on this device or computer to use the voice output feature of Selma."
+    
+    let initMic m (term:Terminal) =
         CUI <- { CUI with Mic = Some(new Mic()) }
         let mic = CUI.Mic.Value
         do mic.onConnecting <- (fun _ -> MicState <- MicConnecting; debug "Mic connecting...")
@@ -64,7 +62,7 @@ module Client =
         do mic.onAudioStart <- (fun _ -> MicState <- MicAudioStart;debug "Mic audio start...")
         do mic.onAudioEnd <- (fun _ -> MicState <- MicAudioEnd;debug "Mic audio end.")
         do mic.onError <- (fun s -> MicState <- MicError s; debug (sprintf "Mic error : %s." s))
-        do mic.onReady <- (fun _ -> MicState <- MicReady; debug "Mic ready.")
+        do mic.onReady <- (fun _ -> MicState <- MicReady; if CUI.Voice = None then initSpeech(2); debug "Mic ready.")
         do mic.onResult <- (fun i e -> 
             if not (isNull i || isNull e) then 
                 MicState <- MicResult(i,e) 
@@ -73,7 +71,7 @@ module Client =
                 debug "Mic: No result returned."
             )
         do mic.Connect("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT")
-
+    
     let say' text =        
         match CUI.Voice with
         | None -> 
@@ -89,13 +87,11 @@ module Client =
     let say text =
         Responses.Push text
         say' text
-
+        
     let sayVoices() =
-        let voices' = Window.SpeechSynthesis.GetVoices()
-        do if not(isNull(voices')) then
-            let voices = voices' |> toArray    
-            sprintf "There are currently %i voices installed on this computer or device." voices.Length |> say'
-            voices |> Array.iteri (fun i v -> sprintf "Voice %i. Name: %s, Local: %A." i v.Name v.LocalService |> say')
+        let voices = Window.SpeechSynthesis.GetVoices() |> toArray    
+        sprintf "There are currently %i voices installed on this computer or device." voices.Length |> say'
+        voices |> Array.iteri (fun i v -> sprintf "Voice %i. Name: %s, Local: %A." i v.Name v.LocalService |> say')
 
     let sayRandom t phrases = say <| getRandomPhrase phrases t
     
@@ -133,15 +129,15 @@ module Client =
                 
         let main (term:Terminal) (command:string)  =
             CUI <- { CUI with Term = term }
-            do if CUI.Voice = None then 
-                initSpeech()
-            do if CUI.Mic = None then 
-                initMic main'
+            do if CUI.Mic = None then initMic main' term
+            do if CUI.Voice = None then initSpeech 0
+            do if CUI.Voice = None then initSpeech 1
             match command with
             (* Quick commands *)
             | Text.Blank -> say' "Tell me what you want me to do or ask me a question."
             | Text.DebugOn -> CUI <- { CUI with DebugMode = true }; say' "Debug mode is now on."  
-            | Text.DebugOff -> CUI <- { CUI with DebugMode = false }; say' "Debug mode is now off." 
+            | Text.DebugOff -> CUI <- { CUI with DebugMode = false }; say' "Debug mode is now off."
+            | Text.Voices -> sayVoices()
             | _ ->
                 match ClientState with
                 | Some LangOp -> say' "I'm still working on understanding your last message."
@@ -164,7 +160,7 @@ module Client =
                                 debug <| sprintf "Text: %A %A %A" m.Intent m.Trait m.Entities
                                 m |> pushContext |> Main.update CUI Props Questions Responses
                             | _ -> 
-                                debug "Text: Did not receive a response from the server." 
+                                debug "Text: Did not receive a meaning from the server." 
                                 say' "Sorry I did not understand what you said."
                             ClientState <- None
                         } |> CUI.Wait

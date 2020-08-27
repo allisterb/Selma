@@ -80,15 +80,15 @@ module Main =
         match context |> Seq.take b |> List.ofSeq with
         
         (* Hello *)
-        | AnonUser(Intent "hello", None, None)::[] -> 
+        | AnonUser(Intent "hello", None, None)::[] ->
             sayRandom' helloPhrases
 
-        | User(Intent "hello", None, None)::[] -> 
+        | User(Intent "hello", None, None)::[] ->
             sayRandom helloUserPhrases <| sprintf "%A" props.["user"]
             pop 1
 
         (* User login *)                    
-        | AnonUser(Intent "hello", None, Some [Entity "contact" u])::[] ->
+        | AnonUser(Intent "hello", None, Some [Entity "contact" u])::_ ->
             getUser u
             pop 1
 
@@ -101,7 +101,7 @@ module Main =
             pop  2
 
         (* User switch *)
-        | User(Intent "hello", None, Some [Entity "contact" u])::[] as q ->
+        | User(Intent "hello", None, Some [Entity "contact" _])::[] as q ->
             question q "Are you sure you want to switch users?"
             
         | User(Intent "yes", None, None)::User(Question(Intent "hello", None, Some [Entity "contact" u]))::[] ->

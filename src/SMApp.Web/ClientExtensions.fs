@@ -19,6 +19,9 @@ module ClientExtensions =
         member x.Echo' (text:string) = x.Disable(); x.Echo text; x.Enable()
         member x.EchoHtml' (text:string) = x.Disable(); x.Echo(text, rawOpt) ; x.Enable()
       
+    let toArray (a : ArrayLike<'t>) =
+        JQuery.MakeArray a |> Array.map (fun a -> a :?> 't)
+
     let jserror = JQuery.JQuery.Error 
 
     let info = Console.Info
@@ -27,8 +30,6 @@ module ClientExtensions =
 
     let debug t = info <| sprintf "DEBUG: %s" (t.ToString())
     
-    let toArray (a : ArrayLike<'t>) =
-        JQuery.MakeArray a |> Array.map (fun a -> a :?> 't)
 
     let toLower (s:string) = s.ToLower()
 

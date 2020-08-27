@@ -22,6 +22,8 @@ module Controls =
     
     let private cls = Attr.Class
 
+    let Class = Attr.Class
+
     let Container c = div (cls "container"::[]) c
     
     let Input lbl extras (target, labelExtras, targetExtras) =
