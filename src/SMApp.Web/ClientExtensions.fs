@@ -28,9 +28,8 @@ module ClientExtensions =
     
     let error = Console.Error
 
-    let debug t = info <| sprintf "DEBUG: %s" (t.ToString())
+    let debug (loc:string) t = info <| sprintf "DEBUG: %s: %A" (loc.ToUpper()) t
     
-
     let toLower (s:string) = s.ToLower()
 
     let replace_tok (token:string) (value:string) (s:string) = s.Replace(token, value)

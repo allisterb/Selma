@@ -52,7 +52,7 @@ module CUI =
         
     type MicState = MicNotInitialized | MicConnecting | MicDisconnected | MicAudioStart | MicAudioEnd | MicReady | MicError of string | MicResult of obj * obj
 
-    type ClientState = | LangOp | UserOp
+    type ClientState = ClientReady | ClientLangOp 
 
     type Interpreter = Interpreter of (SMApp.Microphone.Mic -> (obj*obj) -> unit) * ((SMApp.JQueryTerminal.Terminal->string->unit) * SMApp.JQueryTerminal.Options)
         with
@@ -75,7 +75,7 @@ module CUI =
              let rawOpt = EchoOptions(Raw=true)
              x.Term.Disable(); x.Term.Echo(text, rawOpt); x.Term.Enable()
  
-         member x.Debug m = debug m; if x.DebugMode then x.EchoHtml' m
+         member x.Debug loc m = debug loc m; if x.DebugMode then x.EchoHtml' m
  
          member x.Say text = 
              match x.Voice with
@@ -88,7 +88,7 @@ module CUI =
                  } |> Async.Start
                  do if x.Caption then x.Echo' text
  
-         member x.sayRandom phrases t = ()//x.Say <| getRandomPhrase phrases t
+         member x.sayRandom phrases t = x.Say <| getRandomPhrase phrases t
      
          member x.Wait (f:unit -> unit) =
              do 

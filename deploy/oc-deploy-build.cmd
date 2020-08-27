@@ -22,7 +22,7 @@ if not %ERRORLEVEL%==0  (
     popd
     goto End
 )
-echo "Deploy started."
+echo Deploy succeded.
 popd
 
 :End

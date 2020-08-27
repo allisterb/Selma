@@ -6,7 +6,7 @@ open WebSharper
 
 [<JavaScript>]
 module Main =
-    let debug m = sprintf "Main: %A" m |> ClientExtensions.debug
+    let debug m = ClientExtensions.debug "Main" m
     
     let update (cui: CUI) (props: Dictionary<string, obj>) (questions:Stack<Question>) (responses:Stack<string>) (context: Stack<Meaning>) =
         

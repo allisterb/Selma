@@ -1,7 +1,7 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Web,ClientExtensions,_Html,htmModule,SC$1,Bootstrap,Controls,SC$2,NLU,Intent,Trait,Entity,Meaning,Question,Voice,_Entity,Text,_Meaning,_Intent,_Entity$1,SC$3,CUI,User,MicState,ClientState,Interpreter,CUI$1,SC$4,Main,Client,SC$5,SMApp$Web_GeneratedPrintf,WebSharper,Strings,Utils,console,$,Arrays,IntelliFactory,Runtime,List,Seq,UI,Doc,AttrModule,Concurrency,Random,Unchecked,Remoting,AjaxRemotingProvider,Wit,document,Collections,Dictionary;
+ var Global,SMApp,Web,ClientExtensions,_Html,htmModule,SC$1,Bootstrap,Controls,SC$2,NLU,Intent,Trait,Entity,Meaning,Question,Voice,_Entity,Text,_Meaning,_Intent,_Entity$1,SC$3,CUI,User,MicState,ClientState,Interpreter,CUI$1,SC$4,Main,Client,SC$5,SMApp$Web_GeneratedPrintf,WebSharper,Strings,IntelliFactory,Runtime,Utils,console,$,Arrays,List,Seq,UI,Doc,AttrModule,Concurrency,Random,Unchecked,Remoting,AjaxRemotingProvider,Wit,document,Collections,Dictionary;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Web=SMApp.Web=SMApp.Web||{};
@@ -38,12 +38,12 @@
  SMApp$Web_GeneratedPrintf=Global.SMApp$Web_GeneratedPrintf=Global.SMApp$Web_GeneratedPrintf||{};
  WebSharper=Global.WebSharper;
  Strings=WebSharper&&WebSharper.Strings;
+ IntelliFactory=Global.IntelliFactory;
+ Runtime=IntelliFactory&&IntelliFactory.Runtime;
  Utils=WebSharper&&WebSharper.Utils;
  console=Global.console;
  $=Global.jQuery;
  Arrays=WebSharper&&WebSharper.Arrays;
- IntelliFactory=Global.IntelliFactory;
- Runtime=IntelliFactory&&IntelliFactory.Runtime;
  List=WebSharper&&WebSharper.List;
  Seq=WebSharper&&WebSharper.Seq;
  UI=WebSharper&&WebSharper.UI;
@@ -66,16 +66,12 @@
  {
   return s.toLowerCase();
  };
- ClientExtensions.debug=function(t)
+ ClientExtensions.debug=function(loc,t)
  {
-  var c;
-  ClientExtensions.info((function($1)
+  ClientExtensions.info((((Runtime.Curried3(function($1,$2,$3)
   {
-   return function($2)
-   {
-    return $1("DEBUG: "+Utils.toSafe($2));
-   };
-  }(Global.id))((c=t,Global.String(c))));
+   return $1("DEBUG: "+Utils.toSafe($2)+": "+Utils.prettyPrint($3));
+  }))(Global.id))(loc.toUpperCase()))(t));
  };
  ClientExtensions.error=function(a)
  {
@@ -1058,10 +1054,10 @@
  MicState.MicNotInitialized={
   $:0
  };
- ClientState.UserOp={
+ ClientState.ClientLangOp={
   $:1
  };
- ClientState.LangOp={
+ ClientState.ClientReady={
   $:0
  };
  Interpreter=CUI.Interpreter=Runtime.Class({
@@ -1116,7 +1112,10 @@
    f();
    this.Term.disable();
   },
-  sayRandom:Global.ignore,
+  sayRandom:function(phrases,t)
+  {
+   this.Say(CUI.getRandomPhrase(phrases,t));
+  },
   Say:function(text)
   {
    var m,v,b;
@@ -1130,9 +1129,9 @@
     return Concurrency.Zero();
    })),null),this.Caption?this["Echo'"](text):void 0):this["Echo'"](text);
   },
-  Debug:function(m)
+  Debug:function(loc,m)
   {
-   ClientExtensions.debug(m);
+   ClientExtensions.debug(loc,m);
    this.DebugMode?this["EchoHtml'"](m):void 0;
   },
   "EchoHtml'":function(text)
@@ -1249,7 +1248,7 @@
    Concurrency.Start((b$1=null,Concurrency.Delay(function()
    {
     sayRandom(CUI.waitRetrievePhrases(),"user name");
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetUser2:-539855299",[u]),function(a$18)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetUser2:713499974",[u]),function(a$18)
     {
      var u$1;
      return a$18==null?(say((function($28)
@@ -1329,13 +1328,7 @@
  };
  Main.debug=function(m)
  {
-  ClientExtensions.debug((function($1)
-  {
-   return function($2)
-   {
-    return $1("Main: "+Utils.prettyPrint($2));
-   };
-  }(Global.id))(m));
+  ClientExtensions.debug("Main",m);
  };
  Client.run=function()
  {
@@ -1529,16 +1522,8 @@
  };
  Client.debug=function(m)
  {
-  var text;
-  text=(function($1)
-  {
-   return function($2)
-   {
-    return $1("Client: "+Utils.prettyPrint($2));
-   };
-  }(Global.id))(m);
-  ClientExtensions.debug(text);
-  Client.CUI().DebugMode?Client.echo(text):void 0;
+  ClientExtensions.debug("CLIENT",m);
+  Client.CUI().DebugMode?Client.echo(m):void 0;
  };
  Client.echo=function(m)
  {
@@ -1605,10 +1590,11 @@
     $:1,
     $0:List.ofArray([a$3.$0])
    }:null);
+   Client.set_MicState(MicState.MicReady);
    return intent==null&&(_trait==null&&entity==null)?null:(Client.debug(((((Runtime.Curried(function($3,$4,$5,$6)
    {
     return $3("Voice: "+SMApp$Web_GeneratedPrintf.p($4)+" "+SMApp$Web_GeneratedPrintf.p$3($5)+" "+SMApp$Web_GeneratedPrintf.p$5($6));
-   },4))(Global.id))(intent))(_trait))(entity)),(Client.ClientState()==null?false:Client.ClientState().$0.$==0)?Client["say'"]("I'm still working on understanding your last message."):(c=Client.pushContext(new Meaning({
+   },4))(Global.id))(intent))(_trait))(entity)),(Client.ClientState()==null?false:Client.ClientState().$0.$==1)?Client["say'"]("I'm still working on understanding your last message."):(c=Client.pushContext(new Meaning({
     $:0,
     $0:intent,
     $1:_trait,
@@ -1621,19 +1607,18 @@
    Client.set_CUI(CUI$1.New(Client.CUI().Voice,Client.CUI().Mic,term,Client.CUI().DebugMode,Client.CUI().Caption));
    Unchecked.Equals(Client.CUI().Mic,null)?Client.initMic(_main,term):void 0;
    Unchecked.Equals(Client.CUI().Voice,null)?Client.initSpeech():void 0;
-   return($1=Text.Blank(command),$1!=null&&$1.$==1)?Client["say'"]("Tell me what you want me to do or ask me a question."):($2=Text.DebugOn(command),$2!=null&&$2.$==1)?(Client.set_CUI(CUI$1.New(Client.CUI().Voice,Client.CUI().Mic,Client.CUI().Term,true,Client.CUI().Caption)),Client["say'"]("Debug mode is now on.")):($3=Text.DebugOff(command),$3!=null&&$3.$==1)?(Client.set_CUI(CUI$1.New(Client.CUI().Voice,Client.CUI().Mic,Client.CUI().Term,false,Client.CUI().Caption)),Client["say'"]("Debug mode is now off.")):($4=Text.Voices(command),$4!=null&&$4.$==1)?Client.sayVoices():(Client.ClientState()==null?false:Client.ClientState().$0.$==0)?Client["say'"]("I'm still working on understanding your last message."):(a=Text.QuickHello(command),a!=null&&a.$==1?($6=a.$0,true):(a$1=Text.QuickHelp(command),a$1!=null&&a$1.$==1?($6=a$1.$0,true):(a$2=Text.QuickYes(command),a$2!=null&&a$2.$==1?($6=a$2.$0,true):(a$3=Text.QuickNo(command),a$3!=null&&a$3.$==1?($6=a$3.$0,true):(a$4=Text.QuickPrograms(command),a$4!=null&&a$4.$==1&&($6=a$4.$0,true))))))?(Client.debug((function($7)
+   return($1=Text.Blank(command),$1!=null&&$1.$==1)?Client["say'"]("Tell me what you want me to do or ask me a question."):($2=Text.DebugOn(command),$2!=null&&$2.$==1)?(Client.set_CUI(CUI$1.New(Client.CUI().Voice,Client.CUI().Mic,Client.CUI().Term,true,Client.CUI().Caption)),Client["say'"]("Debug mode is now on.")):($3=Text.DebugOff(command),$3!=null&&$3.$==1)?(Client.set_CUI(CUI$1.New(Client.CUI().Voice,Client.CUI().Mic,Client.CUI().Term,false,Client.CUI().Caption)),Client["say'"]("Debug mode is now off.")):($4=Text.Voices(command),$4!=null&&$4.$==1)?Client.sayVoices():(Client.ClientState()==null?false:Client.ClientState().$0.$==1)?Client["say'"]("I'm still working on understanding your last message."):(a=Text.QuickHello(command),a!=null&&a.$==1?($6=a.$0,true):(a$1=Text.QuickHelp(command),a$1!=null&&a$1.$==1?($6=a$1.$0,true):(a$2=Text.QuickYes(command),a$2!=null&&a$2.$==1?($6=a$2.$0,true):(a$3=Text.QuickNo(command),a$3!=null&&a$3.$==1?($6=a$3.$0,true):(a$4=Text.QuickPrograms(command),a$4!=null&&a$4.$==1&&($6=a$4.$0,true))))))?(Client.debug((function($7)
    {
     return function($8)
     {
      return $7("Quick Text: "+SMApp$Web_GeneratedPrintf.p$7($8)+".");
     };
-   }(Global.id))($6)),c=Client.pushContext($6),Main.update(Client.CUI(),Client.Props(),Client.Questions(),Client.Responses(),c)):Client.CUI().Wait((b=null,Concurrency.Delay(function()
+   }(Global.id))($6)),c=Client.pushContext($6),Main.update(Client.CUI(),Client.Props(),Client.Questions(),Client.Responses(),c),Client.set_ClientState({
+    $:1,
+    $0:ClientState.ClientReady
+   })):Client.CUI().Wait((b=null,Concurrency.Delay(function()
    {
-    Client.set_ClientState({
-     $:1,
-     $0:ClientState.LangOp
-    });
-    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-301318401",[command]),function(a$5)
+    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:1442141940",[command]),function(a$5)
     {
      var a$6,m,c$1;
      a$6=Text.HasMeaning(a$5);
@@ -1643,7 +1628,10 @@
      },4))(Global.id))(m.get_Intent()))(m.get_Trait()))(m.get_Entities())),c$1=Client.pushContext(m),Main.update(Client.CUI(),Client.Props(),Client.Questions(),Client.Responses(),c$1),Concurrency.Zero())):(Client.debug("Text: Did not receive a meaning from the server."),Client["say'"]("Sorry I did not understand what you said."),Concurrency.Zero());
     }),Concurrency.Delay(function()
     {
-     Client.set_ClientState(null);
+     Client.set_ClientState({
+      $:1,
+      $0:ClientState.ClientReady
+     });
      return Concurrency.Zero();
     }));
    })));

@@ -30,9 +30,8 @@ module Client =
 
     let echo m = do if not(isNull(CUI.Term)) then CUI.Term.EchoHtml' m 
     let debug m = 
-        let text = sprintf "Client: %A" m in
-        ClientExtensions.debug text
-        if CUI.DebugMode then echo text
+        debug "CLIENT" m
+        if CUI.DebugMode then echo m
        
     (* NLU context *)
     let Context = new Stack<Meaning>()
@@ -42,7 +41,7 @@ module Client =
 
     (* Initialize speech and mic *)
     let synth = Window.SpeechSynthesis
-
+    
     let initSpeech() =
         let voices = synth.GetVoices() |> toArray         
         do voices |> Array.iter(fun v-> 
@@ -121,12 +120,13 @@ module Client =
                 match e with
                 | Voice.Entity' entity -> Some [entity]
                 | _ -> None
+            do MicState <- MicReady
             match (intent, _trait, entity) with
             | None, None, None -> ()
             | _ -> 
                 debug <| sprintf "Voice: %A %A %A" intent _trait entity
                 match ClientState with
-                | Some LangOp -> say' "I'm still working on understanding your last message."
+                | Some ClientLangOp -> say' "I'm still working on understanding your last message."
                 | Some _ | None -> Meaning(intent, _trait, entity) |> pushContext |> Main.update CUI Props Questions Responses
                 
         let main (term:Terminal) (command:string)  =
@@ -141,7 +141,7 @@ module Client =
             | Text.Voices -> sayVoices()
             | _ ->
                 match ClientState with
-                | Some LangOp -> say' "I'm still working on understanding your last message."
+                | Some ClientLangOp -> say' "I'm still working on understanding your last message."
                 | Some _
                 | None ->
                     match command with
@@ -152,10 +152,10 @@ module Client =
                     | Text.QuickPrograms m -> 
                         debug <| sprintf "Quick Text: %A." m
                         m |> pushContext |> Main.update CUI Props Questions Responses
+                        ClientState <- Some ClientReady
                     (* Use the NLU service for everything else *)
                     | _->         
                         async {
-                            ClientState <- Some LangOp
                             match! Server.GetMeaning command with
                             | Text.HasMeaning m -> 
                                 debug <| sprintf "Text: %A %A %A" m.Intent m.Trait m.Entities
@@ -163,7 +163,7 @@ module Client =
                             | _ -> 
                                 debug "Text: Did not receive a meaning from the server." 
                                 say' "Sorry I did not understand what you said."
-                            ClientState <- None
+                            ClientState <- Some ClientReady
                         } |> CUI.Wait
         let mainOpt =
             Options(
