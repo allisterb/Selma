@@ -52,7 +52,7 @@ module CUI =
         
     type MicState = MicNotInitialized | MicConnecting | MicDisconnected | MicAudioStart | MicAudioEnd | MicReady | MicError of string | MicResult of obj * obj
 
-    type ClientState = ClientReady | ClientLangOp 
+    type ClientState = ClientNotInitialzed | ClientReady | ClientUnderstand 
 
     type Interpreter = Interpreter of (SMApp.Microphone.Mic -> (obj*obj) -> unit) * ((SMApp.JQueryTerminal.Terminal->string->unit) * SMApp.JQueryTerminal.Options)
         with

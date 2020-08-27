@@ -16,7 +16,7 @@
     <Compile Include="Startup.fs" />
     <Content Update="wwwroot\Main.html" CopyToPublishDirectory="Always" />
     <Content Update="wwwroot\Style.css" CopyToPublishDirectory="Always" />
-    <Content Update="wwwroot\microphone\css\*.*" CopyToPublishDirectory="Always" />
+    <Content Update="wwwroot\microphone\css\microphone.min.css" CopyToPublishDirectory="Always" />
     <Content Update="wwwroot\microphone\js\*.*" CopyToPublishDirectory="Always" />
     <Content Update="wwwroot\microphone\fonts\*.*" CopyToPublishDirectory="Always" />
     <None Include="wsconfig.json" />

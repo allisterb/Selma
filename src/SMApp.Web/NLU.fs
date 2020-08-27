@@ -36,11 +36,11 @@ module NLU =
         override x.ToString() = sprintf "%A %A. %A" x.Intent x.Trait x.Entities
 
     type Question = Question of Meaning * string
-        with 
-            member x.Unwrap() = match x with | Question(m, r)->(m, r)
-            member x.Meaning = x.Unwrap() |> fst
-            member x.Response = x.Unwrap() |> snd
-            override x.ToString() = sprintf "(%A,%A)" x.Meaning x.Response
+    with 
+        member x.Unwrap() = match x with | Question(m, r)->(m, r)
+        member x.Meaning = x.Unwrap() |> fst
+        member x.Response = x.Unwrap() |> snd
+        override x.ToString() = sprintf "(%A,%A)" x.Meaning x.Response
 
     let (|Intent|_|) n = 
         function

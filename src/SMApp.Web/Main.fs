@@ -82,16 +82,15 @@ module Main =
         (* Hello *)
         | AnonUser(Intent "hello", None, None)::[] ->
             sayRandom' helloPhrases
-
-        | User(Intent "hello", None, None)::[] ->
-            sayRandom helloUserPhrases <| sprintf "%A" props.["user"]
+        | AnonUser(Intent "hello", None, None)::_::[] ->
+            sayRandom' helloPhrases
             pop 1
-
+               
         (* User login *)                    
-        | AnonUser(Intent "hello", None, Some [Entity "contact" u])::_ ->
+        | AnonUser(Intent "hello", None, Some [Entity "contact" u])::[] ->
             getUser u
             pop 1
-
+       
         | AnonUser (None, None, Some [Entity "contact" u])::AnonUser(Intent "hello", None, None)::[] ->
             getUser u
             pop  2

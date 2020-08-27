@@ -1054,10 +1054,13 @@
  MicState.MicNotInitialized={
   $:0
  };
- ClientState.ClientLangOp={
-  $:1
+ ClientState.ClientUnderstand={
+  $:2
  };
  ClientState.ClientReady={
+  $:1
+ };
+ ClientState.ClientNotInitialzed={
   $:0
  };
  Interpreter=CUI.Interpreter=Runtime.Class({
@@ -1242,13 +1245,17 @@
    responses.unshift(t);
    return cui.Say(t);
   }
+  function _sayRandom(p)
+  {
+   sayRandom(p,"");
+  }
   function getUser(u)
   {
    var b$1;
    Concurrency.Start((b$1=null,Concurrency.Delay(function()
    {
     sayRandom(CUI.waitRetrievePhrases(),"user name");
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetUser2:713499974",[u]),function(a$18)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetUser2:-159057597",[u]),function(a$18)
     {
      var u$1;
      return a$18==null?(say((function($28)
@@ -1308,13 +1315,7 @@
    };
   }(Global.id))(questions));
   m=List.ofSeq(Seq.take(b,context));
-  m.$==1&&(a=AnonUser(m.$0),a!=null&&a.$==1&&(($2=NLU.Intent$1("hello",a.$0[0]),$2!=null&&$2.$==1)&&(a.$0[1]==null&&(a.$0[2]==null&&m.$1.$==0))))?sayRandom(CUI.helloPhrases(),""):m.$==1&&(a$1=User$1(m.$0),a$1!=null&&a$1.$==1&&(($4=NLU.Intent$1("hello",a$1.$0[0]),$4!=null&&$4.$==1)&&(a$1.$0[1]==null&&(a$1.$0[2]==null&&m.$1.$==0))))?(sayRandom(CUI.helloUserPhrases(),(function($28)
-  {
-   return function($29)
-   {
-    return $28(Utils.prettyPrint($29));
-   };
-  }(Global.id))(props.get_Item("user"))),pop(1)):m.$==1&&(a$2=AnonUser(m.$0),a$2!=null&&a$2.$==1&&(($6=NLU.Intent$1("hello",a$2.$0[0]),$6!=null&&$6.$==1)&&(a$2.$0[1]==null&&(($7=a$2.$0[2],$7!=null&&$7.$==1)&&(a$2.$0[2].$0.$==1&&(a$3=NLU.Entity$1("contact",a$2.$0[2].$0.$0),a$3!=null&&a$3.$==1&&(a$2.$0[2].$0.$1.$==0&&($5=a$3.$0,true))))))))?(getUser($5),pop(1)):m.$==1&&(a$4=AnonUser(m.$0),a$4!=null&&a$4.$==1&&(a$4.$0[0]==null&&(a$4.$0[1]==null&&(($9=a$4.$0[2],$9!=null&&$9.$==1)&&(a$4.$0[2].$0.$==1&&(a$5=NLU.Entity$1("contact",a$4.$0[2].$0.$0),a$5!=null&&a$5.$==1&&(a$4.$0[2].$0.$1.$==0&&(m.$1.$==1&&(a$6=AnonUser(m.$1.$0),a$6!=null&&a$6.$==1&&(($10=NLU.Intent$1("hello",a$6.$0[0]),$10!=null&&$10.$==1)&&(a$6.$0[1]==null&&(a$6.$0[2]==null&&(m.$1.$1.$==0&&($8=a$5.$0,true))))))))))))))?(getUser($8),pop(2)):m.$==1&&(a$7=AnonUser(m.$0),a$7!=null&&a$7.$==1&&(($12=NLU.Intent$1("hello",a$7.$0[0]),$12!=null&&$12.$==1)&&(a$7.$0[1]==null&&(($13=a$7.$0[2],$13!=null&&$13.$==1)&&(a$7.$0[2].$0.$==1&&(a$8=NLU.Entity$1("contact",a$7.$0[2].$0.$0),a$8!=null&&a$8.$==1&&(a$7.$0[2].$0.$1.$==0&&(m.$1.$==1&&(a$9=AnonUser(m.$1.$0),a$9!=null&&a$9.$==1&&(($14=NLU.Intent$1("hello",a$9.$0[0]),$14!=null&&$14.$==1)&&(a$9.$0[1]==null&&(a$9.$0[2]==null&&(m.$1.$1.$==0&&($11=a$8.$0,true))))))))))))))?(getUser($11),pop(2)):m.$==1&&(a$10=User$1(m.$0),a$10!=null&&a$10.$==1&&(($16=NLU.Intent$1("hello",a$10.$0[0]),$16!=null&&$16.$==1)&&(a$10.$0[1]==null&&(($17=a$10.$0[2],$17!=null&&$17.$==1)&&(a$10.$0[2].$0.$==1&&(($18=NLU.Entity$1("contact",a$10.$0[2].$0.$0),$18!=null&&$18.$==1)&&(a$10.$0[2].$0.$1.$==0&&(m.$1.$==0&&($15=m,true)))))))))?(r="Are you sure you want to switch users?",questions.unshift(new Question({
+  m.$==1&&(a=AnonUser(m.$0),a!=null&&a.$==1&&(($2=NLU.Intent$1("hello",a.$0[0]),$2!=null&&$2.$==1)&&(a.$0[1]==null&&(a.$0[2]==null&&m.$1.$==0))))?_sayRandom(CUI.helloPhrases()):m.$==1&&(a$1=AnonUser(m.$0),a$1!=null&&a$1.$==1&&(($4=NLU.Intent$1("hello",a$1.$0[0]),$4!=null&&$4.$==1)&&(a$1.$0[1]==null&&(a$1.$0[2]==null&&(m.$1.$==1&&m.$1.$1.$==0)))))?(_sayRandom(CUI.helloPhrases()),pop(1)):m.$==1&&(a$2=AnonUser(m.$0),a$2!=null&&a$2.$==1&&(($6=NLU.Intent$1("hello",a$2.$0[0]),$6!=null&&$6.$==1)&&(a$2.$0[1]==null&&(($7=a$2.$0[2],$7!=null&&$7.$==1)&&(a$2.$0[2].$0.$==1&&(a$3=NLU.Entity$1("contact",a$2.$0[2].$0.$0),a$3!=null&&a$3.$==1&&(a$2.$0[2].$0.$1.$==0&&(m.$1.$==0&&($5=a$3.$0,true)))))))))?(getUser($5),pop(1)):m.$==1&&(a$4=AnonUser(m.$0),a$4!=null&&a$4.$==1&&(a$4.$0[0]==null&&(a$4.$0[1]==null&&(($9=a$4.$0[2],$9!=null&&$9.$==1)&&(a$4.$0[2].$0.$==1&&(a$5=NLU.Entity$1("contact",a$4.$0[2].$0.$0),a$5!=null&&a$5.$==1&&(a$4.$0[2].$0.$1.$==0&&(m.$1.$==1&&(a$6=AnonUser(m.$1.$0),a$6!=null&&a$6.$==1&&(($10=NLU.Intent$1("hello",a$6.$0[0]),$10!=null&&$10.$==1)&&(a$6.$0[1]==null&&(a$6.$0[2]==null&&(m.$1.$1.$==0&&($8=a$5.$0,true))))))))))))))?(getUser($8),pop(2)):m.$==1&&(a$7=AnonUser(m.$0),a$7!=null&&a$7.$==1&&(($12=NLU.Intent$1("hello",a$7.$0[0]),$12!=null&&$12.$==1)&&(a$7.$0[1]==null&&(($13=a$7.$0[2],$13!=null&&$13.$==1)&&(a$7.$0[2].$0.$==1&&(a$8=NLU.Entity$1("contact",a$7.$0[2].$0.$0),a$8!=null&&a$8.$==1&&(a$7.$0[2].$0.$1.$==0&&(m.$1.$==1&&(a$9=AnonUser(m.$1.$0),a$9!=null&&a$9.$==1&&(($14=NLU.Intent$1("hello",a$9.$0[0]),$14!=null&&$14.$==1)&&(a$9.$0[1]==null&&(a$9.$0[2]==null&&(m.$1.$1.$==0&&($11=a$8.$0,true))))))))))))))?(getUser($11),pop(2)):m.$==1&&(a$10=User$1(m.$0),a$10!=null&&a$10.$==1&&(($16=NLU.Intent$1("hello",a$10.$0[0]),$16!=null&&$16.$==1)&&(a$10.$0[1]==null&&(($17=a$10.$0[2],$17!=null&&$17.$==1)&&(a$10.$0[2].$0.$==1&&(($18=NLU.Entity$1("contact",a$10.$0[2].$0.$0),$18!=null&&$18.$==1)&&(a$10.$0[2].$0.$1.$==0&&(m.$1.$==0&&($15=m,true)))))))))?(r="Are you sure you want to switch users?",questions.unshift(new Question({
    $:0,
    $0:List.head($15),
    $1:r
@@ -1449,7 +1450,7 @@
   };
   mic.onresult=function(i,e)
   {
-   return!(i==null||e==null)?(Client.set_MicState({
+   return Client.ClientState().$==2?Client.echo("I'm still trying to understand what you said before."):Client.ClientState().$==0?ClientExtensions.error("Client is not intialized."):!(i==null||e==null)?(Client.set_MicState({
     $:7,
     $0:i,
     $1:e
@@ -1493,17 +1494,22 @@
    {
     return $1("Using default voice "+Utils.toSafe($2)+".");
    };
-  }(Global.id))(Client.CUI().Voice.$0.name))):Unchecked.Equals(Client.CUI().Voice,null)?(ClientExtensions.error("No speech synthesis voice is available."),Client.echo("No speech synthesis voice is available. Install speech synthesis on this device or computer to use the voice output feature of Selma.")):void 0;
+  }(Global.id))(Client.CUI().Voice.$0.name))):Unchecked.Equals(Client.CUI().Voice,null)?Client.echo("No speech synthesis voice is available. Install speech synthesis on this device or computer to use the voice output feature of Selma."):void 0;
  };
  Client.synth=function()
  {
   SC$5.$cctor();
   return SC$5.synth;
  };
- Client.pushContext=function(m)
+ Client.push=function(m)
  {
   Client.Context().unshift(m);
   return Client.Context();
+ };
+ Client.Props=function()
+ {
+  SC$5.$cctor();
+  return SC$5.Props;
  };
  Client.Responses=function()
  {
@@ -1529,11 +1535,6 @@
  {
   if(!(Client.CUI().Term==null))
    ClientExtensions["Terminal.EchoHtml'"](Client.CUI().Term,m);
- };
- Client.Props=function()
- {
-  SC$5.$cctor();
-  return SC$5.Props;
  };
  Client.ClientState=function()
  {
@@ -1571,12 +1572,12 @@
   SC$5.$cctor=Global.ignore;
   function _main(a,command)
   {
-   var i,e,intent,a$1,_trait,a$2,entity,a$3,$1,$2,c;
+   var i,e,intent,a$1,_trait,a$2,entity,a$3,$1,c;
    i=command[0];
    e=command[1];
-   Client.debug((((Runtime.Curried3(function($3,$4,$5)
+   Client.debug((((Runtime.Curried3(function($2,$3,$4)
    {
-    return $3("Voice: "+Utils.prettyPrint($4)+" "+Utils.prettyPrint($5));
+    return $2("Voice: "+Utils.prettyPrint($3)+" "+Utils.prettyPrint($4));
    }))(Global.id))(i))(e));
    intent=(a$1=Voice["Intent'"](i,e),a$1!=null&&a$1.$==1?{
     $:1,
@@ -1590,59 +1591,54 @@
     $:1,
     $0:List.ofArray([a$3.$0])
    }:null);
-   Client.set_MicState(MicState.MicReady);
-   return intent==null&&(_trait==null&&entity==null)?null:(Client.debug(((((Runtime.Curried(function($3,$4,$5,$6)
+   return intent==null&&(_trait==null&&entity==null)?null:(Client.debug(((((Runtime.Curried(function($2,$3,$4,$5)
    {
-    return $3("Voice: "+SMApp$Web_GeneratedPrintf.p($4)+" "+SMApp$Web_GeneratedPrintf.p$3($5)+" "+SMApp$Web_GeneratedPrintf.p$5($6));
-   },4))(Global.id))(intent))(_trait))(entity)),(Client.ClientState()==null?false:Client.ClientState().$0.$==1)?Client["say'"]("I'm still working on understanding your last message."):(c=Client.pushContext(new Meaning({
+    return $2("Voice: "+SMApp$Web_GeneratedPrintf.p($3)+" "+SMApp$Web_GeneratedPrintf.p$3($4)+" "+SMApp$Web_GeneratedPrintf.p$5($5));
+   },4))(Global.id))(intent))(_trait))(entity)),c=Client.push(new Meaning({
     $:0,
     $0:intent,
     $1:_trait,
     $2:entity
-   })),Main.update(Client.CUI(),Client.Props(),Client.Questions(),Client.Responses(),c)));
+   })),Main.update(Client.CUI(),Client.Props(),Client.Questions(),Client.Responses(),c));
   }
   function main(term,command)
   {
-   var $1,$2,$3,$4,$5,$6,a,a$1,a$2,a$3,a$4,c,b;
+   var $1,$2,$3,$4,$5,a,a$1,a$2,a$3,a$4,c,b;
    Client.set_CUI(CUI$1.New(Client.CUI().Voice,Client.CUI().Mic,term,Client.CUI().DebugMode,Client.CUI().Caption));
    Unchecked.Equals(Client.CUI().Mic,null)?Client.initMic(_main,term):void 0;
    Unchecked.Equals(Client.CUI().Voice,null)?Client.initSpeech():void 0;
-   return($1=Text.Blank(command),$1!=null&&$1.$==1)?Client["say'"]("Tell me what you want me to do or ask me a question."):($2=Text.DebugOn(command),$2!=null&&$2.$==1)?(Client.set_CUI(CUI$1.New(Client.CUI().Voice,Client.CUI().Mic,Client.CUI().Term,true,Client.CUI().Caption)),Client["say'"]("Debug mode is now on.")):($3=Text.DebugOff(command),$3!=null&&$3.$==1)?(Client.set_CUI(CUI$1.New(Client.CUI().Voice,Client.CUI().Mic,Client.CUI().Term,false,Client.CUI().Caption)),Client["say'"]("Debug mode is now off.")):($4=Text.Voices(command),$4!=null&&$4.$==1)?Client.sayVoices():(Client.ClientState()==null?false:Client.ClientState().$0.$==1)?Client["say'"]("I'm still working on understanding your last message."):(a=Text.QuickHello(command),a!=null&&a.$==1?($6=a.$0,true):(a$1=Text.QuickHelp(command),a$1!=null&&a$1.$==1?($6=a$1.$0,true):(a$2=Text.QuickYes(command),a$2!=null&&a$2.$==1?($6=a$2.$0,true):(a$3=Text.QuickNo(command),a$3!=null&&a$3.$==1?($6=a$3.$0,true):(a$4=Text.QuickPrograms(command),a$4!=null&&a$4.$==1&&($6=a$4.$0,true))))))?(Client.debug((function($7)
+   Client.ClientState().$===0?Client.set_ClientState(ClientState.ClientReady):void 0;
+   return($1=Text.Blank(command),$1!=null&&$1.$==1)?Client["say'"]("Tell me what you want me to do or ask me a question."):($2=Text.DebugOn(command),$2!=null&&$2.$==1)?(Client.set_CUI(CUI$1.New(Client.CUI().Voice,Client.CUI().Mic,Client.CUI().Term,true,Client.CUI().Caption)),Client["say'"]("Debug mode is now on.")):($3=Text.DebugOff(command),$3!=null&&$3.$==1)?(Client.set_CUI(CUI$1.New(Client.CUI().Voice,Client.CUI().Mic,Client.CUI().Term,false,Client.CUI().Caption)),Client["say'"]("Debug mode is now off.")):($4=Text.Voices(command),$4!=null&&$4.$==1)?Client.sayVoices():Client.ClientState().$==1?(a=Text.QuickHello(command),a!=null&&a.$==1?($5=a.$0,true):(a$1=Text.QuickHelp(command),a$1!=null&&a$1.$==1?($5=a$1.$0,true):(a$2=Text.QuickYes(command),a$2!=null&&a$2.$==1?($5=a$2.$0,true):(a$3=Text.QuickNo(command),a$3!=null&&a$3.$==1?($5=a$3.$0,true):(a$4=Text.QuickPrograms(command),a$4!=null&&a$4.$==1&&($5=a$4.$0,true))))))?(Client.debug((function($6)
    {
-    return function($8)
+    return function($7)
     {
-     return $7("Quick Text: "+SMApp$Web_GeneratedPrintf.p$7($8)+".");
+     return $6("Quick Text: "+SMApp$Web_GeneratedPrintf.p$7($7)+".");
     };
-   }(Global.id))($6)),c=Client.pushContext($6),Main.update(Client.CUI(),Client.Props(),Client.Questions(),Client.Responses(),c),Client.set_ClientState({
-    $:1,
-    $0:ClientState.ClientReady
-   })):Client.CUI().Wait((b=null,Concurrency.Delay(function()
+   }(Global.id))($5)),c=Client.push($5),Main.update(Client.CUI(),Client.Props(),Client.Questions(),Client.Responses(),c),Client.set_ClientState(ClientState.ClientReady)):Client.CUI().Wait((b=null,Concurrency.Delay(function()
    {
-    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:1442141940",[command]),function(a$5)
+    Client.set_ClientState(ClientState.ClientUnderstand);
+    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:364743303",[command]),function(a$5)
     {
      var a$6,m,c$1;
      a$6=Text.HasMeaning(a$5);
-     return a$6!=null&&a$6.$==1?(m=a$6.$0,(Client.debug(((((Runtime.Curried(function($7,$8,$9,$10)
+     return a$6!=null&&a$6.$==1?(m=a$6.$0,(Client.debug(((((Runtime.Curried(function($6,$7,$8,$9)
      {
-      return $7("Text: "+SMApp$Web_GeneratedPrintf.p($8)+" "+SMApp$Web_GeneratedPrintf.p$3($9)+" "+SMApp$Web_GeneratedPrintf.p$5($10));
-     },4))(Global.id))(m.get_Intent()))(m.get_Trait()))(m.get_Entities())),c$1=Client.pushContext(m),Main.update(Client.CUI(),Client.Props(),Client.Questions(),Client.Responses(),c$1),Concurrency.Zero())):(Client.debug("Text: Did not receive a meaning from the server."),Client["say'"]("Sorry I did not understand what you said."),Concurrency.Zero());
+      return $6("Text: "+SMApp$Web_GeneratedPrintf.p($7)+" "+SMApp$Web_GeneratedPrintf.p$3($8)+" "+SMApp$Web_GeneratedPrintf.p$5($9));
+     },4))(Global.id))(m.get_Intent()))(m.get_Trait()))(m.get_Entities())),c$1=Client.push(m),Main.update(Client.CUI(),Client.Props(),Client.Questions(),Client.Responses(),c$1),Concurrency.Zero())):(Client.debug("Text: Did not receive a meaning from the server."),Client["say'"]("Sorry I did not understand what you said."),Concurrency.Zero());
     }),Concurrency.Delay(function()
     {
-     Client.set_ClientState({
-      $:1,
-      $0:ClientState.ClientReady
-     });
+     Client.set_ClientState(ClientState.ClientReady);
      return Concurrency.Zero();
     }));
-   })));
+   }))):Client.ClientState().$==0?ClientExtensions.error("Client is not initialized."):Client["say'"]("I'm still trying to understand what you said before.");
   }
   SC$5.CUI=CUI$1.New(null,null,null,false,false);
   SC$5.MicState=MicState.MicNotInitialized;
-  SC$5.ClientState=null;
-  SC$5.Props=new Dictionary.New$5();
+  SC$5.ClientState=ClientState.ClientNotInitialzed;
   SC$5.Context=[];
   SC$5.Questions=[];
   SC$5.Responses=[];
+  SC$5.Props=new Dictionary.New$5();
   SC$5.synth=Global.speechSynthesis;
   SC$5.container=Controls.Container;
   SC$5.Main=new Interpreter({
