@@ -32,7 +32,7 @@ module NLU =
         member x.Intent = let i, t, el = x.Unwrap() in i
         member x.Trait = let i, t, el = x.Unwrap() in t
         member x.Entities = let i, t, el = x.Unwrap() in el
-        override x.ToString() = sprintf "%A %A. %A" x.Intent x.Trait x.Entities
+        override x.ToString() = sprintf "%A %A %A" x.Intent x.Trait x.Entities
 
     type Meaning' = Trait option * Entity list option
 
@@ -41,7 +41,7 @@ module NLU =
         member x.Unwrap() = match x with | Question(n, t)-> n, t
         member x.Name = x.Unwrap() |> fst 
         member x.Text = x.Unwrap() |> snd
-        override x.ToString() = x.Text
+        override x.ToString() = sprintf "Name: %s Text: %s" x.Name x.Text
 
     let (|Intent|_|) n :Meaning -> Meaning' option= 
         function
@@ -53,14 +53,14 @@ module NLU =
         | entity when entity.Name = n -> Some entity.Value
         | _ -> None
 
-    let (|Yes|_|) :Meaning -> unit option= 
+    let (|Yes|_|) :Meaning -> Meaning option= 
         function 
-        | Intent "yes" (None, None)  -> Some()
+        | Intent "yes" (None, None) as m -> Some m
         |  _ -> None
 
-    let (|No|_|) = 
+    let (|No|_|) :Meaning -> Meaning option= 
         function 
-        | Intent "no" (None, None)  -> Some() 
+        | Intent "no" (None, None) as m  -> Some m 
         |  _ -> None
 
     [<RequireQualifiedAccess>]

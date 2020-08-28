@@ -46,7 +46,7 @@ module Main =
 
         let question n =
             pushq n; 
-            debug <| sprintf "Added question: %A." (questions.Peek())
+            debug <| sprintf "Added question: %A." (questions.Peek()) 
             
         let (|PropSet|_|) (n:string) :Meaning -> Meaning option =
             function
@@ -68,14 +68,14 @@ module Main =
             | PropSet "user" m -> m |> Some 
             | _ -> None
 
-        let (|Assert|_|) :Meaning -> Meaning option  =
+        let (|Assert|_|) :Meaning -> Meaning option =
             function
             | m when questions.Count = 0 -> 
                 popc()
                 Some m
             | _ -> None
 
-        let (|Response|_|) (n:string) :Meaning -> Meaning option  =
+        let (|Response|_|) (n:string) :Meaning -> Meaning option =
             function
             | m when haveQuestion n && questions.Count > 0  && questions.Peek().Name = n -> 
                 popq()
@@ -100,7 +100,7 @@ module Main =
                     sayRandom helloUserPhrases <| sprintf "%A" props.["user"]
                 | None _ -> 
                     say <| sprintf "Sorry I did not find the user name %s." u
-                    ask' "addUser" u
+                    ask' "switchUser" u
             } |> Async.Start
 
         (* Interpreter logic begins here *)
@@ -113,9 +113,11 @@ module Main =
         | AnonUser(Assert(Intent "hello" (None, Some [Entity "contact" u])))::[] -> loginUser u
         | AnonUser(Meaning(None, None, Some [Entity "contact" u]))::[] -> loginUser u
             
-        (* User add *)
-        | User(Response "addUser" Yes)::[] -> say <| sprintf "Added user %A." props.["addUser"]; deleteProp "addUser" |> ignore
-        | User(Response "addUser" No)::[] -> say <| "did not add user"; deleteProp "addUser" |> ignore
+        (* User switch *)
+        | User(Assert(Intent "hello" (None, Some [Entity "contact" u])))::[] 
+        | User(Meaning(None, None, Some [Entity "contact" u]))::[] -> ask' "addUser" props.["user"]
+        | User(Yes(Response "addUser" _))::[] -> say <| sprintf "Added user %A." props.["addUser"]; deleteProp "addUser" |> ignore
+        | User(No(Response "addUser" _))::[] -> say <| "did not add user"; deleteProp "addUser" |> ignore
         //| (Response "addUser" (User(Yes(_))))::[] -> say <| sprintf "Added user %A." props.["addUser"]; deleteProp "addUser" |> ignore
         //| (Response "addUser" (User(No(_))))::[] -> say <| sprintf "Not adding user."; deleteProp "addUser"
 
@@ -124,7 +126,8 @@ module Main =
         //| (Response "switchUser" (User(Yes(_))))::[] -> say  <| sprintf "Switch user to %A." props.["switchUser"]; deleteProp "switchUser" |> ignore
         //| (Response "switchUser" (User(No(_))))::[] -> deleteProp "switchUser" 
 
-        | _ -> 
+        | m -> 
+            debug <| sprintf "Did not understand %A." m
             pop 1 |> ignore
             say "Sorry I didn't understand what you meant."
-            if questions.Count > 0 then let q = questions.Peek() in q.Text |> say
+            if questions.Count > 0 then let q = Seq.item 0 questions in q.Text |> say
