@@ -1,6 +1,0 @@
-#!/bin/bash
-
-set -e
-cd bin/Debug/netcoreapp3.1/
-dotnet "SMApp.CLI.dll" "$@"
-cd ../..

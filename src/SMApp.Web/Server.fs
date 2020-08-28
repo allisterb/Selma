@@ -53,6 +53,7 @@ module Server =
         |> Sql.formatConnectionString
         |> Sql.connect
 
+(*
     [<Rpc>]
     let GetUser (user:string) = 
         async {
@@ -65,9 +66,9 @@ module Server =
                 op.Complete()
                 debugf "Did not find user {0}." [user]; return None
         }
-
+*)
     [<Rpc>]
-    let GetUser2(user:string) : Async<User option> = 
+    let GetUser(user:string) : Async<User option> = 
         pgdb
         |> (Sql.query <| sprintf "SELECT * FROM selma_user WHERE user_name='%s'" user)
         |> Sql.executeAsync (fun read ->
