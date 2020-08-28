@@ -5,7 +5,6 @@ open WebSharper.JavaScript
 
 [<JavaScript;AutoOpen>]
 module NLU =
-
     type Intent = Intent of string * float32 option
       with
           member x.Unwrap = match x with | Intent(n,c)->(n,c)
@@ -35,6 +34,8 @@ module NLU =
         member x.Entities = let i, t, el = x.Unwrap() in el
         override x.ToString() = sprintf "%A %A. %A" x.Intent x.Trait x.Entities
 
+    type Meaning' = Trait option * Entity list option
+
     type Question = Question of string * string
     with 
         member x.Unwrap() = match x with | Question(n, t)-> n, t
@@ -42,9 +43,9 @@ module NLU =
         member x.Text = x.Unwrap() |> snd
         override x.ToString() = x.Text
 
-    let (|Intent|_|) n = 
+    let (|Intent|_|) n :Meaning -> Meaning' option= 
         function
-        | Some(Intent (i, _)) when i = n -> Some ()
+        | m when m.Intent.IsSome && m.Intent.Value.Name = n -> let _, t, el = m.Unwrap() in (t, el) |> Some
         | _ -> None
         
     let (|Entity|_|) (n:string) :Entity->string option = 
@@ -52,15 +53,15 @@ module NLU =
         | entity when entity.Name = n -> Some entity.Value
         | _ -> None
 
-    let (|Yes|_|) = function | Intent "yes", None, None -> Some () |  _ -> None
+    let (|Yes|_|) :Meaning -> unit option= 
+        function 
+        | Intent "yes" (None, None)  -> Some()
+        |  _ -> None
 
-    let (|No|_|) = function | Intent "no", None, None -> Some () |  _ -> None
-
-    let (|YesorNo|_|) = 
-        function
-        | Yes _ -> Some "yes"
-        | No _ -> Some "no"
-        | _ -> None
+    let (|No|_|) = 
+        function 
+        | Intent "no" (None, None)  -> Some() 
+        |  _ -> None
 
     [<RequireQualifiedAccess>]
     module Voice =
@@ -88,14 +89,9 @@ module NLU =
             | "" -> Some()
             | _ -> None
 
-        let (|DebugOn|_|) =
+        let (|Debug|_|) =
             function
-            | "debug on" -> Some ()
-            | _ -> None
-
-        let (|DebugOff|_|) =
-            function
-            | "debug off" -> Some ()
+            | "debug" -> Some ()
             | _ -> None
 
         let (|Voices|_|) =
@@ -108,7 +104,7 @@ module NLU =
             | "hello"
             | "hey"
             | "yo"
-            | "hi" -> Meaning(Some(Intent("hello", None)), None, None) |> Some
+            | "hi" -> Meaning(Some(Intent("hello", Some 1.0f)), None, None) |> Some
             | _ -> None
 
         let (|QuickHelp|_|) =
@@ -116,7 +112,7 @@ module NLU =
             | "help"
             | "help me"
             | "what's this?"
-            | "huh" -> Meaning(Some(Intent("help", None)), None, None) |> Some 
+            | "huh" -> Meaning(Some(Intent("help", Some 1.0f)), None, None) |> Some 
             | _ -> None    
 
         let (|QuickYes|_|) =
@@ -132,7 +128,7 @@ module NLU =
             | "yep" 
             | "uh huh" 
             | "go ahead" 
-            | "go" -> Meaning(Some(Intent("yes", None)), None, None) |> Some 
+            | "go" -> Meaning(Some(Intent("yes", Some 1.0f)), None, None) |> Some 
             | _ -> None
 
         let (|QuickNo|_|) =
@@ -145,7 +141,7 @@ module NLU =
             | "no way" 
             | "nah" 
             | "don't do it" 
-            | "stop" -> Meaning(Some(Intent("no", None)), None, None) |> Some 
+            | "stop" -> Meaning(Some(Intent("no", Some 1.0f)), None, None) |> Some 
             | _ -> None
 
         let (|QuickPrograms|_|) =

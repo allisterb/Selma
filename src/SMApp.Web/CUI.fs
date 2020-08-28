@@ -10,7 +10,6 @@ open SMApp.Microphone
 
 [<AutoOpen;JavaScript>]
 module CUI =
-    
     let rng = Random()
     
     let getRandomPhrase (phrases:List<string>) r = phrases |> List.item(rng.Next(0, phrases.Length)) |> replace_tok "$0" r
@@ -31,6 +30,7 @@ module CUI =
         "Hello this is Selma, how can I help?"
         "Hello, I am Selma. How can I help?"
         "Hello, I am Selma. How may I help you now?"
+        "I'm Selma. Tell me your name so we can get started."
     ]
 
     let helloUserPhrases = [
@@ -65,7 +65,6 @@ module CUI =
          Voice:SpeechSynthesisVoice option
          Mic: Mic option
          Term: Terminal
-         DebugMode: bool
          Caption: bool
      }
      with
@@ -75,7 +74,7 @@ module CUI =
              let rawOpt = EchoOptions(Raw=true)
              x.Term.Disable(); x.Term.Echo(text, rawOpt); x.Term.Enable()
  
-         member x.Debug loc m = debug loc m; if x.DebugMode then x.EchoHtml' m
+         member x.Debug loc m = debug loc m
  
          member x.Say text = 
              match x.Voice with

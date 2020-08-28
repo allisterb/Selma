@@ -21,18 +21,15 @@ module Client =
         Voice = None
         Mic = None
         Term = Unchecked.defaultof<Terminal>
-        DebugMode = false
         Caption = false
     }
     let mutable MicState = MicNotInitialized
     let mutable ClientState = ClientNotInitialzed
     
     (*Console and terminal messages *)
-    let echo m = do if not(isNull(CUI.Term)) then CUI.Term.EchoHtml' m 
-    let debug m = 
-        debug "CLIENT" m
-        if CUI.DebugMode then echo m
-       
+    let echo m = do if not(isNull(CUI.Term)) then CUI.Term.EchoHtml' <| sprintf "%A" m 
+    let debug m = debug "CLIENT" m
+        
     (* NLU context *)
     let Context = new Stack<Meaning>()
     let Questions = new Stack<Question>()
@@ -139,8 +136,13 @@ module Client =
             match command with
             (* Quick commands *)
             | Text.Blank -> say' "Tell me what you want me to do or ask me a question."
-            | Text.DebugOn -> CUI <- { CUI with DebugMode = true }; say' "Debug mode is now on."  
-            | Text.DebugOff -> CUI <- { CUI with DebugMode = false }; say' "Debug mode is now off."
+            | Text.Debug ->  
+                debug "Context:"
+                Context |> Seq.iter(fun c -> debug c)   
+                debug "Questions:"
+                Questions |> Seq.iter(fun c -> debug c)
+                debug "Properties"
+                Props |> Seq.iter(fun c -> debug c)
             | Text.Voices -> sayVoices()
             | _ ->
                 match ClientState with
