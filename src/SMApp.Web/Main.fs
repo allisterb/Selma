@@ -25,7 +25,6 @@ module Main =
 
         let haveUser() = haveProp "user"
 
-        let pop n = for _ in 1..n do context.Pop() |> ignore
         let popc() = context.Pop() |> ignore
         let popq() = questions.Pop() |> ignore
         let pushq (n:string) = 
@@ -112,9 +111,8 @@ module Main =
         | AnonUser(Assert(Intent "hello" (None, Some [Entity "contact" u])))::[]  
         | AnonUser(Meaning(None, None, Some [Entity "contact" u]))::[] -> 
             if not(haveProp "started") then 
-                say "Hello I'm Selma."
                 props.Add("started", true)
-                
+                say "Hello I'm Selma."
             loginUser u
             
         (* User add *)
@@ -129,7 +127,7 @@ module Main =
 
         | m -> 
             debug <| sprintf "Did not understand %A." m
-            pop 1 |> ignore
+            popc()
             say "Sorry I didn't understand what you meant."
             if questions.Count > 0 then let q = Seq.item 0 questions in q.Text |> say
 

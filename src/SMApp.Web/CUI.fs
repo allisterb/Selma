@@ -92,7 +92,7 @@ module CUI =
          member x.Wait (f:unit -> unit) =
              do 
                  x.Echo'("please wait...")
-                 x.Term.Enable();f();x.Term.Disable()
+                 x.Term.Pause();f();x.Term.Resume()
  
          member x.Wait(f:Async<unit>) = x.Wait(fun _ -> f |> Async.Start)
  

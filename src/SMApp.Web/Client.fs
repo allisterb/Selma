@@ -101,7 +101,7 @@ module Client =
     let wait (f:unit -> unit) =
         do 
             CUI.Term.Echo'("please wait")
-            CUI.Term.Disable();f();CUI.Term.Enable()
+            CUI.Term.Pause();f();CUI.Term.Resume()
 
     let container = SMApp.Bootstrap.Controls.Container
 

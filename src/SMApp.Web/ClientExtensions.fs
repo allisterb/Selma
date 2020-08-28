@@ -16,8 +16,8 @@ open SMApp.WebSpeech
 module ClientExtensions =
     let rawOpt = EchoOptions(Raw=true)
     type Terminal with
-        member x.Echo' (text:string) = x.Disable(); x.Echo text; x.Enable()
-        member x.EchoHtml' (text:string) = x.Disable(); x.Echo(text, rawOpt) ; x.Enable()
+        member x.Echo' (text:string) = x.Pause(); x.Echo text; x.Resume()
+        member x.EchoHtml' (text:string) = x.Pause(); x.Echo(text, rawOpt) ; x.Resume()
       
     let toArray (a : ArrayLike<'t>) =
         JQuery.MakeArray a |> Array.map (fun a -> a :?> 't)
