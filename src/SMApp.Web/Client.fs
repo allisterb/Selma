@@ -137,12 +137,9 @@ module Client =
             (* Quick commands *)
             | Text.Blank -> say' "Tell me what you want me to do or ask me a question."
             | Text.Debug ->  
-                debug "Context:"
-                Context |> Seq.iter(fun c -> debug c)   
-                debug "Questions:"
-                Questions |> Seq.iter(fun c -> debug c)
-                debug "Properties"
-                Props |> Seq.iter(fun c -> debug c)
+                debug <| sprintf "Context: %A" Context
+                //debug <| sprintf "Properties: %A" Props
+                debug <| sprintf "Questions: %A" Questions
             | Text.Voices -> sayVoices()
             | _ ->
                 match ClientState with

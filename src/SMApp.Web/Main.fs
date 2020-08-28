@@ -39,13 +39,13 @@ module Main =
         let pop n = for _ in 1..n do context.Pop() |> ignore
         let popc() = context.Pop() |> ignore
         let popq() = questions.Pop() |> ignore
-        let pushq (r:string) = 
-            match getQuestion r with
+        let pushq (n:string) = 
+            match getQuestion n with
             | Some q -> questions.Push q
-            | None -> failwithf "No such question: %s" r
+            | None -> failwithf "No such question: %s" n
 
-        let question r =
-            pushq r; 
+        let question n =
+            pushq n; 
             debug <| sprintf "Added question: %A." (questions.Peek())
             
         let (|PropSet|_|) (n:string) :Meaning -> Meaning option =

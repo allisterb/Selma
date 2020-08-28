@@ -1245,21 +1245,21 @@
   {
    questions.shift();
   }
-  function pushq(r)
+  function pushq(n)
   {
    var m$1;
-   m$1=Main.getQuestion(r);
+   m$1=Main.getQuestion(n);
    m$1==null?(function($11)
    {
     return function($12)
     {
      return $11("No such question: "+Utils.toSafe($12));
     };
-   }(Operators.FailWith))(r):questions.unshift(m$1.$0);
+   }(Operators.FailWith))(n):questions.unshift(m$1.$0);
   }
-  function question(r)
+  function question(n)
   {
-   pushq(r);
+   pushq(n);
    Main.debug((function($11)
    {
     return function($12)
@@ -1326,7 +1326,7 @@
    Concurrency.Start((b=null,Concurrency.Delay(function()
    {
     sayRandom(CUI.waitRetrievePhrases(),"user name");
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetUser2:941409880",[u]),function(a$13)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetUser2:278023039",[u]),function(a$13)
     {
      return a$13==null?(say((function($11)
      {
@@ -1710,16 +1710,19 @@
    Unchecked.Equals(Client.CUI().Mic,null)?Client.initMic(_main,term):void 0;
    Unchecked.Equals(Client.CUI().Voice,null)?Client.initSpeech():void 0;
    Client.ClientState().$===0?Client.set_ClientState(ClientState.ClientReady):void 0;
-   return($1=Text.Blank(command),$1!=null&&$1.$==1)?Client["say'"]("Tell me what you want me to do or ask me a question."):($2=Text.Debug(command),$2!=null&&$2.$==1)?(Client.debug("Context:"),Seq.iter(function(c$1)
+   return($1=Text.Blank(command),$1!=null&&$1.$==1)?Client["say'"]("Tell me what you want me to do or ask me a question."):($2=Text.Debug(command),$2!=null&&$2.$==1)?(Client.debug((function($5)
    {
-    Client.debug(c$1);
-   },Client.Context()),Client.debug("Questions:"),Seq.iter(function(c$1)
+    return function($6)
+    {
+     return $5("Context: "+Utils.prettyPrint($6));
+    };
+   }(Global.id))(Client.Context())),Client.debug((function($5)
    {
-    Client.debug(c$1);
-   },Client.Questions()),Client.debug("Properties"),Seq.iter(function(c$1)
-   {
-    Client.debug(c$1);
-   },Client.Props())):($3=Text.Voices(command),$3!=null&&$3.$==1)?Client.sayVoices():Client.ClientState().$==1?(a=Text.QuickHello(command),a!=null&&a.$==1?($4=a.$0,true):(a$1=Text.QuickHelp(command),a$1!=null&&a$1.$==1?($4=a$1.$0,true):(a$2=Text.QuickYes(command),a$2!=null&&a$2.$==1?($4=a$2.$0,true):(a$3=Text.QuickNo(command),a$3!=null&&a$3.$==1?($4=a$3.$0,true):(a$4=Text.QuickPrograms(command),a$4!=null&&a$4.$==1&&($4=a$4.$0,true))))))?(Client.debug((function($5)
+    return function($6)
+    {
+     return $5("Questions: "+Utils.prettyPrint($6));
+    };
+   }(Global.id))(Client.Questions()))):($3=Text.Voices(command),$3!=null&&$3.$==1)?Client.sayVoices():Client.ClientState().$==1?(a=Text.QuickHello(command),a!=null&&a.$==1?($4=a.$0,true):(a$1=Text.QuickHelp(command),a$1!=null&&a$1.$==1?($4=a$1.$0,true):(a$2=Text.QuickYes(command),a$2!=null&&a$2.$==1?($4=a$2.$0,true):(a$3=Text.QuickNo(command),a$3!=null&&a$3.$==1?($4=a$3.$0,true):(a$4=Text.QuickPrograms(command),a$4!=null&&a$4.$==1&&($4=a$4.$0,true))))))?(Client.debug((function($5)
    {
     return function($6)
     {
@@ -1728,7 +1731,7 @@
    }(Global.id))($4)),c=Client.push($4),Main.update(Client.CUI(),Client.Props(),Client.Questions(),Client.Responses(),c),Client.set_ClientState(ClientState.ClientReady)):Client.CUI().Wait((b=null,Concurrency.Delay(function()
    {
     Client.set_ClientState(ClientState.ClientUnderstand);
-    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:1622007233",[command]),function(a$5)
+    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:1256743597",[command]),function(a$5)
     {
      var a$6,m,c$1;
      a$6=Text.HasMeaning(a$5);
