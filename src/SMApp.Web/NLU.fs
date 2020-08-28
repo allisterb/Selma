@@ -35,12 +35,12 @@ module NLU =
         member x.Entities = let i, t, el = x.Unwrap() in el
         override x.ToString() = sprintf "%A %A. %A" x.Intent x.Trait x.Entities
 
-    type Question = Question of Meaning * string
+    type Question = Question of string * string
     with 
-        member x.Unwrap() = match x with | Question(m, r)->(m, r)
-        member x.Meaning = x.Unwrap() |> fst
-        member x.Response = x.Unwrap() |> snd
-        override x.ToString() = sprintf "(%A,%A)" x.Meaning x.Response
+        member x.Unwrap() = match x with | Question(n, t)-> n, t
+        member x.Name = x.Unwrap() |> fst 
+        member x.Text = x.Unwrap() |> snd
+        override x.ToString() = x.Text
 
     let (|Intent|_|) n = 
         function
@@ -52,9 +52,15 @@ module NLU =
         | entity when entity.Name = n -> Some entity.Value
         | _ -> None
 
-    let (|Yes|_|) = function | Meaning(Intent "yes", None, None) -> Some () |  _ -> None
+    let (|Yes|_|) = function | Intent "yes", None, None -> Some () |  _ -> None
 
-    let (|No|_|) = function | Meaning(Intent "no", None, None) -> Some () |  _ -> None
+    let (|No|_|) = function | Intent "no", None, None -> Some () |  _ -> None
+
+    let (|YesorNo|_|) = 
+        function
+        | Yes _ -> Some "yes"
+        | No _ -> Some "no"
+        | _ -> None
 
     [<RequireQualifiedAccess>]
     module Voice =
