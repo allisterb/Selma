@@ -23,8 +23,6 @@ module Main =
         let addProp k v = props.Add(k, v)
         let deleteProp k = props.Remove k |> ignore
 
-        let haveUser() = haveProp "user"
-
         let popc() = context.Pop() |> ignore
         let popq() = questions.Pop() |> ignore
         let pushq (n:string) = 
@@ -101,6 +99,7 @@ module Main =
                     ask "addUser" u
             } |> Async.Start
 
+
         (* Interpreter logic begins here *)
         match context |> Seq.take (if context.Count >= 5 then 5 else context.Count) |> List.ofSeq with
         
@@ -112,26 +111,29 @@ module Main =
 
         (* User login *)
         | Anon(Assert(Intent "hello" (None, Some [Entity "contact" u])))::[]  -> loginUser u
-        | Anon(Start(Meaning(None, None, Some [Entity "contact" u])))::[] -> 
-                props.Add("started", true)
-                say "Hello I'm Selma."
-                loginUser u
             
         (* User add *)
-        | User(Assert(Intent "hello" (None, Some [Entity "contact" u])))::[] 
-        | User(Meaning(None, None, Some [Entity "contact" u]))::[] -> ask "addUser" (props.["user"] :?> string)
-        | User(Yes(Response "addUser" _))::[] -> 
-            say <| sprintf "Added user %A." props.["addUser"]; 
-            deleteProp "addUser" 
-        | User(No(Response "addUser" _))::[] -> 
-            say <| "did not add user"; 
-            deleteProp "addUser"
+        | Anon(Yes(Response "addUser" _))::[] -> 
+            say <| sprintf "Added user %A." props.["addUser"];deleteProp "addUser" 
+        | Anon(No(Response "addUser" _))::[] -> 
+            say <| "did not add user"; deleteProp "addUser"
 
+        (* User switch *)
+        | User(Assert(Intent "hello" (None, Some [Entity "contact" u])))::[] -> ask "switchUser" (props.["user"] :?> string)
+        | User(Yes(Response "switchUser" _))::[] -> 
+            say <| sprintf "Switch to user %A." props.["switchUser"];deleteProp "switchUser" 
+        | User(No(Response "switchUser" _))::[] -> 
+            say <| "did not switch to user"; deleteProp "switchUser"
+        
         | m -> 
             debug <| sprintf "Did not understand %A." m
             popc()
             say "Sorry I didn't understand what you meant."
-            if questions.Count > 0 then let q = Seq.item 0 questions in q.Text |> say
+            if questions.Count > 0 then 
+                let q = Seq.item 0 questions in 
+                if haveProp q.Name then 
+                    say <| replace_tok "$0" (props.[q.Name] :?> string) q.Text
+                else say q.Text
 
         debug <| sprintf "End context: %A." context
         debug <| sprintf "End questions: %A." questions

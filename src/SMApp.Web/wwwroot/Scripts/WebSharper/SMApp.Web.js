@@ -1211,7 +1211,7 @@
  };
  Main.update=function(cui,props,questions,responses,context)
  {
-  var m,$1,a,a$1,a$2,a$3,$2,a$4,a$5,a$6,$3,a$7,a$8,a$9,$4,a$10,$5,a$11,a$12,$6,a$13,$7,a$14,a$15,a$16,$8,a$17,$9,a$18,$10,a$19,$11,a$20,$12,a$21,$13,a$22,$14,a$23,$15,a$24,$16,a$25,a$26,$17,$18,a$27,a$28,$19;
+  var m,$1,a,a$1,a$2,a$3,a$4,$2,a$5,a$6,a$7,$3,a$8,a$9,a$10,$4,a$11,b,$5,a$12,a$13,$6,$7,a$14,a$15,$8,$9,a$16,a$17,a$18,$10,a$19,$11,a$20,a$21,$12,$13,a$22,a$23,$14,q;
   function haveProp(k)
   {
    return props.ContainsKey(k);
@@ -1236,11 +1236,11 @@
   {
    var m$1;
    m$1=Main.getQuestion(n);
-   m$1==null?(function($20)
+   m$1==null?(function($15)
    {
-    return function($21)
+    return function($16)
     {
-     return $20("No such question: "+Utils.toSafe($21));
+     return $15("No such question: "+Utils.toSafe($16));
     };
    }(Operators.FailWith))(n):questions.unshift(m$1.$0);
   }
@@ -1260,141 +1260,136 @@
    responses.unshift(t);
    return cui.Say(t);
   }
-  function ask(q,v)
+  function ask(q$1,v)
   {
-   addProp(q,v);
-   pushq(q);
-   Main.debug((function($20)
+   addProp(q$1,v);
+   pushq(q$1);
+   Main.debug((function($15)
    {
-    return function($21)
+    return function($16)
     {
-     return $20("Added question: "+SMApp$Web_GeneratedPrintf.p$8($21)+".");
+     return $15("Added question: "+SMApp$Web_GeneratedPrintf.p$8($16)+".");
     };
    }(Global.id))(questions[0]));
-   return say(ClientExtensions.replace_tok("$0",v,Main.getQuestion(q).$0.get_Text()));
+   return say(ClientExtensions.replace_tok("$0",v,Main.getQuestion(q$1).$0.get_Text()));
   }
-  function PropSet(n,a$29)
+  function PropSet(n,a$24)
   {
    return haveProp(n)?{
     $:1,
-    $0:a$29
+    $0:a$24
    }:null;
   }
-  function PropNotSet(n,a$29)
+  function PropNotSet(n,a$24)
   {
    return!haveProp(n)?{
     $:1,
-    $0:a$29
+    $0:a$24
    }:null;
   }
-  function Anon(a$29)
+  function Anon(a$24)
   {
-   var a$30;
-   a$30=PropNotSet("user",a$29);
-   return a$30!=null&&a$30.$==1?{
+   var a$25;
+   a$25=PropNotSet("user",a$24);
+   return a$25!=null&&a$25.$==1?{
     $:1,
-    $0:a$30.$0
+    $0:a$25.$0
    }:null;
   }
-  function User$1(a$29)
+  function User$1(a$24)
   {
-   var a$30;
-   a$30=PropSet("user",a$29);
-   return a$30!=null&&a$30.$==1?{
+   var a$25;
+   a$25=PropSet("user",a$24);
+   return a$25!=null&&a$25.$==1?{
     $:1,
-    $0:a$30.$0
+    $0:a$25.$0
    }:null;
   }
-  function Assert(a$29)
+  function Assert(a$24)
   {
    return questions.length===0?(popc(),{
     $:1,
-    $0:a$29
+    $0:a$24
    }):null;
   }
-  function Response(n,a$29)
+  function Response(n,a$24)
   {
    return Main.haveQuestion(n)&&questions.length>0&&questions[0].get_Name()===n?(popc(),popq(),{
     $:1,
-    $0:a$29
+    $0:a$24
    }):null;
   }
-  function Start(a$29)
+  Main.debug((function($15)
   {
-   var a$30;
-   a$30=PropNotSet("started",a$29);
-   return a$30!=null&&a$30.$==1?{
-    $:1,
-    $0:a$30.$0
-   }:null;
-  }
-  function loginUser(u)
-  {
-   var b;
-   Concurrency.Start((b=null,Concurrency.Delay(function()
+   return function($16)
    {
-    sayRandom(CUI.waitRetrievePhrases(),"user name");
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetUser:1345941124",[u]),function(a$29)
-    {
-     return a$29==null?(say((function($20)
-     {
-      return function($21)
-      {
-       return $20("Sorry I did not find the user name "+Utils.toSafe($21)+".");
-      };
-     }(Global.id))(u)),ask("addUser",u),Concurrency.Zero()):(props.Add("user",a$29.$0),sayRandom(CUI.helloUserPhrases(),(function($20)
-     {
-      return function($21)
-      {
-       return $20(Utils.prettyPrint($21));
-      };
-     }(Global.id))(props.get_Item("user"))),Concurrency.Zero());
-    });
-   })),null);
-  }
-  Main.debug((function($20)
-  {
-   return function($21)
-   {
-    return $20("Begin context: "+Utils.prettyPrint($21)+".");
+    return $15("Begin context: "+Utils.prettyPrint($16)+".");
    };
   }(Global.id))(context));
-  Main.debug((function($20)
+  Main.debug((function($15)
   {
-   return function($21)
+   return function($16)
    {
-    return $20("Begin questions: "+Utils.prettyPrint($21)+".");
+    return $15("Begin questions: "+Utils.prettyPrint($16)+".");
    };
   }(Global.id))(questions));
   m=List.ofSeq(Seq.take(context.length>=5?5:context.length,context));
-  m.$==1&&(a=Anon(m.$0),a!=null&&a.$==1&&(a$1=Start(a.$0),a$1!=null&&a$1.$==1&&(a$2=Assert(a$1.$0),a$2!=null&&a$2.$==1&&(a$3=NLU.Intent$1("hello",a$2.$0),a$3!=null&&a$3.$==1&&(a$3.$0[0]==null&&(a$3.$0[1]==null&&m.$1.$==0))))))?(props.Add("started",true),sayRandom(CUI.helloPhrases(),"")):m.$==1&&(a$4=Anon(m.$0),a$4!=null&&a$4.$==1&&(a$5=Assert(a$4.$0),a$5!=null&&a$5.$==1&&(a$6=NLU.Intent$1("hello",a$5.$0),a$6!=null&&a$6.$==1&&(a$6.$0[0]==null&&(a$6.$0[1]==null&&m.$1.$==0)))))?say("Hello, tell me your user name to get started."):m.$==1&&(a$7=Anon(m.$0),a$7!=null&&a$7.$==1&&(a$8=Assert(a$7.$0),a$8!=null&&a$8.$==1&&(a$9=NLU.Intent$1("hello",a$8.$0),a$9!=null&&a$9.$==1&&(a$9.$0[0]==null&&(($4=a$9.$0[1],$4!=null&&$4.$==1)&&(a$9.$0[1].$0.$==1&&(a$10=NLU.Entity$1("contact",a$9.$0[1].$0.$0),a$10!=null&&a$10.$==1&&(a$9.$0[1].$0.$1.$==0&&(m.$1.$==0&&($3=a$10.$0,true))))))))))?loginUser($3):m.$==1&&(a$11=Anon(m.$0),a$11!=null&&a$11.$==1&&(a$12=Start(a$11.$0),a$12!=null&&a$12.$==1&&(a$12.$0.$0==null&&(a$12.$0.$1==null&&(($6=a$12.$0.$2,$6!=null&&$6.$==1)&&(a$12.$0.$2.$0.$==1&&(a$13=NLU.Entity$1("contact",a$12.$0.$2.$0.$0),a$13!=null&&a$13.$==1&&(a$12.$0.$2.$0.$1.$==0&&(m.$1.$==0&&($5=a$13.$0,true))))))))))?(props.Add("started",true),say("Hello I'm Selma."),loginUser($5)):m.$==1&&(a$14=User$1(m.$0),a$14!=null&&a$14.$==1&&(a$15=Assert(a$14.$0),a$15!=null&&a$15.$==1?(a$16=NLU.Intent$1("hello",a$15.$0),a$16!=null&&a$16.$==1?a$16.$0[0]==null?($8=a$16.$0[1],$8!=null&&$8.$==1)?a$16.$0[1].$0.$==1?(a$17=NLU.Entity$1("contact",a$16.$0[1].$0.$0),a$17!=null&&a$17.$==1?a$16.$0[1].$0.$1.$==0?m.$1.$==0&&($7=a$17.$0,true):a$14.$0.$0==null&&(a$14.$0.$1==null&&(($9=a$14.$0.$2,$9!=null&&$9.$==1)&&(a$14.$0.$2.$0.$==1&&(a$18=NLU.Entity$1("contact",a$14.$0.$2.$0.$0),a$18!=null&&a$18.$==1&&(a$14.$0.$2.$0.$1.$==0&&(m.$1.$==0&&($7=a$18.$0,true))))))):a$14.$0.$0==null&&(a$14.$0.$1==null&&(($10=a$14.$0.$2,$10!=null&&$10.$==1)&&(a$14.$0.$2.$0.$==1&&(a$19=NLU.Entity$1("contact",a$14.$0.$2.$0.$0),a$19!=null&&a$19.$==1&&(a$14.$0.$2.$0.$1.$==0&&(m.$1.$==0&&($7=a$19.$0,true)))))))):a$14.$0.$0==null&&(a$14.$0.$1==null&&(($11=a$14.$0.$2,$11!=null&&$11.$==1)&&(a$14.$0.$2.$0.$==1&&(a$20=NLU.Entity$1("contact",a$14.$0.$2.$0.$0),a$20!=null&&a$20.$==1&&(a$14.$0.$2.$0.$1.$==0&&(m.$1.$==0&&($7=a$20.$0,true))))))):a$14.$0.$0==null&&(a$14.$0.$1==null&&(($12=a$14.$0.$2,$12!=null&&$12.$==1)&&(a$14.$0.$2.$0.$==1&&(a$21=NLU.Entity$1("contact",a$14.$0.$2.$0.$0),a$21!=null&&a$21.$==1&&(a$14.$0.$2.$0.$1.$==0&&(m.$1.$==0&&($7=a$21.$0,true))))))):a$14.$0.$0==null&&(a$14.$0.$1==null&&(($13=a$14.$0.$2,$13!=null&&$13.$==1)&&(a$14.$0.$2.$0.$==1&&(a$22=NLU.Entity$1("contact",a$14.$0.$2.$0.$0),a$22!=null&&a$22.$==1&&(a$14.$0.$2.$0.$1.$==0&&(m.$1.$==0&&($7=a$22.$0,true))))))):a$14.$0.$0==null&&(a$14.$0.$1==null&&(($14=a$14.$0.$2,$14!=null&&$14.$==1)&&(a$14.$0.$2.$0.$==1&&(a$23=NLU.Entity$1("contact",a$14.$0.$2.$0.$0),a$23!=null&&a$23.$==1&&(a$14.$0.$2.$0.$1.$==0&&(m.$1.$==0&&($7=a$23.$0,true)))))))):a$14.$0.$0==null&&(a$14.$0.$1==null&&(($15=a$14.$0.$2,$15!=null&&$15.$==1)&&(a$14.$0.$2.$0.$==1&&(a$24=NLU.Entity$1("contact",a$14.$0.$2.$0.$0),a$24!=null&&a$24.$==1&&(a$14.$0.$2.$0.$1.$==0&&(m.$1.$==0&&($7=a$24.$0,true)))))))))?ask("addUser",props.get_Item("user")):m.$==1&&(a$25=User$1(m.$0),a$25!=null&&a$25.$==1&&(a$26=NLU.Yes(a$25.$0),a$26!=null&&a$26.$==1&&(($17=Response("addUser",a$26.$0),$17!=null&&$17.$==1)&&m.$1.$==0)))?(say((function($20)
+  m.$==1&&(a=Anon(m.$0),a!=null&&a.$==1&&(a$1=(a$2=PropNotSet("started",a.$0),a$2!=null&&a$2.$==1?{
+   $:1,
+   $0:a$2.$0
+  }:null),a$1!=null&&a$1.$==1&&(a$3=Assert(a$1.$0),a$3!=null&&a$3.$==1&&(a$4=NLU.Intent$1("hello",a$3.$0),a$4!=null&&a$4.$==1&&(a$4.$0[0]==null&&(a$4.$0[1]==null&&m.$1.$==0))))))?(props.Add("started",true),sayRandom(CUI.helloPhrases(),"")):m.$==1&&(a$5=Anon(m.$0),a$5!=null&&a$5.$==1&&(a$6=Assert(a$5.$0),a$6!=null&&a$6.$==1&&(a$7=NLU.Intent$1("hello",a$6.$0),a$7!=null&&a$7.$==1&&(a$7.$0[0]==null&&(a$7.$0[1]==null&&m.$1.$==0)))))?say("Hello, tell me your user name to get started."):m.$==1&&(a$8=Anon(m.$0),a$8!=null&&a$8.$==1&&(a$9=Assert(a$8.$0),a$9!=null&&a$9.$==1&&(a$10=NLU.Intent$1("hello",a$9.$0),a$10!=null&&a$10.$==1&&(a$10.$0[0]==null&&(($4=a$10.$0[1],$4!=null&&$4.$==1)&&(a$10.$0[1].$0.$==1&&(a$11=NLU.Entity$1("contact",a$10.$0[1].$0.$0),a$11!=null&&a$11.$==1&&(a$10.$0[1].$0.$1.$==0&&(m.$1.$==0&&($3=a$11.$0,true))))))))))?Concurrency.Start((b=null,Concurrency.Delay(function()
   {
-   return function($21)
+   sayRandom(CUI.waitRetrievePhrases(),"user name");
+   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetUser:1057455919",[$3]),function(a$24)
    {
-    return $20("Added user "+Utils.prettyPrint($21)+".");
-   };
-  }(Global.id))(props.get_Item("addUser"))),deleteProp("addUser")):m.$==1&&(a$27=User$1(m.$0),a$27!=null&&a$27.$==1&&(a$28=NLU.No(a$27.$0),a$28!=null&&a$28.$==1&&(($19=Response("addUser",a$28.$0),$19!=null&&$19.$==1)&&m.$1.$==0)))?(say("did not add user"),deleteProp("addUser")):(Main.debug((function($20)
-  {
-   return function($21)
-   {
-    return $20("Did not understand "+Utils.printList(function($22)
+    return a$24==null?(say((function($15)
     {
-     return SMApp$Web_GeneratedPrintf.p$7($22);
-    },$21)+".");
-   };
-  }(Global.id))(m)),popc(),say("Sorry I didn't understand what you meant."),questions.length>0?say(Seq.nth(0,questions).get_Text()):void 0);
-  Main.debug((function($20)
+     return function($16)
+     {
+      return $15("Sorry I did not find the user name "+Utils.toSafe($16)+".");
+     };
+    }(Global.id))($3)),ask("addUser",$3),Concurrency.Zero()):(props.Add("user",a$24.$0),sayRandom(CUI.helloUserPhrases(),(function($15)
+    {
+     return function($16)
+     {
+      return $15(Utils.prettyPrint($16));
+     };
+    }(Global.id))(props.get_Item("user"))),Concurrency.Zero());
+   });
+  })),null):m.$==1&&(a$12=Anon(m.$0),a$12!=null&&a$12.$==1&&(a$13=NLU.Yes(a$12.$0),a$13!=null&&a$13.$==1&&(($6=Response("addUser",a$13.$0),$6!=null&&$6.$==1)&&m.$1.$==0)))?(say((function($15)
   {
-   return function($21)
+   return function($16)
    {
-    return $20("End context: "+Utils.prettyPrint($21)+".");
+    return $15("Added user "+Utils.prettyPrint($16)+".");
+   };
+  }(Global.id))(props.get_Item("addUser"))),deleteProp("addUser")):m.$==1&&(a$14=Anon(m.$0),a$14!=null&&a$14.$==1&&(a$15=NLU.No(a$14.$0),a$15!=null&&a$15.$==1&&(($8=Response("addUser",a$15.$0),$8!=null&&$8.$==1)&&m.$1.$==0)))?(say("did not add user"),deleteProp("addUser")):m.$==1&&(a$16=User$1(m.$0),a$16!=null&&a$16.$==1&&(a$17=Assert(a$16.$0),a$17!=null&&a$17.$==1&&(a$18=NLU.Intent$1("hello",a$17.$0),a$18!=null&&a$18.$==1&&(a$18.$0[0]==null&&(($10=a$18.$0[1],$10!=null&&$10.$==1)&&(a$18.$0[1].$0.$==1&&(a$19=NLU.Entity$1("contact",a$18.$0[1].$0.$0),a$19!=null&&a$19.$==1&&(a$18.$0[1].$0.$1.$==0&&(m.$1.$==0&&($9=a$19.$0,true))))))))))?ask("switchUser",props.get_Item("user")):m.$==1&&(a$20=User$1(m.$0),a$20!=null&&a$20.$==1&&(a$21=NLU.Yes(a$20.$0),a$21!=null&&a$21.$==1&&(($12=Response("switchUser",a$21.$0),$12!=null&&$12.$==1)&&m.$1.$==0)))?(say((function($15)
+  {
+   return function($16)
+   {
+    return $15("Switch to user "+Utils.prettyPrint($16)+".");
+   };
+  }(Global.id))(props.get_Item("switchUser"))),deleteProp("switchUser")):m.$==1&&(a$22=User$1(m.$0),a$22!=null&&a$22.$==1&&(a$23=NLU.No(a$22.$0),a$23!=null&&a$23.$==1&&(($14=Response("switchUser",a$23.$0),$14!=null&&$14.$==1)&&m.$1.$==0)))?(say("did not switch to user"),deleteProp("switchUser")):(Main.debug((function($15)
+  {
+   return function($16)
+   {
+    return $15("Did not understand "+Utils.printList(function($17)
+    {
+     return SMApp$Web_GeneratedPrintf.p$7($17);
+    },$16)+".");
+   };
+  }(Global.id))(m)),popc(),say("Sorry I didn't understand what you meant."),questions.length>0?(q=Seq.nth(0,questions),haveProp(q.get_Name())?say(ClientExtensions.replace_tok("$0",props.get_Item(q.get_Name()),q.get_Text())):say(q.get_Text())):void 0);
+  Main.debug((function($15)
+  {
+   return function($16)
+   {
+    return $15("End context: "+Utils.prettyPrint($16)+".");
    };
   }(Global.id))(context));
-  Main.debug((function($20)
+  Main.debug((function($15)
   {
-   return function($21)
+   return function($16)
    {
-    return $20("End questions: "+Utils.prettyPrint($21)+".");
+    return $15("End questions: "+Utils.prettyPrint($16)+".");
    };
   }(Global.id))(questions));
  };
@@ -1737,7 +1732,7 @@
    }(Global.id))($4)),c=Client.push($4),Main.update(Client.CUI(),Client.Props(),Client.Questions(),Client.Responses(),c),Client.set_ClientState(ClientState.ClientReady)):Client.CUI().Wait((b=null,Concurrency.Delay(function()
    {
     Client.set_ClientState(ClientState.ClientUnderstand);
-    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-1430995972",[command]),function(a$5)
+    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:136136374",[command]),function(a$5)
     {
      var a$6,m,c$1;
      a$6=Text.HasMeaning(a$5);
