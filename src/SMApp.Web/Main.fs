@@ -22,7 +22,8 @@ module Main =
         let haveProp k = props.ContainsKey k
         let addProp k v = props.Add(k, v)
         let deleteProp k = props.Remove k |> ignore
-
+        let strProp k = props.[k] :?> string
+        
         let popc() = context.Pop() |> ignore
         let popq() = questions.Pop() |> ignore
         let pushq (n:string) = 
@@ -99,6 +100,19 @@ module Main =
                     ask "addUser" u
             } |> Async.Start
 
+        let addUser  = 
+            let u = strProp "addUser"
+            async { 
+                do sayRandom waitAddPhrases "user"
+                match! Server.AddUser u with 
+                | Some _ -> 
+                    addProp "user" u
+                    deleteProp "addUser"
+                    sayRandom helloUserPhrases <| sprintf "%A" props.["user"]
+                | None _ -> 
+                    say <| sprintf "Sorry I was not able to add the user %s to the system." u
+                    ask "addUser" u
+            } |> Async.Start
 
         (* Interpreter logic begins here *)
         match context |> Seq.take (if context.Count >= 5 then 5 else context.Count) |> List.ofSeq with
@@ -113,8 +127,7 @@ module Main =
         | Anon(Assert(Intent "hello" (None, Some [Entity "contact" u])))::[]  -> loginUser u
             
         (* User add *)
-        | Anon(Yes(Response "addUser" _))::[] -> 
-            say <| sprintf "Added user %A." props.["addUser"];deleteProp "addUser" 
+        | Anon(Yes(Response "addUser" _))::[] -> addUser 
         | Anon(No(Response "addUser" _))::[] -> 
             say <| "did not add user"; deleteProp "addUser"
 

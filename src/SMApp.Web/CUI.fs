@@ -16,13 +16,6 @@ module CUI =
     
     let getRandomPhrase' (phrases:List<string>)  = phrases |> List.item(rng.Next(0, phrases.Length)) |> replace_tok "$0" ""
 
-    let waitRetrievePhrases = [
-        "Ok, let me check that $0 for you"
-        "Please wait while I check that $0 for you."
-        "Wait while I check that $0."
-        "Ok let me see if I can find that $0."
-    ]
-
     let helloPhrases = [
         "Welcome!"
         "Welcome, my name is Selma."
@@ -42,6 +35,19 @@ module CUI =
 
     let helpPhrases = [
         "What can I help you with $0?"
+    ]
+
+    let waitRetrievePhrases = [
+        "Ok, let me check that $0 for you"
+        "Please wait while I check that $0 for you."
+        "Wait while I check that $0."
+        "Ok let me see if I can find that $0."
+    ]
+
+    let waitAddPhrases = [
+        "Ok, let me add that $0 for you"
+        "Please wait while I add that $0 for you."
+        "Wait while I add that $0."
     ]
 
     type User = {
