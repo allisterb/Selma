@@ -42,12 +42,15 @@ module Main =
             responses.Push(t) |> ignore
             cui.Say t
         
+        let sayRandom' p = sayRandom p ""
+
         let ask q v =
             addProp q v
             pushq q; 
             debug <| sprintf "Added question: %A." (questions.Peek()) 
             let _q = getQuestion q in say <| replace_tok "$0" v _q.Value.Text
             
+        (* Patterns *)
         let (|PropSet|_|) (n:string) :Meaning -> Meaning option =
             function
             | m when haveProp n -> Some m
@@ -75,12 +78,16 @@ module Main =
                 Some m
             | _ -> None
 
-        let (|Response|_|) (n:string) :Meaning -> Meaning option =
+        let (|Response|_|) (n:string) :Meaning -> (Meaning * obj option) option =
             function
             | m when haveQuestion n && questions.Count > 0  && questions.Peek().Name = n -> 
                 popc()
                 popq()
-                Some m
+                if haveProp n then
+                    let d = props.[n]
+                    deleteProp n
+                    Some(m, Some d)
+                else Some(m, None)
             | _ -> None
 
         let (|Start|_|) :Meaning -> Meaning option=
@@ -88,6 +95,12 @@ module Main =
             | PropNotSet "started" m -> Some m
             | _ -> None
 
+        let (|Str|_|) : obj -> string option =
+            function
+            | :? string as s -> Some s
+            | _ -> None
+
+        (* User functions *)
         let loginUser u = 
             async { 
                 do sayRandom waitRetrievePhrases "user name"
@@ -100,8 +113,7 @@ module Main =
                     ask "addUser" u
             } |> Async.Start
 
-        let addUser  = 
-            let u = strProp "addUser"
+        let addUser u = 
             async { 
                 do sayRandom waitAddPhrases "user"
                 match! Server.AddUser u with 
@@ -120,23 +132,28 @@ module Main =
         (* Hello *)
         | Anon(Start(Assert(Intent "hello" (None, None))))::[] ->  
                 props.Add("started", true)
-                sayRandom helloPhrases ""
+                sayRandom' helloPhrases
         | Anon(Assert(Intent "hello" (None, None)))::[] -> say "Hello, tell me your user name to get started."
 
         (* User login *)
         | Anon(Assert(Intent "hello" (None, Some [Entity "contact" u])))::[]  -> loginUser u
             
         (* User add *)
-        | Anon(Yes(Response "addUser" _))::[] -> addUser 
-        | Anon(No(Response "addUser" _))::[] -> 
-            say <| "did not add user"; deleteProp "addUser"
+        | Anon(Yes(Response "addUser" (_, Some(Str(user)))))::[] -> addUser user
+        | Anon(No(Response "addUser" (_, Some(Str(user)))))::[] -> say <| sprintf "Ok I did not add the user %s." user
 
         (* User switch *)
-        | User(Assert(Intent "hello" (None, Some [Entity "contact" u])))::[] -> ask "switchUser" (props.["user"] :?> string)
-        | User(Yes(Response "switchUser" _))::[] -> 
-            say <| sprintf "Switch to user %A." props.["switchUser"];deleteProp "switchUser" 
-        | User(No(Response "switchUser" _))::[] -> 
-            say <| "did not switch to user"; deleteProp "switchUser"
+        | User(Assert(Intent "hello" (None, Some [Entity "contact" u])))::[] -> 
+            async {
+                match! Server.GetUser u with
+                | Some user -> ask "switchUser" user.Name
+                | None -> say <| sprintf "Sorry, the user %s does not exist." u
+            } |> Async.Start
+        | User(Yes(Response "switchUser" (_, Some(Str(user)))))::[] ->
+            props.["user"] <- user
+            say <| sprintf "Ok I switched to user %A." user  
+        | User(No(Response "switchUser" (_, Some(Str(user)))))::[] -> 
+            say <| sprintf "Ok I did not switch to user %s." user
         
         | m -> 
             debug <| sprintf "Did not understand %A." m
