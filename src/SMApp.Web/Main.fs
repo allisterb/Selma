@@ -59,7 +59,7 @@ module Main =
             | m when not (haveProp n) -> Some m
             | _ -> None
          
-        let (|AnonUser|_|) :Meaning -> Meaning option = //(Intent option * Trait option * Entity list option) option =
+        let (|Anon|_|) :Meaning -> Meaning option = //(Intent option * Trait option * Entity list option) option =
             function
             | PropNotSet "user" m -> m |> Some 
             | _ -> None
@@ -84,6 +84,11 @@ module Main =
                 Some m
             | _ -> None
 
+        let (|Start|_|) :Meaning -> Meaning option=
+            function
+            | PropNotSet "started" m -> Some m
+            | _ -> None
+
         let loginUser u = 
             async { 
                 do sayRandom waitRetrievePhrases "user name"
@@ -100,20 +105,17 @@ module Main =
         match context |> Seq.take (if context.Count >= 5 then 5 else context.Count) |> List.ofSeq with
         
         (* Hello *)
-        | AnonUser(Assert(Intent "hello" (None, None)))::[] -> 
-            if not(haveProp "started") then 
+        | Anon(Start(Assert(Intent "hello" (None, None))))::[] ->  
                 props.Add("started", true)
                 sayRandom helloPhrases ""
-            else
-                say "Hello, tell me your user name to get started."
+        | Anon(Assert(Intent "hello" (None, None)))::[] -> say "Hello, tell me your user name to get started."
 
         (* User login *)
-        | AnonUser(Assert(Intent "hello" (None, Some [Entity "contact" u])))::[]  
-        | AnonUser(Meaning(None, None, Some [Entity "contact" u]))::[] -> 
-            if not(haveProp "started") then 
+        | Anon(Assert(Intent "hello" (None, Some [Entity "contact" u])))::[]  -> loginUser u
+        | Anon(Start(Meaning(None, None, Some [Entity "contact" u])))::[] -> 
                 props.Add("started", true)
                 say "Hello I'm Selma."
-            loginUser u
+                loginUser u
             
         (* User add *)
         | User(Assert(Intent "hello" (None, Some [Entity "contact" u])))::[] 
