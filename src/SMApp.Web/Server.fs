@@ -33,15 +33,7 @@ type ``user`` = {
 module Server =        
    
     let private witai = new WitApi()
-    
-    let private mongodb =
-            let host = Api.Config("MONGODB")
-            do if host.IsEmpty() then failwith "Could not retrieve the MongoDB host using configuration key MONGODB"
-            let connectionString = sprintf "mongodb://%s:%s@<%s>/test?w=majority" host "eddi" "eddi"
-            new MongoClient(connectionString)
-    
-    let private mongodb_users = mongodb.GetDatabase("eddi").GetCollection<``user``>("users")
-    
+        
     let private pgdb =
         Sql.host (Api.Config("PGSQL"))
         |> Sql.port 5432
@@ -53,29 +45,24 @@ module Server =
         |> Sql.formatConnectionString
         |> Sql.connect
 
-(*
-    [<Rpc>]
-    let GetUser (user:string) = 
-        async {
-            use op = beginOp <| sprintf "Find user %s" user
-            match! mongodb_users.Find(Builders.Filter.Where(fun (u:``user``) -> u.user_name = user)).FirstAsync() |> Async.AwaitTask |> Async.Catch with
-            | Choice1Of2 o -> 
-                op.Complete() 
-                return Some {Name=o.user_name}
-            | _ -> 
-                op.Complete()
-                debugf "Did not find user {0}." [user]; return None
-        }
-*)
+
     [<Rpc>]
     let GetUser(user:string) : Async<User option> = 
         pgdb
-        |> (Sql.query <| sprintf "SELECT * FROM selma_user WHERE user_name='%s'" user)
-        |> Sql.executeAsync (fun read ->
-        {
+        |> Sql.query "SELECT * FROM selma_user WHERE user_name=@u"
+        |> Sql.parameters ["u", Sql.string user]
+        |> Sql.executeAsync (fun read -> {
             Name =  read.string("user_name") 
         }) 
         |> Async.map(function | Ok (u)  -> (if u.Length > 0 then Some u.Head else None) | Error exn -> err(exn.Message); None)
+
+    [<Rpc>]
+    let AddUser (user:string) : Async<unit Option> =
+        pgdb
+        |> Sql.query "INSERT INTO public.selma_user(user_name, last_logged_in) VALUES (@u, @d);"
+        |> Sql.parameters [("u", Sql.string user); ("d", Sql.timestamp (DateTime.Now))]
+        |> Sql.executeNonQueryAsync
+        |> Async.map(function | Ok(n) -> (if n > 0 then Some() else None) | Error exn -> err(exn.Message); None)
 
     [<Rpc>]
     let GetMeaning input = 

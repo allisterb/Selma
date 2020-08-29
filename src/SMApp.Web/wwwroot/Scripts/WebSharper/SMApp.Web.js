@@ -1340,7 +1340,7 @@
   }:null),a$1!=null&&a$1.$==1&&(a$3=Assert(a$1.$0),a$3!=null&&a$3.$==1&&(a$4=NLU.Intent$1("hello",a$3.$0),a$4!=null&&a$4.$==1&&(a$4.$0[0]==null&&(a$4.$0[1]==null&&m.$1.$==0))))))?(props.Add("started",true),sayRandom(CUI.helloPhrases(),"")):m.$==1&&(a$5=Anon(m.$0),a$5!=null&&a$5.$==1&&(a$6=Assert(a$5.$0),a$6!=null&&a$6.$==1&&(a$7=NLU.Intent$1("hello",a$6.$0),a$7!=null&&a$7.$==1&&(a$7.$0[0]==null&&(a$7.$0[1]==null&&m.$1.$==0)))))?say("Hello, tell me your user name to get started."):m.$==1&&(a$8=Anon(m.$0),a$8!=null&&a$8.$==1&&(a$9=Assert(a$8.$0),a$9!=null&&a$9.$==1&&(a$10=NLU.Intent$1("hello",a$9.$0),a$10!=null&&a$10.$==1&&(a$10.$0[0]==null&&(($4=a$10.$0[1],$4!=null&&$4.$==1)&&(a$10.$0[1].$0.$==1&&(a$11=NLU.Entity$1("contact",a$10.$0[1].$0.$0),a$11!=null&&a$11.$==1&&(a$10.$0[1].$0.$1.$==0&&(m.$1.$==0&&($3=a$11.$0,true))))))))))?Concurrency.Start((b=null,Concurrency.Delay(function()
   {
    sayRandom(CUI.waitRetrievePhrases(),"user name");
-   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetUser:1057455919",[$3]),function(a$24)
+   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetUser:-1605373505",[$3]),function(a$24)
    {
     return a$24==null?(say((function($15)
     {
@@ -1732,7 +1732,7 @@
    }(Global.id))($4)),c=Client.push($4),Main.update(Client.CUI(),Client.Props(),Client.Questions(),Client.Responses(),c),Client.set_ClientState(ClientState.ClientReady)):Client.CUI().Wait((b=null,Concurrency.Delay(function()
    {
     Client.set_ClientState(ClientState.ClientUnderstand);
-    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:136136374",[command]),function(a$5)
+    return Concurrency.Combine(Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.GetMeaning:-1258393098",[command]),function(a$5)
     {
      var a$6,m,c$1;
      a$6=Text.HasMeaning(a$5);
