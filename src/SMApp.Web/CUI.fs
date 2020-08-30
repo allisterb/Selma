@@ -52,6 +52,7 @@ module CUI =
 
     type User = {
         Name:string
+        LastLoggedIn:string option
     }
     with 
         override x.ToString() = x.Name

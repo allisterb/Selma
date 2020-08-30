@@ -23,7 +23,7 @@ module Main =
         let addProp k v = props.Add(k, v)
         let deleteProp k = props.Remove k |> ignore
         let strProp k = props.[k] :?> string
-        
+
         let popc() = context.Pop() |> ignore
         let popq() = questions.Pop() |> ignore
         let pushq (n:string) = 
@@ -105,9 +105,12 @@ module Main =
             async { 
                 do sayRandom waitRetrievePhrases "user name"
                 match! Server.GetUser u with 
-                | Some u -> 
+                | Some u ->
+                    do! Server.UpdateUserLastLogin u.Name
                     props.Add("user", u)
                     sayRandom helloUserPhrases <| sprintf "%A" props.["user"]
+                    if u.LastLoggedIn.IsSome then say <| sprintf "You last logged in on %A." u.LastLoggedIn.Value
+                    
                 | None _ -> 
                     say <| sprintf "Sorry I did not find the user name %s." u
                     ask "addUser" u

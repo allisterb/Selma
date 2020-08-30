@@ -52,7 +52,8 @@ module Server =
         |> Sql.query "SELECT * FROM selma_user WHERE user_name=@u"
         |> Sql.parameters ["u", Sql.string user]
         |> Sql.executeAsync (fun read -> {
-            Name =  read.string("user_name") 
+            Name =  read.string("user_name")
+            LastLoggedIn = read.timestampOrNone "last_logged_in" |> Option.map(fun t -> t.ToString())
         }) 
         |> Async.map(function | Ok (u)  -> (if u.Length > 0 then Some u.Head else None) | Error exn -> err(exn.Message); None)
 
@@ -63,6 +64,14 @@ module Server =
         |> Sql.parameters [("u", Sql.string user); ("d", Sql.timestamp (DateTime.Now))]
         |> Sql.executeNonQueryAsync
         |> Async.map(function | Ok(n) -> (if n > 0 then Some() else None) | Error exn -> err(exn.Message); None)
+
+    [<Rpc>]
+    let UpdateUserLastLogin (user:string) : Async<unit> =
+        pgdb
+        |> Sql.query "UPDATE public.selma_user SET last_logged_in=@d WHERE user_name=@u;"
+        |> Sql.parameters [("u", Sql.string user); ("d", Sql.timestamp (DateTime.Now))]
+        |> Sql.executeNonQueryAsync
+        |> Async.map(function | Ok(n) -> () | Error exn -> err(exn.Message); ())
 
     [<Rpc>]
     let GetMeaning input = 
