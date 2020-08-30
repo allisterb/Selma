@@ -119,16 +119,14 @@ module Main =
                 match! Server.AddUser u with 
                 | Some _ -> 
                     addProp "user" u
-                    deleteProp "addUser"
-                    sayRandom helloUserPhrases <| sprintf "%A" props.["user"]
+                    say <| sprintf "Hello %A, nice to meet you." props.["user"]
                 | None _ -> 
                     say <| sprintf "Sorry I was not able to add the user %s to the system." u
-                    ask "addUser" u
             } |> Async.Start
 
         (* Interpreter logic begins here *)
         match context |> Seq.take (if context.Count >= 5 then 5 else context.Count) |> List.ofSeq with
-        
+
         (* Hello *)
         | Anon(Start(Assert(Intent "hello" (None, None))))::[] ->  
                 props.Add("started", true)
