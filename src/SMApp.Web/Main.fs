@@ -137,7 +137,7 @@ module Main =
         | Anon(Assert(Intent "hello" (None, None)))::[] -> say "Hello, tell me your name to get started."
 
         (* User login *)
-        | Anon(Assert(Intent "hello" (None, Some [Entity "contact" u])))::[] -> loginUser u
+        | Anon(Assert(Intent "hello" (None, Some [Entity "contact" u])))::[] -> loginUser u.Value
         
         (* User add *)
         | Anon(Yes(Response "addUser" (_, Some(Str(user)))))::[] -> addUser user
@@ -148,9 +148,9 @@ module Main =
         (* User switch *)
         | User(Assert(Intent "hello" (None, Some [Entity "contact" u])))::[] -> 
             async {
-                match! Server.getUser u with
+                match! Server.getUser u.Value with
                 | Some user -> ask "switchUser" user.Name
-                | None -> say <| sprintf "Sorry, the user %s does not exist." u
+                | None -> say <| sprintf "Sorry, the user %s does not exist." u.Value
             } |> Async.Start
         | User(Yes(Response "switchUser" (_, Some(Str(user)))))::[] ->
             props.["user"] <- user
@@ -159,7 +159,7 @@ module Main =
             say <| sprintf "Ok I did not switch to user %s." user
         
         (* Symptoms *)
-        | User(Assert(Intent "symptom" (None, Some e)))::[] -> say <| sprintf "Got %i entities" e.Length
+        | User(Assert(Intent "symptom" (None, Some [Entity "datetime" d; Entity "magnitude" m])))::[] -> say <| sprintf "Got %s magnitude" m.Value
 
         | _ -> 
             popc()

@@ -48,9 +48,9 @@ module NLU =
         | m when m.Intent.IsSome && m.Intent.Value.Name = n -> let _, t, el = m.Unwrap() in (t, el) |> Some
         | _ -> None
         
-    let (|Entity|_|) (n:string) :Entity->string option = 
+    let (|Entity|_|) (n:string) :Entity->Entity option = 
         function
-        | entity when entity.Name = n -> Some entity.Value
+        | entity when entity.Name = n -> Some entity
         | _ -> None
 
     let (|Yes|_|) :Meaning -> Meaning option= 
