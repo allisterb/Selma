@@ -10,3 +10,6 @@
 [submodule "ext/WebSharperBootstrap"]
 	path = ext/WebSharperBootstrap
 	url = https://github.com/allisterb/WebSharperBootstrap.git
+[submodule "ext/Humanizer"]
+	path = ext/Humanizer
+	url = https://github.com/allisterb/Humanizer.git
