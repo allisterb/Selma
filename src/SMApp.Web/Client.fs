@@ -29,7 +29,11 @@ module Client =
     (*Console and terminal messages *)
     let echo m = do if not(isNull(CUI.Term)) then CUI.Term.EchoHtml' <| sprintf "%A" m 
     let debug m = debug "CLIENT" m
-        
+    let wait (f:unit -> unit) =
+        do 
+            CUI.Term.Echo'("please wait")
+            CUI.Term.Pause();f();CUI.Term.Resume()
+
     (* NLU context *)
     let Context = new Stack<Meaning>()
     let Questions = new Stack<Question>()
@@ -37,7 +41,7 @@ module Client =
     let Props = new Dictionary<string, obj>()
     let push (m:Meaning) = Context.Push m; Context
 
-    (* Initialize speech and mic *)
+    (* Speech *)
     let synth = Window.SpeechSynthesis
     
     let initSpeech() =
@@ -51,30 +55,7 @@ module Client =
             CUI <- { CUI with Voice = Some v }; debug <| sprintf "Using default voice %s." CUI.Voice.Value.Name 
         else if CUI.Voice = None then 
             echo "No speech synthesis voice is available. Install speech synthesis on this device or computer to use the voice output feature of Selma."
-    
-    let initMic m (term:Terminal) =
-        CUI <- { CUI with Mic = Some(new Mic()) }
-        let mic = CUI.Mic.Value
-        do mic.onConnecting <- (fun _ -> MicState <- MicConnecting; debug "Mic connecting...")
-        do mic.onDisconnected <- (fun _ -> MicState <- MicDisconnected;debug "Mic disconnected.")
-        do mic.onAudioStart <- (fun _ -> MicState <- MicAudioStart;debug "Mic audio start...")
-        do mic.onAudioEnd <- (fun _ -> MicState <- MicAudioEnd;debug "Mic audio end.")
-        do mic.onError <- (fun s -> MicState <- MicError s; debug (sprintf "Mic error : %s." s))
-        do mic.onReady <- (fun _ -> MicState <- MicReady; debug "Mic ready.")
-        do mic.onResult <- (fun i e -> 
-            match ClientState with
-            | ClientReady ->
-                if not (isNull i || isNull e) then 
-                    MicState <- MicResult(i,e) 
-                    debug <| sprintf "Mic result: %A %A." i e; m mic (i,e)
-                else 
-                    debug "Mic: No result returned."
-                
-            | ClientUnderstand -> echo "I'm still trying to understand what you said before."
-            | ClientNotInitialzed -> error "Client is not intialized."
-            )
-        do mic.Connect("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT")
-    
+       
     let say' text =        
         match CUI.Voice with
         | None -> 
@@ -98,15 +79,35 @@ module Client =
 
     let sayRandom t phrases = say <| getRandomPhrase phrases t
     
-    let wait (f:unit -> unit) =
-        do 
-            CUI.Term.Echo'("please wait")
-            CUI.Term.Pause();f();CUI.Term.Resume()
+    (* Mic *)
+    let initMic interpret =
+        CUI <- { CUI with Mic = Some(new Mic()) }
+        let mic = CUI.Mic.Value
+        do mic.onConnecting <- (fun _ -> MicState <- MicConnecting; debug "Mic connecting...")
+        do mic.onDisconnected <- (fun _ -> MicState <- MicDisconnected;debug "Mic disconnected.")
+        do mic.onAudioStart <- (fun _ -> MicState <- MicAudioStart;debug "Mic audio start...")
+        do mic.onAudioEnd <- (fun _ -> MicState <- MicAudioEnd;debug "Mic audio end.")
+        do mic.onError <- (fun s -> MicState <- MicError s; debug (sprintf "Mic error : %s." s))
+        do mic.onReady <- (fun _ -> MicState <- MicReady; debug "Mic ready.")
+        do mic.onResult <- (fun i e -> 
+            match ClientState with
+            | ClientReady ->
+                if not (isNull i || isNull e) then 
+                    MicState <- MicResult(i,e) 
+                    debug <| sprintf "Mic result: %A %A." i e; interpret mic (i,e)
+                else 
+                    debug "Mic: No result returned."
+                
+            | ClientUnderstand -> echo "I'm still trying to understand what you said before."
+            | ClientNotInitialzed -> error "Client is not intialized."
+            )
+        do mic.Connect("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT")
 
-    let container = SMApp.Bootstrap.Controls.Container
+    let _ = SMApp.Bootstrap.Controls.Container
 
     /// Main interpreter
     let Main =             
+        (* Mic interpreter *)
         let main' (_:Mic) (command:obj*obj) =
             let i, e = command
             debug <| sprintf "Voice: %A %A" i e
@@ -127,10 +128,11 @@ module Client =
             | _ -> 
                 debug <| sprintf "Voice: %A %A %A" intent _trait entity
                 Meaning(intent, _trait, entity) |> push |> Main.update CUI Props Questions Responses
-                
+        
+        (* Terminal interpreter *)
         let main (term:Terminal) (command:string)  =
             CUI <- { CUI with Term = term }
-            do if CUI.Mic = None then initMic main' term
+            do if CUI.Mic = None then initMic main'
             do if CUI.Voice = None then initSpeech ()
             do if ClientState = ClientNotInitialzed then ClientState <- ClientReady
             match command with

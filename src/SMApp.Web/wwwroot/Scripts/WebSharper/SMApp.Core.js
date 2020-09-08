@@ -1,13 +1,14 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Models,Sex,Address,Name,Patient,Skill;
+ var Global,SMApp,Models,Sex,Address,Name,SymptomJournalEntry,Patient,Skill;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Models=SMApp.Models=SMApp.Models||{};
  Sex=Models.Sex=Models.Sex||{};
  Address=Models.Address=Models.Address||{};
  Name=Models.Name=Models.Name||{};
+ SymptomJournalEntry=Models.SymptomJournalEntry=Models.SymptomJournalEntry||{};
  Patient=Models.Patient=Models.Patient||{};
  Skill=Models.Skill=Models.Skill||{};
  Sex.Intersex={
@@ -31,6 +32,15 @@
   return{
    First:First,
    Last:Last
+  };
+ };
+ SymptomJournalEntry.New=function(UserName,Date,Magnitude,Location)
+ {
+  return{
+   UserName:UserName,
+   Date:Date,
+   Magnitude:Magnitude,
+   Location:Location
   };
  };
  Patient.New=function(Id,Sex$1,Name$1,BirthDate,Address$1)

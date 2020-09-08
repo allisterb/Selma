@@ -144,6 +144,30 @@ module NLU =
             | "stop" -> Meaning(Some(Intent("no", Some 1.0f)), None, None) |> Some 
             | _ -> None
 
+        let (|One|_|) =
+            function
+            | "1"
+            | "one" -> Meaning(Some(Intent("questionresponse", Some 1.0f)), None, Some([Entity("wit/ordinal", "one", Some 1.0f)])) |> Some
+            | _ -> None
+
+        let (|Two|_|) =
+            function
+            | "2"
+            | "two" -> Meaning(Some(Intent("questionresponse", Some 1.0f)), None, Some([Entity("wit/ordinal", "two", Some 1.0f)])) |> Some
+            | _ -> None
+
+        let (|Three|_|) =
+            function
+            | "3"
+            | "three" -> Meaning(Some(Intent("questionresponse", Some 1.0f)), None, Some([Entity("wit/ordinal", "three", Some 1.0f)])) |> Some
+            | _ -> None
+
+        let (|QuickNumber|_|) =
+            function
+            | One m 
+            | Two m -> Some m
+            | _ -> None
+
         let (|QuickPrograms|_|) =
             function
             | "programs" -> Meaning(Some(Intent("Program", None)), None, None) |> Some
@@ -181,7 +205,8 @@ module NLU =
             function
             | Some(Meaning'([], entities)) when entities.Length > 0 -> 
                 let entities' = 
-                    entities |> List.where(fun e -> e.Confidence > entityConfidenceThreshold) 
+                    entities 
+                    |> List.where(fun e -> e.Confidence > entityConfidenceThreshold) 
                     |> List.map(fun e -> Entity(e.Role |> toLower, e.Value, Some(e.Confidence)))
                 Meaning(None, None, Some entities') |> Some
 

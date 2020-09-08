@@ -21,6 +21,13 @@ module Models =
 
     type Name = {First: string option; Last: string option}
 
+    type SymptomJournalEntry = {
+        UserName: string
+        Date: DateTime
+        Magnitude: int
+        Location: string
+    }
+
     type Patient = {
         Id: Identifier    
         Sex: Sex 

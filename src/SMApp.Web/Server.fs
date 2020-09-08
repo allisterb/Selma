@@ -45,9 +45,8 @@ module Server =
         |> Sql.formatConnectionString
         |> Sql.connect
 
-
     [<Rpc>]
-    let GetUser(user:string) : Async<User option> = 
+    let getUser(user:string) : Async<User option> = 
         pgdb
         |> Sql.query "SELECT * FROM selma_user WHERE user_name=@u"
         |> Sql.parameters ["u", Sql.string user]
@@ -58,7 +57,7 @@ module Server =
         |> Async.map(function | Ok (u)  -> (if u.Length > 0 then Some u.Head else None) | Error exn -> err(exn.Message); None)
 
     [<Rpc>]
-    let AddUser (user:string) : Async<unit Option> =
+    let addUser (user:string) : Async<unit Option> =
         pgdb
         |> Sql.query "INSERT INTO public.selma_user(user_name, last_logged_in) VALUES (@u, @d);"
         |> Sql.parameters [("u", Sql.string user); ("d", Sql.timestamp (DateTime.Now))]
@@ -66,12 +65,33 @@ module Server =
         |> Async.map(function | Ok(n) -> (if n > 0 then Some() else None) | Error exn -> err(exn.Message); None)
 
     [<Rpc>]
-    let UpdateUserLastLogin (user:string) : Async<unit> =
+    let updateUserLastLogin (user:string) : Async<unit> =
         pgdb
         |> Sql.query "UPDATE public.selma_user SET last_logged_in=@d WHERE user_name=@u;"
         |> Sql.parameters [("u", Sql.string user); ("d", Sql.timestamp (DateTime.Now))]
         |> Sql.executeNonQueryAsync
         |> Async.map(function | Ok(n) -> () | Error exn -> err(exn.Message); ())
+
+    [<Rpc>]
+    let addSymptomJournalEntry (userName:string) (magnitude:int) (location:string) : Async<unit Option> =
+        pgdb
+        |> Sql.query "INSERT INTO public.symptom_journal(user_name, date, magnitude, location) VALUES (@u, @d, @m, @l);"
+        |> Sql.parameters [("u", Sql.string userName); ("d", Sql.timestamp (DateTime.Now)); ("m", Sql.int (magnitude)); ("l", Sql.string (location))]
+        |> Sql.executeNonQueryAsync
+        |> Async.map(function | Ok(n) -> (if n > 0 then Some() else None) | Error exn -> err(exn.Message); None)
+    
+    [<Rpc>]
+    let getSymptomJournalEntry(user:string) : Async<SymptomJournalEntry list option> = 
+        pgdb
+        |> Sql.query "SELECT * FROM symptom_journal WHERE user_name=@u"
+        |> Sql.parameters ["u", Sql.string user]
+        |> Sql.executeAsync (fun read -> {
+            UserName =  read.string("user_name")
+            Date = (read.timestamp "data").ToDateTime() 
+            Magnitude = read.int "magnitude"
+            Location = read.string "locarion"
+        }) 
+        |> Async.map(function | Ok j  -> Some j | Error exn -> err(exn.Message); None)
 
     [<Rpc>]
     let GetMeaning input = 

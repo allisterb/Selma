@@ -16,8 +16,8 @@ module Main =
     let haveQuestion n = questions |> List.exists(fun q -> q.Name = n)
 
     let update (cui: CUI) (props: Dictionary<string, obj>) (questions:Stack<Question>) (responses:Stack<string>) (context: Stack<Meaning>) =        
-        debug <| sprintf "Begin context: %A." context
-        debug <| sprintf "Begin questions: %A." questions
+        debug <| sprintf "Starting context: %A." context
+        debug <| sprintf "Starting questions: %A." questions
      
         let haveProp k = props.ContainsKey k
         let addProp k v = props.Add(k, v)
@@ -104,9 +104,9 @@ module Main =
         let loginUser u = 
             async { 
                 do sayRandom waitRetrievePhrases "user name"
-                match! Server.GetUser u with 
+                match! Server.getUser u with 
                 | Some u ->
-                    do! Server.UpdateUserLastLogin u.Name
+                    do! Server.updateUserLastLogin u.Name
                     props.Add("user", u)
                     sayRandom helloUserPhrases <| sprintf "%A" props.["user"]
                     if u.LastLoggedIn.IsSome then say <| sprintf "You last logged in on %A." u.LastLoggedIn.Value
@@ -119,7 +119,7 @@ module Main =
         let addUser u = 
             async { 
                 do sayRandom waitAddPhrases "user"
-                match! Server.AddUser u with 
+                match! Server.addUser u with 
                 | Some _ -> 
                     addProp "user" u
                     say <| sprintf "Hello %A, nice to meet you." props.["user"]
@@ -134,19 +134,21 @@ module Main =
         | Anon(Start(Assert(Intent "hello" (None, None))))::[] ->  
                 props.Add("started", true)
                 sayRandom' helloPhrases
-        | Anon(Assert(Intent "hello" (None, None)))::[] -> say "Hello, tell me your user name to get started."
+        | Anon(Assert(Intent "hello" (None, None)))::[] -> say "Hello, tell me your name to get started."
 
         (* User login *)
-        | Anon(Assert(Intent "hello" (None, Some [Entity "contact" u])))::[]  -> loginUser u
-            
+        | Anon(Assert(Intent "hello" (None, Some [Entity "contact" u])))::[] -> loginUser u
+        
         (* User add *)
         | Anon(Yes(Response "addUser" (_, Some(Str(user)))))::[] -> addUser user
         | Anon(No(Response "addUser" (_, Some(Str(user)))))::[] -> say <| sprintf "Ok I did not add the user %s." user
 
+        | Anon(_)::[] -> say "Introduce yourself so we can get started."
+
         (* User switch *)
         | User(Assert(Intent "hello" (None, Some [Entity "contact" u])))::[] -> 
             async {
-                match! Server.GetUser u with
+                match! Server.getUser u with
                 | Some user -> ask "switchUser" user.Name
                 | None -> say <| sprintf "Sorry, the user %s does not exist." u
             } |> Async.Start
@@ -156,9 +158,12 @@ module Main =
         | User(No(Response "switchUser" (_, Some(Str(user)))))::[] -> 
             say <| sprintf "Ok I did not switch to user %s." user
         
-        | m -> 
-            debug <| sprintf "Did not understand %A." m
+        (* Symptoms *)
+        | User(Assert(Intent "symptom" (None, Some e)))::[] -> say <| sprintf "Got %i entities" e.Length
+
+        | _ -> 
             popc()
+            debug "Main interpreter did not understand utterance."
             say "Sorry I didn't understand what you meant."
             if questions.Count > 0 then 
                 let q = Seq.item 0 questions in 
@@ -166,5 +171,5 @@ module Main =
                     say <| replace_tok "$0" (props.[q.Name] :?> string) q.Text
                 else say q.Text
 
-        debug <| sprintf "End context: %A." context
-        debug <| sprintf "End questions: %A." questions
+        debug <| sprintf "Ending context: %A." context
+        debug <| sprintf "Ending questions: %A." questions
