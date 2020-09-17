@@ -1,32 +1,27 @@
 namespace SMApp.Web
 
-open System
-
 open Microsoft.AspNetCore
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Hosting
 open Microsoft.AspNetCore.Http
-open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
-
 open WebSharper.AspNetCore
-open Serilog
 
+open Serilog
 open SMApp
 
 type Startup() =
 
-    member this.ConfigureServices(services: IServiceCollection) = 
-        services.AddSitelet(Site.Main)
+    member this.ConfigureServices(services: IServiceCollection) =
+        services
+            .AddSitelet(Site.Main)
             .AddAuthentication("WebSharper")
-            .AddCookie("WebSharper", fun options -> ())
+            .AddCookie("WebSharper", fun _ -> ())   
         |> ignore
 
     member this.Configure(app: IApplicationBuilder, env: IHostingEnvironment) =
         if env.IsDevelopment() then app.UseDeveloperExceptionPage() |> ignore
-        do FSharp.MongoDB.SerializationProviderModule.Register()
-        do FSharp.MongoDB.Conventions.ConventionsModule.Register()
         app.UseAuthentication()
             .UseStaticFiles()
             .UseWebSharper()
@@ -45,7 +40,7 @@ module Program =
     [<EntryPoint>]
     let main args =
         let config = new LoggerConfiguration()
-        Log.Logger <- config.MinimumLevel.Debug().Enrich.FromLogContext().WriteTo.Console().CreateLogger()
+        Log.Logger <- config.MinimumLevel.Information().Enrich.FromLogContext().WriteTo.Console().CreateLogger()
         do Api.SetLogger(new SerilogLogger());
         do BuildWebHost(args).Run()
         do Log.CloseAndFlush()

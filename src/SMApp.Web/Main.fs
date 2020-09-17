@@ -11,6 +11,9 @@ module Main =
     let questions = [ 
         Question("addUser", "Do you want me to add the user $0?")
         Question("switchUser", "Do you want me to switch to the user $0?")
+        Question("painSurvey", "Would you like to take a short survey on your pain symptoms so I can understand them better.")
+        Question("painVideo", "Would you like to see a video about pain management that might help you?")
+        Question("medReminder", "Would you like me to add a reminder about your meds so you won't forget them later?")
     ]  
     let getQuestion n = questions |> List.tryFind(fun q -> q.Name = n)
     let haveQuestion n = questions |> List.exists(fun q -> q.Name = n)
@@ -23,6 +26,7 @@ module Main =
         let addProp k v = props.Add(k, v)
         let deleteProp k = props.Remove k |> ignore
         let strProp k = props.[k] :?> string
+        let user() = strProp "user"
 
         let popc() = context.Pop() |> ignore
         let popq() = questions.Pop() |> ignore
@@ -61,26 +65,16 @@ module Main =
             | m when not (haveProp n) -> Some m
             | _ -> None
          
-        let (|Anon|_|) :Meaning -> Meaning option = //(Intent option * Trait option * Entity list option) option =
-            function
-            | PropNotSet "user" m -> m |> Some 
-            | _ -> None
-
-        let (|User|_|) :Meaning -> Meaning option = //(Intent option * Trait option * Entity list option) option =
-            function
-            | PropSet "user" m -> m |> Some 
-            | _ -> None
-
         let (|Assert|_|) :Meaning -> Meaning option =
             function
-            | m when questions.Count = 0 -> 
+            | PropSet "user" m when questions.Count = 0 -> 
                 popc()
                 Some m
             | _ -> None
 
         let (|Response|_|) (n:string) :Meaning -> (Meaning * obj option) option =
             function
-            | m when haveQuestion n && questions.Count > 0  && questions.Peek().Name = n -> 
+            | PropSet "user" m when haveQuestion n && questions.Count > 0  && questions.Peek().Name = n -> 
                 popc()
                 popq()
                 if haveProp n then
@@ -90,14 +84,33 @@ module Main =
                 else Some(m, None)
             | _ -> None
 
+        let (|AnonResponse|_|) (n:string) :Meaning -> (Meaning * obj option) option =
+            function
+            | PropNotSet "user" m when haveQuestion n && questions.Count > 0  && questions.Peek().Name = n -> 
+                popc()
+                popq()
+                if haveProp n then
+                    let d = props.[n]
+                    deleteProp n
+                    Some(m, Some d)
+                else Some(m, None)
+            | _ -> None
+
+        let (|AnonAssert|_|) :Meaning -> Meaning option =
+            function
+            | PropNotSet "user" m when questions.Count = 0 -> 
+                popc()
+                Some m
+            | _ -> None
+
         let (|Start|_|) :Meaning -> Meaning option=
             function
             | PropNotSet "started" m -> Some m
             | _ -> None
 
-        let (|Str|_|) : obj -> string option =
+        let (|Str|_|) : obj option -> string option =
             function
-            | :? string as s -> Some s
+            | Some s when (s :? string) -> Some (s :?> string)
             | _ -> None
 
         (* User functions *)
@@ -106,16 +119,17 @@ module Main =
                 do sayRandom waitRetrievePhrases "user name"
                 match! Server.getUser u with 
                 | Some u ->
-                    do! Server.updateUserLastLogin u.Name
+                    do! Server.updateUserLastLogin u.Name |> Async.Ignore
                     props.Add("user", u)
                     sayRandom helloUserPhrases <| sprintf "%A" props.["user"]
-                    if u.LastLoggedIn.IsSome then say <| sprintf "You last logged in on %A." u.LastLoggedIn.Value
-                    
+                    if u.LastLoggedIn.IsSome then 
+                        let! h = Server.humanize u.LastLoggedIn.Value
+                        say <| sprintf "You last logged in %s." h 
                 | None _ -> 
                     say <| sprintf "Sorry I did not find the user name %s." u
                     ask "addUser" u
             } |> Async.Start
-
+        
         let addUser u = 
             async { 
                 do sayRandom waitAddPhrases "user"
@@ -127,39 +141,73 @@ module Main =
                     say <| sprintf "Sorry I was not able to add the user %s to the system." u
             } |> Async.Start
 
+        (* Symptom journal functions *)
+        let addSymptom s m l = 
+            async { 
+                do sayRandom waitAddPhrases "symptom entry"
+                match! Server.addSymptomJournalEntry s m l with 
+                | Some _ -> 
+                    say <| sprintf "OK I added that %s symptom to your journal." s 
+                | None _ -> 
+                    say <| sprintf "Sorry I wasn't able to add that symptom to your journal. Could you try again?"
+            } |> Async.Start 
+
+        let getSymptomJournal u =  
+            async {
+            do sayRandom waitRetrievePhrases "symptom journal"
+            return! Server.getSymptomJournal u 
+        }
+            
         (* Interpreter logic begins here *)
         match context |> Seq.take (if context.Count >= 5 then 5 else context.Count) |> List.ofSeq with
 
         (* Hello *)
-        | Anon(Start(Assert(Intent "hello" (None, None))))::[] ->  
+        | Start(AnonAssert(Intent "hello" (_, None)))::[] ->  
                 props.Add("started", true)
                 sayRandom' helloPhrases
-        | Anon(Assert(Intent "hello" (None, None)))::[] -> say "Hello, tell me your name to get started."
+        | AnonAssert(Intent "hello" (_, None))::[] -> say "Hello, tell me your name to get started."
 
         (* User login *)
-        | Anon(Assert(Intent "hello" (None, Some [Entity "contact" u])))::[] -> loginUser u.Value
+        | AnonAssert(Intent "hello" (_, Entity1Of1 "contact" u))::[] -> loginUser u.Value
         
         (* User add *)
-        | Anon(Yes(Response "addUser" (_, Some(Str(user)))))::[] -> addUser user
-        | Anon(No(Response "addUser" (_, Some(Str(user)))))::[] -> say <| sprintf "Ok I did not add the user %s." user
+        | Yes(AnonResponse "addUser" (_, Str user))::[] -> addUser user
+        | No(AnonResponse "addUser" (_, Str user))::[] -> say <| sprintf "Ok I did not add the user %s. But you must login for me to help you." user
 
-        | Anon(_)::[] -> say "Introduce yourself so we can get started."
+        | AnonAssert(_) ::[] -> say "Could you introduce yourself so we can get started?"
 
         (* User switch *)
-        | User(Assert(Intent "hello" (None, Some [Entity "contact" u])))::[] -> 
+        | Assert(Intent "hello" (None, Entity1Of1 "contact" u))::[] -> 
             async {
                 match! Server.getUser u.Value with
                 | Some user -> ask "switchUser" user.Name
                 | None -> say <| sprintf "Sorry, the user %s does not exist." u.Value
             } |> Async.Start
-        | User(Yes(Response "switchUser" (_, Some(Str(user)))))::[] ->
+        | Yes(Response "switchUser" (_, Str user))::[] ->
             props.["user"] <- user
             say <| sprintf "Ok I switched to user %A." user  
-        | User(No(Response "switchUser" (_, Some(Str(user)))))::[] -> 
+        | No(Response "switchUser" (_, Str user))::[] -> 
             say <| sprintf "Ok I did not switch to user %s." user
         
         (* Symptoms *)
-        | User(Assert(Intent "symptom" (None, Some [Entity "datetime" d; Entity "magnitude" m])))::[] -> say <| sprintf "Got %s magnitude" m.Value
+
+        | Assert(Intent "symptom" (_, Entity1Of1 "pain" p))::[] ->
+            
+            async{
+                say "Ok I'll add that entry to your symptom journal"
+                //addSymptom (user()) (Some 9) (None)
+                say <| sprintf "I see this is the 3rd time today you've had pain %s" (user())
+                ask "painVideo" ""
+            } |> Async.Start
+
+        | Yes(Response "painVideo"(_, _))::[] -> cui.EchoHtml'("""<iframe width="560" height="315" src="https://www.youtube.com/embed/SkAqOditKN0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>""")
+            
+
+        (* Meds *)
+
+        | Assert(Intent "medjournal" (_, Some en))::[] ->
+            say "ok I added that entry to your medication journal."
+            say "You should be careful not to take too many painkillers over a short period of time."
 
         | _ -> 
             popc()

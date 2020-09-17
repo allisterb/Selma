@@ -107,7 +107,7 @@ module Client =
 
     /// Main interpreter
     let Main =             
-        (* Mic interpreter *)
+        /// Mic interpreter
         let main' (_:Mic) (command:obj*obj) =
             let i, e = command
             debug <| sprintf "Voice: %A %A" i e
@@ -129,7 +129,7 @@ module Client =
                 debug <| sprintf "Voice: %A %A %A" intent _trait entity
                 Meaning(intent, _trait, entity) |> push |> Main.update CUI Props Questions Responses
         
-        (* Terminal interpreter *)
+        /// Terminal interpreter 
         let main (term:Terminal) (command:string)  =
             CUI <- { CUI with Term = term }
             do if CUI.Mic = None then initMic main'
@@ -148,11 +148,11 @@ module Client =
                 | ClientUnderstand -> say' "I'm still trying to understand what you said before."
                 | ClientReady ->
                     match command with
+                    (* Quick commands *)
                     | Text.QuickHello m 
                     | Text.QuickHelp m 
                     | Text.QuickYes m
-                    | Text.QuickNo m
-                    | Text.QuickPrograms m -> 
+                    | Text.QuickNo m -> 
                         debug <| sprintf "Quick Text: %A." m
                         m |> push |> Main.update CUI Props Questions Responses
                         ClientState <- ClientReady
@@ -173,7 +173,7 @@ module Client =
         let mainOpt =
             Options(
                 Name="Main", 
-                Greetings = "Welcome to Selma. Enter 'hello my name is...(you)' to begin and initialize speech or help for more assistance.",
+                Greetings = "Welcome to Selma. Enter 'hello' or 'hello my name is...(you)' to initialize speech recognition, or enter help for more assistance.",
                 Prompt =">"
             )       
         Interpreter(main', (main, mainOpt))

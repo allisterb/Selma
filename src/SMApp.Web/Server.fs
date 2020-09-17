@@ -7,28 +7,11 @@ open System.Linq
 open FSharp.Control
 
 open WebSharper
-open MongoDB.Driver
-open MongoDB.Bson
-open MongoDB.Driver.Linq
-open FSharp.MongoDB
 open Npgsql.FSharp
+open Humanizer
 
 open SMApp
 open SMApp.Models
-
-type _User = {
-    Id: BsonObjectId
-    username: string
-    password: string
-    salt:string
-    email:string
-    displayName:string
-}
-
-type ``user`` = {
-    user_name:string
-    last_logged_in: DateTime option
-}
     
 module Server =        
    
@@ -46,15 +29,21 @@ module Server =
         |> Sql.connect
 
     [<Rpc>]
+    let humanize(date:DateTime) = async { return date.Humanize() }
+
+    [<Rpc>]
     let getUser(user:string) : Async<User option> = 
         pgdb
         |> Sql.query "SELECT * FROM selma_user WHERE user_name=@u"
         |> Sql.parameters ["u", Sql.string user]
         |> Sql.executeAsync (fun read -> {
             Name =  read.string("user_name")
-            LastLoggedIn = read.timestampOrNone "last_logged_in" |> Option.map(fun t -> t.ToString())
+            LastLoggedIn = read.timestampOrNone "last_logged_in" |> Option.map(fun t -> t.ToDateTime())
         }) 
-        |> Async.map(function | Ok (u)  -> (if u.Length > 0 then Some u.Head else None) | Error exn -> err(exn.Message); None)
+        |> Async.map(
+            function 
+            | Ok u  -> (if u.Length > 0 then infof "Retrieved user {0} from database." [u.Head.Name]; Some u.Head else None) 
+            | Error exn -> errex "Error retrieving user {0} to database." exn [user]; None)
 
     [<Rpc>]
     let addUser (user:string) : Async<unit Option> =
@@ -62,34 +51,45 @@ module Server =
         |> Sql.query "INSERT INTO public.selma_user(user_name, last_logged_in) VALUES (@u, @d);"
         |> Sql.parameters [("u", Sql.string user); ("d", Sql.timestamp (DateTime.Now))]
         |> Sql.executeNonQueryAsync
-        |> Async.map(function | Ok(n) -> (if n > 0 then Some() else None) | Error exn -> err(exn.Message); None)
+        |> Async.map(
+            function 
+            | Ok n -> (if n > 0 then infof "Added user {0} to database." [user]; Some() else None) 
+            | Error exn -> errex "Error adding user {0} to database." exn [user]; None)
 
     [<Rpc>]
-    let updateUserLastLogin (user:string) : Async<unit> =
+    let updateUserLastLogin (user:string) : Async<unit option> =
         pgdb
         |> Sql.query "UPDATE public.selma_user SET last_logged_in=@d WHERE user_name=@u;"
         |> Sql.parameters [("u", Sql.string user); ("d", Sql.timestamp (DateTime.Now))]
         |> Sql.executeNonQueryAsync
-        |> Async.map(function | Ok(n) -> () | Error exn -> err(exn.Message); ())
+        |> Async.map(
+            function 
+            | Ok n -> (if n > 0 then infof "Added updated user {0} last login time in database." [user]; Some() else None) 
+            | Error exn -> errex "Error updating user {0} last login time in database." exn [user]; None)
 
     [<Rpc>]
-    let addSymptomJournalEntry (userName:string) (magnitude:int) (location:string) : Async<unit Option> =
+    let addSymptomJournalEntry (userName:string) (magnitude:int option) (location:string option) : Async<unit Option> =
         pgdb
         |> Sql.query "INSERT INTO public.symptom_journal(user_name, date, magnitude, location) VALUES (@u, @d, @m, @l);"
-        |> Sql.parameters [("u", Sql.string userName); ("d", Sql.timestamp (DateTime.Now)); ("m", Sql.int (magnitude)); ("l", Sql.string (location))]
+        |> Sql.parameters [
+            "u", Sql.string userName 
+            "d", Sql.timestamp (DateTime.Now) 
+            "m", if magnitude.IsSome then Sql.int(magnitude.Value) else Sql.dbnull
+            "l", if location.IsSome then Sql.string (location.Value) else Sql.dbnull
+        ]
         |> Sql.executeNonQueryAsync
-        |> Async.map(function | Ok(n) -> (if n > 0 then Some() else None) | Error exn -> err(exn.Message); None)
+        |> Async.map(function | Ok n -> (if n > 0 then Some() else None) | Error exn -> err(exn.Message); None)
     
     [<Rpc>]
-    let getSymptomJournalEntry(user:string) : Async<SymptomJournalEntry list option> = 
+    let getSymptomJournal(userName:string) : Async<SymptomEntry list option> = 
         pgdb
         |> Sql.query "SELECT * FROM symptom_journal WHERE user_name=@u"
-        |> Sql.parameters ["u", Sql.string user]
+        |> Sql.parameters ["u", Sql.string userName]
         |> Sql.executeAsync (fun read -> {
             UserName =  read.string("user_name")
-            Date = (read.timestamp "data").ToDateTime() 
-            Magnitude = read.int "magnitude"
-            Location = read.string "locarion"
+            Date = (read.timestamp "date").ToDateTime() 
+            Magnitude = read.intOrNone "magnitude"  
+            Location = read.stringOrNone "location"
         }) 
         |> Async.map(function | Ok j  -> Some j | Error exn -> err(exn.Message); None)
 
@@ -104,6 +104,7 @@ module Server =
                     |> Seq.map (fun en -> en.Value) 
                     |> Seq.concat 
                     |> Seq.map (fun e -> Text.Entity'(e.Name, e.Confidence, e.Role, e.Value))
+                    |> Seq.sortBy(fun e -> e.Name)
                     |> List.ofSeq
                 return Text.Meaning'(intents, entities) |> Some
             | Choice2Of2 exn -> errf "Could not get Wit.ai meaning for input '{0}'. Exception: {1}" [input; exn.Message]; return None

@@ -16,5 +16,4 @@ module Api =
 
     let errf mt args = Api.Error(mt, List.toArray args)
 
-    let errex mt args = Api.Error(mt, List.toArray args)
-
+    let errex mt ex args = Api.Error(ex, mt, List.toArray args)

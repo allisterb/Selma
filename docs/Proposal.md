@@ -18,19 +18,21 @@ take care of themselves and manage their illnesses.`
 
 A self-management program teaches patients to see treatment as a collaborative process with the patient taking responsibility for self-monitoring and tracking their
 symptoms as well as medication intake and other vital information, together with a commitment to using evidence-based, self-administered structured therapy and intervention as adjuncts to professionally delivered interventions for managing their illness. 
+There are many chronic disease self-management [programs](http://www.aaa1b.org/wp-content/uploads/2012/05/List-of-Evidence-Based-Programs.pdf) and [resources](https://www.ncoa.org/center-for-healthy-aging/cdsme-resource-center/) developed for diseases and conditions like arthritis, asthma, diabetes, heart-disease, high-blood pressure, depression, obesity, smoking-cessation etc. 
 
 ### The problem
-There are many chronic disease self-management [programs](http://www.aaa1b.org/wp-content/uploads/2012/05/List-of-Evidence-Based-Programs.pdf) and [resources](https://www.ncoa.org/center-for-healthy-aging/cdsme-resource-center/) developed for diseases and conditions like arthritis, asthma, diabetes, heart-disease, high-blood pressure, depression, obesity, smoking-cessation etc. There are many Android and iOS mobile apps in the category of self-management and self-help like task planners and time and activity trackers. For desktop users there is bStable for managing Bipolar Disorder, as well several telemedicine and CBT apps designed to deliver specific therapies remotely, together with the usual assortment of general-purpose task management and time tracking tools.
+There are many Android and iOS mobile apps in the category of self-management and self-help like task planners, time and activity trackers, med and symptom trackers, journals etc. For desktop users there is bStable for managing Bipolar Disorder, as well several telemedicine and CBT apps designed to deliver specific therapies remotely, together with the usual assortment of general-purpose calendars, task management and time tracking tools.
 
-All of these apps however rely on GUIs and touch interfaces with visual forms and widgets for presenting information and entering and reviewing data. 
+All of these apps however rely on GUIs and touch interfaces with visual forms and widgets for entering and reviewing data and presenting information. 
 ![A typical self-management app interface](https://image.slidesharecdn.com/bstablepresentation-110821193750-phpapp01/95/bstable-depression-and-bipolar-disorder-disease-state-management-system-presentation-slides-12-728.jpg?cb=1313964137)
+Screenshot of McGraw System's "bstable" desktop app for bipolar disease management
 
-These types of interfaces can be inaccessible or difficult to use for older people unaccustomed to complex GUI interfaces or people with neuropathy, arthritis, and generally people with vision or motor disabilities or chronic conditions. A large proportion of the target user-base for these apps and systems would benefit from simpler systems or the ability to rely on assistive technology to help then naviagate modern desktop and web applications. Microsoft, Apple and Google have made major advancements in accessibility technology for their operating systems with Microsoft’s Windows Narrator and Apple’s VoiceOver technology in particular being widely used by people with vision disabilities. But even with the best assistive technology, app interfaces and web pages that rely on a persistent visual medium can be frustratingly difficult to use for disabled people as they force users to navigate linearly through large hierarchies of visual widgets which use visual orientation in space and visual style elements like font sizes to effectively organize and present information. 
+These types of interfaces can be inaccessible or difficult to use for older people unaccustomed to complex GUI interfaces, or people with neuropathy, arthritis, and generally people with vision or motor disabilities or chronic conditions. A large proportion of the target user-base for these apps and systems would benefit from simpler systems or the ability to rely on assistive technology to help then naviagate modern desktop and web applications. Microsoft, Apple and Google have made major advancements in accessibility technology for their operating systems with Microsoft’s Windows Narrator and Apple’s VoiceOver technology in particular being widely used by people with vision disabilities. But even with the best assistive technology, app interfaces and web pages that rely on a persistent visual medium can be frustratingly difficult to use for disabled people as they force users to navigate linearly through large hierarchies of visual widgets which use visual orientation in space and visual style elements like font sizes to effectively organize and present information. 
 
 The most accessible app interfaces for older people and people with disabilities are voice assistants like Cortana and Siri and Alexa. 
 
 ## What it does
-Selma is a multimodal CUI designed to provide accessible and inclusive access to self-management tools like medication trackers, mood and symptom trackers, dream and sleep journals, time, activity and exercise, trackers, personal planners, reliable knowledge bases on health conditions and diseases, and similar tools used in the management of chronic physical and mental diseases and disorders and conditions like ADHD or chronic pain where.self-management skills for life activities are critical.
+Selma is a multimodal CUI that provides an inclusive interface to self-management tools like medication trackers, mood and symptom trackers, dream and sleep journals, time, activity and exercise, trackers, personal planners, reliable knowledge bases on health conditions and diseases, and similar tools used in the management of chronic physical and mental diseases and disorders and conditions like ADHD or chronic pain where.self-management skills for life activities are critical.
 
 Selma follows in the tradition of 'therapy bots' like ELIZA but updated with powerful ML-trained NLU models for interacting with users in real-time using both typed text and speech. Existing self-management apps like journal, activity-, and symptom-tracking apps all use GUIs or touch UIs and assume users are sighted and dexterous. The reliance on a visual medium and complex interface for entering and reviewing daily self-management data is a significant barrier to adoption of these apps by people with disabilities and chronic conditions, who form a majority of a self-management app's user base.
 
@@ -40,13 +42,16 @@ The Selma CUI is an accessible user interface that produces text output easily r
 
 Selma uses Facebook's Wit.ai NLU service for understanding what users say and and input as text.
 ![Witai console](https://allisterb-selma.s3.us-east-2.amazonaws.com/selma6.png)
+
 ## How I built it
 
 ### Overview
-Selma is written in F# and C# running on .NET Core and using MongoDB and PostgreSQL as storage backends. F# is a functional-first, multi-paradigm language which brings all the benefits of functional languages like OCaml to the modern cross-platform and widely supported .NET Core runtime. Selma consists of a browser-based CUI client which uses natural language understanding on both text and speech that the user inputs to determine what actions the user wants carried out. The CUI can be logically broken up into different interpreters which roughly correspond to the different forms in a GUI app. 
+Selma is written in F#, running on .NET Core and using PostgreSQL as the storage back-end. F# is a functional-first multi-paradigm language which brings all the benefits of functional lanaguages like OCaml to the modern .NET Core runtime, which also allows it to be compiled to JavaScript and used exclusively for front-end development. The Selma front-end is a browser-based CUI which uses natural language understanding on both text and speech, together with voice, text and graphic output using HTML5 features like the WebSpeech API to provide an inclusive interface to self-management data for one or more self-management programs the user enrolls in. The front-end is designed to be accessible to all mobile and desktop users and does not require any additional software beyond a HTML5 compatible browser.
 
 ### Client
-The [client](https://github.com/allisterb/Selma/blob/master/src/SMApp.Web/Client.fs) and [core](https://github.com/allisterb/Selma/blob/master/src/SMApp.Core/Models.fs) parts of Selma are written in F# and make heavy use of functional language features like first-class functions, algebraic types, pattern-matching, immutability by default, and avoiding nulls using ``Option`` types. This yields code that is concise and easy to understand and eliminates many common code errors, which is an important feature for developing health-care management software. Using the [WebSharper](https://websharper.com/) framework allows us to exclusively use F# on the client-side which is compiled to JavaScript and runs in the browser, yielding all the benefits of a statically-typed higher-level functional language for client-side development. For instance the [NLU](https://github.com/allisterb/Selma/blob/master/src/SMApp.Web/NLU.fs) module makes heavy use of pattern matching:
+The [CUI](https://github.com/allisterb/Selma/blob/master/src/SMApp.Web/Client.fs),  [server](https://github.com/allisterb/Selma/blob/master/src/SMApp.Web/Server.fs) [logic](https://github.com/allisterb/Selma/blob/master/src/SMApp.Web/Main.fs) and [core](https://github.com/allisterb/Selma/blob/master/src/SMApp.Core/Models.fs) of Selma are written in F# and make heavy use of functional language features like first-class functions, algebraic types, pattern-matching, immutability by default, and avoiding nulls using ``Option`` types. This yields code that is concise and easy to understand and eliminates many common code errors, which is an important feature for developing health-care management software. CUI rules are implemented in a declarative way using F# pattern matching, which greatly reduces the complexity of the branching logic required for a rule-based chatbot
+
+Using the [WebSharper](https://websharper.com/) framework allows us to exclusively use F# on the client-side which is compiled to JavaScript and runs in the browser, yielding all the benefits of a statically-typed higher-level functional language for client-side development. For instance the [NLU](https://github.com/allisterb/Selma/blob/master/src/SMApp.Web/NLU.fs) module makes heavy use of pattern matching:
 
 ````fsharp        
         let (|Intent|_|) (name:string) :Meaning' -> (Entity list option) =
@@ -89,6 +94,18 @@ User intents are dispatched to different interpreters which also heavily use pat
 This logic says that for a "Hello" intent Selma should respond by asking the user their name. If the user provides a name then Selma will respond appropriately. Use a functional language like F# to write CUI logic is a vastly better and faster alternative to using commercial bot builder services.
 
 ### Server
-The Selma server is designed around a set of microservices running on the OpenShift Container Platform which talk to the client and stored data in the different storage backends.
+The Selma server is designed around a set of micro-services running on the OpenShift Container Platform which talk to the client and stored data in the storage backend.
 ![Dashboard for the Selma project on RedHat OpenShift Online](https://allisterb-selma.s3.us-east-2.amazonaws.com/selma-2.png)
-Selma services are written in F# and C# and use MongoDB for storage of structured non-sensitive documents like user profiles and PostgreSQL for storing patient data which will highly relational. User profiles for the Selma app are stored separately from patient data allowing this data to be anonymized with User-Patient links stored in a separate high-security storage module.
+
+Since the data is highly-relational and commonly requires calculation of statistics across aggregates, a traditional SQL server is used for data storage.
+
+All the CUI and and interpreter logic is written in F# and runs on the client with the server mainly responsible for data operations. A typical server function is like
+```fsharp
+    [<Rpc>]
+    let addSymptomJournalEntry (userName:string) (magnitude:int) (location:string) : Async<unit Option> =
+        pgdb
+        |> Sql.query "INSERT INTO public.symptom_journal(user_name, date, magnitude, location) VALUES (@u, @d, @m, @l);"
+        |> Sql.parameters [("u", Sql.string userName); ("d", Sql.timestamp (DateTime.Now)); ("m", Sql.int (magnitude)); ("l", Sql.string (location))]
+        |> Sql.executeNonQueryAsync
+        |> Async.map(function | Ok n -> (if n > 0 then Some() else None) | Error exn -> err(exn.Message); None)
+```

@@ -19,14 +19,14 @@ module Models =
 
     type Address = {Street: string; Town: string; }
 
-    type Name = {First: string option; Last: string option}
+    type Name = {Full: string; First: string option; Last: string option}
 
-    type SymptomJournalEntry = {
-        UserName: string
-        Date: DateTime
-        Magnitude: int
-        Location: string
+    type User = {
+        Name:string
+        LastLoggedIn:DateTime option
     }
+    with 
+        override x.ToString() = x.Name
 
     type Patient = {
         Id: Identifier    
@@ -36,12 +36,9 @@ module Models =
         Address: Address option 
     }
 
-    type Skill =
-        | PainManagement
-        | FatigueManagement
-        | BreathingManagement
-        | EmotionsManagement
-        | Nutrition
-        | Exercise
-        | SleepManagement
-    
+    type SymptomEntry = {
+        UserName: string
+        Date: DateTime
+        Magnitude: int option
+        Location: string option
+    }    

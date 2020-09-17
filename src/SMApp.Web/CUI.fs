@@ -49,13 +49,6 @@ module CUI =
         "Please wait while I add that $0 for you."
         "Wait while I add that $0."
     ]
-
-    type User = {
-        Name:string
-        LastLoggedIn:string option
-    }
-    with 
-        override x.ToString() = x.Name
         
     type MicState = MicNotInitialized | MicConnecting | MicDisconnected | MicAudioStart | MicAudioEnd | MicReady | MicError of string | MicResult of obj * obj
 

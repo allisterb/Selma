@@ -7,21 +7,21 @@ open WebSharper.JavaScript
 module NLU =
     type Intent = Intent of string * float32 option
       with
-          member x.Unwrap = match x with | Intent(n,c)->(n,c)
+          member x.Unwrap = match x with | Intent(n, c)->(n, c)
           member x.Name = let (n, _) = x.Unwrap in n
           member x.Confidence = let (_, c) = x.Unwrap in c
           override x.ToString() = sprintf "Intent(%s, %A)" x.Name x.Confidence
 
     type Trait = Trait of string * string
         with
-            member x.Unwrap = match x with | Trait(n,v)->(n,v)
+            member x.Unwrap = match x with | Trait(n, v)->(n, v)
             member x.Name = let (n, _) = x.Unwrap in n
             member x.Value = let (_, v) = x.Unwrap in v
             override x.ToString() = sprintf "Trait(%s, %A)" x.Name x.Value
     
     type Entity = Entity of string * string * float32 option
         with
-            member x.Unwrap = match x with | Entity(n,v,c)->(n, v, c)
+            member x.Unwrap = match x with | Entity(n, v, c)->(n, v, c)
             member x.Name = let (n, _, _) = x.Unwrap in n
             member x.Value = let (_, v, _) = x.Unwrap in v
             member x.Confidence = let (_, _, c) = x.Unwrap in c
@@ -31,7 +31,7 @@ module NLU =
         member x.Unwrap() = match x with Meaning(i, t, el) -> i, t, el
         member x.Intent = let i, t, el = x.Unwrap() in i
         member x.Trait = let i, t, el = x.Unwrap() in t
-        member x.Entities = let i, t, el = x.Unwrap() in el
+        member x.Entities = let i, t, el = x.Unwrap() in if el.IsSome then el.Value |> List.sortBy(fun e -> e.Name) |> Some else None
         override x.ToString() = sprintf "%A %A %A" x.Intent x.Trait x.Entities
 
     type Meaning' = Trait option * Entity list option
@@ -48,19 +48,35 @@ module NLU =
         | m when m.Intent.IsSome && m.Intent.Value.Name = n -> let _, t, el = m.Unwrap() in (t, el) |> Some
         | _ -> None
         
-    let (|Entity|_|) (n:string) :Entity->Entity option = 
+    let (|Entity1Of1|_|) (n:string) :Entity list option -> Entity option = 
         function
-        | entity when entity.Name = n -> Some entity
+        | Some(entity::[]) when entity.Name = n -> Some entity
         | _ -> None
 
+    let (|EntityManyOf1|_|) (n:string) :Entity list option -> Entity list option = 
+        function
+        | Some entities when entities |> List.exists(fun e -> e.Name = n) -> entities |> List.where(fun e -> e.Name = n) |> Some  
+        | _ -> None
+
+    let (|EntityManyofMany|_|) (names:string list) :Entity list -> Map<string, Entity list option> option = 
+        function
+        | el -> 
+            let matches = 
+                names |> List.map(fun n -> if (el |> List.exists(fun e -> e.Name = n)) then (n, Some(el |> List.where(fun e' -> e'.Name = n))) else (n ,None)) |> Map.ofList
+            Some matches
+        
     let (|Yes|_|) :Meaning -> Meaning option= 
         function 
         | Intent "yes" (None, None) as m -> Some m
+        | Intent "yesresponse" (None, None) as m -> Some m
+        | Intent "YesResponse" (None, None) as m -> Some m
         |  _ -> None
 
     let (|No|_|) :Meaning -> Meaning option= 
         function 
-        | Intent "no" (None, None) as m  -> Some m 
+        | Intent "no" (None, None) as m  -> Some m
+        | Intent "noresponse" (None, None) as m  -> Some m
+        | Intent "NoResponse" (None, None) as m  -> Some m
         |  _ -> None
 
     [<RequireQualifiedAccess>]

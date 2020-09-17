@@ -1,16 +1,18 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Models,Sex,Address,Name,SymptomJournalEntry,Patient,Skill;
+ var Global,SMApp,Models,Sex,Address,Name,User,Patient,SymptomEntry,IntelliFactory,Runtime;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Models=SMApp.Models=SMApp.Models||{};
  Sex=Models.Sex=Models.Sex||{};
  Address=Models.Address=Models.Address||{};
  Name=Models.Name=Models.Name||{};
- SymptomJournalEntry=Models.SymptomJournalEntry=Models.SymptomJournalEntry||{};
+ User=Models.User=Models.User||{};
  Patient=Models.Patient=Models.Patient||{};
- Skill=Models.Skill=Models.Skill||{};
+ SymptomEntry=Models.SymptomEntry=Models.SymptomEntry||{};
+ IntelliFactory=Global.IntelliFactory;
+ Runtime=IntelliFactory&&IntelliFactory.Runtime;
  Sex.Intersex={
   $:2
  };
@@ -27,21 +29,26 @@
    Town:Town
   };
  };
- Name.New=function(First,Last)
+ Name.New=function(Full,First,Last)
  {
   return{
+   Full:Full,
    First:First,
    Last:Last
   };
  };
- SymptomJournalEntry.New=function(UserName,Date,Magnitude,Location)
+ User=Models.User=Runtime.Class({
+  toString:function()
+  {
+   return this.Name;
+  }
+ },null,User);
+ User.New=function(Name$1,LastLoggedIn)
  {
-  return{
-   UserName:UserName,
-   Date:Date,
-   Magnitude:Magnitude,
-   Location:Location
-  };
+  return new User({
+   Name:Name$1,
+   LastLoggedIn:LastLoggedIn
+  });
  };
  Patient.New=function(Id,Sex$1,Name$1,BirthDate,Address$1)
  {
@@ -53,25 +60,13 @@
    Address:Address$1
   };
  };
- Skill.SleepManagement={
-  $:6
- };
- Skill.Exercise={
-  $:5
- };
- Skill.Nutrition={
-  $:4
- };
- Skill.EmotionsManagement={
-  $:3
- };
- Skill.BreathingManagement={
-  $:2
- };
- Skill.FatigueManagement={
-  $:1
- };
- Skill.PainManagement={
-  $:0
+ SymptomEntry.New=function(UserName,Date,Magnitude,Location)
+ {
+  return{
+   UserName:UserName,
+   Date:Date,
+   Magnitude:Magnitude,
+   Location:Location
+  };
  };
 }());
