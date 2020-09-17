@@ -13,3 +13,9 @@
 [submodule "ext/Humanizer"]
 	path = ext/Humanizer
 	url = https://github.com/allisterb/Humanizer.git
+[submodule "ext/alexa-skills-dotnet"]
+	path = ext/alexa-skills-dotnet
+	url = https://github.com/timheuer/alexa-skills-dotnet.git
+[submodule "ext/Alexa.NET.Conversations"]
+	path = ext/Alexa.NET.Conversations
+	url = https://github.com/stoiveyp/Alexa.NET.Conversations.git
