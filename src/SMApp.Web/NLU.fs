@@ -3,6 +3,8 @@
 open WebSharper
 open WebSharper.JavaScript
 
+open SMApp.NLU.Wit
+
 [<JavaScript;AutoOpen>]
 module NLU =
     type Intent = Intent of string * float32 option
@@ -100,6 +102,7 @@ module NLU =
 
     [<RequireQualifiedAccess>]
     module Text =
+       
         let (|Blank|_|) =
             function
             | "" -> Some()
@@ -212,7 +215,36 @@ module NLU =
                 member x.Confidence = let (_, c, _, _) = x.Unwrap in c
                 member x.Role = let (_, _, r, _) = x.Unwrap in r
                 member x.Value = let (_, _, _, v) = x.Unwrap in v
-        
+
+        let private witapi = new WitApi("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT")
+         
+        let entity_types = ["wit$contact:contact"]
+        let getMeaning sentence m =
+            witapi.getMeaning(sentence, 
+                (
+                    fun o _ _ -> 
+                        debug "NLU" <| sprintf  "Wit.ai returned: %A" o
+                        let intents = 
+                            if not (isNull(o.GetJS("intents"))) then
+                                o.GetJS<obj array>("intents") 
+                                |> Array.map (fun i -> Intent'(i.GetJS<string>("name"), i.GetJS<float32>("confidence")))    
+                                |> List.ofArray  
+                            else []
+                        let entities =
+                            if not (isNull(o.GetJS("intents"))) then
+                                entity_types 
+                                |> List.where(fun et -> not(isNull(o.GetJS("entities").GetJS<obj array>(et)))) 
+                                |> List.map(fun et -> o.GetJS("entities").GetJS<obj array>(et) |> Array.map(fun e -> Entity'(e.GetJS<string>("name"), e.GetJS<float32>("confidence"), e.GetJS<string>("role"), e.GetJS<string>("value"))))
+                                |> Seq.concat
+                                |> List.ofSeq
+                            else []
+                        m (Some(Meaning'(intents, entities)))
+                ), 
+                    fun s e _ ->  
+                        error <| sprintf  "Wit.ai returned: %A %A" s e
+                        m (None)
+                )
+ 
         let mutable intentConfidenceThreshold = 0.85f
 
         let mutable entityConfidenceThreshold = 0.85f

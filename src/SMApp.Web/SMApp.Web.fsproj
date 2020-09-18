@@ -37,7 +37,7 @@
     <ProjectReference Include="..\SMApp.Base.Fs\SMApp.Base.Fs.fsproj" />
     <ProjectReference Include="..\SMApp.Core\SMApp.Core.fsproj" />
     <ProjectReference Include="..\SMApp.Logger.Serilog\SMApp.Logger.Serilog.csproj" />
-    <ProjectReference Include="..\SMApp.NLU.Wit\SMApp.NLU.Wit.csproj" />
+    <ProjectReference Include="..\SMApp.NLU.Wit.Web\SMApp.NLU.Wit.Web.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="SMApp.JQueryTerminal">

@@ -160,13 +160,16 @@ module Client =
                     | _->         
                         async {
                             ClientState <- ClientUnderstand
-                            match! Server.GetMeaning command with
-                            | Text.HasMeaning m -> 
-                                debug <| sprintf "Text: %A %A %A" m.Intent m.Trait m.Entities
-                                m |> push |> Main.update CUI Props Questions Responses
-                            | _ -> 
-                                debug "Text: Did not receive a meaning from the server." 
-                                say' "Sorry I did not understand what you said."
+                            NLU.Text.getMeaning command (fun meaning ->
+                                match meaning with
+                                | Text.HasMeaning m -> 
+                                    debug <| sprintf "Text: %A %A %A" m.Intent m.Trait m.Entities
+                                    m |> push |> Main.update CUI Props Questions Responses
+                                | _ -> 
+                                    debug "Text: Did not receive a meaning from the server." 
+                                    say' "Sorry I did not understand what you said."
+                            )
+                            
                             ClientState <- ClientReady
                         } |> CUI.Wait
                 | ClientNotInitialzed -> error "Client is not initialized."

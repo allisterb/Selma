@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="wsconfig.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WebSharper" Version="4.6.7.408" />    
+    <PackageReference Include="WebSharper.CSharp" Version="4.6.7.408" />
+  </ItemGroup>
+
+</Project>

@@ -29,8 +29,6 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "WebSharper.JQueryTerminal.T
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "SMApp.Base.Fs", "SMApp.Base.Fs\SMApp.Base.Fs.fsproj", "{811DBC03-3079-4CF7-99E6-C28C620069A3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMApp.NLU.Wit", "SMApp.NLU.Wit\SMApp.NLU.Wit.csproj", "{393A1DA3-6803-46C1-816B-482B0EAFA800}"
-EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharp.MongoDB", "..\ext\FSharp.MongoDB\FSharp.MongoDB.fsproj", "{693A2D85-8C99-48B1-9687-3DB0AECB7526}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{08D21D7A-6818-417B-900D-BD9F2B95B9B0}"
@@ -50,6 +48,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Alexa.NET.Conversations", "..\ext\Alexa.NET.Conversations\Alexa.NET.Conversations\Alexa.NET.Conversations.csproj", "{8F5C805A-BC5F-4620-92CB-BE45B51E4297}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Base", "Base", "{9487FAAB-6BBF-462C-9BBC-8206A1C9A1F3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMApp.NLU.Wit.Web", "SMApp.NLU.Wit.Web\SMApp.NLU.Wit.Web.csproj", "{F5B1E856-FF3A-4093-B3C5-80474FC0117E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -77,10 +77,6 @@ Global
 		{811DBC03-3079-4CF7-99E6-C28C620069A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{811DBC03-3079-4CF7-99E6-C28C620069A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{811DBC03-3079-4CF7-99E6-C28C620069A3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{393A1DA3-6803-46C1-816B-482B0EAFA800}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{393A1DA3-6803-46C1-816B-482B0EAFA800}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{393A1DA3-6803-46C1-816B-482B0EAFA800}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{393A1DA3-6803-46C1-816B-482B0EAFA800}.Release|Any CPU.Build.0 = Release|Any CPU
 		{693A2D85-8C99-48B1-9687-3DB0AECB7526}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{693A2D85-8C99-48B1-9687-3DB0AECB7526}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{693A2D85-8C99-48B1-9687-3DB0AECB7526}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -101,6 +97,10 @@ Global
 		{8F5C805A-BC5F-4620-92CB-BE45B51E4297}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8F5C805A-BC5F-4620-92CB-BE45B51E4297}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8F5C805A-BC5F-4620-92CB-BE45B51E4297}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5B1E856-FF3A-4093-B3C5-80474FC0117E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5B1E856-FF3A-4093-B3C5-80474FC0117E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5B1E856-FF3A-4093-B3C5-80474FC0117E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5B1E856-FF3A-4093-B3C5-80474FC0117E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -14,9 +14,6 @@ open SMApp
 open SMApp.Models
     
 module Server =        
-   
-    let private witai = new WitApi()
-        
     let private pgdb =
         Sql.host (Api.Config("PGSQL"))
         |> Sql.port 5432
@@ -92,24 +89,6 @@ module Server =
             Location = read.stringOrNone "location"
         }) 
         |> Async.map(function | Ok j  -> Some j | Error exn -> err(exn.Message); None)
-
-    [<Rpc>]
-    let GetMeaning input = 
-        async {
-            match! witai.GetMeaning input |> Async.AwaitTask |> Async.Catch with
-            | Choice1Of2 o when not(isNull(o)) -> 
-                let intents = o.Intents |> Seq.map (fun i -> Text.Intent'(i.Name, i.Confidence)) |> List.ofSeq
-                let entities = 
-                    o.Entities 
-                    |> Seq.map (fun en -> en.Value) 
-                    |> Seq.concat 
-                    |> Seq.map (fun e -> Text.Entity'(e.Name, e.Confidence, e.Role, e.Value))
-                    |> Seq.sortBy(fun e -> e.Name)
-                    |> List.ofSeq
-                return Text.Meaning'(intents, entities) |> Some
-            | Choice2Of2 exn -> errf "Could not get Wit.ai meaning for input '{0}'. Exception: {1}" [input; exn.Message]; return None
-            | _ -> errf "Could not get Wit.ai meaning for input '{0}'. Exception: {1}" [input]; return None
-        }
 
     [<Rpc>]
     let GetPatients() : Async<Result<Patient list, string>> = 
