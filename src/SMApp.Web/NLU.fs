@@ -218,7 +218,8 @@ module NLU =
 
         let private witapi = new WitApi("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT")
          
-        let entity_types = ["wit$contact:contact"]
+        let private entity_types = ["wit$contact:contact"]
+
         let getMeaning sentence m =
             witapi.getMeaning(sentence, 
                 (
@@ -240,7 +241,7 @@ module NLU =
                             else []
                         m (Some(Meaning'(intents, entities)))
                 ), 
-                    fun s e _ ->  
+                    fun _ s e ->  
                         error <| sprintf  "Wit.ai returned: %A %A" s e
                         m (None)
                 )
