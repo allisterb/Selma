@@ -61,21 +61,25 @@ module Server =
         |> Sql.executeNonQueryAsync
         |> Async.map(
             function 
-            | Ok n -> (if n > 0 then infof "Added updated user {0} last login time in database." [user]; Some() else None) 
+            | Ok n -> (if n > 0 then infof "Updated user {0} last login time in database." [user]; Some() else None) 
             | Error exn -> errex "Error updating user {0} last login time in database." exn [user]; None)
 
     [<Rpc>]
-    let addSymptomJournalEntry (userName:string) (magnitude:int option) (location:string option) : Async<unit Option> =
+    let addSymptomJournalEntry (user:string) (name:string) (location:string option) (magnitude:int option) : Async<unit Option> =
         pgdb
-        |> Sql.query "INSERT INTO public.symptom_journal(user_name, date, magnitude, location) VALUES (@u, @d, @m, @l);"
+        |> Sql.query "INSERT INTO public.symptom_journal(user_name, name, date, magnitude, location) VALUES (@u, @n, @d, @m, @l);"
         |> Sql.parameters [
-            "u", Sql.string userName 
+            "u", Sql.string user
+            "n", Sql.string name
             "d", Sql.timestamp (DateTime.Now) 
             "m", if magnitude.IsSome then Sql.int(magnitude.Value) else Sql.dbnull
             "l", if location.IsSome then Sql.string (location.Value) else Sql.dbnull
         ]
         |> Sql.executeNonQueryAsync
-        |> Async.map(function | Ok n -> (if n > 0 then Some() else None) | Error exn -> err(exn.Message); None)
+        |> Async.map(
+            function 
+            | Ok n -> (if n > 0 then infof "Added symptom {0} for user {1} to database." [name;user]; Some() else None) 
+            | Error exn -> errex "Did not add symptom {0} for user {1} to database" exn [name;user]; None)
     
     [<Rpc>]
     let getSymptomJournal(userName:string) : Async<SymptomEntry list option> = 

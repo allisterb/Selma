@@ -83,10 +83,10 @@ module CUI =
                  async { 
                      let u = new SpeechSynthesisUtterance(text)
                      u.Voice <- v
-                     Window.SpeechSynthesis.Speak(u) 
+                     Window.SpeechSynthesis.Speak(u)
+                     do if x.Caption then x.Echo' text
                  } |> Async.Start
-                 do if x.Caption then x.Echo' text
- 
+                 
          member x.sayRandom phrases t = x.Say <| getRandomPhrase phrases t
      
          member x.Wait (f:unit -> unit) =

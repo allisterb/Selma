@@ -55,6 +55,15 @@ module NLU =
         | Some(entity::[]) when entity.Name = n -> Some entity
         | _ -> None
 
+    let (|Entity1OfAny|_|) (n:string) :Entity list option -> Entity option = 
+        function
+        | Some el when el |> List.exists(fun e -> e.Name = n) -> 
+            el |> List.where(fun e -> e.Name = n) 
+            |> List.sortBy(fun e -> e.Name)
+            |> List.head 
+            |> Some 
+        | _ -> None
+
     let (|EntityManyOf1|_|) (n:string) :Entity list option -> Entity list option = 
         function
         | Some entities when entities |> List.exists(fun e -> e.Name = n) -> entities |> List.where(fun e -> e.Name = n) |> Some  
@@ -218,7 +227,7 @@ module NLU =
 
         let private witapi = new WitApi("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT")
          
-        let private entity_types = ["wit$contact:contact"]
+        let private entity_types = ["wit$contact:contact"; "wit$datetime:datetime"; "symptom_name:symptom_name"]
 
         let getMeaning sentence m =
             witapi.getMeaning(sentence, 

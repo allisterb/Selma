@@ -17,6 +17,7 @@ open SMApp.Microphone
 [<JavaScript>]
 module Client =
    (* CUI state *)
+    
     let mutable CUI = {
         Voice = None
         Mic = None
@@ -26,7 +27,8 @@ module Client =
     let mutable MicState = MicNotInitialized
     let mutable ClientState = ClientNotInitialzed
     
-    (*Console and terminal messages *)
+    (* Console and terminal messages *)
+    
     let echo m = do if not(isNull(CUI.Term)) then CUI.Term.EchoHtml' <| sprintf "%A" m 
     let debug m = debug "CLIENT" m
     let wait (f:unit -> unit) =
@@ -34,7 +36,8 @@ module Client =
             CUI.Term.Echo'("please wait")
             CUI.Term.Pause();f();CUI.Term.Resume()
 
-    (* NLU context *)
+    (* Dialogue state *)
+
     let Context = new Stack<Meaning>()
     let Questions = new Stack<Question>()
     let Responses = new Stack<string>()
@@ -42,6 +45,7 @@ module Client =
     let push (m:Meaning) = Context.Push m; Context
 
     (* Speech *)
+
     let synth = Window.SpeechSynthesis
     
     let initSpeech() =
@@ -80,6 +84,7 @@ module Client =
     let sayRandom t phrases = say <| getRandomPhrase phrases t
     
     (* Mic *)
+
     let initMic interpret =
         CUI <- { CUI with Mic = Some(new Mic()) }
         let mic = CUI.Mic.Value
@@ -96,8 +101,7 @@ module Client =
                     MicState <- MicResult(i,e) 
                     debug <| sprintf "Mic result: %A %A." i e; interpret mic (i,e)
                 else 
-                    debug "Mic: No result returned."
-                
+                    debug "Mic: No result returned."        
             | ClientUnderstand -> echo "I'm still trying to understand what you said before."
             | ClientNotInitialzed -> error "Client is not intialized."
             )
@@ -169,14 +173,13 @@ module Client =
                                     debug "Text: Did not receive a meaning from the server." 
                                     say' "Sorry I did not understand what you said."
                             )
-                            
                             ClientState <- ClientReady
                         } |> CUI.Wait
                 | ClientNotInitialzed -> error "Client is not initialized."
         let mainOpt =
             Options(
                 Name="Main", 
-                Greetings = "Welcome to Selma. Enter 'hello' or 'hello my name is...(you)' to initialize speech recognition, or enter help for more assistance.",
+                Greetings = "Welcome to Selma. Enter 'hello' or 'hello my name is...(you) to initialize speech recognition, or enter help for more assistance.",
                 Prompt =">"
             )       
         Interpreter(main', (main, mainOpt))

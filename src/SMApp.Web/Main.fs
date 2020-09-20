@@ -4,6 +4,8 @@ open System.Collections.Generic
 
 open WebSharper
 
+open SMApp.Models
+
 [<JavaScript>]
 module Main =
     let debug m = ClientExtensions.debug "Main" m
@@ -18,22 +20,11 @@ module Main =
     let getQuestion n = questions |> List.tryFind(fun q -> q.Name = n)
     let haveQuestion n = questions |> List.exists(fun q -> q.Name = n)
 
+    /// Update the dialogue state
     let update (cui: CUI) (props: Dictionary<string, obj>) (questions:Stack<Question>) (responses:Stack<string>) (context: Stack<Meaning>) =        
-        debug <| sprintf "Starting context: %A." context
-        debug <| sprintf "Starting questions: %A." questions
-     
-        let haveProp k = props.ContainsKey k
-        let addProp k v = props.Add(k, v)
-        let deleteProp k = props.Remove k |> ignore
-        let strProp k = props.[k] :?> string
-        let user() = strProp "user"
-
-        let popc() = context.Pop() |> ignore
-        let popq() = questions.Pop() |> ignore
-        let pushq (n:string) = 
-            match getQuestion n with
-            | Some q -> questions.Push q
-            | None -> failwithf "No such question: %s" n
+        debug <| sprintf "Starting context: %A.\nStarting questions: %A." context questions
+       
+        (* Audio and text cues *)
 
         let say' t = cui.Say t
         
@@ -48,13 +39,27 @@ module Main =
         
         let sayRandom' p = sayRandom p ""
 
+        (* Manage the dialogue state elements*)
+
+        let haveProp k = props.ContainsKey k
+        let addProp k v = props.Add(k, v)
+        let deleteProp k = props.Remove k |> ignore
+        let strProp k = props.[k] :?> string
+        let user() = props.["user"] :?> User
+        let popc() = context.Pop() |> ignore
+        let popq() = questions.Pop() |> ignore
+        let pushq (n:string) = 
+            match getQuestion n with
+            | Some q -> questions.Push q
+            | None -> failwithf "No such question: %s" n
         let ask q v =
             addProp q v
             pushq q; 
             debug <| sprintf "Added question: %A." (questions.Peek()) 
             let _q = getQuestion q in say <| replace_tok "$0" v _q.Value.Text
             
-        (* Patterns *)
+        (* Dialogoue patterns *)
+
         let (|PropSet|_|) (n:string) :Meaning -> Meaning option =
             function
             | m when haveProp n -> Some m
@@ -114,9 +119,10 @@ module Main =
             | _ -> None
 
         (* User functions *)
+        
         let loginUser u = 
+            do sayRandom waitRetrievePhrases "user name"
             async { 
-                do sayRandom waitRetrievePhrases "user name"
                 match! Server.getUser u with 
                 | Some u ->
                     do! Server.updateUserLastLogin u.Name |> Async.Ignore
@@ -142,10 +148,11 @@ module Main =
             } |> Async.Start
 
         (* Symptom journal functions *)
-        let addSymptom s m l = 
+        
+        let addSymptom s l m = 
             async { 
                 do sayRandom waitAddPhrases "symptom entry"
-                match! Server.addSymptomJournalEntry s m l with 
+                match! Server.addSymptomJournalEntry (user().Name) s l m with 
                 | Some _ -> 
                     say <| sprintf "OK I added that %s symptom to your journal." s 
                 | None _ -> 
@@ -162,21 +169,25 @@ module Main =
         match context |> Seq.take (if context.Count >= 5 then 5 else context.Count) |> List.ofSeq with
 
         (* Hello *)
+        
         | Start(AnonAssert(Intent "hello" (_, None)))::[] ->  
                 props.Add("started", true)
                 sayRandom' helloPhrases
         | AnonAssert(Intent "hello" (_, None))::[] -> say "Hello, tell me your name to get started."
 
         (* User login *)
+        
         | AnonAssert(Intent "hello" (_, Entity1Of1 "contact" u))::[] -> loginUser u.Value
         
         (* User add *)
+        
         | Yes(AnonResponse "addUser" (_, Str user))::[] -> addUser user
         | No(AnonResponse "addUser" (_, Str user))::[] -> say <| sprintf "Ok I did not add the user %s. But you must login for me to help you." user
 
         | AnonAssert(_) ::[] -> say "Could you introduce yourself so we can get started?"
 
         (* User switch *)
+        
         | Assert(Intent "hello" (None, Entity1Of1 "contact" u))::[] -> 
             async {
                 match! Server.getUser u.Value with
@@ -191,18 +202,16 @@ module Main =
         
         (* Symptoms *)
 
-        | Assert(Intent "symptom" (_, Entity1Of1 "pain" p))::[] ->
-            
+        | Assert(Intent "symptom" (_, Entity1OfAny "symptom_name" s))::[] ->
             async{
                 say "Ok I'll add that entry to your symptom journal"
-                //addSymptom (user()) (Some 9) (None)
-                say <| sprintf "I see this is the 3rd time today you've had pain %s" (user())
+                addSymptom "pain" None (None)
+                //say <| sprintf "I see this is the 3rd time today you've had pain %s" (user())
                 ask "painVideo" ""
             } |> Async.Start
 
         | Yes(Response "painVideo"(_, _))::[] -> cui.EchoHtml'("""<iframe width="560" height="315" src="https://www.youtube.com/embed/SkAqOditKN0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>""")
             
-
         (* Meds *)
 
         | Assert(Intent "medjournal" (_, Some en))::[] ->
