@@ -21,8 +21,8 @@ module Main =
     let haveQuestion n = questions |> List.exists(fun q -> q.Name = n)
 
     /// Update the dialogue state
-    let update (cui: CUI) (props: Dictionary<string, obj>) (questions:Stack<Question>) (responses:Stack<string>) (context: Stack<Meaning>) =        
-        debug <| sprintf "Starting context: %A.\nStarting questions: %A." context questions
+    let update (cui: CUI) (props: Dictionary<string, obj>) (questions:Stack<Question>) (responses:Stack<string>) (utterances: Stack<Utterance>) =        
+        debug <| sprintf "Starting utterances:%A. Starting questions: %A." utterances questions
        
         (* Audio and text cues *)
 
@@ -46,7 +46,7 @@ module Main =
         let deleteProp k = props.Remove k |> ignore
         let strProp k = props.[k] :?> string
         let user() = props.["user"] :?> User
-        let popc() = context.Pop() |> ignore
+        let popc() = utterances.Pop() |> ignore
         let popq() = questions.Pop() |> ignore
         let pushq (n:string) = 
             match getQuestion n with
@@ -58,26 +58,26 @@ module Main =
             debug <| sprintf "Added question: %A." (questions.Peek()) 
             let _q = getQuestion q in say <| replace_tok "$0" v _q.Value.Text
             
-        (* Dialogoue patterns *)
+        (* Dialogue patterns *)
 
-        let (|PropSet|_|) (n:string) :Meaning -> Meaning option =
+        let (|PropSet|_|) (n:string) :Utterance -> Utterance option =
             function
             | m when haveProp n -> Some m
             | _ -> None
 
-        let (|PropNotSet|_|) (n:string) :Meaning -> Meaning option =
+        let (|PropNotSet|_|) (n:string) :Utterance -> Utterance option =
             function
             | m when not (haveProp n) -> Some m
             | _ -> None
          
-        let (|Assert|_|) :Meaning -> Meaning option =
+        let (|Assert|_|) :Utterance -> Utterance option =
             function
             | PropSet "user" m when questions.Count = 0 -> 
                 popc()
                 Some m
             | _ -> None
 
-        let (|Response|_|) (n:string) :Meaning -> (Meaning * obj option) option =
+        let (|Response|_|) (n:string) :Utterance -> (Utterance * obj option) option =
             function
             | PropSet "user" m when haveQuestion n && questions.Count > 0  && questions.Peek().Name = n -> 
                 popc()
@@ -89,7 +89,7 @@ module Main =
                 else Some(m, None)
             | _ -> None
 
-        let (|AnonResponse|_|) (n:string) :Meaning -> (Meaning * obj option) option =
+        let (|AnonResponse|_|) (n:string) :Utterance -> (Utterance * obj option) option =
             function
             | PropNotSet "user" m when haveQuestion n && questions.Count > 0  && questions.Peek().Name = n -> 
                 popc()
@@ -101,14 +101,14 @@ module Main =
                 else Some(m, None)
             | _ -> None
 
-        let (|AnonAssert|_|) :Meaning -> Meaning option =
+        let (|AnonAssert|_|) :Utterance -> Utterance option =
             function
             | PropNotSet "user" m when questions.Count = 0 -> 
                 popc()
                 Some m
             | _ -> None
 
-        let (|Start|_|) :Meaning -> Meaning option=
+        let (|Start|_|) :Utterance -> Utterance option=
             function
             | PropNotSet "started" m -> Some m
             | _ -> None
@@ -132,7 +132,7 @@ module Main =
                         let! h = Server.humanize u.LastLoggedIn.Value
                         say <| sprintf "You last logged in %s." h 
                 | None _ -> 
-                    say <| sprintf "Sorry I did not find the user name %s." u
+                    say <| sprintf "I did not find a user with the name %s." u
                     ask "addUser" u
             } |> Async.Start
         
@@ -161,12 +161,12 @@ module Main =
 
         let getSymptomJournal u =  
             async {
-            do sayRandom waitRetrievePhrases "symptom journal"
-            return! Server.getSymptomJournal u 
+                do sayRandom waitRetrievePhrases "symptom journal"
+                return! Server.getSymptomJournal u 
         }
             
         (* Interpreter logic begins here *)
-        match context |> Seq.take (if context.Count >= 5 then 5 else context.Count) |> List.ofSeq with
+        match utterances |> Seq.take (if utterances.Count >= 5 then 5 else utterances.Count) |> List.ofSeq with
 
         (* Hello *)
         
@@ -203,9 +203,10 @@ module Main =
         (* Symptoms *)
 
         | Assert(Intent "symptom" (_, Entity1OfAny "symptom_name" s))::[] ->
-            async{
+            async {
                 say "Ok I'll add that entry to your symptom journal"
-                addSymptom "pain" None (None)
+                addSymptom s.Value None (None)
+                let! j = getSymptomJournal (user().Name)
                 //say <| sprintf "I see this is the 3rd time today you've had pain %s" (user())
                 ask "painVideo" ""
             } |> Async.Start
@@ -228,5 +229,4 @@ module Main =
                     say <| replace_tok "$0" (props.[q.Name] :?> string) q.Text
                 else say q.Text
 
-        debug <| sprintf "Ending context: %A." context
-        debug <| sprintf "Ending questions: %A." questions
+        debug <| sprintf "Ending utterances: %A. Ending questions:%A." utterances questions

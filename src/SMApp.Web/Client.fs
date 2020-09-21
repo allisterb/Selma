@@ -38,11 +38,11 @@ module Client =
 
     (* Dialogue state *)
 
-    let Context = new Stack<Meaning>()
+    let Utterances = new Stack<Utterance>()
     let Questions = new Stack<Question>()
     let Responses = new Stack<string>()
     let Props = new Dictionary<string, obj>()
-    let push (m:Meaning) = Context.Push m; Context
+    let push (m:Utterance) = Utterances.Push m; Utterances
 
     (* Speech *)
 
@@ -131,7 +131,7 @@ module Client =
             | None, None, None -> ()
             | _ -> 
                 debug <| sprintf "Voice: %A %A %A" intent _trait entity
-                Meaning(intent, _trait, entity) |> push |> Main.update CUI Props Questions Responses
+                Utterance(intent, _trait, entity) |> push |> Main.update CUI Props Questions Responses
         
         /// Terminal interpreter 
         let main (term:Terminal) (command:string)  =
@@ -143,7 +143,7 @@ module Client =
             (* Quick commands *)
             | Text.Blank -> say' "Tell me what you want me to do or ask me a question."
             | Text.Debug ->  
-                debug <| sprintf "Context: %A" Context
+                debug <| sprintf "Utterances: %A" Utterances
                 //debug <| sprintf "Properties: %A" Props
                 debug <| sprintf "Questions: %A" Questions
             | Text.Voices -> sayVoices()
@@ -164,9 +164,9 @@ module Client =
                     | _->         
                         async {
                             ClientState <- ClientUnderstand
-                            NLU.Text.getMeaning command (fun meaning ->
+                            NLU.Text.getUtterance command (fun meaning ->
                                 match meaning with
-                                | Text.HasMeaning m -> 
+                                | Text.HasUtterance m -> 
                                     debug <| sprintf "Text: %A %A %A" m.Intent m.Trait m.Entities
                                     m |> push |> Main.update CUI Props Questions Responses
                                 | _ -> 

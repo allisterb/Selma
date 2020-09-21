@@ -20,7 +20,7 @@ module Templates =
     type MainTemplate = Templating.Template<"wwwroot/Main.html">
 
     let Main ctx action (title: string) (body: Doc list) =
-        Content.Page(
+        Content.Page (
             MainTemplate()
                 .Title(title)
                 .Body(body)

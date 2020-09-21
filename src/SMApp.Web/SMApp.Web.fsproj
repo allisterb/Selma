@@ -10,6 +10,7 @@
     <Compile Include="NLU.fs" />
     <Compile Include="CUI.fs" />
     <Compile Include="Server.fs" />
+    <Compile Include="Symptoms.fs" />
     <Compile Include="Main.fs" />
     <Compile Include="Client.fs" />
     <Compile Include="Site.fs" />

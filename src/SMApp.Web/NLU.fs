@@ -29,14 +29,14 @@ module NLU =
             member x.Confidence = let (_, _, c) = x.Unwrap in c
             override x.ToString() = sprintf "Entity(%s, %s, %A)" x.Name x.Value x.Confidence
 
-    type Meaning = Meaning of Intent option * Trait option * Entity list option with
-        member x.Unwrap() = match x with Meaning(i, t, el) -> i, t, el
+    type Utterance = Utterance of Intent option * Trait option * Entity list option with
+        member x.Unwrap() = match x with Utterance(i, t, el) -> i, t, el
         member x.Intent = let i, t, el = x.Unwrap() in i
         member x.Trait = let i, t, el = x.Unwrap() in t
         member x.Entities = let i, t, el = x.Unwrap() in if el.IsSome then el.Value |> List.sortBy(fun e -> e.Name) |> Some else None
         override x.ToString() = sprintf "%A %A %A" x.Intent x.Trait x.Entities
 
-    type Meaning' = Trait option * Entity list option
+    type Utterance' = Trait option * Entity list option
 
     type Question = Question of string * string
     with 
@@ -45,7 +45,7 @@ module NLU =
         member x.Text = x.Unwrap() |> snd
         override x.ToString() = sprintf "Name: %s Text: %s" x.Name x.Text
 
-    let (|Intent|_|) n :Meaning -> Meaning' option= 
+    let (|Intent|_|) n :Utterance -> Utterance' option= 
         function
         | m when m.Intent.IsSome && m.Intent.Value.Name = n -> let _, t, el = m.Unwrap() in (t, el) |> Some
         | _ -> None
@@ -76,14 +76,14 @@ module NLU =
                 names |> List.map(fun n -> if (el |> List.exists(fun e -> e.Name = n)) then (n, Some(el |> List.where(fun e' -> e'.Name = n))) else (n ,None)) |> Map.ofList
             Some matches
         
-    let (|Yes|_|) :Meaning -> Meaning option= 
+    let (|Yes|_|) :Utterance -> Utterance option= 
         function 
         | Intent "yes" (None, None) as m -> Some m
         | Intent "yesresponse" (None, None) as m -> Some m
         | Intent "YesResponse" (None, None) as m -> Some m
         |  _ -> None
 
-    let (|No|_|) :Meaning -> Meaning option= 
+    let (|No|_|) :Utterance -> Utterance option= 
         function 
         | Intent "no" (None, None) as m  -> Some m
         | Intent "noresponse" (None, None) as m  -> Some m
@@ -111,7 +111,6 @@ module NLU =
 
     [<RequireQualifiedAccess>]
     module Text =
-       
         let (|Blank|_|) =
             function
             | "" -> Some()
@@ -132,7 +131,7 @@ module NLU =
             | "hello"
             | "hey"
             | "yo"
-            | "hi" -> Meaning(Some(Intent("hello", Some 1.0f)), None, None) |> Some
+            | "hi" -> Utterance(Some(Intent("hello", Some 1.0f)), None, None) |> Some
             | _ -> None
 
         let (|QuickHelp|_|) =
@@ -140,7 +139,7 @@ module NLU =
             | "help"
             | "help me"
             | "what's this?"
-            | "huh" -> Meaning(Some(Intent("help", Some 1.0f)), None, None) |> Some 
+            | "huh" -> Utterance(Some(Intent("help", Some 1.0f)), None, None) |> Some 
             | _ -> None    
 
         let (|QuickYes|_|) =
@@ -156,7 +155,7 @@ module NLU =
             | "yep" 
             | "uh huh" 
             | "go ahead" 
-            | "go" -> Meaning(Some(Intent("yes", Some 1.0f)), None, None) |> Some 
+            | "go" -> Utterance(Some(Intent("yes", Some 1.0f)), None, None) |> Some 
             | _ -> None
 
         let (|QuickNo|_|) =
@@ -169,25 +168,25 @@ module NLU =
             | "no way" 
             | "nah" 
             | "don't do it" 
-            | "stop" -> Meaning(Some(Intent("no", Some 1.0f)), None, None) |> Some 
+            | "stop" -> Utterance(Some(Intent("no", Some 1.0f)), None, None) |> Some 
             | _ -> None
 
         let (|One|_|) =
             function
             | "1"
-            | "one" -> Meaning(Some(Intent("questionresponse", Some 1.0f)), None, Some([Entity("wit/ordinal", "one", Some 1.0f)])) |> Some
+            | "one" -> Utterance(Some(Intent("questionresponse", Some 1.0f)), None, Some([Entity("wit/ordinal", "one", Some 1.0f)])) |> Some
             | _ -> None
 
         let (|Two|_|) =
             function
             | "2"
-            | "two" -> Meaning(Some(Intent("questionresponse", Some 1.0f)), None, Some([Entity("wit/ordinal", "two", Some 1.0f)])) |> Some
+            | "two" -> Utterance(Some(Intent("questionresponse", Some 1.0f)), None, Some([Entity("wit/ordinal", "two", Some 1.0f)])) |> Some
             | _ -> None
 
         let (|Three|_|) =
             function
             | "3"
-            | "three" -> Meaning(Some(Intent("questionresponse", Some 1.0f)), None, Some([Entity("wit/ordinal", "three", Some 1.0f)])) |> Some
+            | "three" -> Utterance(Some(Intent("questionresponse", Some 1.0f)), None, Some([Entity("wit/ordinal", "three", Some 1.0f)])) |> Some
             | _ -> None
 
         let (|QuickNumber|_|) =
@@ -198,13 +197,13 @@ module NLU =
 
         let (|QuickPrograms|_|) =
             function
-            | "programs" -> Meaning(Some(Intent("Program", None)), None, None) |> Some
+            | "programs" -> Utterance(Some(Intent("Program", None)), None, None) |> Some
             | _ -> None
 
         [<JavaScript>]
-        type Meaning' = Meaning' of Intent' list * Entity' list
+        type Utterance' = Utterance' of Intent' list * Entity' list
         with 
-            member x.Unwrap = match x with | Meaning'(i, e)-> i, e
+            member x.Unwrap = match x with | Utterance'(i, e)-> i, e
             member x.Intents = let (i, e) = x.Unwrap in i
             member x.Entities = let (i, e) = x.Unwrap in e
             member x.TopIntent = x.Intents |> List.sortBy (fun i -> i.Confidence) |> List.head
@@ -229,7 +228,7 @@ module NLU =
          
         let private entity_types = ["wit$contact:contact"; "wit$datetime:datetime"; "symptom_name:symptom_name"]
 
-        let getMeaning sentence m =
+        let getUtterance sentence m =
             witapi.getMeaning(sentence, 
                 (
                     fun o _ _ -> 
@@ -248,7 +247,7 @@ module NLU =
                                 |> Seq.concat
                                 |> List.ofSeq
                             else []
-                        m (Some(Meaning'(intents, entities)))
+                        m (Some(Utterance'(intents, entities)))
                 ), 
                     fun _ s e ->  
                         error <| sprintf  "Wit.ai returned: %A %A" s e
@@ -259,23 +258,23 @@ module NLU =
 
         let mutable entityConfidenceThreshold = 0.85f
         
-        let (|HasMeaning|_|) :Meaning' option ->(Meaning option) =
+        let (|HasUtterance|_|) :Utterance' option ->(Utterance option) =
             function
-            | Some(Meaning'([], entities)) when entities.Length > 0 -> 
+            | Some(Utterance'([], entities)) when entities.Length > 0 -> 
                 let entities' = 
                     entities 
                     |> List.where(fun e -> e.Confidence > entityConfidenceThreshold) 
                     |> List.map(fun e -> Entity(e.Role |> toLower, e.Value, Some(e.Confidence)))
-                Meaning(None, None, Some entities') |> Some
+                Utterance(None, None, Some entities') |> Some
 
-            | Some(Meaning'(intents, [])) as m when intents.Length > 0 && m.Value.TopIntent.Confidence > intentConfidenceThreshold  -> 
-                    Meaning(Some(Intent(m.Value.TopIntent.Name |> toLower, Some m.Value.TopIntent.Confidence)), None, None) |> Some
+            | Some(Utterance'(intents, [])) as m when intents.Length > 0 && m.Value.TopIntent.Confidence > intentConfidenceThreshold  -> 
+                    Utterance(Some(Intent(m.Value.TopIntent.Name |> toLower, Some m.Value.TopIntent.Confidence)), None, None) |> Some
             
-            | Some(Meaning'(intents, entities)) as m when intents.Length > 0 && entities.Length > 0 && m.Value.TopIntent.Confidence > intentConfidenceThreshold  -> 
+            | Some(Utterance'(intents, entities)) as m when intents.Length > 0 && entities.Length > 0 && m.Value.TopIntent.Confidence > intentConfidenceThreshold  -> 
                     let entities = 
                         m.Value.Entities |> 
                         List.where(fun e -> e.Confidence > entityConfidenceThreshold) 
                         |> List.map(fun e -> Entity(e.Role |> toLower, e.Value, Some(e.Confidence))) 
-                    Meaning(Some(Intent(m.Value.TopIntent.Name |> toLower, Some m.Value.TopIntent.Confidence)), None, Some(entities)) |> Some
+                    Utterance(Some(Intent(m.Value.TopIntent.Name |> toLower, Some m.Value.TopIntent.Confidence)), None, Some(entities)) |> Some
             
             | _ -> None        

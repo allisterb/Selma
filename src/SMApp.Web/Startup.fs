@@ -9,6 +9,7 @@ open Microsoft.Extensions.Hosting
 open WebSharper.AspNetCore
 
 open Serilog
+
 open SMApp
 
 type Startup() =
