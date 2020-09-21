@@ -9,6 +9,7 @@
     <Compile Include="Bootstrap.fs" />
     <Compile Include="NLU.fs" />
     <Compile Include="CUI.fs" />
+    <Compile Include="Dialogue.fs" />
     <Compile Include="Server.fs" />
     <Compile Include="Symptoms.fs" />
     <Compile Include="Main.fs" />

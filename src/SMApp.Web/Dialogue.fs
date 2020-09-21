@@ -1,28 +1,30 @@
-﻿namespace SMApp.Web
+﻿namespace SMApp.Web.Prototype
 
 open System.Collections.Generic
 
 open WebSharper
+
+open SMApp.Web
 
 [<AutoOpen; JavaScript>]
 module Dialogue =
     type Response =
         | Question of string * string
         | Ack of string * string
-        | Expr of string * string
+        | Expr of string
         
     with
         member x.Name =
             match x with
             | Question(n, _) 
-            | Ack (n, _) 
-            | Expr (n, _) -> n
+            | Ack (n, _) -> n
+            | Expr _ -> "Expr"
 
         member x.Text =
             match x with
             | Question(_, t)
             | Ack (_, t)
-            | Expr(_, t) -> t
+            | Expr t -> t
         
         member x.IsAQuestion = match x with | Question _ -> true | _ -> false
 
@@ -34,18 +36,15 @@ module Dialogue =
         member x.Props = let (Dialogue(_, p, _, _)) = x in p
         member x.Utterances = let (Dialogue(_, _, u, _)) = x in u
         member x.Responses = let (Dialogue(_, _, _, r)) = x in r 
-        member x.UtteranceHistory = new List<Utterance>()
-        member x.ResponseHistory = new List<Response>()
-
         member x.Frame() = x.Utterances |> Seq.take (if x.Utterances.Count >= 5 then 5 else x.Utterances.Count) |> List.ofSeq
         
         (* Audio and text cues *)
 
         member x.Say' t = x.Cui.Say t
     
-        member x.Say t =
-            x.Responses.Push t
-            x.Say' (t.ToString())
+        member x.Say r =
+            x.Responses.Push r
+            x.Say' r.Text
 
         member x.SayRandom (r:string -> Response) p v  = 
             let t = getRandomPhrase p v
@@ -63,7 +62,6 @@ module Dialogue =
             match q with
             | Question (_, _) -> 
                 x.Responses.Push q
-                x.ResponseHistory.Add q
             | _ -> failwithf "Response %s is not a question." q.Text
         member x.PopUtterance() = x.Utterances.Pop()
         member x.PopQuestion() = 

@@ -1,8 +1,12 @@
-﻿namespace SMApp.Web
+﻿namespace SMApp.Web.Prototype
 
 open System.Collections.Generic
 
 open SMApp.Models
+
+//open SMApp.Web.ClientExtensions
+open SMApp.Web.CUI
+open SMApp.Web.NLU
 
 open WebSharper
 
@@ -33,10 +37,12 @@ module Users =
             | None -> failwithf "No such question: %s" n
         
         let say' = d.Say'
+        let ack' n t = Ack(n, t)
         let ack n t = Ack(n, t) |> d.Say
         let ackRandom n p v = let t = getRandomPhrase p v in ack n t
-        let expr n t = Expr(n, t) |> d.Say
-        let exprRandom n p v = let t = getRandomPhrase p v in expr n t
+        let expr' t = Expr t
+        let expr t = Expr t |> d.Say
+        let exprRandom p v = let t = getRandomPhrase p v in expr t
         let ask q v =
             addProp q v
             pushq q; debug <| sprintf "Added question: %A." (d.Responses.Peek()) 
@@ -146,7 +152,7 @@ module Users =
         
         (* User add *)
         
-        | Yes(AnonResponse "addUser" (_, Str user))::[] -> addUser user
+        | Yes(AnonResponse "addUser" (_, StrProp user))::[] -> addUser user
         | No(AnonResponse "addUser" (_, Str user))::[] -> say <| sprintf "Ok I did not add the user %s. But you must login for me to help you." user
 
         | AnonAssert(_) ::[] -> say "Could you introduce yourself so we can get started?"
