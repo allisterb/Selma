@@ -7,7 +7,7 @@ open SMApp.Models
 //open SMApp.Web.ClientExtensions
 open SMApp.Web.CUI
 open SMApp.Web.NLU
-
+open SMApp.Web
 open WebSharper
 
 [<JavaScript>]

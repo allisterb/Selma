@@ -9,45 +9,40 @@ open SMApp.NLU.Wit
 module NLU =
     type Intent = Intent of string * float32 option
       with
-          member x.Unwrap = match x with | Intent(n, c)->(n, c)
-          member x.Name = let (n, _) = x.Unwrap in n
-          member x.Confidence = let (_, c) = x.Unwrap in c
+          member x.Name = let (Intent(n, _)) = x in n
+          member x.Confidence = let (Intent(_, c)) = x in c
           override x.ToString() = sprintf "Intent(%s, %A)" x.Name x.Confidence
 
     type Trait = Trait of string * string
         with
-            member x.Unwrap = match x with | Trait(n, v)->(n, v)
-            member x.Name = let (n, _) = x.Unwrap in n
-            member x.Value = let (_, v) = x.Unwrap in v
+            member x.Name = let (Trait(n, _)) = x in n
+            member x.Value = let (Trait(_, v)) = x in v
             override x.ToString() = sprintf "Trait(%s, %A)" x.Name x.Value
     
     type Entity = Entity of string * string * float32 option
         with
-            member x.Unwrap = match x with | Entity(n, v, c)->(n, v, c)
-            member x.Name = let (n, _, _) = x.Unwrap in n
-            member x.Value = let (_, v, _) = x.Unwrap in v
-            member x.Confidence = let (_, _, c) = x.Unwrap in c
+            member x.Name = let (Entity(n, _, _)) = x in n
+            member x.Value = let (Entity(_, v, _)) = x in v
+            member x.Confidence = let (Entity(_, _, c)) = x in c
             override x.ToString() = sprintf "Entity(%s, %s, %A)" x.Name x.Value x.Confidence
 
     type Utterance = Utterance of Intent option * Trait option * Entity list option with
-        member x.Unwrap() = match x with Utterance(i, t, el) -> i, t, el
-        member x.Intent = let i, t, el = x.Unwrap() in i
-        member x.Trait = let i, t, el = x.Unwrap() in t
-        member x.Entities = let i, t, el = x.Unwrap() in if el.IsSome then el.Value |> List.sortBy(fun e -> e.Name) |> Some else None
+        member x.Intent = let (Utterance(i, _, _)) = x in i
+        member x.Trait = let (Utterance(_, t, _)) = x in t
+        member x.Entities = let (Utterance(_, _, el)) = x in if el.IsSome then el.Value |> List.sortBy(fun e -> e.Name) |> Some else None
         override x.ToString() = sprintf "%A %A %A" x.Intent x.Trait x.Entities
 
     type Utterance' = Trait option * Entity list option
 
     type Question = Question of string * string
     with 
-        member x.Unwrap() = match x with | Question(n, t)-> n, t
-        member x.Name = x.Unwrap() |> fst 
-        member x.Text = x.Unwrap() |> snd
+        member x.Name = let (Question(n, _)) = x in n 
+        member x.Text = let (Question(_, t)) = x in t
         override x.ToString() = sprintf "Name: %s Text: %s" x.Name x.Text
 
     let (|Intent|_|) n :Utterance -> Utterance' option= 
         function
-        | m when m.Intent.IsSome && m.Intent.Value.Name = n -> let _, t, el = m.Unwrap() in (t, el) |> Some
+        | m when m.Intent.IsSome && m.Intent.Value.Name = n -> (m.Trait, m.Entities) |> Some
         | _ -> None
         
     let (|Entity1Of1|_|) (n:string) :Entity list option -> Entity option = 
@@ -203,17 +198,15 @@ module NLU =
         [<JavaScript>]
         type Utterance' = Utterance' of Intent' list * Entity' list
         with 
-            member x.Unwrap = match x with | Utterance'(i, e)-> i, e
-            member x.Intents = let (i, e) = x.Unwrap in i
-            member x.Entities = let (i, e) = x.Unwrap in e
+            member x.Intents = let (Utterance'(i, _)) = x in i
+            member x.Entities = let (Utterance'(_, e)) = x in e
             member x.TopIntent = x.Intents |> List.sortBy (fun i -> i.Confidence) |> List.head
         and
             [<JavaScript>]
             Intent' = Intent' of string * float32 
                 with
-                member x.Unwrap = match x with | Intent'(n,c)->(n,c)
-                member x.Name = let (n, _) = x.Unwrap in n
-                member x.Confidence = let (_, c) = x.Unwrap in c
+                member x.Name = let (Intent'(n, _)) = x in n
+                member x.Confidence = let (Intent'(_, c)) = x in c
         and 
             [<JavaScript>]
             Entity' = Entity' of string * float32 * string * string
