@@ -41,6 +41,9 @@
     <ProjectReference Include="..\SMApp.NLU.Wit.Web\SMApp.NLU.Wit.Web.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="SMApp.BotLibre">
+      <HintPath>..\..\ext\SMApp.BotLibre\bin\Debug\netstandard2.0\SMApp.BotLibre.dll</HintPath>
+    </Reference>
     <Reference Include="SMApp.JQueryTerminal">
       <HintPath>..\..\ext\SMApp.JQueryTerminal\bin\Debug\netstandard2.0\SMApp.JQueryTerminal.dll</HintPath>
     </Reference>

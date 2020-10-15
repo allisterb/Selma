@@ -12,13 +12,14 @@ module NLU =
           member x.Name = let (Intent(n, _)) = x in n
           member x.Confidence = let (Intent(_, c)) = x in c
           override x.ToString() = sprintf "Intent(%s, %A)" x.Name x.Confidence
-
-    type Trait = Trait of string * string
-        with
-            member x.Name = let (Trait(n, _)) = x in n
-            member x.Value = let (Trait(_, v)) = x in v
-            override x.ToString() = sprintf "Trait(%s, %A)" x.Name x.Value
     
+    type Trait = Trait of string * string * float32 option
+        with
+            member x.Name = let (Trait(n, _, _)) = x in n
+            member x.Value = let (Trait(_, v, _)) = x in v
+            member x.Confidence = let (Trait(_, _, c)) = x in c
+            override x.ToString() = sprintf "Trait(%s, %A)" x.Name x.Value
+
     type Entity = Entity of string * string * float32 option
         with
             member x.Name = let (Entity(n, _, _)) = x in n
@@ -26,13 +27,13 @@ module NLU =
             member x.Confidence = let (Entity(_, _, c)) = x in c
             override x.ToString() = sprintf "Entity(%s, %s, %A)" x.Name x.Value x.Confidence
 
-    type Utterance = Utterance of Intent option * Trait option * Entity list option with
+    type Utterance = Utterance of Intent option * Trait list option * Entity list option with
         member x.Intent = let (Utterance(i, _, _)) = x in i
-        member x.Trait = let (Utterance(_, t, _)) = x in t
+        member x.Traits = let (Utterance(_, tl, _)) = x in if tl.IsSome then tl.Value |> List.sortBy(fun e -> e.Name) |> Some else None
         member x.Entities = let (Utterance(_, _, el)) = x in if el.IsSome then el.Value |> List.sortBy(fun e -> e.Name) |> Some else None
-        override x.ToString() = sprintf "%A %A %A" x.Intent x.Trait x.Entities
+        override x.ToString() = sprintf "%A %A %A" x.Intent x.Traits x.Entities
 
-    type Utterance' = Trait option * Entity list option
+    type Utterance' = Trait list option * Entity list option
 
     type Question = Question of string * string
     with 
@@ -42,7 +43,7 @@ module NLU =
 
     let (|Intent|_|) n :Utterance -> Utterance' option= 
         function
-        | m when m.Intent.IsSome && m.Intent.Value.Name = n -> (m.Trait, m.Entities) |> Some
+        | m when m.Intent.IsSome && m.Intent.Value.Name = n -> (m.Traits, m.Entities) |> Some
         | _ -> None
         
     let (|Entity1Of1|_|) (n:string) :Entity list option -> Entity option = 
@@ -96,7 +97,8 @@ module NLU =
 
         let (|Trait'|_|) : obj -> Trait option =
             function
-            | o when o.GetJS("greetings") |> isNull |> not -> Trait("greetings", o.GetJS("contact").GetJS("value") :?> string |> toLower) |> Some
+            | o when o.GetJS("domain") |> isNull |> not -> Trait("domain", o.GetJS("domain").GetJS("value") :?> string |> toLower, None) |> Some
+            | o when o.GetJS("dialogue_act") |> isNull |> not -> Trait("dialogue_act", o.GetJS("dialogue_act").GetJS("value") :?> string |> toLower, None) |> Some
             | _ -> None
 
         let (|Intent'|_|) :(obj * obj) -> Intent option =
@@ -196,10 +198,11 @@ module NLU =
             | _ -> None
 
         [<JavaScript>]
-        type Utterance' = Utterance' of Intent' list * Entity' list
+        type Utterance' = Utterance' of Intent' list * Entity' list * Trait' list
         with 
-            member x.Intents = let (Utterance'(i, _)) = x in i
-            member x.Entities = let (Utterance'(_, e)) = x in e
+            member x.Intents = let (Utterance'(i, _, _)) = x in i
+            member x.Entities = let (Utterance'(_, e, _)) = x in e
+            member x.Traits = let (Utterance'(_, _, t)) = x in t
             member x.TopIntent = x.Intents |> List.sortBy (fun i -> i.Confidence) |> List.head
         and
             [<JavaScript>]
@@ -217,9 +220,20 @@ module NLU =
                 member x.Role = let (_, _, r, _) = x.Unwrap in r
                 member x.Value = let (_, _, _, v) = x.Unwrap in v
 
-        let private witapi = new WitApi("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT")
+        and
+            [<JavaScript>]
+            Trait' = Trait' of string * float32 * string 
+                with
+                member x.Unwrap = match x with | Trait'(n,c,v)->(n,c,v)
+                member x.Name = let (n, _, _) = x.Unwrap in n
+                member x.Confidence = let (_, c, _) = x.Unwrap in c
+                member x.Value = let (_, _, v) = x.Unwrap in v
+
+        let private witapi = new WitApi("MROJG5PKG6G7Q4SVXN7HSIGSIZZ5DI6W")
          
-        let private entity_types = ["wit$contact:contact"; "wit$datetime:datetime"; "symptom_name:symptom_name"]
+        let private entity_types = ["wit$contact:contact"; "wit$datetime:datetime"; "subject:subject"; "term:term"]
+
+        let private trait_types = ["domain"; "dialogue_act"]
 
         let getUtterance sentence m =
             witapi.getMeaning(sentence, 
@@ -232,6 +246,15 @@ module NLU =
                                 |> Array.map (fun i -> Intent'(i.GetJS<string>("name"), i.GetJS<float32>("confidence")))    
                                 |> List.ofArray  
                             else []
+                        
+                        let traits =
+                            if not (isNull(o.GetJS("traits"))) then
+                                trait_types 
+                                |> List.where(fun tt -> not(isNull(o.GetJS("traits").GetJS<obj array>(tt)))) 
+                                |> List.map(fun tt -> o.GetJS("traits").GetJS<obj array>(tt) |> Array.map(fun t -> Trait'(tt, t.GetJS<float32>("confidence"), t.GetJS<string>("value"))))
+                                |> Seq.concat
+                                |> List.ofSeq
+                            else []                       
                         let entities =
                             if not (isNull(o.GetJS("intents"))) then
                                 entity_types 
@@ -240,7 +263,7 @@ module NLU =
                                 |> Seq.concat
                                 |> List.ofSeq
                             else []
-                        m (Some(Utterance'(intents, entities)))
+                        m (Some(Utterance'(intents, entities, traits)))
                 ), 
                     fun _ s e ->  
                         error <| sprintf  "Wit.ai returned: %A %A" s e
@@ -253,21 +276,50 @@ module NLU =
         
         let (|HasUtterance|_|) :Utterance' option ->(Utterance option) =
             function
-            | Some(Utterance'([], entities)) when entities.Length > 0 -> 
+            | Some(Utterance'([], entities, traits)) when entities.Length > 0 -> 
                 let entities' = 
                     entities 
                     |> List.where(fun e -> e.Confidence > entityConfidenceThreshold) 
                     |> List.map(fun e -> Entity(e.Role |> toLower, e.Value, Some(e.Confidence)))
-                Utterance(None, None, Some entities') |> Some
+                let traits' = 
+                    traits 
+                    |> List.where(fun t -> t.Confidence > entityConfidenceThreshold) 
+                    |> List.map(fun t -> Trait(t.Name |> toLower, t.Value, Some(t.Confidence)))
+                Utterance(None, Some traits', Some entities') |> Some
 
-            | Some(Utterance'(intents, [])) as m when intents.Length > 0 && m.Value.TopIntent.Confidence > intentConfidenceThreshold  -> 
+            | Some(Utterance'(intents, [], [])) as m when intents.Length > 0 && m.Value.TopIntent.Confidence > intentConfidenceThreshold  -> 
                     Utterance(Some(Intent(m.Value.TopIntent.Name |> toLower, Some m.Value.TopIntent.Confidence)), None, None) |> Some
             
-            | Some(Utterance'(intents, entities)) as m when intents.Length > 0 && entities.Length > 0 && m.Value.TopIntent.Confidence > intentConfidenceThreshold  -> 
-                    let entities = 
+            | Some(Utterance'(intents, _, [])) as m when intents.Length > 0 && m.Value.TopIntent.Confidence > intentConfidenceThreshold  -> 
+                    let entities' = 
+                        m.Value.Entities |> 
+                        List.where(fun e -> e.Confidence > entityConfidenceThreshold) 
+                        |> List.map(fun e -> Entity(e.Role |> toLower, e.Value, Some(e.Confidence)))
+                    Utterance(Some(Intent(m.Value.TopIntent.Name |> toLower, Some m.Value.TopIntent.Confidence)), None, Some(entities')) |> Some
+
+            | Some(Utterance'(intents, [], _)) as m when intents.Length > 0 && m.Value.TopIntent.Confidence > intentConfidenceThreshold  -> 
+                    let traits' = 
+                        m.Value.Traits |> 
+                        List.where(fun e -> e.Confidence > entityConfidenceThreshold) 
+                        |> List.map(fun e -> Trait(e.Name |> toLower, e.Value, Some(e.Confidence)))
+                    Utterance(Some(Intent(m.Value.TopIntent.Name |> toLower, Some m.Value.TopIntent.Confidence)), Some(traits'), None) |> Some
+
+            | Some(Utterance'(intents, _, _)) as m when intents.Length > 0 && m.Value.TopIntent.Confidence > intentConfidenceThreshold  -> 
+                    let entities' = 
                         m.Value.Entities |> 
                         List.where(fun e -> e.Confidence > entityConfidenceThreshold) 
                         |> List.map(fun e -> Entity(e.Role |> toLower, e.Value, Some(e.Confidence))) 
-                    Utterance(Some(Intent(m.Value.TopIntent.Name |> toLower, Some m.Value.TopIntent.Confidence)), None, Some(entities)) |> Some
+                    let traits' = 
+                        m.Value.Traits |> 
+                        List.where(fun e -> e.Confidence > entityConfidenceThreshold) 
+                        |> List.map(fun e -> Trait(e.Name |> toLower, e.Value, Some(e.Confidence))) 
+                    Utterance(Some(Intent(m.Value.TopIntent.Name |> toLower, Some m.Value.TopIntent.Confidence)), Some(traits'), Some(entities')) |> Some
             
             | _ -> None        
+
+    [<RequireQualifiedAccess>]
+    module Domain =
+        let (|Study|Other|) :Utterance->Choice<unit, unit> =
+            function
+            | u when u.Traits.IsSome -> Study
+            | _ -> Other

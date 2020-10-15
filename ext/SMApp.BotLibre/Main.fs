@@ -8,13 +8,16 @@ module Definition =
     let SDK =
         Class "SDK"
         |+> Static [
-            "DOMAIN" =@ T<string>
-            "APP" =@ T<string>
-            "PATH" =@ T<string>
             "applicationId" =@ T<string>
             "host" =@ T<string>
             "app" =@ T<string>
             "scheme" =@ T<string>
+            "rest" =@ T<string>
+            "debug" =@ T<bool>
+            "useCanvas" =@ T<bool>
+            "useVideo" =@ T<bool>
+            "speechRate" =@ T<float>
+            "chime" => T<unit> ^-> T<unit>
         ]
 
     let Credentials = 
@@ -54,8 +57,9 @@ module Definition =
             "nativeVoiceName" =@ T<string>
             "width" =@ T<int>
             "createBox" => T<unit> ^-> T<unit>
-            "addMessage" => T<string> + T<string>  + T<string> + T<string> ^-> T<unit> 
-            "processMessages" => T<unit> ^-> T<unit>
+            "addMessage" => T<string> ^-> T<unit>
+            "addMessage2" => (T<string> * T<string>) ^-> T<unit> |> WithInline("""addMessage($0, $1, "", "")""")
+            "processMessages" => T<int> ^-> T<unit>
         ]
         |+> Static [
                 Constructor (T<unit>)

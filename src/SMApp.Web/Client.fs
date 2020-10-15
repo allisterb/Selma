@@ -6,6 +6,7 @@ open FSharp.Control
 
 open WebSharper
 open WebSharper.JavaScript
+open WebSharper.JQuery
 open WebSharper.UI
 open WebSharper.UI.Client
 open WebSharper.UI.Html
@@ -13,6 +14,9 @@ open WebSharper.UI.Html
 open SMApp.JQueryTerminal
 open SMApp.WebSpeech
 open SMApp.Microphone
+open SMApp.BotLibre
+
+open SMApp.NLU
 
 [<JavaScript>]
 module Client =
@@ -22,6 +26,22 @@ module Client =
         Voice = None
         Mic = None
         Term = Unchecked.defaultof<Terminal>
+        Avatar = 
+            SDK.ApplicationId <- "4277115329081938617"
+            let sdk = new SDKConnection()
+            let web = new WebAvatar()
+            web.Version <- 8.5
+            web.Connection <- sdk
+            web.Avatar <- "22225225"
+            web.Voice <- "cmu-slt";
+            web.VoiceMod <- "default";
+            web.NativeVoice <- true;
+            web.NativeVoiceName <- "Microsoft David Desktop - English (United States)";
+            web.Width <- 300;
+            web.CreateBox();
+            web.AddMessage("")
+            web.ProcessMessages(0)
+            web
         Caption = false
     }
     let mutable MicState = MicNotInitialized
@@ -29,7 +49,7 @@ module Client =
     
     (* Console and terminal messages *)
     
-    let echo m = do if not(isNull(CUI.Term)) then CUI.Term.EchoHtml' <| sprintf "%A" m 
+    let echo m = CUI.Term.EchoHtml' <| sprintf "%A" m 
     let debug m = debug "CLIENT" m
     let wait (f:unit -> unit) =
         do 
@@ -48,36 +68,26 @@ module Client =
 
     let synth = Window.SpeechSynthesis
     
-    let initSpeech() =
+    let initSpeech((cui: Ref<CUI>)) =
         let voices = synth.GetVoices() |> toArray         
-        do voices |> Array.iter(fun v-> 
-            if CUI.Voice = None && (v.Name.Contains "Microsoft Zira" || v.Name.ToLower().Contains "female") then
-                CUI <- { CUI with Voice = Some v }; debug <| sprintf "Using voice %s." CUI.Voice.Value.Name
-            )
-        if CUI.Voice = None && voices.Length > 0 then
+        if voices.Length > 0 then
             let v = voices |> Array.find (fun v -> v.Default) in 
-            CUI <- { CUI with Voice = Some v }; debug <| sprintf "Using default voice %s." CUI.Voice.Value.Name 
-        else if CUI.Voice = None then 
-            echo "No speech synthesis voice is available. Install speech synthesis on this device or computer to use the voice output feature of Selma."
-       
-    let say' text =        
-        match CUI.Voice with
-        | None -> 
-            CUI.Term.Echo' text
-        | Some v ->
-            async { 
-                let u = new SpeechSynthesisUtterance(text)
-                u.Voice <- v
-                Window.SpeechSynthesis.Speak(u)
-                do if CUI.Caption then CUI.Term.Echo' text
-            } |> Async.Start
+            cui := { !cui with Voice = Some v }  
+            let cui' = !cui
+            debug <| sprintf "Using browser speech synthesis voice %s." cui'.Voice.Value.Name
+            cui'.Avatar.NativeVoice <- true
+            cui'.Avatar.NativeVoiceName <- v.Name
+        else  
+            echo "No browser speech synthesis voice is available. Falling back to CMU TTS."
+
+    let say' text = CUI.Say text                
 
     let say text =
         Responses.Push text
         say' text
         
     let sayVoices() =
-        let voices = Window.SpeechSynthesis.GetVoices() |> toArray    
+        let voices = speechSynthesis().GetVoices() |> toArray    
         sprintf "There are currently %i voices installed on this computer or device." voices.Length |> say'
         voices |> Array.iteri (fun i v -> sprintf "Voice %i. Name: %s, Local: %A." i v.Name v.LocalService |> say')
 
@@ -85,9 +95,9 @@ module Client =
     
     (* Mic *)
 
-    let initMic interpret =
-        CUI <- { CUI with Mic = Some(new Mic()) }
-        let mic = CUI.Mic.Value
+    let initMic (cui: Ref<CUI>) interpret  =
+        cui := { !cui with Mic = Some(new Mic()) }
+        let mic = (!cui).Mic.Value
         do mic.onConnecting <- (fun _ -> MicState <- MicConnecting; debug "Mic connecting...")
         do mic.onDisconnected <- (fun _ -> MicState <- MicDisconnected;debug "Mic disconnected.")
         do mic.onAudioStart <- (fun _ -> MicState <- MicAudioStart;debug "Mic audio start...")
@@ -99,7 +109,7 @@ module Client =
             | ClientReady ->
                 if not (isNull i || isNull e) then 
                     MicState <- MicResult(i,e) 
-                    debug <| sprintf "Mic result: %A %A." i e; interpret mic (i,e)
+                    debug <| sprintf "Mic result: %A %A." i e; interpret cui mic (i,e)
                 else 
                     debug "Mic: No result returned."        
             | ClientUnderstand -> echo "I'm still trying to understand what you said before."
@@ -107,12 +117,11 @@ module Client =
             )
         do mic.Connect("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT")
 
-    let _ = SMApp.Bootstrap.Controls.Container
-
+   
     /// Main interpreter
     let Main =             
         /// Mic interpreter
-        let main' (_:Mic) (command:obj*obj) =
+        let main' (cui:Ref<CUI>) (_:Mic) (command:obj*obj) =
             let i, e = command
             debug <| sprintf "Voice: %A %A" i e
             let intent = 
@@ -121,7 +130,7 @@ module Client =
                 | _ -> None
             let _trait = 
                 match e with
-                | Voice.Trait' t -> Some t
+                | Voice.Trait' t -> Some [t]
                 | _ -> None
             let entity = 
                 match e with
@@ -131,21 +140,25 @@ module Client =
             | None, None, None -> ()
             | _ -> 
                 debug <| sprintf "Voice: %A %A %A" intent _trait entity
-                Utterance(intent, _trait, entity) |> push |> Main.update CUI Props Questions Responses
+                Utterance(intent, _trait, entity) |> push |> Main.update (!cui) Props Questions Responses
         
         /// Terminal interpreter 
-        let main (term:Terminal) (command:string)  =
-            CUI <- { CUI with Term = term }
-            do if CUI.Mic = None then initMic main'
-            do if CUI.Voice = None then initSpeech ()
+        let main (cui: Ref<CUI>) (term:Terminal) (command:string)  =
+            cui := { CUI with Term = term }
+            do 
+                if (!cui).Mic = None then initMic cui main'
+                if (!cui).Voice = None then initSpeech cui
+            let cui' = !cui
             do if ClientState = ClientNotInitialzed then ClientState <- ClientReady
             match command with
             (* Quick commands *)
             | Text.Blank -> say' "Tell me what you want me to do or ask me a question."
             | Text.Debug ->  
                 debug <| sprintf "Utterances: %A" Utterances
-                //debug <| sprintf "Properties: %A" Props
                 debug <| sprintf "Questions: %A" Questions
+                let el = JS.Document.CreateElement("insert")
+                do div [attr.id  "bar"] [] |> Doc.RunAppend el
+                debug <| el.InnerHTML
             | Text.Voices -> sayVoices()
             | _ ->
                 match ClientState with
@@ -157,8 +170,8 @@ module Client =
                     | Text.QuickHelp m 
                     | Text.QuickYes m
                     | Text.QuickNo m -> 
-                        debug <| sprintf "Quick Text: %A." m
-                        m |> push |> Main.update CUI Props Questions Responses
+                        debug <| sprintf "Quick Text: %A." m                        
+                        m |> push |> Main.update cui' Props Questions Responses
                         ClientState <- ClientReady
                     (* Use the NLU service for everything else *)
                     | _->         
@@ -167,23 +180,23 @@ module Client =
                             NLU.Text.getUtterance command (fun meaning ->
                                 match meaning with
                                 | Text.HasUtterance m -> 
-                                    debug <| sprintf "Text: %A %A %A" m.Intent m.Trait m.Entities
-                                    m |> push |> Main.update CUI Props Questions Responses
+                                    debug <| sprintf "Text: Intent: %A, Traits: %A, Entities: %A" m.Intent m.Traits m.Entities
+                                    m |> push |> Main.update cui' Props Questions Responses
                                 | _ -> 
                                     debug "Text: Did not receive a meaning from the server." 
                                     say' "Sorry I did not understand what you said."
                             )
                             ClientState <- ClientReady
-                        } |> CUI.Wait
+                        } |> cui'.Wait
                 | ClientNotInitialzed -> error "Client is not initialized."
         let mainOpt =
             Options(
                 Name="Main", 
-                Greetings = "Welcome to Selma. Enter 'hello' or 'hello my name is...(you) to initialize speech recognition, or enter help for more assistance.",
+                Greetings = "Welcome to SMApp. Enter 'hello' or 'hello my name is...(you) to initialize speech.",
                 Prompt =">"
             )       
-        Interpreter(main', (main, mainOpt))
+        Interpreter(main' (ref CUI), (main (ref CUI), mainOpt))
     
-    let run() =
-        Terminal("#main", ThisAction<Terminal, string>(fun term command -> Main.Text term command), Main.Options) |> ignore 
+    let run() =        
+        do Terminal("#term", ThisAction<Terminal, string>(fun term command -> Main.Text term command), Main.Options) |> ignore
         Doc.Empty

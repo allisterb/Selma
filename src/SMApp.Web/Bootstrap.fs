@@ -1,4 +1,4 @@
-﻿namespace SMApp.Bootstrap
+﻿namespace SMApp.Web
 
 open WebSharper
 open WebSharper.UI
@@ -18,33 +18,34 @@ module Resources =
 
 [<Require(typeof<Resources.CSS>);Require(typeof<JQuery.Resources.JQuery>);Require(typeof<Resources.PopperJS>);Require(typeof<Resources.JS>)>]
 [<JavaScript>]
-module Controls =
+module Bs =
     
-    let private cls = Attr.Class
+    let private eid = attr.id
+    let private cls = attr.``class``
 
-    let Class = Attr.Class
-
-    let Container c = div (cls "container"::[]) c
+    let container c = div [cls "container"] c
     
-    let Input lbl extras (target, labelExtras, targetExtras) =
+    let btn id = button [eid id; cls "btn"] []
+
+    let input lbl extras (target, labelExtras, targetExtras) =
         div (cls "form-group" :: extras) [
             label labelExtras [text lbl]
-            Doc.Input (cls "form-control" :: targetExtras) target
+            Doc.Input [cls "form-control"; targetExtras] target
         ]
 
-    let InputPassword lbl extras (target, labelExtras, targetExtras) =
+    let inputPassword lbl extras (target, labelExtras, targetExtras) =
         div (cls "form-group" :: extras) [
             label labelExtras [text lbl]
             Doc.PasswordBox (cls "form-control" :: targetExtras) target
         ]
 
-    let TextArea lbl extras (target, labelExtras, targetExtras) =
+    let textArea lbl extras (target, labelExtras, targetExtras) =
         div (cls "form-group" :: extras) [
             label labelExtras [text lbl]
             Doc.InputArea (cls "form-control" :: targetExtras) target
         ]
 
-    let Checkbox lbl extras (target, labelExtras, targetExtras) =
+    let checkbox lbl extras (target, labelExtras, targetExtras) =
         div (cls "checkbox" :: extras) [
             label labelExtras [
                 Doc.CheckBox targetExtras target

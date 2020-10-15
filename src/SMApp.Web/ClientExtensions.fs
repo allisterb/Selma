@@ -7,6 +7,7 @@ open WebSharper
 open WebSharper.JavaScript
 open WebSharper.UI
 open WebSharper.UI.Client
+open WebSharper.UI.Html
 open WebSharper.JQuery
 
 open SMApp.JQueryTerminal
@@ -15,6 +16,7 @@ open SMApp.WebSpeech
 [<AutoOpen; JavaScript>]
 module ClientExtensions =
     let rawOpt = EchoOptions(Raw=true)
+
     type Terminal with
         member x.Echo' (text:string) = x.Pause(); x.Echo text; x.Resume()
         member x.EchoHtml' (text:string) = x.Pause(); x.Echo(text, rawOpt) ; x.Resume()
@@ -33,6 +35,16 @@ module ClientExtensions =
     let toLower (s:string) = s.ToLower()
 
     let replace_tok (token:string) (value:string) (s:string) = s.Replace(token, value)
+
+    [<Direct("window.speechSynthesis")>]
+    let speechSynthesis() = X<SpeechSynthesis>
+   
+    let createElement id doc =
+        let el = JS.Document.CreateElement id
+        do doc |> Doc.RunAppend el
+        el
+
+    let elementHTML (d:Dom.Element) = d.InnerHTML
 
 [<JavaScript>]
 type _Html =

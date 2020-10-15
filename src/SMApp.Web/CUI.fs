@@ -7,6 +7,7 @@ open WebSharper
 open SMApp.JQueryTerminal
 open SMApp.WebSpeech
 open SMApp.Microphone
+open SMApp.BotLibre
 
 [<AutoOpen;JavaScript>]
 module CUI =
@@ -18,19 +19,20 @@ module CUI =
 
     let helloPhrases = [
         "Welcome!"
-        "Welcome, my name is Selma."
-        "Welcome to Selma. How can I help?"
-        "Hello this is Selma, how can I help?"
-        "Hello, I am Selma. How can I help?"
-        "Hello, I am Selma. How may I help you now?"
-        "I'm Selma. Tell me your name so we can get started."
+        "Welcome, my name is SMApp."
+        "Welcome to SMApp. How can I help?"
+        "Hello this is SMApp, how can I help?"
+        "Hello, I am SMApp. How can I help?"
+        "Hello, I am SMApp. How may I help you now?"
+        "I'm SMApp. Tell me your name so we can get started."
     ]
 
     let helloUserPhrases = [
-        "Hi $0, welcome back."
+        "Hello $0, welcome back."
         "Welcome $0, nice to see you again."
         "Hello $0."
         "Good to see you $0."
+        "Hello $0, nice to see you."
     ]
 
     let helpPhrases = [
@@ -48,6 +50,7 @@ module CUI =
         "Ok, let me add that $0 for you"
         "Please wait while I add that $0 for you."
         "Wait while I add that $0."
+        "I'll add that $0 now."
     ]
         
     type MicState = MicNotInitialized | MicConnecting | MicDisconnected | MicAudioStart | MicAudioEnd | MicReady | MicError of string | MicResult of obj * obj
@@ -62,9 +65,10 @@ module CUI =
         member x.Options = let v, i, o = x.Unwrap in o
 
     type CUI = {
-         Voice:SpeechSynthesisVoice option
+         Voice: SpeechSynthesisVoice option
          Mic: Mic option
          Term: Terminal
+         Avatar: WebAvatar
          Caption: bool
      }
      with
@@ -76,17 +80,24 @@ module CUI =
  
          member x.Debug loc m = debug loc m
  
-         member x.Say text = 
-             match x.Voice with
-             | None -> x.Echo' text
-             | Some v ->
-                 async { 
-                     let u = new SpeechSynthesisUtterance(text)
-                     u.Voice <- v
-                     Window.SpeechSynthesis.Speak(u)
-                     do if x.Caption then x.Echo' text
-                 } |> Async.Start
-                 
+         member x.Say text =
+            async {
+                let synth = Window.SpeechSynthesis
+                if synth.Speaking then SDK.Chime()
+                x.Avatar.AddMessage(text)
+                x.Avatar.ProcessMessages(0) 
+            } |> Async.Start
+
+         member x.SayAngry m =
+           async {
+               let synth = Window.SpeechSynthesis
+               if synth.Speaking then 
+                   synth.Cancel()
+                   SDK.Chime()
+               x.Avatar.AddMessage2(m, "anger")
+               x.Avatar.ProcessMessages(0) 
+           } |> Async.Start
+
          member x.sayRandom phrases t = x.Say <| getRandomPhrase phrases t
      
          member x.Wait (f:unit -> unit) =

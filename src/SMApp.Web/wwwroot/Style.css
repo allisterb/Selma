@@ -1,5 +1,18 @@
 ﻿.terminal {
-    --color: rgba(0, 128, 0, 0.99);
+    --color: #40AADD;
     --background: white;
-    --size: 2;
+}
+
+.mic {
+    font-size: unset;
+    line-height: unset
+}
+
+.mic-box {
+    border: inherit
+}
+
+.wit-microphone {
+    height: unset;
+    width: 30px;
 }
