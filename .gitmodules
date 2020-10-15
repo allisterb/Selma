@@ -19,3 +19,6 @@
 [submodule "ext/Alexa.NET.Conversations"]
 	path = ext/Alexa.NET.Conversations
 	url = https://github.com/stoiveyp/Alexa.NET.Conversations.git
+[submodule "ext/impressjs"]
+	path = ext/impressjs
+	url = https://github.com/impress/impress.js.git
