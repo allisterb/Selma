@@ -36,18 +36,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Base", "Base", "{9487FAAB-6
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shell", "Shell", "{B1A4DF9B-4110-44A5-AA05-44736770B000}"
 	ProjectSection(SolutionItems) = preProject
+		..\deploy\oc-create-app.cmd = ..\deploy\oc-create-app.cmd
 		..\deploy\oc-deploy-build.cmd = ..\deploy\oc-deploy-build.cmd
-		..\deploy\oc-deploy.cmd = ..\deploy\oc-deploy.cmd
-		..\build\oc-port-forward.cmd = ..\build\oc-port-forward.cmd
+		..\deploy\oc-pgdb-port-forward.cmd = ..\deploy\oc-pgdb-port-forward.cmd
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQL", "SQL", "{3AA128F8-A07B-4F05-A910-77DB119C879D}"
 	ProjectSection(SolutionItems) = preProject
-		..\deploy\SQL\DDL_CREATE_DB_selma.sql = ..\deploy\SQL\DDL_CREATE_DB_selma.sql
-		..\deploy\SQL\DDL_CREATE_TABLE_selma.messages.sql = ..\deploy\SQL\DDL_CREATE_TABLE_selma.messages.sql
-		..\deploy\SQL\DDL_CREATE_TABLE_selma.study_journal.sql = ..\deploy\SQL\DDL_CREATE_TABLE_selma.study_journal.sql
-		..\deploy\SQL\DDL_CREATE_TABLE_selma_user.sql = ..\deploy\SQL\DDL_CREATE_TABLE_selma_user.sql
-		..\deploy\SQL\DDL_CREATE_USER_selma.sql = ..\deploy\SQL\DDL_CREATE_USER_selma.sql
+		..\deploy\SQL\DDL_CREATE_DB_smapp.sql = ..\deploy\SQL\DDL_CREATE_DB_smapp.sql
+		..\deploy\SQL\DDL_CREATE_TABLE_smapp.messages.sql = ..\deploy\SQL\DDL_CREATE_TABLE_smapp.messages.sql
+		..\deploy\SQL\DDL_CREATE_TABLE_smapp.study_journal.sql = ..\deploy\SQL\DDL_CREATE_TABLE_smapp.study_journal.sql
+		..\deploy\SQL\DDL_CREATE_TABLE_smapp_user.sql = ..\deploy\SQL\DDL_CREATE_TABLE_smapp_user.sql
+		..\deploy\SQL\DDL_CREATE_USER_smapp.sql = ..\deploy\SQL\DDL_CREATE_USER_smapp.sql
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "App", "App", "{81DCA9E6-0628-4463-BEBF-4E9AF9A82FF8}"

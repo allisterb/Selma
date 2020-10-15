@@ -231,8 +231,6 @@ module NLU =
                 member x.Confidence = let (_, c, _) = x.Unwrap in c
                 member x.Value = let (_, _, v) = x.Unwrap in v
 
-        
-         
         let private entity_types = ["wit$contact:contact"; "wit$datetime:datetime"; "subject:subject"; "term:term"]
 
         let private trait_types = ["domain"; "dialogue_act"]
@@ -247,8 +245,7 @@ module NLU =
                                 o.GetJS<obj array>("intents") 
                                 |> Array.map (fun i -> Intent'(i.GetJS<string>("name"), i.GetJS<float32>("confidence")))    
                                 |> List.ofArray  
-                            else []
-                        
+                            else []                        
                         let traits =
                             if not (isNull(o.GetJS("traits"))) then
                                 trait_types 

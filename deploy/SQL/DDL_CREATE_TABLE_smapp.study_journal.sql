@@ -10,7 +10,7 @@ CREATE SEQUENCE public.study_journal__id_seq
     CACHE 1;
 
 ALTER SEQUENCE public.study_journal__id_seq
-    OWNER TO selma;
+    OWNER TO smapp;
 
 -- Table: public.study_journal
 
@@ -31,4 +31,4 @@ WITH (
 TABLESPACE pg_default;
 
 ALTER TABLE public.study_journal
-    OWNER to selma;
+    OWNER to smapp;

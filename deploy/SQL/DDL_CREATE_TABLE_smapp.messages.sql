@@ -10,7 +10,7 @@ CREATE SEQUENCE public.messages__id_seq
     CACHE 1;
 
 ALTER SEQUENCE public.messages__id_seq
-    OWNER TO selma;
+    OWNER TO smapp;
 
 -- Table: public.messages
 
@@ -29,4 +29,4 @@ CREATE TABLE public.messages
 TABLESPACE pg_default;
 
 ALTER TABLE public.messages
-    OWNER to selma;
+    OWNER to smapp;
