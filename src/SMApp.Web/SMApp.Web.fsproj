@@ -5,13 +5,15 @@
     <UserSecretsId>f3ed0dc7-f978-44ae-8add-9e5bfcf8fa8a</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Symptoms.fs" />
     <Compile Include="ClientExtensions.fs" />
     <Compile Include="Bootstrap.fs" />
+    <Compile Include="Babelfy.fs" />
+    <Compile Include="Witai.fs" />
     <Compile Include="NLU.fs" />
     <Compile Include="CUI.fs" />
     <Compile Include="Server.fs" />
     <Compile Include="Main.fs" />
+    <Compile Include="Symptoms.fs" />
     <Compile Include="Client.fs" />
     <Compile Include="Site.fs" />
     <Compile Include="Startup.fs" />
@@ -38,7 +40,6 @@
     <ProjectReference Include="..\SMApp.Base.Fs\SMApp.Base.Fs.fsproj" />
     <ProjectReference Include="..\SMApp.Core\SMApp.Core.fsproj" />
     <ProjectReference Include="..\SMApp.Logger.Serilog\SMApp.Logger.Serilog.csproj" />
-    <ProjectReference Include="..\SMApp.NLU.Wit.Web\SMApp.NLU.Wit.Web.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="SMApp.BotLibre">

@@ -27,7 +27,7 @@ module Templates =
     
 module Site =
     let HomePage ctx =
-        Templates.Main ctx Home "Lerna" [
+        Templates.Main ctx Home "Selma" [
             div [attr.id "term"; attr.``class`` "container"] [
                 client <@ Client.run() @>                
             ]

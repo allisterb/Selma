@@ -1,7 +1,7 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Web,ClientExtensions,_Html,htmModule,SC$1,Bs,NLU,Intent,Trait,Entity,Utterance,Question,Voice,_Entity,Text,_Utterance,_Intent,_Entity$1,_Trait,Domain,SC$2,CUI,MicState,ClientState,Interpreter,CUI$1,SC$3,Main,SC$4,Client,SC$5,SMApp$Web_GeneratedPrintf,WebSharper,UI,Client$1,Templates,Doc,Strings,IntelliFactory,Runtime,Utils,console,$,Arrays,List,Seq,AttrProxy,JavaScript,Pervasives,Collections,Map,NLU$1,Wit,WitApi,Concurrency,SDK,Random,Operators,Remoting,AjaxRemotingProvider,Wit$1,document,Unchecked,Dictionary;
+ var Global,SMApp,Web,ClientExtensions,_Html,htmModule,SC$1,Bs,NLU,Babelfy,ApiResponse,TokenFragment,CharFragment,Witai,NLU$1,Intent,Trait,Entity,Utterance,Question,Voice,_Entity,Text,_Utterance,_Intent,_Entity$1,_Trait,Domain,SC$2,CUI,MicState,ClientState,Interpreter,CUI$1,SC$3,Main,SC$4,Client,SC$5,SMApp$Web_GeneratedPrintf,WebSharper,UI,Client$1,Templates,Doc,Strings,IntelliFactory,Runtime,Utils,console,$,Arrays,List,Seq,AttrProxy,Concurrency,JavaScript,Pervasives,Collections,Map,SDK,Random,Operators,Remoting,AjaxRemotingProvider,Wit,document,Unchecked,Dictionary;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Web=SMApp.Web=SMApp.Web||{};
@@ -10,20 +10,26 @@
  htmModule=Web.htmModule=Web.htmModule||{};
  SC$1=Global.StartupCode$SMApp_Web$ClientExtensions=Global.StartupCode$SMApp_Web$ClientExtensions||{};
  Bs=Web.Bs=Web.Bs||{};
- NLU=Web.NLU=Web.NLU||{};
- Intent=NLU.Intent=NLU.Intent||{};
- Trait=NLU.Trait=NLU.Trait||{};
- Entity=NLU.Entity=NLU.Entity||{};
- Utterance=NLU.Utterance=NLU.Utterance||{};
- Question=NLU.Question=NLU.Question||{};
- Voice=NLU.Voice=NLU.Voice||{};
+ NLU=SMApp.NLU=SMApp.NLU||{};
+ Babelfy=NLU.Babelfy=NLU.Babelfy||{};
+ ApiResponse=Babelfy.ApiResponse=Babelfy.ApiResponse||{};
+ TokenFragment=Babelfy.TokenFragment=Babelfy.TokenFragment||{};
+ CharFragment=Babelfy.CharFragment=Babelfy.CharFragment||{};
+ Witai=NLU.Witai=NLU.Witai||{};
+ NLU$1=Web.NLU=Web.NLU||{};
+ Intent=NLU$1.Intent=NLU$1.Intent||{};
+ Trait=NLU$1.Trait=NLU$1.Trait||{};
+ Entity=NLU$1.Entity=NLU$1.Entity||{};
+ Utterance=NLU$1.Utterance=NLU$1.Utterance||{};
+ Question=NLU$1.Question=NLU$1.Question||{};
+ Voice=NLU$1.Voice=NLU$1.Voice||{};
  _Entity=Voice["Entity'"]=Voice["Entity'"]||{};
- Text=NLU.Text=NLU.Text||{};
+ Text=NLU$1.Text=NLU$1.Text||{};
  _Utterance=Text["Utterance'"]=Text["Utterance'"]||{};
  _Intent=Text["Intent'"]=Text["Intent'"]||{};
  _Entity$1=Text["Entity'"]=Text["Entity'"]||{};
  _Trait=Text["Trait'"]=Text["Trait'"]||{};
- Domain=NLU.Domain=NLU.Domain||{};
+ Domain=NLU$1.Domain=NLU$1.Domain||{};
  SC$2=Global.StartupCode$SMApp_Web$NLU=Global.StartupCode$SMApp_Web$NLU||{};
  CUI=Web.CUI=Web.CUI||{};
  MicState=CUI.MicState=CUI.MicState||{};
@@ -51,20 +57,17 @@
  List=WebSharper&&WebSharper.List;
  Seq=WebSharper&&WebSharper.Seq;
  AttrProxy=UI&&UI.AttrProxy;
+ Concurrency=WebSharper&&WebSharper.Concurrency;
  JavaScript=WebSharper&&WebSharper.JavaScript;
  Pervasives=JavaScript&&JavaScript.Pervasives;
  Collections=WebSharper&&WebSharper.Collections;
  Map=Collections&&Collections.Map;
- NLU$1=SMApp&&SMApp.NLU;
- Wit=NLU$1&&NLU$1.Wit;
- WitApi=Wit&&Wit.WitApi;
- Concurrency=WebSharper&&WebSharper.Concurrency;
  SDK=Global.SDK;
  Random=WebSharper&&WebSharper.Random;
  Operators=WebSharper&&WebSharper.Operators;
  Remoting=WebSharper&&WebSharper.Remoting;
  AjaxRemotingProvider=Remoting&&Remoting.AjaxRemotingProvider;
- Wit$1=Global.Wit;
+ Wit=Global.Wit;
  document=Global.document;
  Unchecked=WebSharper&&WebSharper.Unchecked;
  Dictionary=Collections&&Collections.Dictionary;
@@ -561,7 +564,73 @@
  {
   return AttrProxy.Create("id",a);
  };
- Intent=NLU.Intent=Runtime.Class({
+ ApiResponse.New=function(tokenFragment,charFragment,babelSynsetID,DBpediaURL,BabelNetURL,score,cohrenceScore,globalScore,source)
+ {
+  return{
+   tokenFragment:tokenFragment,
+   charFragment:charFragment,
+   babelSynsetID:babelSynsetID,
+   DBpediaURL:DBpediaURL,
+   BabelNetURL:BabelNetURL,
+   score:score,
+   cohrenceScore:cohrenceScore,
+   globalScore:globalScore,
+   source:source
+  };
+ };
+ TokenFragment.New=function(start,end)
+ {
+  return{
+   start:start,
+   end:end
+  };
+ };
+ CharFragment.New=function(start,end)
+ {
+  return{
+   start:start,
+   end:end
+  };
+ };
+ Babelfy.disambiguate=function(text)
+ {
+  function a(ok,ko)
+  {
+   var r;
+   $.ajax((r={},r.url=(function($1)
+   {
+    return function($2)
+    {
+     return $1("https://babelfy.io/v1/disambiguate?text="+Utils.toSafe($2)+"&lang=EN&extAIDA=true&key=983fc0ec-a6fa-49ef-bd02-203c18aef272");
+    };
+   }(Global.id))(text),r.type="GET",r.contentType="application/json",r.dataType="json",r.success=function(result)
+   {
+    return ok(result);
+   },r.error=function(jqxhr)
+   {
+    return ko(new Global.Error(jqxhr.responseText));
+   },r));
+  }
+  return Concurrency.FromContinuations(function($1,$2,$3)
+  {
+   return a.apply(null,[$1,$2,$3]);
+  });
+ };
+ Witai.getMeaning=function(authValue,sentence,success,error)
+ {
+  var r;
+  $.ajax((r={},r.url=(function($1)
+  {
+   return function($2)
+   {
+    return $1("https://api.wit.ai/message?q="+Utils.toSafe($2));
+   };
+  }(Global.id))(sentence),r.type="GET",r.beforeSend=function(jqxhr)
+  {
+   return jqxhr.setRequestHeader("Authorization","Bearer "+authValue);
+  },r.success=success,r.error=error,r));
+ };
+ Intent=NLU$1.Intent=Runtime.Class({
   toString:function()
   {
    return(((Runtime.Curried3(function($1,$2,$3)
@@ -578,7 +647,7 @@
    return this.$0;
   }
  },null,Intent);
- Trait=NLU.Trait=Runtime.Class({
+ Trait=NLU$1.Trait=Runtime.Class({
   toString:function()
   {
    return(((Runtime.Curried3(function($1,$2,$3)
@@ -599,7 +668,7 @@
    return this.$0;
   }
  },null,Trait);
- Entity=NLU.Entity=Runtime.Class({
+ Entity=NLU$1.Entity=Runtime.Class({
   toString:function()
   {
    return((((Runtime.Curried(function($1,$2,$3,$4)
@@ -620,7 +689,7 @@
    return this.$0;
   }
  },null,Entity);
- Utterance=NLU.Utterance=Runtime.Class({
+ Utterance=NLU$1.Utterance=Runtime.Class({
   toString:function()
   {
    return((((Runtime.Curried(function($1,$2,$3,$4)
@@ -657,7 +726,7 @@
    return this.$0;
   }
  },null,Utterance);
- Question=NLU.Question=Runtime.Class({
+ Question=NLU$1.Question=Runtime.Class({
   toString:function()
   {
    return(((Runtime.Curried3(function($1,$2,$3)
@@ -1007,7 +1076,7 @@
  };
  Text.getUtterance=function(sentence,m)
  {
-  Text.witapi().getMeaning(sentence,function(o)
+  Witai.getMeaning("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT",sentence,function(o)
   {
    var intents,traits;
    ClientExtensions.debug("NLU",(function($1)
@@ -1082,11 +1151,6 @@
  {
   SC$2.$cctor();
   return SC$2.entity_types;
- };
- Text.witapi=function()
- {
-  SC$2.$cctor();
-  return SC$2.witapi;
  };
  Text.QuickPrograms=function(a)
  {
@@ -1340,35 +1404,35 @@
    $0:null
   };
  };
- NLU.No=function(a)
+ NLU$1.No=function(a)
  {
   var $1,a$1,$2,a$2,$3,a$3;
-  return(a$1=NLU.Intent$1("no",a),a$1!=null&&a$1.$==1&&(a$1.$0[0]==null&&(a$1.$0[1]==null&&($1=a,true))))?{
+  return(a$1=NLU$1.Intent$1("no",a),a$1!=null&&a$1.$==1&&(a$1.$0[0]==null&&(a$1.$0[1]==null&&($1=a,true))))?{
    $:1,
    $0:$1
-  }:(a$2=NLU.Intent$1("noresponse",a),a$2!=null&&a$2.$==1&&(a$2.$0[0]==null&&(a$2.$0[1]==null&&($2=a,true))))?{
+  }:(a$2=NLU$1.Intent$1("noresponse",a),a$2!=null&&a$2.$==1&&(a$2.$0[0]==null&&(a$2.$0[1]==null&&($2=a,true))))?{
    $:1,
    $0:$2
-  }:(a$3=NLU.Intent$1("NoResponse",a),a$3!=null&&a$3.$==1&&(a$3.$0[0]==null&&(a$3.$0[1]==null&&($3=a,true))))?{
+  }:(a$3=NLU$1.Intent$1("NoResponse",a),a$3!=null&&a$3.$==1&&(a$3.$0[0]==null&&(a$3.$0[1]==null&&($3=a,true))))?{
    $:1,
    $0:$3
   }:null;
  };
- NLU.Yes=function(a)
+ NLU$1.Yes=function(a)
  {
   var $1,a$1,$2,a$2,$3,a$3;
-  return(a$1=NLU.Intent$1("yes",a),a$1!=null&&a$1.$==1&&(a$1.$0[0]==null&&(a$1.$0[1]==null&&($1=a,true))))?{
+  return(a$1=NLU$1.Intent$1("yes",a),a$1!=null&&a$1.$==1&&(a$1.$0[0]==null&&(a$1.$0[1]==null&&($1=a,true))))?{
    $:1,
    $0:$1
-  }:(a$2=NLU.Intent$1("yesresponse",a),a$2!=null&&a$2.$==1&&(a$2.$0[0]==null&&(a$2.$0[1]==null&&($2=a,true))))?{
+  }:(a$2=NLU$1.Intent$1("yesresponse",a),a$2!=null&&a$2.$==1&&(a$2.$0[0]==null&&(a$2.$0[1]==null&&($2=a,true))))?{
    $:1,
    $0:$2
-  }:(a$3=NLU.Intent$1("YesResponse",a),a$3!=null&&a$3.$==1&&(a$3.$0[0]==null&&(a$3.$0[1]==null&&($3=a,true))))?{
+  }:(a$3=NLU$1.Intent$1("YesResponse",a),a$3!=null&&a$3.$==1&&(a$3.$0[0]==null&&(a$3.$0[1]==null&&($3=a,true))))?{
    $:1,
    $0:$3
   }:null;
  };
- NLU.EntityManyofMany=function(names,a)
+ NLU$1.EntityManyofMany=function(names,a)
  {
   return{
    $:1,
@@ -1387,7 +1451,7 @@
    },names)))
   };
  };
- NLU.EntityManyOf1=function(n,a)
+ NLU$1.EntityManyOf1=function(n,a)
  {
   var $1;
   return a!=null&&a.$==1&&(List.exists(function(e)
@@ -1401,7 +1465,7 @@
    },$1)
   }:null;
  };
- NLU.Entity1OfAny=function(n,a)
+ NLU$1.Entity1OfAny=function(n,a)
  {
   var $1;
   return a!=null&&a.$==1&&(List.exists(function(e)
@@ -1418,7 +1482,7 @@
    },$1)))
   }:null;
  };
- NLU.Entity1Of1=function(n,a)
+ NLU$1.Entity1Of1=function(n,a)
  {
   var $1;
   return a!=null&&a.$==1&&(a.$0.$==1&&(a.$0.$1.$==0&&(a.$0.$0.get_Name()===n&&($1=a.$0.$0,true))))?{
@@ -1426,7 +1490,7 @@
    $0:$1
   }:null;
  };
- NLU.Intent$1=function(n,a)
+ NLU$1.Intent$1=function(n,a)
  {
   return a.get_Intent()!=null&&a.get_Intent().$0.get_Name()===n?{
    $:1,
@@ -1436,7 +1500,6 @@
  SC$2.$cctor=function()
  {
   SC$2.$cctor=Global.ignore;
-  SC$2.witapi=new WitApi.New("MROJG5PKG6G7Q4SVXN7HSIGSIZZ5DI6W");
   SC$2.entity_types=List.ofArray(["wit$contact:contact","wit$datetime:datetime","subject:subject","term:term"]);
   SC$2.trait_types=List.ofArray(["domain","dialogue_act"]);
   SC$2.intentConfidenceThreshold=0.85;
@@ -1770,7 +1833,7 @@
    return Concurrency.Start((b$4=null,Concurrency.Delay(function()
    {
     sayRandom(CUI.waitAddPhrases(),"symptom entry");
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addSymptomJournalEntry:-890470465",[user().Name,s,l,m$1]),function(a$30)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addSymptomJournalEntry:1346209123",[user().Name,s,l,m$1]),function(a$30)
     {
      return a$30==null?(say(function($16)
      {
@@ -1792,7 +1855,7 @@
    return Concurrency.Delay(function()
    {
     sayRandom(CUI.waitRetrievePhrases(),"symptom journal");
-    return(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getSymptomJournal:-1761137731",[u$1]);
+    return(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getSymptomJournal:24998529",[u$1]);
    });
   }
   Main.debug((((Runtime.Curried3(function($16,$17,$18)
@@ -1803,9 +1866,9 @@
   m.$==1&&(a=(a$1=PropNotSet("started",m.$0),a$1!=null&&a$1.$==1?{
    $:1,
    $0:a$1.$0
-  }:null),a!=null&&a.$==1&&(a$2=AnonAssert(a.$0),a$2!=null&&a$2.$==1&&(a$3=NLU.Intent$1("hello",a$2.$0),a$3!=null&&a$3.$==1&&(a$3.$0[1]==null&&m.$1.$==0))))?(props.Add("started",true),sayRandom(CUI.helloPhrases(),"")):m.$==1&&(a$4=AnonAssert(m.$0),a$4!=null&&a$4.$==1&&(a$5=NLU.Intent$1("hello",a$4.$0),a$5!=null&&a$5.$==1&&(a$5.$0[1]==null&&m.$1.$==0)))?say("Hello, tell me your name to get started."):m.$==1&&(a$6=AnonAssert(m.$0),a$6!=null&&a$6.$==1&&(a$7=NLU.Intent$1("hello",a$6.$0),a$7!=null&&a$7.$==1&&(a$8=NLU.Entity1Of1("contact",a$7.$0[1]),a$8!=null&&a$8.$==1&&(m.$1.$==0&&($3=a$8.$0,true)))))?(u=$3.get_Value(),sayRandom(CUI.waitRetrievePhrases(),"user name"),Concurrency.Start((b=null,Concurrency.Delay(function()
+  }:null),a!=null&&a.$==1&&(a$2=AnonAssert(a.$0),a$2!=null&&a$2.$==1&&(a$3=NLU$1.Intent$1("hello",a$2.$0),a$3!=null&&a$3.$==1&&(a$3.$0[1]==null&&m.$1.$==0))))?(props.Add("started",true),sayRandom(CUI.helloPhrases(),"")):m.$==1&&(a$4=AnonAssert(m.$0),a$4!=null&&a$4.$==1&&(a$5=NLU$1.Intent$1("hello",a$4.$0),a$5!=null&&a$5.$==1&&(a$5.$0[1]==null&&m.$1.$==0)))?say("Hello, tell me your name to get started."):m.$==1&&(a$6=AnonAssert(m.$0),a$6!=null&&a$6.$==1&&(a$7=NLU$1.Intent$1("hello",a$6.$0),a$7!=null&&a$7.$==1&&(a$8=NLU$1.Entity1Of1("contact",a$7.$0[1]),a$8!=null&&a$8.$==1&&(m.$1.$==0&&($3=a$8.$0,true)))))?(u=$3.get_Value(),sayRandom(CUI.waitRetrievePhrases(),"user name"),Concurrency.Start((b=null,Concurrency.Delay(function()
   {
-   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:-491767581",[u]),function(a$30)
+   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:-1338505423",[u]),function(a$30)
    {
     var u$1;
     return a$30==null?(say((function($16)
@@ -1814,7 +1877,7 @@
      {
       return $16("I did not find a user with the name "+Utils.toSafe($17)+".");
      };
-    }(Global.id))(u)),ask("addUser",u),Concurrency.Zero()):(u$1=a$30.$0,Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.updateUserLastLogin:-1358860327",[u$1.Name]),function()
+    }(Global.id))(u)),ask("addUser",u),Concurrency.Zero()):(u$1=a$30.$0,Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.updateUserLastLogin:1385890372",[u$1.Name]),function()
     {
      props.Add("user",u$1);
      sayRandom(CUI.helloUserPhrases(),(function($16)
@@ -1824,7 +1887,7 @@
        return $16(Utils.prettyPrint($17));
       };
      }(Global.id))(props.get_Item("user")));
-     return u$1.LastLoggedIn!=null?Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.humanize:-458977748",[u$1.LastLoggedIn.$0]),function(a$31)
+     return u$1.LastLoggedIn!=null?Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.humanize:135823522",[u$1.LastLoggedIn.$0]),function(a$31)
      {
       say((function($16)
       {
@@ -1837,10 +1900,10 @@
      }):Concurrency.Zero();
     }));
    });
-  })),null)):m.$==1&&(a$9=NLU.Yes(m.$0),a$9!=null&&a$9.$==1&&(a$10=AnonResponse("addUser",a$9.$0),a$10!=null&&a$10.$==1&&(a$11=Str(a$10.$0[1]),a$11!=null&&a$11.$==1&&(m.$1.$==0&&($4=a$11.$0,true)))))?Concurrency.Start((b$1=null,Concurrency.Delay(function()
+  })),null)):m.$==1&&(a$9=NLU$1.Yes(m.$0),a$9!=null&&a$9.$==1&&(a$10=AnonResponse("addUser",a$9.$0),a$10!=null&&a$10.$==1&&(a$11=Str(a$10.$0[1]),a$11!=null&&a$11.$==1&&(m.$1.$==0&&($4=a$11.$0,true)))))?Concurrency.Start((b$1=null,Concurrency.Delay(function()
   {
    sayRandom(CUI.waitAddPhrases(),"user");
-   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addUser:-1358860327",[$4]),function(a$30)
+   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addUser:1385890372",[$4]),function(a$30)
    {
     return a$30==null?(say((function($16)
     {
@@ -1856,15 +1919,15 @@
      };
     }(Global.id))(props.get_Item("user"))),Concurrency.Zero());
    });
-  })),null):m.$==1&&(a$12=NLU.No(m.$0),a$12!=null&&a$12.$==1&&(a$13=AnonResponse("addUser",a$12.$0),a$13!=null&&a$13.$==1&&(a$14=Str(a$13.$0[1]),a$14!=null&&a$14.$==1&&(m.$1.$==0&&($5=a$14.$0,true)))))?say((function($16)
+  })),null):m.$==1&&(a$12=NLU$1.No(m.$0),a$12!=null&&a$12.$==1&&(a$13=AnonResponse("addUser",a$12.$0),a$13!=null&&a$13.$==1&&(a$14=Str(a$13.$0[1]),a$14!=null&&a$14.$==1&&(m.$1.$==0&&($5=a$14.$0,true)))))?say((function($16)
   {
    return function($17)
    {
     return $16("Ok I did not add the user "+Utils.toSafe($17)+". But you must login for me to help you.");
    };
-  }(Global.id))($5)):m.$==1&&(($7=AnonAssert(m.$0),$7!=null&&$7.$==1)&&m.$1.$==0)?say("Could you introduce yourself so we can get started?"):m.$==1&&(a$15=Assert(m.$0),a$15!=null&&a$15.$==1&&(a$16=NLU.Intent$1("hello",a$15.$0),a$16!=null&&a$16.$==1&&(a$16.$0[0]==null&&(a$17=NLU.Entity1Of1("contact",a$16.$0[1]),a$17!=null&&a$17.$==1&&(m.$1.$==0&&($8=a$17.$0,true))))))?Concurrency.Start((b$2=null,Concurrency.Delay(function()
+  }(Global.id))($5)):m.$==1&&(($7=AnonAssert(m.$0),$7!=null&&$7.$==1)&&m.$1.$==0)?say("Could you introduce yourself so we can get started?"):m.$==1&&(a$15=Assert(m.$0),a$15!=null&&a$15.$==1&&(a$16=NLU$1.Intent$1("hello",a$15.$0),a$16!=null&&a$16.$==1&&(a$16.$0[0]==null&&(a$17=NLU$1.Entity1Of1("contact",a$16.$0[1]),a$17!=null&&a$17.$==1&&(m.$1.$==0&&($8=a$17.$0,true))))))?Concurrency.Start((b$2=null,Concurrency.Delay(function()
   {
-   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:-491767581",[$8.get_Value()]),function(a$30)
+   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:-1338505423",[$8.get_Value()]),function(a$30)
    {
     return a$30==null?(say((function($16)
     {
@@ -1874,19 +1937,19 @@
      };
     }(Global.id))($8.get_Value())),Concurrency.Zero()):(ask("switchUser",a$30.$0.Name),Concurrency.Zero());
    });
-  })),null):m.$==1&&(a$18=NLU.Yes(m.$0),a$18!=null&&a$18.$==1&&(a$19=Response("switchUser",a$18.$0),a$19!=null&&a$19.$==1&&(a$20=Str(a$19.$0[1]),a$20!=null&&a$20.$==1&&(m.$1.$==0&&($9=a$20.$0,true)))))?(props.set_Item("user",$9),say((function($16)
+  })),null):m.$==1&&(a$18=NLU$1.Yes(m.$0),a$18!=null&&a$18.$==1&&(a$19=Response("switchUser",a$18.$0),a$19!=null&&a$19.$==1&&(a$20=Str(a$19.$0[1]),a$20!=null&&a$20.$==1&&(m.$1.$==0&&($9=a$20.$0,true)))))?(props.set_Item("user",$9),say((function($16)
   {
    return function($17)
    {
     return $16("Ok I switched to user "+Utils.prettyPrint($17)+".");
    };
-  }(Global.id))($9))):m.$==1&&(a$21=NLU.No(m.$0),a$21!=null&&a$21.$==1&&(a$22=Response("switchUser",a$21.$0),a$22!=null&&a$22.$==1&&(a$23=Str(a$22.$0[1]),a$23!=null&&a$23.$==1&&(m.$1.$==0&&($10=a$23.$0,true)))))?say((function($16)
+  }(Global.id))($9))):m.$==1&&(a$21=NLU$1.No(m.$0),a$21!=null&&a$21.$==1&&(a$22=Response("switchUser",a$21.$0),a$22!=null&&a$22.$==1&&(a$23=Str(a$22.$0[1]),a$23!=null&&a$23.$==1&&(m.$1.$==0&&($10=a$23.$0,true)))))?say((function($16)
   {
    return function($17)
    {
     return $16("Ok I did not switch to user "+Utils.toSafe($17)+".");
    };
-  }(Global.id))($10)):m.$==1&&(a$24=Assert(m.$0),a$24!=null&&a$24.$==1&&(a$25=NLU.Intent$1("symptom",a$24.$0),a$25!=null&&a$25.$==1&&(a$26=NLU.Entity1OfAny("symptom_name",a$25.$0[1]),a$26!=null&&a$26.$==1&&(m.$1.$==0&&($11=a$26.$0,true)))))?Concurrency.Start((b$3=null,Concurrency.Delay(function()
+  }(Global.id))($10)):m.$==1&&(a$24=Assert(m.$0),a$24!=null&&a$24.$==1&&(a$25=NLU$1.Intent$1("symptom",a$24.$0),a$25!=null&&a$25.$==1&&(a$26=NLU$1.Entity1OfAny("symptom_name",a$25.$0[1]),a$26!=null&&a$26.$==1&&(m.$1.$==0&&($11=a$26.$0,true)))))?Concurrency.Start((b$3=null,Concurrency.Delay(function()
   {
    say("Ok I'll add that entry to your symptom journal");
    addSymptom($11.get_Value(),null,null);
@@ -1895,7 +1958,7 @@
     ask("painVideo","");
     return Concurrency.Zero();
    });
-  })),null):m.$==1&&(a$27=NLU.Yes(m.$0),a$27!=null&&a$27.$==1&&(($13=Response("painVideo",a$27.$0),$13!=null&&$13.$==1)&&m.$1.$==0))?cui["EchoHtml'"]("<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/SkAqOditKN0\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>"):m.$==1&&(a$28=Assert(m.$0),a$28!=null&&a$28.$==1&&(a$29=NLU.Intent$1("medjournal",a$28.$0),a$29!=null&&a$29.$==1&&(($15=a$29.$0[1],$15!=null&&$15.$==1)&&(m.$1.$==0&&($14=a$29.$0[1].$0,true)))))?(say("ok I added that entry to your medication journal."),say("You should be careful not to take too many painkillers over a short period of time.")):(popc(),Main.debug("Main interpreter did not understand utterance."),say("Sorry I didn't understand what you meant."),questions.length>0?(q=Seq.nth(0,questions),haveProp(q.get_Name())?say(ClientExtensions.replace_tok("$0",props.get_Item(q.get_Name()),q.get_Text())):say(q.get_Text())):void 0);
+  })),null):m.$==1&&(a$27=NLU$1.Yes(m.$0),a$27!=null&&a$27.$==1&&(($13=Response("painVideo",a$27.$0),$13!=null&&$13.$==1)&&m.$1.$==0))?cui["EchoHtml'"]("<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/SkAqOditKN0\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>"):m.$==1&&(a$28=Assert(m.$0),a$28!=null&&a$28.$==1&&(a$29=NLU$1.Intent$1("medjournal",a$28.$0),a$29!=null&&a$29.$==1&&(($15=a$29.$0[1],$15!=null&&$15.$==1)&&(m.$1.$==0&&($14=a$29.$0[1].$0,true)))))?(say("ok I added that entry to your medication journal."),say("You should be careful not to take too many painkillers over a short period of time.")):(popc(),Main.debug("Main interpreter did not understand utterance."),say("Sorry I didn't understand what you meant."),questions.length>0?(q=Seq.nth(0,questions),haveProp(q.get_Name())?say(ClientExtensions.replace_tok("$0",props.get_Item(q.get_Name()),q.get_Text())):say(q.get_Text())):void 0);
   Main.debug((((Runtime.Curried3(function($16,$17,$18)
   {
    return $16("Ending utterances: "+Utils.prettyPrint($17)+". Ending questions:"+Utils.prettyPrint($18)+".");
@@ -1970,7 +2033,7 @@
   var i,mic;
   cui[0]=(i=cui[0],CUI$1.New(i.Voice,{
    $:1,
-   $0:new Wit$1.Microphone(document.getElementById("microphone"))
+   $0:new Wit.Microphone(document.getElementById("microphone"))
   },i.Term,i.Avatar,i.Caption));
   mic=cui[0].Mic.$0;
   mic.onconnecting=function()

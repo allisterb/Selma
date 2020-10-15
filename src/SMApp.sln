@@ -9,20 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMApp.Base", "SMApp.Base\SM
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMApp.Logger.Serilog", "SMApp.Logger.Serilog\SMApp.Logger.Serilog.csproj", "{63314C9E-498C-4EF4-9B52-BC0CBC3BEF15}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{58D5A197-EB9E-40D4-B130-4209045A6C03}"
-	ProjectSection(SolutionItems) = preProject
-		..\build\Common.props = ..\build\Common.props
-		..\build\oc-port-forward.cmd = ..\build\oc-port-forward.cmd
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{6D8F868E-885F-46A0-ABB2-AA847C1EC782}"
-	ProjectSection(SolutionItems) = preProject
-		..\build.cmd = ..\build.cmd
-		..\build.sh = ..\build.sh
-		..\smapp = ..\smapp
-		..\smapp.cmd = ..\smapp.cmd
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{2A047A27-219A-4EDF-91CA-7C3B4749907D}"
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "WebSharper.JQueryTerminal.Tests", "..\ext\terminal\WebSharper.JQueryTerminal.Tests\WebSharper.JQueryTerminal.Tests.fsproj", "{32DFA028-4476-406C-A0BA-6FB64C5BE8AB}"
@@ -32,12 +18,11 @@ EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharp.MongoDB", "..\ext\FSharp.MongoDB\FSharp.MongoDB.fsproj", "{693A2D85-8C99-48B1-9687-3DB0AECB7526}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{08D21D7A-6818-417B-900D-BD9F2B95B9B0}"
+	ProjectSection(SolutionItems) = preProject
+		..\docs\fsharpx2020\Easyccg.fsx = ..\docs\fsharpx2020\Easyccg.fsx
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deploy", "Deploy", "{471A2D10-FC79-4425-92A4-CF8234D86D1E}"
-	ProjectSection(SolutionItems) = preProject
-		..\deploy\oc-deploy-build.cmd = ..\deploy\oc-deploy-build.cmd
-		..\deploy\oc-deploy.cmd = ..\deploy\oc-deploy.cmd
-	EndProjectSection
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "SMApp.Core", "SMApp.Core\SMApp.Core.fsproj", "{4F3EB21D-99E3-4E88-858C-649AC982E417}"
 EndProject
@@ -49,7 +34,23 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Alexa.NET.Conversations", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Base", "Base", "{9487FAAB-6BBF-462C-9BBC-8206A1C9A1F3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMApp.NLU.Wit.Web", "SMApp.NLU.Wit.Web\SMApp.NLU.Wit.Web.csproj", "{F5B1E856-FF3A-4093-B3C5-80474FC0117E}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shell", "Shell", "{B1A4DF9B-4110-44A5-AA05-44736770B000}"
+	ProjectSection(SolutionItems) = preProject
+		..\deploy\oc-deploy-build.cmd = ..\deploy\oc-deploy-build.cmd
+		..\deploy\oc-deploy.cmd = ..\deploy\oc-deploy.cmd
+		..\build\oc-port-forward.cmd = ..\build\oc-port-forward.cmd
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQL", "SQL", "{3AA128F8-A07B-4F05-A910-77DB119C879D}"
+	ProjectSection(SolutionItems) = preProject
+		..\deploy\SQL\DDL_CREATE_DB_selma.sql = ..\deploy\SQL\DDL_CREATE_DB_selma.sql
+		..\deploy\SQL\DDL_CREATE_TABLE_selma.messages.sql = ..\deploy\SQL\DDL_CREATE_TABLE_selma.messages.sql
+		..\deploy\SQL\DDL_CREATE_TABLE_selma.study_journal.sql = ..\deploy\SQL\DDL_CREATE_TABLE_selma.study_journal.sql
+		..\deploy\SQL\DDL_CREATE_TABLE_selma_user.sql = ..\deploy\SQL\DDL_CREATE_TABLE_selma_user.sql
+		..\deploy\SQL\DDL_CREATE_USER_selma.sql = ..\deploy\SQL\DDL_CREATE_USER_selma.sql
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "App", "App", "{81DCA9E6-0628-4463-BEBF-4E9AF9A82FF8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -97,23 +98,23 @@ Global
 		{8F5C805A-BC5F-4620-92CB-BE45B51E4297}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8F5C805A-BC5F-4620-92CB-BE45B51E4297}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8F5C805A-BC5F-4620-92CB-BE45B51E4297}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F5B1E856-FF3A-4093-B3C5-80474FC0117E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F5B1E856-FF3A-4093-B3C5-80474FC0117E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F5B1E856-FF3A-4093-B3C5-80474FC0117E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F5B1E856-FF3A-4093-B3C5-80474FC0117E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{297E962E-25A7-4826-B1AB-672C5AA730FA} = {81DCA9E6-0628-4463-BEBF-4E9AF9A82FF8}
 		{B39700CE-2096-4C7C-BC04-22BF6D14BB4B} = {9487FAAB-6BBF-462C-9BBC-8206A1C9A1F3}
 		{63314C9E-498C-4EF4-9B52-BC0CBC3BEF15} = {9487FAAB-6BBF-462C-9BBC-8206A1C9A1F3}
 		{32DFA028-4476-406C-A0BA-6FB64C5BE8AB} = {2A047A27-219A-4EDF-91CA-7C3B4749907D}
 		{811DBC03-3079-4CF7-99E6-C28C620069A3} = {9487FAAB-6BBF-462C-9BBC-8206A1C9A1F3}
 		{693A2D85-8C99-48B1-9687-3DB0AECB7526} = {2A047A27-219A-4EDF-91CA-7C3B4749907D}
+		{4F3EB21D-99E3-4E88-858C-649AC982E417} = {81DCA9E6-0628-4463-BEBF-4E9AF9A82FF8}
 		{692E47DC-DC2A-4AA6-8158-50FF12389E7E} = {2A047A27-219A-4EDF-91CA-7C3B4749907D}
 		{1FA49664-A980-4EB4-81B7-73F5A01511E4} = {2A047A27-219A-4EDF-91CA-7C3B4749907D}
 		{8F5C805A-BC5F-4620-92CB-BE45B51E4297} = {2A047A27-219A-4EDF-91CA-7C3B4749907D}
+		{B1A4DF9B-4110-44A5-AA05-44736770B000} = {471A2D10-FC79-4425-92A4-CF8234D86D1E}
+		{3AA128F8-A07B-4F05-A910-77DB119C879D} = {471A2D10-FC79-4425-92A4-CF8234D86D1E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {93DA2F01-DE80-4D2C-964E-B49597D49580}

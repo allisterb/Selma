@@ -1,9 +1,11 @@
 ﻿namespace SMApp.Web
 
+open System
+
 open WebSharper
 open WebSharper.JavaScript
 
-open SMApp.NLU.Wit
+open SMApp.NLU
 
 [<JavaScript;AutoOpen>]
 module NLU =
@@ -229,15 +231,15 @@ module NLU =
                 member x.Confidence = let (_, c, _) = x.Unwrap in c
                 member x.Value = let (_, _, v) = x.Unwrap in v
 
-        let private witapi = new WitApi("MROJG5PKG6G7Q4SVXN7HSIGSIZZ5DI6W")
+        
          
         let private entity_types = ["wit$contact:contact"; "wit$datetime:datetime"; "subject:subject"; "term:term"]
 
         let private trait_types = ["domain"; "dialogue_act"]
 
         let getUtterance sentence m =
-            witapi.getMeaning(sentence, 
-                (
+            Witai.getMeaning "4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT" sentence 
+               (Action<obj, string, JQuery.JqXHR>(
                     fun o _ _ -> 
                         debug "NLU" <| sprintf  "Wit.ai returned: %A" o
                         let intents = 
@@ -264,11 +266,12 @@ module NLU =
                                 |> List.ofSeq
                             else []
                         m (Some(Utterance'(intents, entities, traits)))
-                ), 
+                ))
+                (Action<JQuery.JqXHR, string, string>( 
                     fun _ s e ->  
                         error <| sprintf  "Wit.ai returned: %A %A" s e
                         m (None)
-                )
+                ))
  
         let mutable intentConfidenceThreshold = 0.85f
 
