@@ -67,7 +67,7 @@ module Server =
     [<Rpc>]
     let addSymptomJournalEntry (user:string) (name:string) (location:string option) (magnitude:int option) : Async<unit Option> =
         pgdb
-        |> Sql.query "INSERT INTO public.symptom_journal(user_name, name, date, magnitude, location) VALUES (@u, @n, @d, @m, @l);"
+        |> Sql.query "INSERT INTO public.physical_symptom_journal(user_name, name, date, magnitude, location) VALUES (@u, @n, @d, @m, @l);"
         |> Sql.parameters [
             "u", Sql.string user
             "n", Sql.string name
@@ -84,7 +84,7 @@ module Server =
     [<Rpc>]
     let getSymptomJournal(userName:string) : Async<SymptomEntry list option> = 
         pgdb
-        |> Sql.query "SELECT * FROM symptom_journal WHERE user_name=@u"
+        |> Sql.query "SELECT * FROM public.physical_symptom_journal WHERE user_name=@u"
         |> Sql.parameters ["u", Sql.string userName]
         |> Sql.executeAsync (fun read -> {
             UserName =  read.string("user_name")

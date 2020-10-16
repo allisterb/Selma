@@ -45,6 +45,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQL", "SQL", "{3AA128F8-A07
 	ProjectSection(SolutionItems) = preProject
 		..\deploy\SQL\DDL_CREATE_DB_smapp.sql = ..\deploy\SQL\DDL_CREATE_DB_smapp.sql
 		..\deploy\SQL\DDL_CREATE_TABLE_smapp.messages.sql = ..\deploy\SQL\DDL_CREATE_TABLE_smapp.messages.sql
+		..\deploy\SQL\DDL_CREATE_TABLE_smapp.physical_symptom_journal.sql = ..\deploy\SQL\DDL_CREATE_TABLE_smapp.physical_symptom_journal.sql
 		..\deploy\SQL\DDL_CREATE_TABLE_smapp.study_journal.sql = ..\deploy\SQL\DDL_CREATE_TABLE_smapp.study_journal.sql
 		..\deploy\SQL\DDL_CREATE_TABLE_smapp_user.sql = ..\deploy\SQL\DDL_CREATE_TABLE_smapp_user.sql
 		..\deploy\SQL\DDL_CREATE_USER_smapp.sql = ..\deploy\SQL\DDL_CREATE_USER_smapp.sql
