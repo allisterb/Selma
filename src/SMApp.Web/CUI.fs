@@ -19,12 +19,12 @@ module CUI =
 
     let helloPhrases = [
         "Welcome!"
-        "Welcome, my name is SMApp."
-        "Welcome to SMApp. How can I help?"
-        "Hello this is SMApp, how can I help?"
-        "Hello, I am SMApp. How can I help?"
-        "Hello, I am SMApp. How may I help you now?"
-        "I'm SMApp. Tell me your name so we can get started."
+        "Welcome, my name is Selma."
+        "Welcome to Selma. How can I help?"
+        "Hello this is Selma, how can I help?"
+        "Hello, I am Selma. How can I help?"
+        "Hello, I am Selma. How may I help you now?"
+        "I'm Selma. Tell me your name so we can get started."
     ]
 
     let helloUserPhrases = [
@@ -57,7 +57,7 @@ module CUI =
 
     type ClientState = ClientNotInitialzed | ClientReady | ClientUnderstand 
 
-    type Interpreter = Interpreter of (SMApp.Microphone.Mic -> (obj*obj) -> unit) * ((SMApp.JQueryTerminal.Terminal->string->unit) * SMApp.JQueryTerminal.Options)
+    type Interpreter = Interpreter of ((obj*obj) -> unit) * ((SMApp.JQueryTerminal.Terminal->string->unit) * SMApp.JQueryTerminal.Options)
         with
         member x.Unwrap = match x with | Interpreter(v, (i, o)) -> v, i, o
         member x.Voice = let v, i, o = x.Unwrap in v
