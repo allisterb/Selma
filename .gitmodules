@@ -22,3 +22,6 @@
 [submodule "ext/impressjs"]
 	path = ext/impressjs
 	url = https://github.com/impress/impress.js.git
+[submodule "ext/presentations/bytecode-presentation"]
+	path = ext/presentations/bytecode-presentation
+	url = https://github.com/pkoperek/bytecode-presentation.git
