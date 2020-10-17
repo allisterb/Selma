@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1024" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Selma</title>
+    <!-- highlight styles -->
+    <link rel="stylesheet" href="extras/highlight/styles/github.css">
+    <!-- Common styles for example presentations -->  
+    <link rel="stylesheet" href="css/impress-common.css" /> 
+    
+    <link rel="stylesheet" href="css/impress-style.css" />
+    <link rel="stylesheet" href="css/sourcecode.css" />
+</head>
+
+<body class="impress-not-supported">
+<div class="fallback-message">
+   impress.js is not sported by 2 your browser, sorry.
+</div>
+
+<div id="impress">
+<section id="overview" class="level1 step" data-scale="10">
+<h1><a href="#overview"></a></h1>
+</section>
+<section id="hello-there" class="level1 step">
+<h1><a href="#hello-there">Hello there!</a></h1>
+<p>This is the first slide</p>
+</section>
+<section id="so-what-can-we-do" class="level1 step" data-x="2000">
+<h1><a href="#so-what-can-we-do">So, what can we do?</a></h1>
+<p>We have those stupid bullet point lists, everybody has on their slides:</p>
+<ul>
+<li>Stupid</li>
+<li>bullet
+<ul>
+<li>point</li>
+<li>bla</li>
+</ul></li>
+<li>lists</li>
+</ul>
+</section>
+<section id="fancy-stuff" class="level1 step" data-rotate="20" data-x="0" data-y="2000" data-scale="3">
+<h1><a href="#fancy-stuff">Fancy stuff</a></h1>
+<p>But there's more: There is LaTeX support: <span class="math">\(\int \frac{x}{4}\)</span></p>
+<p>And of course syntax highlighting for a number of programming languages:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="fu">map</span>((\x <span class="ot">-&gt;</span> x<span class="fu">^</span><span class="dv">2</span>), xs)</code></pre>
+<blockquote>
+<ul>
+<li>One more of those</li>
+<li>bullet point lists</li>
+</ul>
+</blockquote>
+</section>
+<section id="another-slide" class="level1 step" data-y="2200" data-x="-600" data-rotate="20">
+<h1><a href="#another-slide">Another slide</a></h1>
+<p>Some text</p>
+</section>
+<section id="yet-another-slide" class="level1 step" data-y="2500" data-x="400" data-rotate="20">
+<h1><a href="#yet-another-slide">Yet another slide</a></h1>
+<p>more text</p>
+</section>
+<section id="overview" class="level1 step" data-scale="10">
+<h1><a href="#overview"></a></h1>
+</section>
+<section id="now-thats-a-big-slide" class="level1 step" data-y="1000" data-x="6000" data-scale="4">
+<h1><a href="#now-thats-a-big-slide">Now that's a big slide</a></h1>
+<p>Big slide..</p>
+</section>
+<section id="last-slide" class="level1 step" data-y="1000" data-x="5000">
+<h1><a href="#last-slide">Last slide</a></h1>
+<p>That's it, folks :)</p>
+</section>
+</div>
+
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+    tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+<!-- Extra modules
+     Load highlight.js, mermaid.js and markdown.js from extras.
+     See also src/plugins/extras/extras.js -->
+     <script type="text/javascript" src="extras/highlight/highlight.pack.js"></script>
+     <script type="text/javascript" src="extras/mermaid/mermaid.min.js"></script>
+     <script type="text/javascript" src="extras/markdown/markdown.js"></script>
+     
+     <!--
+         To make all described above really work, you need to include impress.js in the page.
+         You also need to call a `impress().init()` function to initialize impress.js presentation.
+         And you should do it in the end of your document. 
+     -->
+     <script type="text/javascript" src="js/impress.js"></script>
+     <script>impress().init();</script>
+</body>
+</html>

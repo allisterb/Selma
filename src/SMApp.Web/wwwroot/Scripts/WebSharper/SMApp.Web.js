@@ -1,7 +1,7 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Web,ClientExtensions,_Html,htmModule,SC$1,Bs,NLU,Babelfy,ApiResponse,TokenFragment,CharFragment,Witai,NLU$1,Intent,Trait,Entity,Utterance,Question,Voice,_Entity,Text,_Utterance,_Intent,_Entity$1,_Trait,Domain,SC$2,CUI,MicState,ClientState,Interpreter,CUI$1,SC$3,Main,SC$4,Client,SC$5,SMApp$Web_GeneratedPrintf,WebSharper,UI,Client$1,Templates,Doc,Strings,IntelliFactory,Runtime,Utils,console,$,Arrays,List,Seq,AttrProxy,Concurrency,JavaScript,Pervasives,Collections,Map,SDK,Random,Operators,Remoting,AjaxRemotingProvider,Wit,document,Unchecked,Dictionary;
+ var Global,SMApp,Web,ClientExtensions,_Html,htmModule,SC$1,Bs,NLU,Babelfy,ApiResponse,TokenFragment,CharFragment,Witai,Utterance,Intent,Entity,Trait,_Utterance,_Value,NLU$1,Intent$1,Trait$1,Entity$1,Utterance$1,Question,Voice,_Entity,Text,_Utterance$1,_Intent,_Entity$1,_Trait,Domain,SC$2,CUI,MicState,ClientState,Interpreter,CUI$1,SC$3,Main,SC$4,Client,SC$5,SMApp$Web_GeneratedPrintf,WebSharper,UI,Client$1,Templates,Doc,Strings,IntelliFactory,Runtime,Utils,console,$,Arrays,List,Seq,AttrProxy,Concurrency,JavaScript,Pervasives,Collections,Map,SDK,Random,Operators,Remoting,AjaxRemotingProvider,Wit,document,Unchecked,Dictionary;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Web=SMApp.Web=SMApp.Web||{};
@@ -16,16 +16,22 @@
  TokenFragment=Babelfy.TokenFragment=Babelfy.TokenFragment||{};
  CharFragment=Babelfy.CharFragment=Babelfy.CharFragment||{};
  Witai=NLU.Witai=NLU.Witai||{};
+ Utterance=Witai.Utterance=Witai.Utterance||{};
+ Intent=Witai.Intent=Witai.Intent||{};
+ Entity=Witai.Entity=Witai.Entity||{};
+ Trait=Witai.Trait=Witai.Trait||{};
+ _Utterance=Witai["Utterance'"]=Witai["Utterance'"]||{};
+ _Value=Witai["Value'"]=Witai["Value'"]||{};
  NLU$1=Web.NLU=Web.NLU||{};
- Intent=NLU$1.Intent=NLU$1.Intent||{};
- Trait=NLU$1.Trait=NLU$1.Trait||{};
- Entity=NLU$1.Entity=NLU$1.Entity||{};
- Utterance=NLU$1.Utterance=NLU$1.Utterance||{};
+ Intent$1=NLU$1.Intent=NLU$1.Intent||{};
+ Trait$1=NLU$1.Trait=NLU$1.Trait||{};
+ Entity$1=NLU$1.Entity=NLU$1.Entity||{};
+ Utterance$1=NLU$1.Utterance=NLU$1.Utterance||{};
  Question=NLU$1.Question=NLU$1.Question||{};
  Voice=NLU$1.Voice=NLU$1.Voice||{};
  _Entity=Voice["Entity'"]=Voice["Entity'"]||{};
  Text=NLU$1.Text=NLU$1.Text||{};
- _Utterance=Text["Utterance'"]=Text["Utterance'"]||{};
+ _Utterance$1=Text["Utterance'"]=Text["Utterance'"]||{};
  _Intent=Text["Intent'"]=Text["Intent'"]||{};
  _Entity$1=Text["Entity'"]=Text["Entity'"]||{};
  _Trait=Text["Trait'"]=Text["Trait'"]||{};
@@ -616,6 +622,85 @@
    return a.apply(null,[$1,$2,$3]);
   });
  };
+ Utterance.New=function(text,intents,entities,traits)
+ {
+  return{
+   text:text,
+   intents:intents,
+   entities:entities,
+   traits:traits
+  };
+ };
+ Intent.New=function(id,name,confidence)
+ {
+  return{
+   id:id,
+   name:name,
+   confidence:confidence
+  };
+ };
+ Entity.New=function(id,name,role,start,end,body,entities,suggested,value,type)
+ {
+  return{
+   id:id,
+   name:name,
+   role:role,
+   start:start,
+   end:end,
+   body:body,
+   entities:entities,
+   suggested:suggested,
+   value:value,
+   type:type
+  };
+ };
+ Trait.New=function(id,value,confidence)
+ {
+  return{
+   id:id,
+   value:value,
+   confidence:confidence
+  };
+ };
+ _Utterance.New=function(intent)
+ {
+  return{
+   intent:intent
+  };
+ };
+ _Value.New=function(value)
+ {
+  return{
+   value:value
+  };
+ };
+ Witai.getMeaning2=function(authValue,sentence)
+ {
+  function a(ok,ko)
+  {
+   var r;
+   $.ajax((r={},r.url=(function($1)
+   {
+    return function($2)
+    {
+     return $1("https://api.wit.ai/message?q="+Utils.toSafe($2));
+    };
+   }(Global.id))(sentence),r.type="GET",r.beforeSend=function(jqxhr)
+   {
+    return jqxhr.setRequestHeader("Authorization","Bearer "+authValue);
+   },r.success=function(result)
+   {
+    return ok(result);
+   },r.error=function(jqxhr)
+   {
+    return ko(new Global.Error(jqxhr.responseText));
+   },r));
+  }
+  return Concurrency.FromContinuations(function($1,$2,$3)
+  {
+   return a.apply(null,[$1,$2,$3]);
+  });
+ };
  Witai.getMeaning=function(authValue,sentence,success,error)
  {
   var r;
@@ -630,7 +715,7 @@
    return jqxhr.setRequestHeader("Authorization","Bearer "+authValue);
   },r.success=success,r.error=error,r));
  };
- Intent=NLU$1.Intent=Runtime.Class({
+ Intent$1=NLU$1.Intent=Runtime.Class({
   toString:function()
   {
    return(((Runtime.Curried3(function($1,$2,$3)
@@ -646,8 +731,8 @@
   {
    return this.$0;
   }
- },null,Intent);
- Trait=NLU$1.Trait=Runtime.Class({
+ },null,Intent$1);
+ Trait$1=NLU$1.Trait=Runtime.Class({
   toString:function()
   {
    return(((Runtime.Curried3(function($1,$2,$3)
@@ -667,8 +752,8 @@
   {
    return this.$0;
   }
- },null,Trait);
- Entity=NLU$1.Entity=Runtime.Class({
+ },null,Trait$1);
+ Entity$1=NLU$1.Entity=Runtime.Class({
   toString:function()
   {
    return((((Runtime.Curried(function($1,$2,$3,$4)
@@ -688,8 +773,8 @@
   {
    return this.$0;
   }
- },null,Entity);
- Utterance=NLU$1.Utterance=Runtime.Class({
+ },null,Entity$1);
+ Utterance$1=NLU$1.Utterance=Runtime.Class({
   toString:function()
   {
    return((((Runtime.Curried(function($1,$2,$3,$4)
@@ -725,7 +810,7 @@
   {
    return this.$0;
   }
- },null,Utterance);
+ },null,Utterance$1);
  Question=NLU$1.Question=Runtime.Class({
   toString:function()
   {
@@ -757,7 +842,7 @@
  {
   return!(a$1.intent==null)?{
    $:1,
-   $0:new Intent({
+   $0:new Intent$1({
     $:0,
     $0:ClientExtensions.toLower(a$1.intent.value),
     $1:null
@@ -768,7 +853,7 @@
  {
   return!(a.domain==null)?{
    $:1,
-   $0:new Trait({
+   $0:new Trait$1({
     $:0,
     $0:"domain",
     $1:ClientExtensions.toLower(a.domain.value),
@@ -776,7 +861,7 @@
    })
   }:!(a.dialogue_act==null)?{
    $:1,
-   $0:new Trait({
+   $0:new Trait$1({
     $:0,
     $0:"dialogue_act",
     $1:ClientExtensions.toLower(a.dialogue_act.value),
@@ -788,7 +873,7 @@
  {
   return!(a.contact==null)?{
    $:1,
-   $0:new Entity({
+   $0:new Entity$1({
     $:0,
     $0:"contact",
     $1:ClientExtensions.toLower(a.contact.value),
@@ -796,7 +881,7 @@
    })
   }:null;
  };
- _Utterance=Text["Utterance'"]=Runtime.Class({
+ _Utterance$1=Text["Utterance'"]=Runtime.Class({
   get_TopIntent:function()
   {
    return List.head(List.sortBy(function(i)
@@ -816,7 +901,7 @@
   {
    return this.$0;
   }
- },null,_Utterance);
+ },null,_Utterance$1);
  _Intent=Text["Intent'"]=Runtime.Class({
   get_Confidence:function()
   {
@@ -872,7 +957,7 @@
   var $1,_entities,$2,m,$3,m$1,_entities$1,$4,m$2,_traits,$5,m$3,_entities$2,_traits$1;
   return a!=null&&a.$==1&&(a.$0.$0.$==0&&(a.$0.$1.get_Length()>0&&($1=[a.$0.$1,a.$0.$2],true)))?(_entities=List.map(function(e)
   {
-   return new Entity({
+   return new Entity$1({
     $:0,
     $0:ClientExtensions.toLower(e.get_Role()),
     $1:e.get_Value(),
@@ -886,14 +971,14 @@
    return e.get_Confidence()>Text.entityConfidenceThreshold();
   },$1[0])),{
    $:1,
-   $0:new Utterance({
+   $0:new Utterance$1({
     $:0,
     $0:null,
     $1:{
      $:1,
      $0:List.map(function(t)
      {
-      return new Trait({
+      return new Trait$1({
        $:0,
        $0:ClientExtensions.toLower(t.get_Name()),
        $1:t.get_Value(),
@@ -914,11 +999,11 @@
    })
   }):a!=null&&a.$==1&&(a.$0.$1.$==0&&(a.$0.$2.$==0&&(a.$0.$0.get_Length()>0&&a.$0.get_TopIntent().get_Confidence()>Text.intentConfidenceThreshold()&&($2=[a.$0.$0,a],true))))?(m=$2[1],{
    $:1,
-   $0:new Utterance({
+   $0:new Utterance$1({
     $:0,
     $0:{
      $:1,
-     $0:new Intent({
+     $0:new Intent$1({
       $:0,
       $0:ClientExtensions.toLower(m.$0.get_TopIntent().get_Name()),
       $1:{
@@ -932,7 +1017,7 @@
    })
   }):a!=null&&a.$==1&&(a.$0.$2.$==0&&(a.$0.$0.get_Length()>0&&a.$0.get_TopIntent().get_Confidence()>Text.intentConfidenceThreshold()&&($3=[a.$0.$0,a],true)))?(m$1=$3[1],(_entities$1=List.map(function(e)
   {
-   return new Entity({
+   return new Entity$1({
     $:0,
     $0:ClientExtensions.toLower(e.get_Role()),
     $1:e.get_Value(),
@@ -946,11 +1031,11 @@
    return e.get_Confidence()>Text.entityConfidenceThreshold();
   },m$1.$0.get_Entities())),{
    $:1,
-   $0:new Utterance({
+   $0:new Utterance$1({
     $:0,
     $0:{
      $:1,
-     $0:new Intent({
+     $0:new Intent$1({
       $:0,
       $0:ClientExtensions.toLower(m$1.$0.get_TopIntent().get_Name()),
       $1:{
@@ -967,7 +1052,7 @@
    })
   })):a!=null&&a.$==1&&(a.$0.$1.$==0&&(a.$0.$0.get_Length()>0&&a.$0.get_TopIntent().get_Confidence()>Text.intentConfidenceThreshold()&&($4=[a.$0.$0,a],true)))?(m$2=$4[1],(_traits=List.map(function(e)
   {
-   return new Trait({
+   return new Trait$1({
     $:0,
     $0:ClientExtensions.toLower(e.get_Name()),
     $1:e.get_Value(),
@@ -981,11 +1066,11 @@
    return e.get_Confidence()>Text.entityConfidenceThreshold();
   },m$2.$0.get_Traits())),{
    $:1,
-   $0:new Utterance({
+   $0:new Utterance$1({
     $:0,
     $0:{
      $:1,
-     $0:new Intent({
+     $0:new Intent$1({
       $:0,
       $0:ClientExtensions.toLower(m$2.$0.get_TopIntent().get_Name()),
       $1:{
@@ -1002,7 +1087,7 @@
    })
   })):a!=null&&a.$==1&&(a.$0.$0.get_Length()>0&&a.$0.get_TopIntent().get_Confidence()>Text.intentConfidenceThreshold()&&($5=[a.$0.$0,a],true))?(m$3=$5[1],(_entities$2=List.map(function(e)
   {
-   return new Entity({
+   return new Entity$1({
     $:0,
     $0:ClientExtensions.toLower(e.get_Role()),
     $1:e.get_Value(),
@@ -1016,7 +1101,7 @@
    return e.get_Confidence()>Text.entityConfidenceThreshold();
   },m$3.$0.get_Entities())),(_traits$1=List.map(function(e)
   {
-   return new Trait({
+   return new Trait$1({
     $:0,
     $0:ClientExtensions.toLower(e.get_Name()),
     $1:e.get_Value(),
@@ -1030,11 +1115,11 @@
    return e.get_Confidence()>Text.entityConfidenceThreshold();
   },m$3.$0.get_Traits())),{
    $:1,
-   $0:new Utterance({
+   $0:new Utterance$1({
     $:0,
     $0:{
      $:1,
-     $0:new Intent({
+     $0:new Intent$1({
       $:0,
       $0:ClientExtensions.toLower(m$3.$0.get_TopIntent().get_Name()),
       $1:{
@@ -1111,7 +1196,7 @@
    },Text.trait_types())))):List.T.Empty;
    return m({
     $:1,
-    $0:new _Utterance({
+    $0:new _Utterance$1({
      $:0,
      $0:intents,
      $1:!(o.intents==null)?List.ofSeq(Seq.concat(List.map(function(et)
@@ -1142,6 +1227,10 @@
    return m(null);
   });
  };
+ Text.getUtterance2=function(sentence)
+ {
+  return Witai.getMeaning2("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT",sentence);
+ };
  Text.trait_types=function()
  {
   SC$2.$cctor();
@@ -1156,11 +1245,11 @@
  {
   return a==="programs"?{
    $:1,
-   $0:new Utterance({
+   $0:new Utterance$1({
     $:0,
     $0:{
      $:1,
-     $0:new Intent({
+     $0:new Intent$1({
       $:0,
       $0:"Program",
       $1:null
@@ -1184,11 +1273,11 @@
   var $1;
   return a==="3"||a==="three"?{
    $:1,
-   $0:new Utterance({
+   $0:new Utterance$1({
     $:0,
     $0:{
      $:1,
-     $0:new Intent({
+     $0:new Intent$1({
       $:0,
       $0:"questionresponse",
       $1:{
@@ -1200,7 +1289,7 @@
     $1:null,
     $2:{
      $:1,
-     $0:List.ofArray([new Entity({
+     $0:List.ofArray([new Entity$1({
       $:0,
       $0:"wit/ordinal",
       $1:"three",
@@ -1218,11 +1307,11 @@
   var $1;
   return a==="2"||a==="two"?{
    $:1,
-   $0:new Utterance({
+   $0:new Utterance$1({
     $:0,
     $0:{
      $:1,
-     $0:new Intent({
+     $0:new Intent$1({
       $:0,
       $0:"questionresponse",
       $1:{
@@ -1234,7 +1323,7 @@
     $1:null,
     $2:{
      $:1,
-     $0:List.ofArray([new Entity({
+     $0:List.ofArray([new Entity$1({
       $:0,
       $0:"wit/ordinal",
       $1:"two",
@@ -1252,11 +1341,11 @@
   var $1;
   return a==="1"||a==="one"?{
    $:1,
-   $0:new Utterance({
+   $0:new Utterance$1({
     $:0,
     $0:{
      $:1,
-     $0:new Intent({
+     $0:new Intent$1({
       $:0,
       $0:"questionresponse",
       $1:{
@@ -1268,7 +1357,7 @@
     $1:null,
     $2:{
      $:1,
-     $0:List.ofArray([new Entity({
+     $0:List.ofArray([new Entity$1({
       $:0,
       $0:"wit/ordinal",
       $1:"one",
@@ -1286,11 +1375,11 @@
   var $1;
   return a==="no"||(a==="NO"||(a==="No"||(a==="nope"||(a==="no way"||(a==="nah"||(a==="don't do it"||a==="stop"))))))?{
    $:1,
-   $0:new Utterance({
+   $0:new Utterance$1({
     $:0,
     $0:{
      $:1,
-     $0:new Intent({
+     $0:new Intent$1({
       $:0,
       $0:"no",
       $1:{
@@ -1309,11 +1398,11 @@
   var $1;
   return a==="yes"||(a==="YES"||(a==="Yes"||(a==="YEs"||(a==="ok"||(a==="sure"||(a==="yeah"||(a==="yep"||(a==="uh huh"||(a==="go ahead"||a==="go")))))))))?{
    $:1,
-   $0:new Utterance({
+   $0:new Utterance$1({
     $:0,
     $0:{
      $:1,
-     $0:new Intent({
+     $0:new Intent$1({
       $:0,
       $0:"yes",
       $1:{
@@ -1332,11 +1421,11 @@
   var $1;
   return a==="help"||(a==="help me"||(a==="what's this?"||a==="huh"))?{
    $:1,
-   $0:new Utterance({
+   $0:new Utterance$1({
     $:0,
     $0:{
      $:1,
-     $0:new Intent({
+     $0:new Intent$1({
       $:0,
       $0:"help",
       $1:{
@@ -1355,11 +1444,11 @@
   var $1;
   return a==="hello"||(a==="hey"||(a==="yo"||a==="hi"))?{
    $:1,
-   $0:new Utterance({
+   $0:new Utterance$1({
     $:0,
     $0:{
      $:1,
-     $0:new Intent({
+     $0:new Intent$1({
       $:0,
       $0:"hello",
       $1:{
@@ -1833,7 +1922,7 @@
    return Concurrency.Start((b$4=null,Concurrency.Delay(function()
    {
     sayRandom(CUI.waitAddPhrases(),"symptom entry");
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addSymptomJournalEntry:1150681409",[user().Name,s,l,m$1]),function(a$30)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addSymptomJournalEntry:1126931596",[user().Name,s,l,m$1]),function(a$30)
     {
      return a$30==null?(say(function($16)
      {
@@ -1855,7 +1944,7 @@
    return Concurrency.Delay(function()
    {
     sayRandom(CUI.waitRetrievePhrases(),"symptom journal");
-    return(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getSymptomJournal:1657877048",[u$1]);
+    return(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getSymptomJournal:59525302",[u$1]);
    });
   }
   Main.debug((((Runtime.Curried3(function($16,$17,$18)
@@ -1868,7 +1957,7 @@
    $0:a$1.$0
   }:null),a!=null&&a.$==1&&(a$2=AnonAssert(a.$0),a$2!=null&&a$2.$==1&&(a$3=NLU$1.Intent$1("hello",a$2.$0),a$3!=null&&a$3.$==1&&(a$3.$0[1]==null&&m.$1.$==0))))?(props.Add("started",true),sayRandom(CUI.helloPhrases(),"")):m.$==1&&(a$4=AnonAssert(m.$0),a$4!=null&&a$4.$==1&&(a$5=NLU$1.Intent$1("hello",a$4.$0),a$5!=null&&a$5.$==1&&(a$5.$0[1]==null&&m.$1.$==0)))?say("Hello, tell me your name to get started."):m.$==1&&(a$6=AnonAssert(m.$0),a$6!=null&&a$6.$==1&&(a$7=NLU$1.Intent$1("hello",a$6.$0),a$7!=null&&a$7.$==1&&(a$8=NLU$1.Entity1Of1("contact",a$7.$0[1]),a$8!=null&&a$8.$==1&&(m.$1.$==0&&($3=a$8.$0,true)))))?(u=$3.get_Value(),sayRandom(CUI.waitRetrievePhrases(),"user name"),Concurrency.Start((b=null,Concurrency.Delay(function()
   {
-   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:1909217759",[u]),function(a$30)
+   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:-1249169759",[u]),function(a$30)
    {
     var u$1;
     return a$30==null?(say((function($16)
@@ -1877,7 +1966,7 @@
      {
       return $16("I did not find a user with the name "+Utils.toSafe($17)+".");
      };
-    }(Global.id))(u)),ask("addUser",u),Concurrency.Zero()):(u$1=a$30.$0,Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.updateUserLastLogin:-658852470",[u$1.Name]),function()
+    }(Global.id))(u)),ask("addUser",u),Concurrency.Zero()):(u$1=a$30.$0,Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.updateUserLastLogin:1790003096",[u$1.Name]),function()
     {
      props.Add("user",u$1);
      sayRandom(CUI.helloUserPhrases(),(function($16)
@@ -1887,7 +1976,7 @@
        return $16(Utils.prettyPrint($17));
       };
      }(Global.id))(props.get_Item("user")));
-     return u$1.LastLoggedIn!=null?Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.humanize:1052561741",[u$1.LastLoggedIn.$0]),function(a$31)
+     return u$1.LastLoggedIn!=null?Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.humanize:2010625893",[u$1.LastLoggedIn.$0]),function(a$31)
      {
       say((function($16)
       {
@@ -1903,7 +1992,7 @@
   })),null)):m.$==1&&(a$9=NLU$1.Yes(m.$0),a$9!=null&&a$9.$==1&&(a$10=AnonResponse("addUser",a$9.$0),a$10!=null&&a$10.$==1&&(a$11=Str(a$10.$0[1]),a$11!=null&&a$11.$==1&&(m.$1.$==0&&($4=a$11.$0,true)))))?Concurrency.Start((b$1=null,Concurrency.Delay(function()
   {
    sayRandom(CUI.waitAddPhrases(),"user");
-   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addUser:-658852470",[$4]),function(a$30)
+   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addUser:1790003096",[$4]),function(a$30)
    {
     return a$30==null?(say((function($16)
     {
@@ -1927,7 +2016,7 @@
    };
   }(Global.id))($5)):m.$==1&&(($7=AnonAssert(m.$0),$7!=null&&$7.$==1)&&m.$1.$==0)?say("Could you introduce yourself so we can get started?"):m.$==1&&(a$15=Assert(m.$0),a$15!=null&&a$15.$==1&&(a$16=NLU$1.Intent$1("hello",a$15.$0),a$16!=null&&a$16.$==1&&(a$16.$0[0]==null&&(a$17=NLU$1.Entity1Of1("contact",a$16.$0[1]),a$17!=null&&a$17.$==1&&(m.$1.$==0&&($8=a$17.$0,true))))))?Concurrency.Start((b$2=null,Concurrency.Delay(function()
   {
-   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:1909217759",[$8.get_Value()]),function(a$30)
+   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:-1249169759",[$8.get_Value()]),function(a$30)
    {
     return a$30==null?(say((function($16)
     {
@@ -2237,7 +2326,7 @@
    intent==null&&(_trait==null&&entity==null)?void 0:(Client.debug(((((Runtime.Curried(function($2,$3,$4,$5)
    {
     return $2("Voice: "+SMApp$Web_GeneratedPrintf.p($3)+" "+SMApp$Web_GeneratedPrintf.p$3($4)+" "+SMApp$Web_GeneratedPrintf.p$5($5));
-   },4))(Global.id))(intent))(_trait))(entity)),u=Client.push(new Utterance({
+   },4))(Global.id))(intent))(_trait))(entity)),u=Client.push(new Utterance$1({
     $:0,
     $0:intent,
     $1:_trait,

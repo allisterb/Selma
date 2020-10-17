@@ -235,6 +235,8 @@ module NLU =
 
         let private trait_types = ["domain"; "dialogue_act"]
 
+        let getUtterance2 sentence = Witai.getMeaning2 "4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT" sentence
+
         let getUtterance sentence m =
             Witai.getMeaning "4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT" sentence 
                (Action<obj, string, JQuery.JqXHR>(
