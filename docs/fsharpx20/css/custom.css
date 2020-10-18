@@ -45,18 +45,18 @@ section {
    overflow: hidden;
    border-style:solid;
    border-width:2px;
-   height: 768px;
+   height: 1100px;
    word-wrap: break-word;
    background-color: white;
 }
 
 h1 {
-   width: 900px;
-   margin-left: -40px;
+   width: 1600px;
+   margin-left: -60px;
    padding-left: 10px;
    margin-top: -40px;
    color: black;
-   background-color: #7777bb;
+   background-color: #378BBA;
    min-height: 50px;
 }
 
@@ -119,7 +119,7 @@ a:focus {
 
 .step {
     position: relative;
-    width: 900px;
+    width: 1600px;
     padding: 40px;
     margin: 20px auto;
 
@@ -150,8 +150,8 @@ a:focus {
 .slide {
     display: block;
 
-    width: 900px;
-    height: 700px;
+    width: 1600px;
+    height: 1100px;
     padding: 40px 60px;
 
     background-color: white;
@@ -189,3 +189,70 @@ a:focus {
 
 .impress-enabled          { pointer-events: none }
 .impress-enabled #impress { pointer-events: auto }
+
+.presentation_title {
+    text-align: center;
+    position: absolute;
+    padding-top: 30px;
+    top: 50%;
+    font-size: 43px;
+}
+
+.ex-title  {
+    text-align: center;
+    position: relative;
+    top: 40%;
+}
+
+.title_author{
+    font-family: Graziano;
+    font-size: 25px;
+    position: absolute;
+    bottom: 40px;
+    right: 5px;
+}
+
+.right {
+    text-align:right;
+    position: absolute;
+    top: 60%;
+    right: 5px;   
+    font-size: 35px;
+}
+
+.title_author .author {
+     display: inline-block;
+    -webkit-transform: translateY(25px);
+    -moz-transform:    translateY(25px);
+    -ms-transform:     translateY(25px);
+    -o-transform:      translateY(25px);
+    transform:         translateY(25px);
+}
+
+.title_author .slash {
+    font-size: 70px;    
+    
+     display: inline-block;
+    -webkit-transform: translateY(35px);
+    -moz-transform:    translateY(35px);
+    -ms-transform:     translateY(35px);
+    -o-transform:      translateY(35px);
+    transform:         translateY(35px);
+
+}
+
+.title_author .date {
+    display: inline-block;
+    -webkit-transform: translateY(10px);
+    -moz-transform:    translateY(10px);
+    -ms-transform:     translateY(10px);
+    -o-transform:      translateY(10px);
+    transform:         translateY(10px);  
+}
+
+.logo {
+    text-align: center;
+}
+.logo_img {
+    height: 500px;
+}
