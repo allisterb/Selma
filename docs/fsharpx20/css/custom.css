@@ -52,8 +52,9 @@ section {
 
 h1 {
    width: 1600px;
-   margin-left: -60px;
-   padding-left: 10px;
+   margin-left: -40px; 
+   padding-left: reset;
+   
    margin-top: -40px;
    color: black;
    background-color: #378BBA;
