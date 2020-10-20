@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net471</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Iterable.fs" />
+    <Compile Include="PennTreebankIIPatterns.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Stanford.NLP.Parser" Version="3.9.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SMApp.Base.Fs\SMApp.Base.Fs.fsproj" />
+    <ProjectReference Include="..\SMApp.Base\SMApp.Base.csproj" />
+  </ItemGroup>
+
+</Project>

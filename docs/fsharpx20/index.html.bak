@@ -71,38 +71,24 @@
           interactions with health care providers.4,5</blockquote>
         <footer><img src="images/fsharp.png" class="footer-img"></footer>
       </section>
-      
       <section id="slide-5" class="level1 step" data-x="8000">
         <h1><a href="#slide-5">Self-Management</a></h1>
         <ul>
-          <li> Many smartphone apps for physical health self-management...
+          <li>Diaries</li>
+          <li> Symptom tracking</li>
+          <li> Medication tracking</li>
+          <li> Exercises tracking</li>
+          <li> Many smartphone apps fill this role...
             <ul>
               <li>Flaredown™</li>
               <li>Manage My Pain™</li>
               <li>SuperBetter™</li>
-              <li>Symple&trade;</li>
-              <li>CareClinic&trade;</li>
             </ul>
           </li>
         </ul>
-        <div class="slide-img"><img src="images/mmp.png" class="slide-img" style="width:1000px;height:500px;"></div>
+        <img src="images/mmp.png" class="slide-img">
         <footer><img src="images/fsharp.png" class="footer-img"></footer>
       </section>
-
-      <section id="slide-6" class="level1 step" data-x="10000">
-        <h1><a href="#slide-6">Self-Management</a></h1>
-        Mental health self-management apps:
-        <ul>
-          <li>Stop.Breath.Think&trade;</li>
-          <li>Happify&trade;</li>
-          <li>Gratitude&trade;</li>
-          <li>Pathways&trade;</li>
-          <li>Daylio&trade;</li>
-        </ul> 
-        <div class="slide-img"><img src="images/daylio.png" class="slide-img"></div>
-        <footer><img src="images/fsharp.png" class="footer-img"></footer>
-      </section>
-
     </div>
     <!-- Extra modules
      Load highlight.js, mermaid.js and markdown.js from extras.     See also src/plugins/extras/extras.js -->
