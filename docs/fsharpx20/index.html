@@ -113,7 +113,8 @@
           let Compromise = 
               Class "Nlp"
                 |+> Static [ 
-                  Constructor (T&lt;string&gt; target) |> WithInline("nlp($target);") //Constructor
+                //Constructor takes on string parameter  
+                Constructor (T&lt;string&gt; target) |> WithInline("window.nlp($target);") 
                 ]
           </code>
         </pre>
