@@ -204,10 +204,11 @@ module Main =
             async {
                 say "Ok I'll add that entry to your symptom journal"
                 addSymptom s.Value None (None)
-                let! j = getSymptomJournal (user().Name)
+                //let! j = getSymptomJournal (user().Name)
                 //say <| sprintf "I see this is the 3rd time today you've had pain %s" (user())
                 //ask "painVideo" ""
-            } |> Async.Start
+            } 
+            |> Async.Start
 
         | Yes(Response "painVideo"(_, _))::[] -> cui.EchoHtml'("""<iframe width="560" height="315" src="https://www.youtube.com/embed/SkAqOditKN0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>""")
             

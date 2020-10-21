@@ -1,4 +1,4 @@
-﻿namespace SMApp.Web
+﻿namespace SMApp
 
 open WebSharper
 open WebSharper.UI
@@ -20,12 +20,13 @@ module Resources =
 [<JavaScript>]
 module Bs =
     
-    let private eid = attr.id
-    let private cls = attr.``class``
-
+    let eid = attr.id
+    let cls n = attr.``class`` n
+    let dindex (n:int) = Attr.Create "data-index" (n.ToString())
     let container c = div [cls "container"] c
     
-    let btn id = button [eid id; cls "btn"] []
+    let btnPrimary id label onclick = button [eid id; cls "btn btn-primary"; on.click onclick] [text label]
+    let btnSecondary id label onclick = button [eid id; cls "btn btn-secondary"; on.click onclick] [text label]
 
     let input lbl extras (target, labelExtras, targetExtras) =
         div (cls "form-group" :: extras) [

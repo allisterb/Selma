@@ -42,12 +42,12 @@ module NLU =
 
     type Response =
         | Ssml of SSML
-        | Html of SSML * HTMLElement 
+        | Html of SSML * Element 
     with 
         override x.ToString() =
             match x with
             | Ssml s -> s.ToString()
-            | Html(p, h) -> h.InnerText
+            | Html(p, h) -> h.InnerHTML
         member x.Text = 
             match x with
             | Ssml s -> s.ToString()

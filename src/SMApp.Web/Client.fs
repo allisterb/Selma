@@ -9,6 +9,7 @@ open WebSharper.UI
 open WebSharper.UI.Client
 open WebSharper.UI.Html
 
+open SMApp.Bs
 open SMApp.JQueryTerminal
 open SMApp.WebSpeech
 open SMApp.Microphone
@@ -135,15 +136,19 @@ module Client =
                 if CUI.Mic = None then initMic main'
                 if CUI.Voice = None then initSpeech()
             do if ClientState = ClientNotInitialzed then ClientState <- ClientReady
+            let btn = btnPrimary "btn0" "test" (fun o i -> (Utterance(None, None, None) |> push |> Main.update CUI Props Tasks Responses))
+            
             match command with
             (* Quick commands *)
             | Text.Blank -> say' "Tell me what you want me to do or ask me a question."
             | Text.Debug ->  
                 debug <| sprintf "Utterances: %A" Utterances
                 debug <| sprintf "Tasks: %A" Tasks
-                let el = JS.Document.CreateElement("insert")
-                do div [attr.id  "bar"] [] |> Doc.RunAppend el
-                debug <| el.InnerHTML
+                
+                let i =  JQuery(".terminal-output").Get().[0].ChildNodes.Length
+                let btn = btnPrimary "btn0" "test" (fun o i -> (Utterance(None, None, None) |> push |> Main.update CUI Props Tasks Responses))
+                div [cls "terminal-command"; dindex (i + 1)] [btn] |> Doc.RunAppend (termOutput())
+
             | Text.Voices -> 
                 let voices = speechSynthesis().GetVoices() |> toArray    
                 sprintf "There are currently %i voices installed on this computer or device." voices.Length |> say'
