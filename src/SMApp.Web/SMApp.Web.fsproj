@@ -5,6 +5,7 @@
     <UserSecretsId>f3ed0dc7-f978-44ae-8add-9e5bfcf8fa8a</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="NLG.fs" />
     <Compile Include="ClientExtensions.fs" />
     <Compile Include="Bootstrap.fs" />
     <Compile Include="Babelfy.fs" />
@@ -44,6 +45,9 @@
   <ItemGroup>
     <Reference Include="SMApp.BotLibre">
       <HintPath>..\..\ext\SMApp.BotLibre\bin\Debug\netstandard2.0\SMApp.BotLibre.dll</HintPath>
+    </Reference>
+    <Reference Include="SMApp.Compromise">
+      <HintPath>..\..\ext\SMApp.Compromise\bin\Debug\netstandard2.0\SMApp.Compromise.dll</HintPath>
     </Reference>
     <Reference Include="SMApp.JQueryTerminal">
       <HintPath>..\..\ext\SMApp.JQueryTerminal\bin\Debug\netstandard2.0\SMApp.JQueryTerminal.dll</HintPath>

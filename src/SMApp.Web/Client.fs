@@ -13,6 +13,7 @@ open SMApp.JQueryTerminal
 open SMApp.WebSpeech
 open SMApp.Microphone
 open SMApp.BotLibre
+open SMApp.Compromise
 
 [<JavaScript>]
 module Client =

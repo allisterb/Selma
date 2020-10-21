@@ -6,40 +6,30 @@ open WebSharper.InterfaceGenerator
 
 module Definition =
 
-    let Compromise = Class "Compromise"
-    let I1 =
-        Interface "I1"
-        |+> [
-                "test1" => T<string> ^-> T<string>
-            ]
-
-    let I2 =
-        Generic -- fun t1 t2 ->
-            Interface "I2"
-            |+> [
-                    Generic - fun m1 -> "foo" => m1 * t1 ^-> t2
-                ]
-
-    let C1 =
-        Class "C1"
-        |+> Instance [
-                "foo" =@ T<int>
-            ]
+    let Nlp = 
+        Class "Nlp"
         |+> Static [
-                Constructor (T<unit> + T<int>)
-                "mem"   => (T<unit> + T<int> ^-> T<unit>)
-                "test2" => (TSelf -* T<int> ^-> T<unit>) * T<string> ^-> T<string>
-                "radius2" =? T<float>
-                |> WithSourceName "R2"
-            ]
+            Constructor (T<string>? target) |> WithInline("new window.nlp($target)")
+        ]
+        |+> Instance[
+            "match" => T<string> ^-> TSelf
+            "text" => T<unit> ^-> T<string>
+        ]
+
 
     let Assembly =
         Assembly [
             Namespace "SMApp.Compromise.Resources" [
-                Resource "Js" "https://unpkg.com/compromise" |> AssemblyWide
+                Resource "compromise" "https://unpkg.com/compromise" |> AssemblyWide
+                Resource "numbers" "https://unpkg.com/compromise-numbers" |> AssemblyWide
+                Resource "dates" "https://unpkg.com/compromise-dates" |> AssemblyWide
+                Resource "adjectives" "https://unpkg.com/compromise-adjectives" |> AssemblyWide
+                Resource "syllables" "https://unpkg.com/compromise-syllables" |> AssemblyWide
+                Resource "sentences" "https://unpkg.com/compromise-sentences" |> AssemblyWide
+                Resource "paragraphs" "https://unpkg.com/compromise-paragraphs" |> AssemblyWide
             ]
             Namespace "SMApp.Compromise" [
-                Compromise
+                Nlp
             ]
         ]
 

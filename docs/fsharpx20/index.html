@@ -8,7 +8,7 @@
     <meta name="description" content="Presentation">
     <meta name="author" content="Allister Beharry">
     <!-- highlight styles -->
-    <link rel="stylesheet" href="extras/highlight/styles/arduino-light.css">
+    <link rel="stylesheet" href="extras/highlight/styles/github.css">
     <!-- Common styles for impress.js -->
     <link rel="stylesheet" href="css/impress-common.css">
     <!-- My styles -->
@@ -98,8 +98,25 @@
           <li>Gratitude&trade;</li>
           <li>Pathways&trade;</li>
           <li>Daylio&trade;</li>
-        </ul> 
+        </ul>
+        Mood journals, meditation, self-affirmation 
         <div class="slide-img"><img src="images/daylio.png" class="slide-img"></div>
+        <footer><img src="images/fsharp.png" class="footer-img"></footer>
+      </section>
+
+      <section id="slide-66" class="level1 step" data-x="10000">
+        <h1><a href="#slide-66">WebSharper</a></h1>
+        <h2>Interop with JavaScript</h2>
+       
+        <pre><code class="fsharp">          
+          //  Use an idiomatic F# DSL to create bindings to JavaScript code:  
+          let Compromise = 
+              Class "Nlp"
+                |+> Static [ 
+                  Constructor (T&lt;string&gt; target) |> WithInline("nlp($target);") //Constructor
+                ]
+          </code>
+        </pre>
         <footer><img src="images/fsharp.png" class="footer-img"></footer>
       </section>
 

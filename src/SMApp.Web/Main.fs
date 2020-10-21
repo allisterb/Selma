@@ -42,10 +42,12 @@ module Main =
         (* Manage the dialogue state elements*)
 
         let haveProp k = props.ContainsKey k
+        let prop k :'a = props.[k] :?> 'a
         let addProp k v = props.Add(k, v)
         let deleteProp k = props.Remove k |> ignore
-        let strProp k = props.[k] :?> string
-        let user() = props.["user"] :?> User
+        
+
+        let user() :User = prop "user"
         let popc() = utterances.Pop() |> ignore
         let popq() = questions.Pop() |> ignore
         let pushq (n:string) = 

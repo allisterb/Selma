@@ -14,6 +14,7 @@ module PennTreebankIIPatterns =
     let isPhraseLevel = function
         | ADJP | ADVP | CONJP | FRAG | INTJ | LST
         | NAC | NP | NX | PP | PRN | PRT | QP | RRC
+
         | UCP | VP | WHADJP | WHADVP | WHNP | WHPP | X -> true
         | _ -> false
 

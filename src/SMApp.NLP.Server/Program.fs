@@ -1,8 +1,10 @@
 module SMApp.NLP.StanfordNLP.App
 
 open System
+
+open Microsoft.AspNetCore
+open Microsoft.AspNetCore.Http
 open Microsoft.AspNetCore.Builder
-open Microsoft.AspNetCore.Cors.Infrastructure
 open Microsoft.AspNetCore.Hosting
 open Microsoft.Extensions.Hosting
 open Microsoft.Extensions.Logging
@@ -36,23 +38,16 @@ let errorHandler (ex : Exception) (logger : ILogger) =
 // Config and Main
 // ---------------------------------
 
-let configureCors (builder : CorsPolicyBuilder) =
-    builder.WithOrigins("http://localhost:8080")
-           .AllowAnyMethod()
-           .AllowAnyHeader()
-           |> ignore
 
 let configureApp (app : IApplicationBuilder) =
-    let env = app.ApplicationServices.GetService<IWebHostEnvironment>()
+    let env = app.ApplicationServices.GetService<IHostingEnvironment>()
     (match env.EnvironmentName with
     | "Development" -> app.UseDeveloperExceptionPage()
     | _ -> app.UseGiraffeErrorHandler(errorHandler))
-        .UseHttpsRedirection()
-        .UseCors(configureCors)
+      
         .UseGiraffe(webApp)
 
 let configureServices (services : IServiceCollection) =
-    services.AddCors()    |> ignore
     services.AddGiraffe() |> ignore
 
 let configureLogging (builder : ILoggingBuilder) =
@@ -68,7 +63,7 @@ let main args =
                 webHostBuilder
                     .Configure(Action<IApplicationBuilder> configureApp)
                     .ConfigureServices(configureServices)
-                    .ConfigureLogging(configureLogging)
+                   
                     |> ignore)
         .Build()
         .Run()
