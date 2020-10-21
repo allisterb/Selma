@@ -165,13 +165,11 @@
 
       <section id="slide-57" class="level1 step" data-x="16000">
         <h1><a href="#slide-57">WebSharper</a></h1>
-        <h2>.NET Web Development is hard for a poor robot...</h2>
+        <h2>.NET Web Development is hard for a poor monster...</h2>
         <div style="float: left;">
           <h3>Multiple language types:</h3>
           <ul>
-            <li>Compiled</li>
-            <li>Interpreted</li>
-            <li>Transpiled</li>
+            <li>Compiled/Interpreted/Transpiled</li>
             <li>
               Object-oriented
             </li>
@@ -208,21 +206,64 @@
             <li>Domain ???</li>
           </ul>
         </div>
-        <div class="slide-img"><img src="images/depressed.png" style="width:800px"/></div>
+        <div class="slide-img"><img src="images/sadelmo.png" style="width:450px"/></div>
         <footer><img src="images/fsharp.png" class="footer-img"></footer>
       </section>
-      <section id="slide-66" class="level1 step" data-x="44000">
-        <h1><a href="#slide-66">WebSharper</a></h1>
+
+      <section id="slide-58" class="level1 step" data-x="18000">
+        <h1><a href="#slide-57">WebSharper</a></h1>
+        <h2 class="tlt">Managing the cognitive load of .NET web development</h2>
+        <div class="slide-img fade-in"><img src="images/happy.png" style="width:800px"/></div>
+        <footer><img src="images/fsharp.png" class="footer-img"></footer>
+      </section>
+
+      <section id="slide-59" class="level1 step" data-x="20000">
+        <h1><a href="#slide-59">WebSharper</a></h1>
         <h2>Interop with JavaScript</h2>
-       
         <pre><code class="fsharp">          
-          //  Use an idiomatic F# DSL to create bindings to JavaScript code:  
-          let Compromise = 
-              Class "Nlp"
-                |+> Static [ 
-                //Constructor takes on string parameter  
-                Constructor (T&lt;string&gt; target) |> WithInline("window.nlp($target);") 
-                ]
+              let Mic = // https://github.com/wit-ai/microphone
+                  Class "Mic"
+                  |+> Instance [
+                          "connect" => T<string> ^-> T<unit>
+                          "start" => T<unit> ^-> T<unit>
+                          "stop" => T<unit> ^-> T<unit>
+                          "onaudiostart" =@ T<unit> ^-> T<unit> |> WithSourceName "onAudioStart"
+                          "onaudioend" =@ T<unit> ^-> T<unit> |> WithSourceName "onAudioEnd"
+                          "onconnecting" =@ T<unit> ^-> T<unit> |> WithSourceName "onConnecting"
+                          "ondisconnected" =@ T<unit> ^-> T<unit> |> WithSourceName "onDisconnected"
+                          "onready" =@ T<unit> ^-> T<unit> |> WithSourceName "onReady"
+                          "onerror" =@ T<string> ^-> T<unit> |> WithSourceName "onError"
+                          "onresult" =@ (T<obj> * T<obj>) ^-> T<unit> |> WithSourceName "onResult"
+                      ]
+                  |+> Static [ Constructor (T<unit>) 
+                    |> WithInline "new Wit.Microphone(document.getElementById(\"microphone\"))"]
+          </code>
+        </pre>
+        <footer><img src="images/fsharp.png" class="footer-img"></footer>
+      </section>
+      
+      <section id="slide-60" class="level1 step" data-x="22000">
+        <h1><a href="#slide-60">WebSharper</a></h1>
+        <h2>Interop with JavaScript</h2>
+        <pre><code class="fsharp">          
+        let initMic interpret  = // Initialize the CUI Mic
+            CUI <- { CUI with Mic = Some(Mic()) }
+            let mic = CUI.Mic.Value
+            do mic.onConnecting <- (fun _ -> MicState <- MicConnecting; debug "Mic connecting...")
+            do mic.onDisconnected <- (fun _ -> MicState <- MicDisconnected;debug "Mic disconnected.")
+            ...
+            do mic.onResult <- (fun i e -> 
+                match ClientState with
+                | ClientReady ->
+                    if not (isNull i || isNull e) then 
+                        MicState <- MicResult(i,e) 
+                        debug <| sprintf "Mic result: %A %A." i e; interpret (i,e)
+                    else 
+                        debug "Mic: No result returned."        
+                | ClientUnderstand -> echo "I'm still trying to understand what you said before."
+                | ClientNotInitialzed -> error "Client is not intialized."
+                )
+            do mic.Connect("...client key...")
           </code>
         </pre>
         <footer><img src="images/fsharp.png" class="footer-img"></footer>
