@@ -289,9 +289,9 @@ module NLU =
                 return Utterance'(intents, entities, traits)
             }
  
-        let mutable intentConfidenceThreshold = 0.85f
+        let mutable intentConfidenceThreshold = 0.5f
 
-        let mutable entityConfidenceThreshold = 0.85f
+        let mutable entityConfidenceThreshold = 0.5f
         
         let (|HasUtterance|_|) :Utterance' option ->(Utterance option) =
             function

@@ -29,15 +29,28 @@
                 --------
         Plugins: For first slide, set the autoplay time to a custom 10 seconds.        
     -->
-      <div id="title" class="step slide" data-x="0" data-y="0">
+      <div id="title" class="step slide" data-x="-30000" data-y="0">
         <div class="logo"> <img src="images/fsharp.png" class="logo_img">
         </div>
         <div class="presentation_title"> Declarative, Concise Implementation of
           a Rule-Based Dialogue Manager in F# </div>
-        <div class="title_author"><span class="date">05.10.2020</span><span class="slash">/</span><span
-
+        <div class="title_author"><span class="date">21 October 2020</span><span class="slash">/</span><span
             class="author">Allister Beharry</span></div>
       </div>
+      <section id="slide-1" class="level1 step" data-x="0">
+        <h1><a href="#slide-1">About me</a></h1>
+        <ul>
+          <li>Open-source developer</li>
+          <li>Mostly C# and F# but dabble in other languages</li>
+          <li>Computer security, scientific programming, natural language understanding, CUIs</li>
+          <li>https://github.com/allisterb</li>
+          <li>@allisterb</li>
+          <li>From Trinidad W.I.</li>
+        </ul>
+        <div style="text-align: center;"> <img src="images/caribmap.png" style="width: 1000px;text-align: center;">
+        </div>
+      </section>
+
       <section id="slide-2" class="level1 step" data-x="2000">
         <h1><a href="#slide-2">Self-Management</a></h1>
         <div style="text-align: center;"> <img src="images/robot.png" style="width: 1000px;text-align: center;">
@@ -209,16 +222,34 @@
         <div class="slide-img"><img src="images/sadelmo.png" style="width:450px"/></div>
         <footer><img src="images/fsharp.png" class="footer-img"></footer>
       </section>
-
       <section id="slide-58" class="level1 step" data-x="18000">
-        <h1><a href="#slide-57">WebSharper</a></h1>
-        <h2 class="tlt">Managing the cognitive load of .NET web development</h2>
-        <div class="slide-img fade-in"><img src="images/happy.png" style="width:800px"/></div>
+        <h1><a href="#slide-58">WebSharper</a></h1>
+        <h2>What .NET web development feels like now</h2>
+        <iframe width="1500" height="900" src="https://www.youtube.com/embed/Moh2l7udjio?controls=0&amp;start=41" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         <footer><img src="images/fsharp.png" class="footer-img"></footer>
       </section>
 
       <section id="slide-59" class="level1 step" data-x="20000">
         <h1><a href="#slide-59">WebSharper</a></h1>
+        <h2 class="xtlt">Managing the cognitive load of .NET web development</h2>
+        <div class="slide-img fade-in"><img src="images/happy.png" style="width:800px;float:left"/></div>
+        <div>
+          <ul>
+            <li>Use <b>ONE</b> language (mostly) for solution. </li>
+            <li>Use <b>ONE</b> framework for solution components. </li>
+            <li>A single set of concepts, idioms, models, abstractions.</li>
+            <li>Compile F# to JavaScript to run in browser</li>
+            <li>Pure F# libraries for JavaScript interop including native jQuery</li>
+            <li>DSL for DOM manipulation</li>
+            <li>Functional reactive programming</li>
+            <li>Seamless connection between client-server code.</li>
+          </ul>
+        </div>
+        <footer><img src="images/fsharp.png" class="footer-img"></footer>
+      </section>
+
+      <section id="slide-60" class="level1 step" data-x="22000">
+        <h1><a href="#slide-60">WebSharper</a></h1>
         <h2>Interop with JavaScript</h2>
         <pre><code class="fsharp">          
               let Mic = // https://github.com/wit-ai/microphone
@@ -242,8 +273,8 @@
         <footer><img src="images/fsharp.png" class="footer-img"></footer>
       </section>
       
-      <section id="slide-60" class="level1 step" data-x="22000">
-        <h1><a href="#slide-60">WebSharper</a></h1>
+      <section id="slide-61" class="level1 step" data-x="22000">
+        <h1><a href="#slide-61">WebSharper</a></h1>
         <h2>Interop with JavaScript</h2>
         <pre><code class="fsharp">          
         let initMic interpret  = // Initialize the CUI Mic
