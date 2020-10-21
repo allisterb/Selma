@@ -9,6 +9,8 @@
     <meta name="author" content="Allister Beharry">
     <!-- highlight styles -->
     <link rel="stylesheet" href="extras/highlight/styles/github.css">
+    <!-- textillate styles-->
+    <link rel="stylesheet" href="https://textillate.js.org/assets/animate.css">
     <!-- Common styles for impress.js -->
     <link rel="stylesheet" href="css/impress-common.css">
     <!-- My styles -->
@@ -104,7 +106,112 @@
         <footer><img src="images/fsharp.png" class="footer-img"></footer>
       </section>
 
-      <section id="slide-66" class="level1 step" data-x="10000">
+      <section id="slide-55" class="level1 step" data-x="12000">
+        <h1><a href="#slide-55">WebSharper</a></h1>
+        <h2>Managing the complexity of web development</h2>
+        <div class="slide-img"><img src="images/braincog.png" style="width:700px"/></div>
+       
+        <footer><img src="images/fsharp.png" class="footer-img"></footer>
+      </section>
+      <section id="slide-56" class="level1 step" data-x="14000">
+        <h1><a href="#slide-56">WebSharper</a></h1>
+        <h2>.NET Web Development is hard for a poor robot...</h2>
+        <div style="float: left;">
+          <h3>Multiple languages:</h3>
+          <ul>
+            <li>
+              HTML
+            </li>
+            <li>
+              CSS
+            </li>
+            <li>
+              JavaScript (and/or TypeScript) (and/or JSX)
+            </li>
+            <li>
+              Razor
+            </li>
+            <li>
+              C#
+            </li>
+            <li>
+              SQL
+            </li>
+          </ul>
+          <h3>Multiple frameworks:</h3>
+          <ul>
+            <li>
+              React / Angular / Vue
+            </li>
+            <li>
+              jQuery (may still be needed)
+            </li>
+            <li>
+              Bootstrap
+            </li>
+            <li>
+              ASP.NET Core
+            </li>
+            <li>
+              Entity Framework
+            </li>
+            ...testing frameworks too
+            <li>xUnit, Selenium,...</li>
+          </ul>
+        </div>
+        <div class="slide-img"><img src="images/depressed.png" style="width:800px"/></div>
+        <footer><img src="images/fsharp.png" class="footer-img"></footer>
+      </section>
+
+      <section id="slide-57" class="level1 step" data-x="16000">
+        <h1><a href="#slide-57">WebSharper</a></h1>
+        <h2>.NET Web Development is hard for a poor robot...</h2>
+        <div style="float: left;">
+          <h3>Multiple language types:</h3>
+          <ul>
+            <li>Compiled</li>
+            <li>Interpreted</li>
+            <li>Transpiled</li>
+            <li>
+              Object-oriented
+            </li>
+            <li>
+              Markup
+            </li>
+            <li>
+              Statically-typed
+            </li>
+            <li>
+              Dynamically-typed
+            </li>
+            <li>
+              Relational
+            </li>
+          </ul>
+          <h3>Multiple concepts:</h3>
+          <ul>
+            <li>
+              DOM
+            </li>
+            <li>
+              (Virtual) DOM
+            </li>
+            <li>
+              MVC
+            </li>
+            <li>
+            Dependency Injection
+            </li>
+            <li>
+              Object-Relational Mapper
+            </li>
+            <li>Domain ???</li>
+          </ul>
+        </div>
+        <div class="slide-img"><img src="images/depressed.png" style="width:800px"/></div>
+        <footer><img src="images/fsharp.png" class="footer-img"></footer>
+      </section>
+      <section id="slide-66" class="level1 step" data-x="44000">
         <h1><a href="#slide-66">WebSharper</a></h1>
         <h2>Interop with JavaScript</h2>
        
@@ -120,13 +227,32 @@
         </pre>
         <footer><img src="images/fsharp.png" class="footer-img"></footer>
       </section>
-
+      <section id="slide-99" class="level1 step" data-x="46000">
+        <h1><a href="#slide-99">WebSharper</a></h1>
+        <h2>Interop with DOM</h2>
+       
+        <pre><code class="fsharp">          
+          //  Use an idiomatic F# DSL to create bindings to JavaScript code:  
+          let Compromise = 
+              Class "Nlp"
+                |+> Static [ 
+                //Constructor takes on string parameter  
+                Constructor (T&lt;string&gt; target) |> WithInline("window.nlp($target);") 
+                ]
+          </code>
+        </pre>
+        <footer><img src="images/fsharp.png" class="footer-img"></footer>
+      </section>
     </div>
     <!-- Extra modules
      Load highlight.js, mermaid.js and markdown.js from extras.     See also src/plugins/extras/extras.js -->
     <script type="text/javascript" src="extras/highlight/highlight.pack.js"></script>
     <script type="text/javascript" src="extras/mermaid/mermaid.min.js"></script>
     <script type="text/javascript" src="extras/markdown/markdown.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+    <script type="text/javascript" src="https://textillate.js.org/assets/jquery.fittext.js"></script>
+    <script type="text/javascript" src="https://textillate.js.org/assets/jquery.lettering.js"></script>
+    <script type="text/javascript" src="https://textillate.js.org/jquery.textillate.js"></script>
     <!--
          To make all described above really work, you need to include impress.js in the page.         You also need to call a `impress().init()` function to initialize impress.js presentation.
          And you should do it in the end of your document.      -->
@@ -134,6 +260,9 @@
     <script>
       hljs.initHighlightingOnLoad();
       impress().init();
+      $(function () {
+	      $('.tlt').textillate();
+      })
     </script>
     <div class="fallback-message"> impress.js is not sported by 2 your browser,
       sorry. </div>
