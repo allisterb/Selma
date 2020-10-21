@@ -14,6 +14,7 @@ module Witai =
         entities: Map<string, Entity array>
         traits: Map<string, Trait array>
     }
+       
     and Intent = {
         id: string
         name: string
@@ -26,11 +27,13 @@ module Witai =
         start: int
         ``end``: int
         body: string
+        confidence: float32
         entities: obj[]
         suggested: bool
         value: string
         ``type``:string
     }
+    
     and Trait = {
         id: string
         value: string

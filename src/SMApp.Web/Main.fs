@@ -10,19 +10,16 @@ open SMApp.Models
 module Main =
     let debug m = ClientExtensions.debug "Main" m
     
-    let questions = [ 
-        Question("addUser", "Do you want me to add the user $0?")
-        Question("switchUser", "Do you want me to switch to the user $0?")
-        Question("painSurvey", "Would you like to take a short survey on your pain symptoms so I can understand them better.")
-        Question("painVideo", "Would you like to see a video about pain management that might help you?")
-        Question("medReminder", "Would you like me to add a reminder about your meds so you won't forget them later?")
+    let tasks = [ 
+        Task("addUser", Ssml(SSML("Do you want me to add the user $0?")))
+        Task("switchUser", Ssml(SSML("Do you want me to switch to the user $0?")))
     ]  
-    let getQuestion n = questions |> List.tryFind(fun q -> q.Name = n)
-    let haveQuestion n = questions |> List.exists(fun q -> q.Name = n)
+    let getTask n = tasks |> List.tryFind(fun q -> q.Name = n)
+    let haveTask n = tasks |> List.exists(fun q -> q.Name = n)
 
     /// Update the dialogue state
-    let update (cui: CUI) (props: Dictionary<string, obj>) (questions:Stack<Question>) (responses:Stack<string>) (utterances: Stack<Utterance>) =        
-        debug <| sprintf "Starting utterances:%A. Starting questions: %A." utterances questions
+    let update (cui: CUI) (props: Dictionary<string, obj>) (tasks:Stack<Task>) (responses:Stack<string>) (utterances: Stack<Utterance>) =        
+        debug <| sprintf "Starting utterances:%A. Starting tasks: %A." utterances tasks
        
         (* Audio and text cues *)
 
@@ -46,19 +43,18 @@ module Main =
         let addProp k v = props.Add(k, v)
         let deleteProp k = props.Remove k |> ignore
         
-
         let user() :User = prop "user"
         let popc() = utterances.Pop() |> ignore
-        let popq() = questions.Pop() |> ignore
+        let popq() = tasks.Pop() |> ignore
         let pushq (n:string) = 
-            match getQuestion n with
-            | Some q -> questions.Push q
-            | None -> failwithf "No such question: %s" n
+            match getTask n with
+            | Some q -> tasks.Push q
+            | None -> failwithf "No such task %s" n
         let ask q v =
             addProp q v
             pushq q; 
-            debug <| sprintf "Added question: %A." (questions.Peek()) 
-            let _q = getQuestion q in say <| replace_tok "$0" v _q.Value.Text
+            debug <| sprintf "Added question: %A." (tasks.Peek()) 
+            let _q = getTask q in say <| replace_tok "$0" v (_q.Value.Prompt.Text)
             
         (* Dialogue patterns *)
 
@@ -74,14 +70,14 @@ module Main =
          
         let (|Assert|_|) :Utterance -> Utterance option =
             function
-            | PropSet "user" m when questions.Count = 0 -> 
+            | PropSet "user" m when tasks.Count = 0 -> 
                 popc()
                 Some m
             | _ -> None
 
         let (|Response|_|) (n:string) :Utterance -> (Utterance * obj option) option =
             function
-            | PropSet "user" m when haveQuestion n && questions.Count > 0  && questions.Peek().Name = n -> 
+            | PropSet "user" m when haveTask n && tasks.Count > 0  && tasks.Peek().Name = n -> 
                 popc()
                 popq()
                 if haveProp n then
@@ -91,9 +87,9 @@ module Main =
                 else Some(m, None)
             | _ -> None
 
-        let (|AnonResponse|_|) (n:string) :Utterance -> (Utterance * obj option) option =
+        let (|Response'|_|) (n:string) :Utterance -> (Utterance * obj option) option =
             function
-            | PropNotSet "user" m when haveQuestion n && questions.Count > 0  && questions.Peek().Name = n -> 
+            | PropNotSet "user" m when haveTask n && tasks.Count > 0  && tasks.Peek().Name = n -> 
                 popc()
                 popq()
                 if haveProp n then
@@ -103,9 +99,9 @@ module Main =
                 else Some(m, None)
             | _ -> None
 
-        let (|AnonAssert|_|) :Utterance -> Utterance option =
+        let (|Assert'|_|) :Utterance -> Utterance option =
             function
-            | PropNotSet "user" m when questions.Count = 0 -> 
+            | PropNotSet "user" m when tasks.Count = 0 -> 
                 popc()
                 Some m
             | _ -> None
@@ -172,21 +168,21 @@ module Main =
 
         (* Hello *)
         
-        | Start(AnonAssert(Intent "hello" (_, None)))::[] ->  
+        | Start(Assert'(Intent "hello" (_, None)))::[] ->  
                 props.Add("started", true)
                 sayRandom' helloPhrases
-        | AnonAssert(Intent "hello" (_, None))::[] -> say "Hello, tell me your name to get started."
+        | Assert'(Intent "hello" (_, None))::[] -> say "Hello, tell me your name to get started."
 
         (* User login *)
         
-        | AnonAssert(Intent "hello" (_, Entity1Of1 "contact" u))::[] -> loginUser u.Value
+        | Assert'(Intent "hello" (_, Entity1Of1 "contact" u))::[] -> loginUser u.Value
         
         (* User add *)
         
-        | Yes(AnonResponse "addUser" (_, Str user))::[] -> addUser user
-        | No(AnonResponse "addUser" (_, Str user))::[] -> say <| sprintf "Ok I did not add the user %s. But you must login for me to help you." user
+        | Yes(Response' "addUser" (_, Str user))::[] -> addUser user
+        | No(Response' "addUser" (_, Str user))::[] -> say <| sprintf "Ok I did not add the user %s. But you must login for me to help you." user
 
-        | AnonAssert(_) ::[] -> say "Could you introduce yourself so we can get started?"
+        | Assert'(_) ::[] -> say "Could you introduce yourself so we can get started?"
 
         (* User switch *)
         
@@ -210,7 +206,7 @@ module Main =
                 addSymptom s.Value None (None)
                 let! j = getSymptomJournal (user().Name)
                 //say <| sprintf "I see this is the 3rd time today you've had pain %s" (user())
-                ask "painVideo" ""
+                //ask "painVideo" ""
             } |> Async.Start
 
         | Yes(Response "painVideo"(_, _))::[] -> cui.EchoHtml'("""<iframe width="560" height="315" src="https://www.youtube.com/embed/SkAqOditKN0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>""")
@@ -225,10 +221,10 @@ module Main =
             popc()
             debug "Main interpreter did not understand utterance."
             say "Sorry I didn't understand what you meant."
-            if questions.Count > 0 then 
-                let q = Seq.item 0 questions in 
+            if tasks.Count > 0 then 
+                let q = Seq.item 0 tasks in 
                 if haveProp q.Name then 
-                    say <| replace_tok "$0" (props.[q.Name] :?> string) q.Text
-                else say q.Text
+                    say <| replace_tok "$0" (props.[q.Name] :?> string) (q.ToString())
+                else say (q.ToString())
 
-        debug <| sprintf "Ending utterances: %A. Ending questions:%A." utterances questions
+        debug <| sprintf "Ending utterances: %A. Ending questions:%A." utterances tasks

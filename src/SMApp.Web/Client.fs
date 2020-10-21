@@ -51,7 +51,7 @@ module Client =
 
     (* Dialogue state *)
     let Utterances = new Stack<Utterance>()
-    let Questions = new Stack<Question>()
+    let Tasks = new Stack<Task>()
     let Responses = new Stack<string>()
     let Props = new Dictionary<string, obj>()
     let push (m:Utterance) = Utterances.Push m; Utterances
@@ -126,7 +126,7 @@ module Client =
             | None, None, None -> ()
             | _ -> 
                 debug <| sprintf "Voice: %A %A %A" intent _trait entity
-                Utterance(intent, _trait, entity) |> push |> Main.update CUI Props Questions Responses
+                Utterance(intent, _trait, entity) |> push |> Main.update CUI Props Tasks Responses
         
         /// Terminal interpreter 
         let main (term:Terminal) (command:string)  =
@@ -140,7 +140,7 @@ module Client =
             | Text.Blank -> say' "Tell me what you want me to do or ask me a question."
             | Text.Debug ->  
                 debug <| sprintf "Utterances: %A" Utterances
-                debug <| sprintf "Questions: %A" Questions
+                debug <| sprintf "Tasks: %A" Tasks
                 let el = JS.Document.CreateElement("insert")
                 do div [attr.id  "bar"] [] |> Doc.RunAppend el
                 debug <| el.InnerHTML
@@ -160,7 +160,7 @@ module Client =
                     | Text.QuickYes m
                     | Text.QuickNo m -> 
                         debug <| sprintf "Quick Text: %A." m                        
-                        m |> push |> Main.update CUI Props Questions Responses
+                        m |> push |> Main.update CUI Props Tasks Responses
                         ClientState <- ClientReady
                     (* Use the NLU service for everything else *)
                     | _->         
@@ -170,7 +170,7 @@ module Client =
                                 match meaning with
                                 | Text.HasUtterance m -> 
                                     debug <| sprintf "Text: Intent: %A, Traits: %A, Entities: %A" m.Intent m.Traits m.Entities
-                                    m |> push |> Main.update CUI Props Questions Responses
+                                    m |> push |> Main.update CUI Props Tasks Responses
                                 | _ -> 
                                     debug "Text: Did not receive a meaning from the server." 
                                     say' "Sorry I did not understand what you said."

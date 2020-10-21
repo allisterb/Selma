@@ -4,7 +4,8 @@ open System
 
 open WebSharper
 open WebSharper.JavaScript
-
+open WebSharper.JavaScript.Dom
+open WebSharper.UI
 open SMApp.NLU
 
 [<JavaScript;AutoOpen>]
@@ -37,11 +38,26 @@ module NLU =
 
     type Utterance' = Trait list option * Entity list option
 
-    type Question = Question of string * string
+    type SSML = SSML of string with override x.ToString() = let (SSML s) = x in s 
+
+    type Response =
+        | Ssml of SSML
+        | Html of SSML * HTMLElement 
     with 
-        member x.Name = let (Question(n, _)) = x in n 
-        member x.Text = let (Question(_, t)) = x in t
-        override x.ToString() = sprintf "Name: %s Text: %s" x.Name x.Text
+        override x.ToString() =
+            match x with
+            | Ssml s -> s.ToString()
+            | Html(p, h) -> h.InnerText
+        member x.Text = 
+            match x with
+            | Ssml s -> s.ToString()
+            | Html(p, _) -> p.ToString()
+
+    type Task = Task of string * Response
+    with 
+        member x.Name = let (Task(n, _)) = x in n 
+        member x.Prompt = let (Task(_, p)) = x in p
+        override x.ToString() = sprintf "Name: %s Prompt: %s" x.Name (x.Prompt.ToString())
 
     let (|Intent|_|) n :Utterance -> Utterance' option= 
         function
@@ -144,10 +160,6 @@ module NLU =
         let (|QuickYes|_|) =
             function
             | "yes"
-            | "YES"
-            | "Yes"
-            | "YEs"
-            | "Yes"
             | "ok"
             | "sure"
             | "yeah" 
@@ -159,9 +171,6 @@ module NLU =
 
         let (|QuickNo|_|) =
             function
-            | "no"
-            | "NO"
-            | "No"
             | "no"
             | "nope"          
             | "no way" 
@@ -231,11 +240,9 @@ module NLU =
                 member x.Confidence = let (_, c, _) = x.Unwrap in c
                 member x.Value = let (_, _, v) = x.Unwrap in v
 
-        let private entity_types = ["wit$contact:contact"; "wit$datetime:datetime"; "subject:subject"; "term:term"]
+        let private entity_types = ["wit$contact:contact"; "wit$datetime:datetime"; "subject:subject"; "term:term"; "symptom_name:symptom_name"]
 
-        let private trait_types = ["domain"; "dialogue_act"]
-
-        let getUtterance2 sentence = Witai.getMeaning2 "4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT" sentence
+        let private trait_types = ["domain"; "dialogue_act"; "wit$sentiment"]
 
         let getUtterance sentence m =
             Witai.getMeaning "4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT" sentence 
@@ -257,7 +264,7 @@ module NLU =
                                 |> List.ofSeq
                             else []                       
                         let entities =
-                            if not (isNull(o.GetJS("intents"))) then
+                            if not (isNull(o.GetJS("entities"))) then
                                 entity_types 
                                 |> List.where(fun et -> not(isNull(o.GetJS("entities").GetJS<obj array>(et)))) 
                                 |> List.map(fun et -> o.GetJS("entities").GetJS<obj array>(et) |> Array.map(fun e -> Entity'(e.GetJS<string>("name"), e.GetJS<float32>("confidence"), e.GetJS<string>("role"), e.GetJS<string>("value"))))
@@ -271,6 +278,16 @@ module NLU =
                         error <| sprintf  "Wit.ai returned: %A %A" s e
                         m (None)
                 ))
+
+        let getUtterance2 sentence = 
+            async {
+                let! m = Witai.getMeaning2 "4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT" sentence
+                debug "NLU" <| sprintf "Wit.ai returned %A " m
+                let intents = m.intents |> Array.map(fun a -> Intent'(a.name, a.confidence)) |> List.ofArray
+                let entities = m.entities |> Map.toSeq |> Seq.map snd |> Seq.concat |> List.ofSeq |> List.map(fun e -> Entity'(e.name, e.confidence, e.role, e.value))
+                let traits = m.traits |> Map.toSeq |> Seq.map(fun t -> let t' = snd t in Trait'(fst t, t'.[0].confidence, t'.[0].value)) |> List.ofSeq                
+                return Utterance'(intents, entities, traits)
+            }
  
         let mutable intentConfidenceThreshold = 0.85f
 
