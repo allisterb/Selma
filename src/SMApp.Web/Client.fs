@@ -127,7 +127,7 @@ module Client =
             | None, None, None -> ()
             | _ -> 
                 debug <| sprintf "Voice: %A %A %A" intent _trait entity
-                Utterance(intent, _trait, entity) |> push |> Main.update CUI Props Tasks Responses
+                Utterance("", intent, _trait, entity) |> push |> Main.update CUI Props Tasks Responses
         
         /// Terminal interpreter 
         let main (term:Terminal) (command:string)  =
@@ -136,7 +136,6 @@ module Client =
                 if CUI.Mic = None then initMic main'
                 if CUI.Voice = None then initSpeech()
             do if ClientState = ClientNotInitialzed then ClientState <- ClientReady
-            let btn = btnPrimary "btn0" "test" (fun o i -> (Utterance(None, None, None) |> push |> Main.update CUI Props Tasks Responses))
             
             match command with
             (* Quick commands *)
@@ -144,11 +143,6 @@ module Client =
             | Text.Debug ->  
                 debug <| sprintf "Utterances: %A" Utterances
                 debug <| sprintf "Tasks: %A" Tasks
-                
-                let i =  JQuery(".terminal-output").Get().[0].ChildNodes.Length
-                let btn = btnPrimary "btn0" "test" (fun o i -> (Utterance(None, None, None) |> push |> Main.update CUI Props Tasks Responses))
-                div [cls "terminal-command"; dindex (i + 1)] [btn] |> Doc.RunAppend (termOutput())
-
             | Text.Voices -> 
                 let voices = speechSynthesis().GetVoices() |> toArray    
                 sprintf "There are currently %i voices installed on this computer or device." voices.Length |> say'

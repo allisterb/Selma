@@ -5,6 +5,7 @@ open System.Collections.Generic
 open WebSharper
 
 open SMApp.Models
+open SMApp.NLU
 
 [<JavaScript>]
 module Main =
@@ -35,6 +36,8 @@ module Main =
             cui.Say t
         
         let sayRandom' p = sayRandom p ""
+
+        let echo t = cui.EchoHtml' t
 
         (* Manage the dialogue state elements*)
 
@@ -182,7 +185,7 @@ module Main =
         | Yes(Response' "addUser" (_, Str user))::[] -> addUser user
         | No(Response' "addUser" (_, Str user))::[] -> say <| sprintf "Ok I did not add the user %s. But you must login for me to help you." user
 
-        | Assert'(_) ::[] -> say "Could you introduce yourself so we can get started?"
+        //| Assert'(_) ::[] -> say "Could you introduce yourself so we can get started?"
 
         (* User switch *)
         
@@ -198,6 +201,19 @@ module Main =
         | No(Response "switchUser" (_, Str user))::[] -> 
             say <| sprintf "Ok I did not switch to user %s." user
         
+
+        (* KB query *)
+
+        | Assert'(Intent "kbquery" (_, _) as u)::[]
+        | Assert(Intent "kbquery" (_, _) as u)::[] -> 
+            async {
+                let! a = QnAMaker.getAnswer u.Text 
+                let! html = a.answers.[0].answer |> Server.mdtohtml
+                let! text = a.answers.[0].answer |> Server.mdtotext
+                echo html
+                say text
+            } |> Async.Start
+
         (* Symptoms *)
 
         | Assert(Intent "symptom" (_, Entity1OfAny "symptom_name" s))::[] ->

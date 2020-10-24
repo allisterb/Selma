@@ -3,7 +3,6 @@
 open System
 
 open WebSharper
-open WebSharper.JavaScript
 open WebSharper.JQuery
 
 [<JavaScript>]

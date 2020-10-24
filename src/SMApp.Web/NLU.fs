@@ -30,10 +30,11 @@ module NLU =
             member x.Confidence = let (Entity(_, _, c)) = x in c
             override x.ToString() = sprintf "Entity(%s, %s, %A)" x.Name x.Value x.Confidence
 
-    type Utterance = Utterance of Intent option * Trait list option * Entity list option with
-        member x.Intent = let (Utterance(i, _, _)) = x in i
-        member x.Traits = let (Utterance(_, tl, _)) = x in if tl.IsSome then tl.Value |> List.sortBy(fun e -> e.Name) |> Some else None
-        member x.Entities = let (Utterance(_, _, el)) = x in if el.IsSome then el.Value |> List.sortBy(fun e -> e.Name) |> Some else None
+    type Utterance = Utterance of string * Intent option * Trait list option * Entity list option with
+        member x.Text = let (Utterance(t, _, _, _)) = x in t
+        member x.Intent = let (Utterance(_,i, _, _)) = x in i
+        member x.Traits = let (Utterance(_, _, tl, _)) = x in if tl.IsSome then tl.Value |> List.sortBy(fun e -> e.Name) |> Some else None
+        member x.Entities = let (Utterance(_, _, _, el)) = x in if el.IsSome then el.Value |> List.sortBy(fun e -> e.Name) |> Some else None
         override x.ToString() = sprintf "%A %A %A" x.Intent x.Traits x.Entities
 
     type Utterance' = Trait list option * Entity list option
@@ -146,7 +147,7 @@ module NLU =
             | "hello"
             | "hey"
             | "yo"
-            | "hi" -> Utterance(Some(Intent("hello", Some 1.0f)), None, None) |> Some
+            | "hi" -> Utterance("hello", Some(Intent("hello", Some 1.0f)), None, None) |> Some
             | _ -> None
 
         let (|QuickHelp|_|) =
@@ -154,7 +155,7 @@ module NLU =
             | "help"
             | "help me"
             | "what's this?"
-            | "huh" -> Utterance(Some(Intent("help", Some 1.0f)), None, None) |> Some 
+            | "huh" -> Utterance("help", Some(Intent("help", Some 1.0f)), None, None) |> Some 
             | _ -> None    
 
         let (|QuickYes|_|) =
@@ -166,7 +167,7 @@ module NLU =
             | "yep" 
             | "uh huh" 
             | "go ahead" 
-            | "go" -> Utterance(Some(Intent("yes", Some 1.0f)), None, None) |> Some 
+            | "go" -> Utterance("yes", Some(Intent("yes", Some 1.0f)), None, None) |> Some 
             | _ -> None
 
         let (|QuickNo|_|) =
@@ -176,25 +177,25 @@ module NLU =
             | "no way" 
             | "nah" 
             | "don't do it" 
-            | "stop" -> Utterance(Some(Intent("no", Some 1.0f)), None, None) |> Some 
+            | "stop" -> Utterance("no", Some(Intent("no", Some 1.0f)), None, None) |> Some 
             | _ -> None
 
         let (|One|_|) =
             function
             | "1"
-            | "one" -> Utterance(Some(Intent("questionresponse", Some 1.0f)), None, Some([Entity("wit/ordinal", "one", Some 1.0f)])) |> Some
+            | "one" -> Utterance("1", Some(Intent("questionresponse", Some 1.0f)), None, Some([Entity("wit/ordinal", "one", Some 1.0f)])) |> Some
             | _ -> None
 
         let (|Two|_|) =
             function
             | "2"
-            | "two" -> Utterance(Some(Intent("questionresponse", Some 1.0f)), None, Some([Entity("wit/ordinal", "two", Some 1.0f)])) |> Some
+            | "two" -> Utterance("1", Some(Intent("questionresponse", Some 1.0f)), None, Some([Entity("wit/ordinal", "two", Some 1.0f)])) |> Some
             | _ -> None
 
         let (|Three|_|) =
             function
             | "3"
-            | "three" -> Utterance(Some(Intent("questionresponse", Some 1.0f)), None, Some([Entity("wit/ordinal", "three", Some 1.0f)])) |> Some
+            | "three" -> Utterance("1", Some(Intent("questionresponse", Some 1.0f)), None, Some([Entity("wit/ordinal", "three", Some 1.0f)])) |> Some
             | _ -> None
 
         let (|QuickNumber|_|) =
@@ -205,15 +206,16 @@ module NLU =
 
         let (|QuickPrograms|_|) =
             function
-            | "programs" -> Utterance(Some(Intent("Program", None)), None, None) |> Some
+            | "programs" -> Utterance("programs", Some(Intent("Program", None)), None, None) |> Some
             | _ -> None
 
         [<JavaScript>]
-        type Utterance' = Utterance' of Intent' list * Entity' list * Trait' list
+        type Utterance' = Utterance' of string * Intent' list * Entity' list * Trait' list
         with 
-            member x.Intents = let (Utterance'(i, _, _)) = x in i
-            member x.Entities = let (Utterance'(_, e, _)) = x in e
-            member x.Traits = let (Utterance'(_, _, t)) = x in t
+            member x.Text = let (Utterance'(t, _, _, _)) = x in t
+            member x.Intents = let (Utterance'(_, i, _, _)) = x in i
+            member x.Entities = let (Utterance'(_, _, e, _)) = x in e
+            member x.Traits = let (Utterance'(_, _, _, t)) = x in t
             member x.TopIntent = x.Intents |> List.sortBy (fun i -> i.Confidence) |> List.head
         and
             [<JavaScript>]
@@ -271,7 +273,7 @@ module NLU =
                                 |> Seq.concat
                                 |> List.ofSeq
                             else []
-                        m (Some(Utterance'(intents, entities, traits)))
+                        m (Some(Utterance'(sentence, intents, entities, traits)))
                 ))
                 (Action<JQuery.JqXHR, string, string>( 
                     fun _ s e ->  
@@ -286,7 +288,7 @@ module NLU =
                 let intents = m.intents |> Array.map(fun a -> Intent'(a.name, a.confidence)) |> List.ofArray
                 let entities = m.entities |> Map.toSeq |> Seq.map snd |> Seq.concat |> List.ofSeq |> List.map(fun e -> Entity'(e.name, e.confidence, e.role, e.value))
                 let traits = m.traits |> Map.toSeq |> Seq.map(fun t -> let t' = snd t in Trait'(fst t, t'.[0].confidence, t'.[0].value)) |> List.ofSeq                
-                return Utterance'(intents, entities, traits)
+                return Utterance'(sentence, intents, entities, traits)
             }
  
         let mutable intentConfidenceThreshold = 0.5f
@@ -295,7 +297,7 @@ module NLU =
         
         let (|HasUtterance|_|) :Utterance' option ->(Utterance option) =
             function
-            | Some(Utterance'([], entities, traits)) when entities.Length > 0 -> 
+            | Some(Utterance'(text, [], entities, traits)) when entities.Length > 0 -> 
                 let entities' = 
                     entities 
                     |> List.where(fun e -> e.Confidence > entityConfidenceThreshold) 
@@ -304,26 +306,26 @@ module NLU =
                     traits 
                     |> List.where(fun t -> t.Confidence > entityConfidenceThreshold) 
                     |> List.map(fun t -> Trait(t.Name |> toLower, t.Value, Some(t.Confidence)))
-                Utterance(None, Some traits', Some entities') |> Some
+                Utterance(text, None, Some traits', Some entities') |> Some
 
-            | Some(Utterance'(intents, [], [])) as m when intents.Length > 0 && m.Value.TopIntent.Confidence > intentConfidenceThreshold  -> 
-                    Utterance(Some(Intent(m.Value.TopIntent.Name |> toLower, Some m.Value.TopIntent.Confidence)), None, None) |> Some
+            | Some(Utterance'(text, intents, [], [])) as m when intents.Length > 0 && m.Value.TopIntent.Confidence > intentConfidenceThreshold  -> 
+                    Utterance(text, Some(Intent(m.Value.TopIntent.Name |> toLower, Some m.Value.TopIntent.Confidence)), None, None) |> Some
             
-            | Some(Utterance'(intents, _, [])) as m when intents.Length > 0 && m.Value.TopIntent.Confidence > intentConfidenceThreshold  -> 
+            | Some(Utterance'(text, intents, _, [])) as m when intents.Length > 0 && m.Value.TopIntent.Confidence > intentConfidenceThreshold  -> 
                     let entities' = 
                         m.Value.Entities |> 
                         List.where(fun e -> e.Confidence > entityConfidenceThreshold) 
                         |> List.map(fun e -> Entity(e.Role |> toLower, e.Value, Some(e.Confidence)))
-                    Utterance(Some(Intent(m.Value.TopIntent.Name |> toLower, Some m.Value.TopIntent.Confidence)), None, Some(entities')) |> Some
+                    Utterance(text, Some(Intent(m.Value.TopIntent.Name |> toLower, Some m.Value.TopIntent.Confidence)), None, Some(entities')) |> Some
 
-            | Some(Utterance'(intents, [], _)) as m when intents.Length > 0 && m.Value.TopIntent.Confidence > intentConfidenceThreshold  -> 
+            | Some(Utterance'(text, intents, [], _)) as m when intents.Length > 0 && m.Value.TopIntent.Confidence > intentConfidenceThreshold  -> 
                     let traits' = 
                         m.Value.Traits |> 
                         List.where(fun e -> e.Confidence > entityConfidenceThreshold) 
                         |> List.map(fun e -> Trait(e.Name |> toLower, e.Value, Some(e.Confidence)))
-                    Utterance(Some(Intent(m.Value.TopIntent.Name |> toLower, Some m.Value.TopIntent.Confidence)), Some(traits'), None) |> Some
+                    Utterance(text, Some(Intent(m.Value.TopIntent.Name |> toLower, Some m.Value.TopIntent.Confidence)), Some(traits'), None) |> Some
 
-            | Some(Utterance'(intents, _, _)) as m when intents.Length > 0 && m.Value.TopIntent.Confidence > intentConfidenceThreshold  -> 
+            | Some(Utterance'(text, intents, _, _)) as m when intents.Length > 0 && m.Value.TopIntent.Confidence > intentConfidenceThreshold  -> 
                     let entities' = 
                         m.Value.Entities |> 
                         List.where(fun e -> e.Confidence > entityConfidenceThreshold) 
@@ -332,7 +334,7 @@ module NLU =
                         m.Value.Traits |> 
                         List.where(fun e -> e.Confidence > entityConfidenceThreshold) 
                         |> List.map(fun e -> Trait(e.Name |> toLower, e.Value, Some(e.Confidence))) 
-                    Utterance(Some(Intent(m.Value.TopIntent.Name |> toLower, Some m.Value.TopIntent.Confidence)), Some(traits'), Some(entities')) |> Some
+                    Utterance(text, Some(Intent(m.Value.TopIntent.Name |> toLower, Some m.Value.TopIntent.Confidence)), Some(traits'), Some(entities')) |> Some
             
             | _ -> None        
 

@@ -10,6 +10,7 @@
     <Compile Include="Bootstrap.fs" />
     <Compile Include="Babelfy.fs" />
     <Compile Include="Witai.fs" />
+    <Compile Include="QnAMaker.fs" />
     <Compile Include="NLU.fs" />
     <Compile Include="CUI.fs" />
     <Compile Include="Server.fs" />
@@ -26,6 +27,7 @@
     <None Include="wsconfig.json" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Markdig" Version="0.22.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Npgsql.FSharp" Version="3.7.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="3.4.0" />

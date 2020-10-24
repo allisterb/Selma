@@ -8,5 +8,6 @@ REM cd C:\Projects\SMApp\src\SMApp.Web
 REM dotnet publish -c Debug /p:MicrosoftNETPlatformLibrary=Microsoft.NETCore.App
 REM oc new-build --name=selma dotnet:2.2 --binary=true
 REM oc start-build selma --from-dir=bin\Debug\netcoreapp2.2\publish
-REM oc new-app selma:latest -e PGSQL=172.30.56.108
+REM oc new-app selma:latest -e PGSQL=172.30.85.225
 REM oc expose svc/selma
+REM cd C:\Projects

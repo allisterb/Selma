@@ -29,9 +29,15 @@ module Server =
     let humanize(date:DateTime) = async { return date.Humanize() }
 
     [<Rpc>]
+    let mdtohtml(s:string) = async { return Markdig.Markdown.ToHtml s }
+
+    [<Rpc>]
+    let mdtotext(s:string) = async { return Markdig.Markdown.ToPlainText s }
+
+    [<Rpc>]
     let getUser(user:string) : Async<User option> = 
         pgdb
-        |> Sql.query "SELECT * FROM selma_user WHERE user_name=@u"
+        |> Sql.query "SELECT * FROM smapp_user WHERE user_name=@u"
         |> Sql.parameters ["u", Sql.string user]
         |> Sql.executeAsync (fun read -> {
             Name =  read.string("user_name")
@@ -45,7 +51,7 @@ module Server =
     [<Rpc>]
     let addUser (user:string) : Async<unit Option> =
         pgdb
-        |> Sql.query "INSERT INTO public.selma_user(user_name, last_logged_in) VALUES (@u, @d);"
+        |> Sql.query "INSERT INTO public.smapp_user(user_name, last_logged_in) VALUES (@u, @d);"
         |> Sql.parameters [("u", Sql.string user); ("d", Sql.timestamp (DateTime.Now))]
         |> Sql.executeNonQueryAsync
         |> Async.map(
@@ -56,7 +62,7 @@ module Server =
     [<Rpc>]
     let updateUserLastLogin (user:string) : Async<unit option> =
         pgdb
-        |> Sql.query "UPDATE public.selma_user SET last_logged_in=@d WHERE user_name=@u;"
+        |> Sql.query "UPDATE public.smapp_user SET last_logged_in=@d WHERE user_name=@u;"
         |> Sql.parameters [("u", Sql.string user); ("d", Sql.timestamp (DateTime.Now))]
         |> Sql.executeNonQueryAsync
         |> Async.map(

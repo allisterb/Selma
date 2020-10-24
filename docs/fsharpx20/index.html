@@ -378,6 +378,76 @@
         </pre>
         <footer><img src="images/fsharp.png" class="footer-img"></footer>
       </section>
+      <section id="slide-101" class="level1 step" data-x="50000">
+        <h1><a href="#slide-101">WebSharper</a></h1>
+        <h2 class="xtlt">WebSharper drastically reduces the cognitive load of .NET web-based CUIs and dialogue systems.</h2>
+        <div class="slide-img"><img src="images/brain1.png" style="width:600px"/></div>
+        <footer><img src="images/fsharp.png" class="footer-img"></footer>
+      </section>
+      <section id="slide-102" class="level1 step" data-x="52000">
+        <h1><a href="#slide-102">Selma Dialogue Manager</a></h1>
+        <h2>Competing dialogue systems</h2>
+        <ul>
+          <li>Alexa, Google DialogFlow, Rasa (open-source)</li>
+          <li>Use NLU models at the discourse or conversation level.</li>
+          <li>Many are GUI-based to be user-friendly</li>
+          <li>MS Bot Framework is an entire multi-language framework (C#, Python) for chatbots</li>
+          <li>May use external markup languages like YAML</li>
+          <li>Developer writes Python or JavaScript or C# code to implement actions.</li>
+          <li>System is inherently imperative, event-based, relies on mutable state</li>
+          <li>...remember what we were saying about cognitive load?</li>
+        </ul>
+        <footer><img src="images/fsharp.png" class="footer-img"></footer>
+      </section>
+      <section id="slide-103" class="level1 step" data-x="54000">
+        <h1><a href="#slide-103">Selma Dialogue Manager</a></h1>
+        <h2>F# dialogue manager implementation</h2>
+        <pre><code class="fsharp">        
+          let (|PropNotSet|_|) (n:string) :Utterance -> Utterance option =
+          function
+          | m when not (haveProp n) -> Some m
+          | _ -> None
+       
+      let (|Assert|_|) :Utterance -> Utterance option =
+          function
+          | PropSet "user" m when tasks.Count = 0 -> 
+              popc()
+              Some m
+          | _ -> None
+
+      let (|Response|_|) (n:string) :Utterance -> (Utterance * obj option) option =
+          function
+          | PropSet "user" m when haveTask n && tasks.Count > 0  && tasks.Peek().Name = n -> 
+              popc()
+              popq()
+              if haveProp n then
+                  let d = props.[n]
+                  deleteProp n
+                  Some(m, Some d)
+              else Some(m, None)
+          | _ -> None
+</code></pre>
+        <footer><img src="images/fsharp.png" class="footer-img"></footer>
+      </section>
+      <section id="slide-104" class="level1 step" data-x="56000">
+        <h1><a href="#slide-104">Selma Dialogue Manager</a></h1>
+        <h2>F# dialogue manager implementation</h2>
+        <ul>
+          <li>
+            Declarative
+        </li>
+        <li>
+          Avoid state mutation
+      </li>
+      <li>
+        Uses pure F#
+    </li>
+    <li>
+      Use external NLU services like Wit.ai
+  </li>
+      </ul>
+        <footer><img src="images/fsharp.png" class="footer-img"></footer>
+      </section>
     </div>
     <!-- Extra modules
      Load highlight.js, mermaid.js and markdown.js from extras.     See also src/plugins/extras/extras.js -->
