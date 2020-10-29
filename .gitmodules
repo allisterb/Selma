@@ -25,3 +25,12 @@
 [submodule "ext/presentations/bytecode-presentation"]
 	path = ext/presentations/bytecode-presentation
 	url = https://github.com/pkoperek/bytecode-presentation.git
+[submodule "ext/FastText.NetWrapper"]
+	path = ext/FastText.NetWrapper
+	url = https://github.com/allisterb/FastText.NetWrapper.git
+[submodule "ext/CherubNLP"]
+	path = ext/CherubNLP
+	url = https://github.com/allisterb/CherubNLP.git
+[submodule "ext/NativeLibraryManager"]
+	path = ext/NativeLibraryManager
+	url = https://github.com/allisterb/NativeLibraryManager.git
