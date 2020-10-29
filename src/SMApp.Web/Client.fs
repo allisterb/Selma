@@ -92,7 +92,7 @@ module Client =
         do mic.onConnecting <- (fun _ -> MicState <- MicConnecting; debug "Mic connecting...")
         do mic.onDisconnected <- (fun _ -> MicState <- MicDisconnected;debug "Mic disconnected.")
         do mic.onAudioStart <- (fun _ -> MicState <- MicAudioStart;debug "Mic audio start...")
-        do mic.onAudioEnd <- (fun _ -> MicState <- MicAudioEnd;debug "Mic audio end.")
+        do mic.onAudioEnd <- (fun _ -> MicState <- MicAudioEnd;debug "Mic audio end."; debug (JS.Window.GetJS("lastMicData")))
         do mic.onError <- (fun s -> MicState <- MicError s; debug (sprintf "Mic error : %s." s))
         do mic.onReady <- (fun _ -> MicState <- MicReady; debug "Mic ready.")
         do mic.onResult <- (fun i e -> 
