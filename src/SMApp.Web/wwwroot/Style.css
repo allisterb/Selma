@@ -4,12 +4,20 @@
     --size: 2;
 }
 
-/*
-.mic {
-    font-size: unset;
-    line-height: unset
+#microphone {
+    width: unset;
 }
 
+.mic {
+    width: 120px;
+}
+
+.mic-box {
+    width: 120px
+}
+/*
+    font-size: unset;
+    line-height: unset
 .mic-box {
     border: inherit
 }

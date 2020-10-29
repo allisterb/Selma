@@ -9,12 +9,13 @@ open WebSharper.UI
 open WebSharper.UI.Client
 open WebSharper.UI.Html
 
-open SMApp.Bs
 open SMApp.JQueryTerminal
 open SMApp.WebSpeech
 open SMApp.Microphone
 open SMApp.BotLibre
 open SMApp.Compromise
+
+open Dialogue
 
 [<JavaScript>]
 module Client =
@@ -51,11 +52,13 @@ module Client =
             CUI.Term.Pause();f();CUI.Term.Resume()
 
     (* Dialogue state *)
-    let Utterances = new Stack<Utterance>()
-    let Tasks = new Stack<Task>()
-    let Responses = new Stack<string>()
     let Props = new Dictionary<string, obj>()
-    let push (m:Utterance) = Utterances.Push m; Utterances
+    let Output = new Stack<string>()
+    let Questions = new Stack<Question>()
+    let Utterances = new Stack<Utterance>()
+    let Dialogue = Dialogue(CUI, Props, Questions, Output, Utterances)
+    let push (m:Utterance) = Utterances.Push m; Dialogue
+
 
     (* Speech *)
     let synth = Window.SpeechSynthesis
@@ -77,7 +80,7 @@ module Client =
     let say' text = CUI.Say text                
 
     let say text =
-        Responses.Push text
+        Output.Push text
         say' text
         
     let sayRandom t phrases = say <| getRandomPhrase phrases t
@@ -127,7 +130,7 @@ module Client =
             | None, None, None -> ()
             | _ -> 
                 debug <| sprintf "Voice: %A %A %A" intent _trait entity
-                Utterance("", intent, _trait, entity) |> push |> Main.update CUI Props Tasks Responses
+                Utterance("", intent, _trait, entity) |> push |> Main.update
         
         /// Terminal interpreter 
         let main (term:Terminal) (command:string)  =
@@ -142,7 +145,7 @@ module Client =
             | Text.Blank -> say' "Tell me what you want me to do or ask me a question."
             | Text.Debug ->  
                 debug <| sprintf "Utterances: %A" Utterances
-                debug <| sprintf "Tasks: %A" Tasks
+                debug <| sprintf "Questions: %A" Questions
             | Text.Voices -> 
                 let voices = speechSynthesis().GetVoices() |> toArray    
                 sprintf "There are currently %i voices installed on this computer or device." voices.Length |> say'
@@ -159,7 +162,7 @@ module Client =
                     | Text.QuickYes m
                     | Text.QuickNo m -> 
                         debug <| sprintf "Quick Text: %A." m                        
-                        m |> push |> Main.update CUI Props Tasks Responses
+                        m |> push |> Main.update
                         ClientState <- ClientReady
                     (* Use the NLU service for everything else *)
                     | _->         
@@ -169,7 +172,7 @@ module Client =
                                 match meaning with
                                 | Text.HasUtterance m -> 
                                     debug <| sprintf "Text: Intent: %A, Traits: %A, Entities: %A" m.Intent m.Traits m.Entities
-                                    m |> push |> Main.update CUI Props Tasks Responses
+                                    m |> push |> Main.update
                                 | _ -> 
                                     debug "Text: Did not receive a meaning from the server." 
                                     say' "Sorry I did not understand what you said."

@@ -5,6 +5,21 @@ open WebSharper.JavaScript
 open WebSharper.InterfaceGenerator
 
 module Definition =
+    let Term =
+        Class "Term"
+        |+> Instance [
+            "isA" =@ T<string>
+            "id" =@ T<string>
+            
+        ]
+
+    
+    let DocIndex =
+        Generic -- fun t1 t2 ->
+            Interface "DocIndex"
+            |+> [
+                    Generic - fun m1 -> "foo" => m1 * t1 ^-> t2
+                ]
 
     let Nlp = 
         Class "Nlp"

@@ -9,8 +9,6 @@ open WebSharper.UI
 open WebSharper.UI.Html
 open WebSharper.UI.Server
 
-open SMApp.Bs
-
 type Route =
     | [<EndPoint"/">] Home
 

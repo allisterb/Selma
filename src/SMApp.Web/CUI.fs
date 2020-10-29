@@ -3,6 +3,12 @@
 open System
 
 open WebSharper
+open WebSharper.JavaScript
+open WebSharper.JavaScript.Dom
+open WebSharper.JQuery
+open WebSharper.UI
+open WebSharper.UI.Client
+open WebSharper.UI.Html
 
 open SMApp.JQueryTerminal
 open SMApp.WebSpeech
@@ -11,47 +17,6 @@ open SMApp.BotLibre
 
 [<AutoOpen;JavaScript>]
 module CUI =
-    let rng = Random()
-    
-    let getRandomPhrase (phrases:List<string>) r = phrases |> List.item(rng.Next(0, phrases.Length)) |> replace_tok "$0" r
-    
-    let getRandomPhrase' (phrases:List<string>)  = phrases |> List.item(rng.Next(0, phrases.Length)) |> replace_tok "$0" ""
-
-    let helloPhrases = [
-        "Welcome!"
-        "Welcome, my name is Selma."
-        "Welcome to Selma. How can I help?"
-        "Hello this is Selma, how can I help?"
-        "Hello, I am Selma. How can I help?"
-        "Hello, I am Selma. How may I help you now?"
-        "I'm Selma. Tell me your name so we can get started."
-    ]
-
-    let helloUserPhrases = [
-        "Hello $0, welcome back."
-        "Welcome $0, nice to see you again."
-        "Hello $0."
-        "Good to see you $0."
-        "Hello $0, nice to see you."
-    ]
-
-    let helpPhrases = [
-        "What can I help you with $0?"
-    ]
-
-    let waitRetrievePhrases = [
-        "Ok, let me check that $0 for you"
-        "Please wait while I check that $0 for you."
-        "Wait while I check that $0."
-        "Ok let me see if I can find that $0."
-    ]
-
-    let waitAddPhrases = [
-        "Ok, let me add that $0 for you"
-        "Please wait while I add that $0 for you."
-        "Wait while I add that $0."
-        "I'll add that $0 now."
-    ]
         
     type MicState = MicNotInitialized | MicConnecting | MicDisconnected | MicAudioStart | MicAudioEnd | MicReady | MicError of string | MicResult of obj * obj
 
@@ -87,6 +52,10 @@ module CUI =
                 x.Avatar.AddMessage(text)
                 x.Avatar.ProcessMessages(0) 
             } |> Async.Start
+
+         member x.SayDoc (d:Doc) =
+           let i =  JQuery(".terminal-output").Get().[0].ChildNodes.Length
+           div [cls "terminal-command"; dindex (i + 1)] [d] |> Doc.RunAppend (termOutput())
 
          member x.SayAngry m =
            async {

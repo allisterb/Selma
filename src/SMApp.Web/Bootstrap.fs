@@ -1,4 +1,4 @@
-﻿namespace SMApp
+﻿namespace SMApp.Web
 
 open WebSharper
 open WebSharper.UI
@@ -19,12 +19,7 @@ module Resources =
 [<Require(typeof<Resources.CSS>);Require(typeof<JQuery.Resources.JQuery>);Require(typeof<Resources.PopperJS>);Require(typeof<Resources.JS>)>]
 [<JavaScript>]
 module Bs =
-    
-    let eid = attr.id
-    let cls n = attr.``class`` n
-    let dindex (n:int) = Attr.Create "data-index" (n.ToString())
-    let container c = div [cls "container"] c
-    
+        
     let btnPrimary id label onclick = button [eid id; cls "btn btn-primary"; on.click onclick] [text label]
     let btnSecondary id label onclick = button [eid id; cls "btn btn-secondary"; on.click onclick] [text label]
 

@@ -1,7 +1,7 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Web,ClientExtensions,_Html,htmModule,SC$1,Bs,NLU,Babelfy,ApiResponse,TokenFragment,CharFragment,Witai,Utterance,Intent,Entity,Trait,_Utterance,_Value,QnAMaker,ITSQuestion,ITSAnswerContext,ITSAnswer,ITSAnswers,NLU$1,Intent$1,Trait$1,Entity$1,Utterance$1,SSML,Response,Task,Voice,_Entity,Text,_Utterance$1,_Intent,_Entity$1,_Trait,Domain,SC$2,CUI,MicState,ClientState,Interpreter,CUI$1,SC$3,Main,SC$4,Client,SC$5,GeneratedPrintf,SMApp$Web_GeneratedPrintf,WebSharper,UI,Client$1,Templates,Doc,Strings,Arrays,IntelliFactory,Runtime,Utils,console,$,List,Seq,AttrModule,AttrProxy,Concurrency,JSON,Collections,Map,JavaScript,Pervasives,SDK,Random,Operators,Remoting,AjaxRemotingProvider,Wit,document,Unchecked,Dictionary;
+ var Global,SMApp,Web,ClientExtensions,_Html,htmModule,SC$1,Bs,NLU,Babelfy,ApiResponse,TokenFragment,CharFragment,Witai,Utterance,Intent,Entity,Trait,_Utterance,_Value,QnAMaker,ITSQuestion,ITSAnswerContext,ITSAnswer,ITSAnswers,NLG,SC$2,NLU$1,Intent$1,Trait$1,Entity$1,Utterance$1,Question,Voice,_Entity,Text,_Utterance$1,_Intent,_Entity$1,_Trait,Domain,SC$3,CUI,MicState,ClientState,Interpreter,CUI$1,Dialogue,Dialogue$1,Main,SC$4,Client,SC$5,GeneratedPrintf,SMApp$Web_GeneratedPrintf,WebSharper,UI,Client$1,Templates,Doc,AttrProxy,Arrays,IntelliFactory,Runtime,Utils,console,$,Strings,List,Seq,AttrModule,Concurrency,JSON,Random,Collections,Map,JavaScript,Pervasives,SDK,Operators,Remoting,AjaxRemotingProvider,Wit,document,Unchecked,Dictionary;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Web=SMApp.Web=SMApp.Web||{};
@@ -9,7 +9,7 @@
  _Html=Web._Html=Web._Html||{};
  htmModule=Web.htmModule=Web.htmModule||{};
  SC$1=Global.StartupCode$SMApp_Web$ClientExtensions=Global.StartupCode$SMApp_Web$ClientExtensions||{};
- Bs=SMApp.Bs=SMApp.Bs||{};
+ Bs=Web.Bs=Web.Bs||{};
  NLU=SMApp.NLU=SMApp.NLU||{};
  Babelfy=NLU.Babelfy=NLU.Babelfy||{};
  ApiResponse=Babelfy.ApiResponse=Babelfy.ApiResponse||{};
@@ -27,14 +27,14 @@
  ITSAnswerContext=QnAMaker.ITSAnswerContext=QnAMaker.ITSAnswerContext||{};
  ITSAnswer=QnAMaker.ITSAnswer=QnAMaker.ITSAnswer||{};
  ITSAnswers=QnAMaker.ITSAnswers=QnAMaker.ITSAnswers||{};
+ NLG=Web.NLG=Web.NLG||{};
+ SC$2=Global.StartupCode$SMApp_Web$NLG=Global.StartupCode$SMApp_Web$NLG||{};
  NLU$1=Web.NLU=Web.NLU||{};
  Intent$1=NLU$1.Intent=NLU$1.Intent||{};
  Trait$1=NLU$1.Trait=NLU$1.Trait||{};
  Entity$1=NLU$1.Entity=NLU$1.Entity||{};
  Utterance$1=NLU$1.Utterance=NLU$1.Utterance||{};
- SSML=NLU$1.SSML=NLU$1.SSML||{};
- Response=NLU$1.Response=NLU$1.Response||{};
- Task=NLU$1.Task=NLU$1.Task||{};
+ Question=NLU$1.Question=NLU$1.Question||{};
  Voice=NLU$1.Voice=NLU$1.Voice||{};
  _Entity=Voice["Entity'"]=Voice["Entity'"]||{};
  Text=NLU$1.Text=NLU$1.Text||{};
@@ -43,13 +43,14 @@
  _Entity$1=Text["Entity'"]=Text["Entity'"]||{};
  _Trait=Text["Trait'"]=Text["Trait'"]||{};
  Domain=NLU$1.Domain=NLU$1.Domain||{};
- SC$2=Global.StartupCode$SMApp_Web$NLU=Global.StartupCode$SMApp_Web$NLU||{};
+ SC$3=Global.StartupCode$SMApp_Web$NLU=Global.StartupCode$SMApp_Web$NLU||{};
  CUI=Web.CUI=Web.CUI||{};
  MicState=CUI.MicState=CUI.MicState||{};
  ClientState=CUI.ClientState=CUI.ClientState||{};
  Interpreter=CUI.Interpreter=CUI.Interpreter||{};
  CUI$1=CUI.CUI=CUI.CUI||{};
- SC$3=Global.StartupCode$SMApp_Web$CUI=Global.StartupCode$SMApp_Web$CUI||{};
+ Dialogue=Web.Dialogue=Web.Dialogue||{};
+ Dialogue$1=Dialogue.Dialogue=Dialogue.Dialogue||{};
  Main=Web.Main=Web.Main||{};
  SC$4=Global.StartupCode$SMApp_Web$Main=Global.StartupCode$SMApp_Web$Main||{};
  Client=Web.Client=Web.Client||{};
@@ -61,25 +62,25 @@
  Client$1=UI&&UI.Client;
  Templates=Client$1&&Client$1.Templates;
  Doc=UI&&UI.Doc;
- Strings=WebSharper&&WebSharper.Strings;
+ AttrProxy=UI&&UI.AttrProxy;
  Arrays=WebSharper&&WebSharper.Arrays;
  IntelliFactory=Global.IntelliFactory;
  Runtime=IntelliFactory&&IntelliFactory.Runtime;
  Utils=WebSharper&&WebSharper.Utils;
  console=Global.console;
  $=Global.jQuery;
+ Strings=WebSharper&&WebSharper.Strings;
  List=WebSharper&&WebSharper.List;
  Seq=WebSharper&&WebSharper.Seq;
  AttrModule=UI&&UI.AttrModule;
- AttrProxy=UI&&UI.AttrProxy;
  Concurrency=WebSharper&&WebSharper.Concurrency;
  JSON=Global.JSON;
+ Random=WebSharper&&WebSharper.Random;
  Collections=WebSharper&&WebSharper.Collections;
  Map=Collections&&Collections.Map;
  JavaScript=WebSharper&&WebSharper.JavaScript;
  Pervasives=JavaScript&&JavaScript.Pervasives;
  SDK=Global.SDK;
- Random=WebSharper&&WebSharper.Random;
  Operators=WebSharper&&WebSharper.Operators;
  Remoting=WebSharper&&WebSharper.Remoting;
  AjaxRemotingProvider=Remoting&&Remoting.AjaxRemotingProvider;
@@ -102,9 +103,21 @@
   Templates.LoadLocalTemplates("");
   Doc.RunAppend(el,doc);
  };
- ClientExtensions.replace_tok=function(token,value,s)
+ ClientExtensions.container=function(c)
  {
-  return Strings.Replace(s,token,value);
+  return Doc.Element("div",[ClientExtensions.cls("container")],c);
+ };
+ ClientExtensions.dindex=function(n)
+ {
+  return AttrProxy.Create("data-index",Global.String(n));
+ };
+ ClientExtensions.cls=function(n)
+ {
+  return AttrProxy.Create("class",n);
+ };
+ ClientExtensions.eid=function(a)
+ {
+  return AttrProxy.Create("id",a);
  };
  ClientExtensions.termOutput=function()
  {
@@ -523,7 +536,7 @@
  {
   return Doc.Element("div",new List.T({
    $:1,
-   $0:Bs.cls("radio"),
+   $0:ClientExtensions.cls("radio"),
    $1:extras
   }),[Doc.Element("label",labelExtras,[Doc.Radio(targetExtras,true,target),Doc.TextNode(lbl)])]);
  };
@@ -531,7 +544,7 @@
  {
   return Doc.Element("div",new List.T({
    $:1,
-   $0:Bs.cls("checkbox"),
+   $0:ClientExtensions.cls("checkbox"),
    $1:extras
   }),[Doc.Element("label",labelExtras,[Doc.CheckBox(targetExtras,target),Doc.TextNode(lbl)])]);
  };
@@ -539,11 +552,11 @@
  {
   return Doc.Element("div",new List.T({
    $:1,
-   $0:Bs.cls("form-group"),
+   $0:ClientExtensions.cls("form-group"),
    $1:extras
   }),[Doc.Element("label",labelExtras,[Doc.TextNode(lbl)]),Doc.InputArea(new List.T({
    $:1,
-   $0:Bs.cls("form-control"),
+   $0:ClientExtensions.cls("form-control"),
    $1:targetExtras
   }),target)]);
  };
@@ -551,11 +564,11 @@
  {
   return Doc.Element("div",new List.T({
    $:1,
-   $0:Bs.cls("form-group"),
+   $0:ClientExtensions.cls("form-group"),
    $1:extras
   }),[Doc.Element("label",labelExtras,[Doc.TextNode(lbl)]),Doc.PasswordBox(new List.T({
    $:1,
-   $0:Bs.cls("form-control"),
+   $0:ClientExtensions.cls("form-control"),
    $1:targetExtras
   }),target)]);
  };
@@ -563,33 +576,17 @@
  {
   return Doc.Element("div",new List.T({
    $:1,
-   $0:Bs.cls("form-group"),
+   $0:ClientExtensions.cls("form-group"),
    $1:extras
-  }),[Doc.Element("label",labelExtras,[Doc.TextNode(lbl)]),Doc.Input([Bs.cls("form-control"),targetExtras],target)]);
+  }),[Doc.Element("label",labelExtras,[Doc.TextNode(lbl)]),Doc.Input([ClientExtensions.cls("form-control"),targetExtras],target)]);
  };
  Bs.btnSecondary=function(id,label,onclick)
  {
-  return Doc.Element("button",[Bs.eid(id),Bs.cls("btn btn-secondary"),AttrModule.Handler("click",onclick)],[Doc.TextNode(label)]);
+  return Doc.Element("button",[ClientExtensions.eid(id),ClientExtensions.cls("btn btn-secondary"),AttrModule.Handler("click",onclick)],[Doc.TextNode(label)]);
  };
  Bs.btnPrimary=function(id,label,onclick)
  {
-  return Doc.Element("button",[Bs.eid(id),Bs.cls("btn btn-primary"),AttrModule.Handler("click",onclick)],[Doc.TextNode(label)]);
- };
- Bs.container=function(c)
- {
-  return Doc.Element("div",[Bs.cls("container")],c);
- };
- Bs.dindex=function(n)
- {
-  return AttrProxy.Create("data-index",Global.String(n));
- };
- Bs.cls=function(n)
- {
-  return AttrProxy.Create("class",n);
- };
- Bs.eid=function(a)
- {
-  return AttrProxy.Create("id",a);
+  return Doc.Element("button",[ClientExtensions.eid(id),ClientExtensions.cls("btn btn-primary"),AttrModule.Handler("click",onclick)],[Doc.TextNode(label)]);
  };
  ApiResponse.New=function(tokenFragment,charFragment,babelSynsetID,DBpediaURL,BabelNetURL,score,cohrenceScore,globalScore,source)
  {
@@ -789,6 +786,58 @@
    return a.apply(null,[$1,$2,$3]);
   });
  };
+ NLG.waitAddPhrases=function()
+ {
+  SC$2.$cctor();
+  return SC$2.waitAddPhrases;
+ };
+ NLG.waitRetrievePhrases=function()
+ {
+  SC$2.$cctor();
+  return SC$2.waitRetrievePhrases;
+ };
+ NLG.helpPhrases=function()
+ {
+  SC$2.$cctor();
+  return SC$2.helpPhrases;
+ };
+ NLG.helloUserPhrases=function()
+ {
+  SC$2.$cctor();
+  return SC$2.helloUserPhrases;
+ };
+ NLG.helloPhrases=function()
+ {
+  SC$2.$cctor();
+  return SC$2.helloPhrases;
+ };
+ NLG["getRandomPhrase'"]=function(phrases)
+ {
+  return NLG.replace_tok("$0","",Seq.nth(NLG.rng().Next(0,phrases.get_Length()),phrases));
+ };
+ NLG.getRandomPhrase=function(phrases,r)
+ {
+  return NLG.replace_tok("$0",r,Seq.nth(NLG.rng().Next(0,phrases.get_Length()),phrases));
+ };
+ NLG.replace_tok=function(token,value,s)
+ {
+  return Strings.Replace(s,token,value);
+ };
+ NLG.rng=function()
+ {
+  SC$2.$cctor();
+  return SC$2.rng;
+ };
+ SC$2.$cctor=function()
+ {
+  SC$2.$cctor=Global.ignore;
+  SC$2.rng=new Random.New();
+  SC$2.helloPhrases=List.ofArray(["Welcome!","Welcome, my name is Selma.","Welcome to Selma. How can I help?","Hello this is Selma, how can I help?","Hello, I am Selma. How can I help?","Hello, I am Selma. How may I help you now?","I'm Selma. Tell me your name so we can get started."]);
+  SC$2.helloUserPhrases=List.ofArray(["Hello $0, welcome back.","Welcome $0, nice to see you again.","Hello $0.","Good to see you $0.","Hello $0, nice to see you."]);
+  SC$2.helpPhrases=List.ofArray(["What can I help you with $0?"]);
+  SC$2.waitRetrievePhrases=List.ofArray(["Ok, let me check that $0 for you","Please wait while I check that $0 for you.","Wait while I check that $0.","Ok let me see if I can find that $0."]);
+  SC$2.waitAddPhrases=List.ofArray(["Ok, let me add that $0 for you","Please wait while I add that $0 for you.","Wait while I add that $0.","I'll add that $0 now."]);
+ };
  Intent$1=NLU$1.Intent=Runtime.Class({
   toString:function()
   {
@@ -830,16 +879,20 @@
  Entity$1=NLU$1.Entity=Runtime.Class({
   toString:function()
   {
-   return((((Runtime.Curried(function($1,$2,$3,$4)
+   return(((((Runtime.Curried(function($1,$2,$3,$4,$5)
    {
-    return $1("Entity("+Utils.toSafe($2)+", "+Utils.toSafe($3)+", "+SMApp$Web_GeneratedPrintf.p$2($4)+")");
-   },4))(Global.id))(this.get_Name()))(this.get_Value()))(this.get_Confidence());
+    return $1("Entity("+Utils.toSafe($2)+", "+Utils.toSafe($3)+", "+Utils.toSafe($4)+", "+SMApp$Web_GeneratedPrintf.p$2($5)+")");
+   },5))(Global.id))(this.get_Name()))(this.get_Role()))(this.get_Value()))(this.get_Confidence());
   },
   get_Confidence:function()
   {
-   return this.$2;
+   return this.$3;
   },
   get_Value:function()
+  {
+   return this.$2;
+  },
+  get_Role:function()
   {
    return this.$1;
   },
@@ -889,31 +942,19 @@
    return this.$0;
   }
  },null,Utterance$1);
- SSML=NLU$1.SSML=Runtime.Class({
-  toString:function()
-  {
-   return this.$0;
-  }
- },null,SSML);
- Response=NLU$1.Response=Runtime.Class({
-  toString:function()
-  {
-   return this.$==1?this.$1.innerHTML:Global.String(this.$0);
-  },
-  get_Text:function()
-  {
-   return this.$==1?Global.String(this.$0):Global.String(this.$0);
-  }
- },null,Response);
- Task=NLU$1.Task=Runtime.Class({
+ Question=NLU$1.Question=Runtime.Class({
   toString:function()
   {
    return(((Runtime.Curried3(function($1,$2,$3)
    {
-    return $1("Name: "+Utils.toSafe($2)+" Prompt: "+Utils.toSafe($3));
-   }))(Global.id))(this.get_Name()))(Global.String(this.get_Prompt()));
+    return $1("Name: "+Utils.toSafe($2)+" Text: "+Utils.toSafe($3));
+   }))(Global.id))(this.get_Name()))(this.get_Text());
   },
-  get_Prompt:function()
+  get_Type:function()
+  {
+   return this.$2;
+  },
+  get_Text:function()
   {
    return this.$1;
   },
@@ -921,7 +962,7 @@
   {
    return this.$0;
   }
- },null,Task);
+ },null,Question);
  _Entity.New=function(body,end,start,suggested,value)
  {
   return{
@@ -970,8 +1011,9 @@
    $0:new Entity$1({
     $:0,
     $0:"contact",
-    $1:ClientExtensions.toLower(a.contact.value),
-    $2:null
+    $1:"",
+    $2:ClientExtensions.toLower(a.contact.value),
+    $3:null
    })
   }:null;
  };
@@ -1057,9 +1099,10 @@
   {
    return new Entity$1({
     $:0,
-    $0:ClientExtensions.toLower(e.get_Role()),
-    $1:e.get_Value(),
-    $2:{
+    $0:e.get_Name(),
+    $1:ClientExtensions.toLower(e.get_Role()),
+    $2:e.get_Value(),
+    $3:{
      $:1,
      $0:e.get_Confidence()
     }
@@ -1119,9 +1162,10 @@
   {
    return new Entity$1({
     $:0,
-    $0:ClientExtensions.toLower(e.get_Role()),
-    $1:e.get_Value(),
-    $2:{
+    $0:e.get_Name(),
+    $1:ClientExtensions.toLower(e.get_Role()),
+    $2:e.get_Value(),
+    $3:{
      $:1,
      $0:e.get_Confidence()
     }
@@ -1191,9 +1235,10 @@
   {
    return new Entity$1({
     $:0,
-    $0:ClientExtensions.toLower(e.get_Role()),
-    $1:e.get_Value(),
-    $2:{
+    $0:e.get_Name(),
+    $1:ClientExtensions.toLower(e.get_Role()),
+    $2:e.get_Value(),
+    $3:{
      $:1,
      $0:e.get_Confidence()
     }
@@ -1244,23 +1289,23 @@
  };
  Text.entityConfidenceThreshold=function()
  {
-  SC$2.$cctor();
-  return SC$2.entityConfidenceThreshold;
+  SC$3.$cctor();
+  return SC$3.entityConfidenceThreshold;
  };
  Text.set_entityConfidenceThreshold=function($1)
  {
-  SC$2.$cctor();
-  SC$2.entityConfidenceThreshold=$1;
+  SC$3.$cctor();
+  SC$3.entityConfidenceThreshold=$1;
  };
  Text.intentConfidenceThreshold=function()
  {
-  SC$2.$cctor();
-  return SC$2.intentConfidenceThreshold;
+  SC$3.$cctor();
+  return SC$3.intentConfidenceThreshold;
  };
  Text.set_intentConfidenceThreshold=function($1)
  {
-  SC$2.$cctor();
-  SC$2.intentConfidenceThreshold=$1;
+  SC$3.$cctor();
+  SC$3.intentConfidenceThreshold=$1;
  };
  Text.getUtterance2=function(sentence)
  {
@@ -1387,33 +1432,13 @@
  };
  Text.trait_types=function()
  {
-  SC$2.$cctor();
-  return SC$2.trait_types;
+  SC$3.$cctor();
+  return SC$3.trait_types;
  };
  Text.entity_types=function()
  {
-  SC$2.$cctor();
-  return SC$2.entity_types;
- };
- Text.QuickPrograms=function(a)
- {
-  return a==="programs"?{
-   $:1,
-   $0:new Utterance$1({
-    $:0,
-    $0:"programs",
-    $1:{
-     $:1,
-     $0:new Intent$1({
-      $:0,
-      $0:"Program",
-      $1:null
-     })
-    },
-    $2:null,
-    $3:null
-   })
-  }:null;
+  SC$3.$cctor();
+  return SC$3.entity_types;
  };
  Text.QuickNumber=function(a)
  {
@@ -1430,7 +1455,7 @@
    $:1,
    $0:new Utterance$1({
     $:0,
-    $0:"1",
+    $0:"three",
     $1:{
      $:1,
      $0:new Intent$1({
@@ -1448,8 +1473,9 @@
      $0:List.ofArray([new Entity$1({
       $:0,
       $0:"wit/ordinal",
-      $1:"three",
-      $2:{
+      $1:"",
+      $2:"three",
+      $3:{
        $:1,
        $0:1
       }
@@ -1465,7 +1491,7 @@
    $:1,
    $0:new Utterance$1({
     $:0,
-    $0:"1",
+    $0:"two",
     $1:{
      $:1,
      $0:new Intent$1({
@@ -1483,8 +1509,9 @@
      $0:List.ofArray([new Entity$1({
       $:0,
       $0:"wit/ordinal",
-      $1:"two",
-      $2:{
+      $1:"",
+      $2:"two",
+      $3:{
        $:1,
        $0:1
       }
@@ -1500,7 +1527,7 @@
    $:1,
    $0:new Utterance$1({
     $:0,
-    $0:"1",
+    $0:"one",
     $1:{
      $:1,
      $0:new Intent$1({
@@ -1518,8 +1545,9 @@
      $0:List.ofArray([new Entity$1({
       $:0,
       $0:"wit/ordinal",
-      $1:"one",
-      $2:{
+      $1:"",
+      $2:"one",
+      $3:{
        $:1,
        $0:1
       }
@@ -1540,7 +1568,7 @@
      $:1,
      $0:new Intent$1({
       $:0,
-      $0:"no",
+      $0:"reject",
       $1:{
        $:1,
        $0:1
@@ -1564,7 +1592,7 @@
      $:1,
      $0:new Intent$1({
       $:0,
-      $0:"yes",
+      $0:"verify",
       $1:{
        $:1,
        $0:1
@@ -1612,7 +1640,7 @@
      $:1,
      $0:new Intent$1({
       $:0,
-      $0:"hello",
+      $0:"greet",
       $1:{
        $:1,
        $0:1
@@ -1657,86 +1685,74 @@
  };
  NLU$1.No=function(a)
  {
-  var $1,a$1,$2,a$2,$3,a$3;
-  return(a$1=NLU$1.Intent$1("no",a),a$1!=null&&a$1.$==1&&(a$1.$0[0]==null&&(a$1.$0[1]==null&&($1=a,true))))?{
+  var $1,a$1;
+  return(a$1=NLU$1.Intent$1("reject",a),a$1!=null&&a$1.$==1&&(a$1.$0[0]==null&&(a$1.$0[1]==null&&($1=a,true))))?{
    $:1,
    $0:$1
-  }:(a$2=NLU$1.Intent$1("noresponse",a),a$2!=null&&a$2.$==1&&(a$2.$0[0]==null&&(a$2.$0[1]==null&&($2=a,true))))?{
-   $:1,
-   $0:$2
-  }:(a$3=NLU$1.Intent$1("NoResponse",a),a$3!=null&&a$3.$==1&&(a$3.$0[0]==null&&(a$3.$0[1]==null&&($3=a,true))))?{
-   $:1,
-   $0:$3
   }:null;
  };
  NLU$1.Yes=function(a)
  {
-  var $1,a$1,$2,a$2,$3,a$3;
-  return(a$1=NLU$1.Intent$1("yes",a),a$1!=null&&a$1.$==1&&(a$1.$0[0]==null&&(a$1.$0[1]==null&&($1=a,true))))?{
+  var $1,a$1;
+  return(a$1=NLU$1.Intent$1("verify",a),a$1!=null&&a$1.$==1&&(a$1.$0[0]==null&&(a$1.$0[1]==null&&($1=a,true))))?{
    $:1,
    $0:$1
-  }:(a$2=NLU$1.Intent$1("yesresponse",a),a$2!=null&&a$2.$==1&&(a$2.$0[0]==null&&(a$2.$0[1]==null&&($2=a,true))))?{
-   $:1,
-   $0:$2
-  }:(a$3=NLU$1.Intent$1("YesResponse",a),a$3!=null&&a$3.$==1&&(a$3.$0[0]==null&&(a$3.$0[1]==null&&($3=a,true))))?{
-   $:1,
-   $0:$3
   }:null;
  };
- NLU$1.EntityManyofMany=function(names,a)
+ NLU$1.EntityManyofMany=function(roles,a)
  {
   return{
    $:1,
-   $0:Map.OfArray(Arrays.ofSeq(List.map(function(n)
+   $0:Map.OfArray(Arrays.ofSeq(List.map(function(r)
    {
     return List.exists(function(e)
     {
-     return e.get_Name()===n;
-    },a)?[n,{
+     return e.get_Role()===r;
+    },a)?[r,{
      $:1,
      $0:List.filter(function(_e)
      {
-      return _e.get_Name()===n;
+      return _e.get_Role()===r;
      },a)
-    }]:[n,null];
-   },names)))
+    }]:[r,null];
+   },roles)))
   };
  };
- NLU$1.EntityManyOf1=function(n,a)
+ NLU$1.EntityManyOf1=function(r,a)
  {
   var $1;
   return a!=null&&a.$==1&&(List.exists(function(e)
   {
-   return e.get_Name()===n;
+   return e.get_Role()===r;
   },a.$0)&&($1=a.$0,true))?{
    $:1,
    $0:List.filter(function(e)
    {
-    return e.get_Name()===n;
+    return e.get_Role()===r;
    },$1)
   }:null;
  };
- NLU$1.Entity1OfAny=function(n,a)
+ NLU$1.Entity1OfAny=function(r,a)
  {
   var $1;
   return a!=null&&a.$==1&&(List.exists(function(e)
   {
-   return e.get_Name()===n;
+   return e.get_Role()===r;
   },a.$0)&&($1=a.$0,true))?{
    $:1,
    $0:List.head(List.sortBy(function(e)
    {
-    return e.get_Name();
+    return e.get_Role();
    },List.filter(function(e)
    {
-    return e.get_Name()===n;
+    return e.get_Role()===r;
    },$1)))
   }:null;
  };
- NLU$1.Entity1Of1=function(n,a)
+ NLU$1.Entity1Of1=function(r,a)
  {
   var $1;
-  return a!=null&&a.$==1&&(a.$0.$==1&&(a.$0.$1.$==0&&(a.$0.$0.get_Name()===n&&($1=a.$0.$0,true))))?{
+  return a!=null&&a.$==1&&(a.$0.$==1&&(a.$0.$1.$==0&&(a.$0.$0.get_Role()===r&&($1=a.$0.$0,true))))?{
    $:1,
    $0:$1
   }:null;
@@ -1748,13 +1764,13 @@
    $0:[a.get_Traits(),a.get_Entities()]
   }:null;
  };
- SC$2.$cctor=function()
+ SC$3.$cctor=function()
  {
-  SC$2.$cctor=Global.ignore;
-  SC$2.entity_types=List.ofArray(["wit$contact:contact","wit$datetime:datetime","subject:subject","term:term","symptom_name:symptom_name"]);
-  SC$2.trait_types=List.ofArray(["domain","dialogue_act","wit$sentiment"]);
-  SC$2.intentConfidenceThreshold=0.5;
-  SC$2.entityConfidenceThreshold=0.5;
+  SC$3.$cctor=Global.ignore;
+  SC$3.entity_types=List.ofArray(["wit$contact:name","wit$datetime:datetime","term:subject","term:object","term:verb"]);
+  SC$3.trait_types=List.ofArray(["domain","dialogue_act"]);
+  SC$3.intentConfidenceThreshold=0.85;
+  SC$3.entityConfidenceThreshold=0.85;
  };
  MicState.MicReady={
   $:5
@@ -1837,7 +1853,7 @@
   },
   sayRandom:function(phrases,t)
   {
-   this.Say(CUI.getRandomPhrase(phrases,t));
+   this.Say(NLG.getRandomPhrase(phrases,t));
   },
   SayAngry:function(m)
   {
@@ -1852,6 +1868,15 @@
      return Concurrency.Zero();
     }));
    })),null);
+  },
+  SayDoc:function(d)
+  {
+   var i,x,a;
+   i=Arrays.get($(".terminal-output").get(),0).childNodes.length;
+   x=Doc.Element("div",[ClientExtensions.cls("terminal-command"),ClientExtensions.dindex(i+1)],[d]);
+   a=ClientExtensions.termOutput();
+   Templates.LoadLocalTemplates("");
+   Doc.RunAppend(a,x);
   },
   Say:function(text)
   {
@@ -1896,187 +1921,229 @@
    Caption:Caption
   });
  };
- CUI.waitAddPhrases=function()
- {
-  SC$3.$cctor();
-  return SC$3.waitAddPhrases;
- };
- CUI.waitRetrievePhrases=function()
- {
-  SC$3.$cctor();
-  return SC$3.waitRetrievePhrases;
- };
- CUI.helpPhrases=function()
- {
-  SC$3.$cctor();
-  return SC$3.helpPhrases;
- };
- CUI.helloUserPhrases=function()
- {
-  SC$3.$cctor();
-  return SC$3.helloUserPhrases;
- };
- CUI.helloPhrases=function()
- {
-  SC$3.$cctor();
-  return SC$3.helloPhrases;
- };
- CUI["getRandomPhrase'"]=function(phrases)
- {
-  return ClientExtensions.replace_tok("$0","",Seq.nth(CUI.rng().Next(0,phrases.get_Length()),phrases));
- };
- CUI.getRandomPhrase=function(phrases,r)
- {
-  return ClientExtensions.replace_tok("$0",r,Seq.nth(CUI.rng().Next(0,phrases.get_Length()),phrases));
- };
- CUI.rng=function()
- {
-  SC$3.$cctor();
-  return SC$3.rng;
- };
- SC$3.$cctor=function()
- {
-  SC$3.$cctor=Global.ignore;
-  SC$3.rng=new Random.New();
-  SC$3.helloPhrases=List.ofArray(["Welcome!","Welcome, my name is Selma.","Welcome to Selma. How can I help?","Hello this is Selma, how can I help?","Hello, I am Selma. How can I help?","Hello, I am Selma. How may I help you now?","I'm Selma. Tell me your name so we can get started."]);
-  SC$3.helloUserPhrases=List.ofArray(["Hello $0, welcome back.","Welcome $0, nice to see you again.","Hello $0.","Good to see you $0.","Hello $0, nice to see you."]);
-  SC$3.helpPhrases=List.ofArray(["What can I help you with $0?"]);
-  SC$3.waitRetrievePhrases=List.ofArray(["Ok, let me check that $0 for you","Please wait while I check that $0 for you.","Wait while I check that $0.","Ok let me see if I can find that $0."]);
-  SC$3.waitAddPhrases=List.ofArray(["Ok, let me add that $0 for you","Please wait while I add that $0 for you.","Wait while I add that $0.","I'll add that $0 now."]);
- };
- Main.update=function(cui,props,tasks,responses,utterances)
- {
-  var m,$1,a,a$1,a$2,a$3,$2,a$4,a$5,$3,a$6,a$7,a$8,u,b,$4,a$9,a$10,a$11,b$1,$5,a$12,a$13,a$14,$6,a$15,a$16,a$17,b$2,$7,a$18,a$19,a$20,$8,a$21,a$22,a$23,$9,a$24,$10,a$25,$11,a$26,$12,b$3,$13,a$27,a$28,a$29,b$4,$14,a$30,$15,$16,a$31,a$32,$17,q;
-  function _say(t)
+ Dialogue$1=Dialogue.Dialogue=Runtime.Class({
+  get_Utterances:function()
   {
-   cui.Say(t);
+   return this.$4;
+  },
+  get_Output:function()
+  {
+   return this.$3;
+  },
+  get_DialogueQuestions:function()
+  {
+   return this.$2;
+  },
+  get_Props:function()
+  {
+   return this.$1;
+  },
+  get_Cui:function()
+  {
+   return this.$0;
+  }
+ },null,Dialogue$1);
+ Dialogue["Response'_"]=function(d,moduleQuestions,n,a)
+ {
+  var $1,a$1,v;
+  return(a$1=Dialogue.PropNotSet_(d,"user",a),a$1!=null&&a$1.$==1&&(Dialogue.haveQuestion(moduleQuestions,n)&&d.get_DialogueQuestions().length>0&&(d.get_DialogueQuestions())[0].get_Name()===n&&($1=a$1.$0,true)))?(Dialogue.popu(d),Dialogue.popq(d),Dialogue.haveProp(d,n)?(v=d.get_Props().get_Item(n),(Dialogue.deleteProp(d,n),{
+   $:1,
+   $0:[$1,{
+    $:1,
+    $0:v
+   }]
+  })):{
+   $:1,
+   $0:[$1,null]
+  }):null;
+ };
+ Dialogue.Response_=function(d,moduleQuestions,n,a)
+ {
+  var $1,a$1,v;
+  return(a$1=Dialogue.PropSet_(d,"user",a),a$1!=null&&a$1.$==1&&(Dialogue.haveQuestion(moduleQuestions,n)&&d.get_DialogueQuestions().length>0&&(d.get_DialogueQuestions())[0].get_Name()===n&&($1=a$1.$0,true)))?(Dialogue.popu(d),Dialogue.popq(d),Dialogue.haveProp(d,n)?(v=d.get_Props().get_Item(n),(Dialogue.deleteProp(d,n),{
+   $:1,
+   $0:[$1,{
+    $:1,
+    $0:v
+   }]
+  })):{
+   $:1,
+   $0:[$1,null]
+  }):null;
+ };
+ Dialogue["User'_"]=function(d,a)
+ {
+  var $1,a$1;
+  return(a$1=Dialogue.PropNotSet_(d,"user",a),a$1!=null&&a$1.$==1&&(d.get_DialogueQuestions().length===0&&($1=a$1.$0,true)))?(Dialogue.popu(d),{
+   $:1,
+   $0:$1
+  }):null;
+ };
+ Dialogue.User_=function(d,a)
+ {
+  var $1,a$1;
+  return(a$1=Dialogue.PropSet_(d,"user",a),a$1!=null&&a$1.$==1&&(d.get_DialogueQuestions().length===0&&($1=a$1.$0,true)))?(Dialogue.popu(d),{
+   $:1,
+   $0:$1
+  }):null;
+ };
+ Dialogue.PropNotSet_=function(d,n,a)
+ {
+  return!Dialogue.haveProp(d,n)?{
+   $:1,
+   $0:a
+  }:null;
+ };
+ Dialogue.PropSet_=function(d,n,a)
+ {
+  return Dialogue.haveProp(d,n)?{
+   $:1,
+   $0:a
+  }:null;
+ };
+ Dialogue.noUnderstand=function(d,debug,name)
+ {
+  var q;
+  debug((function($1)
+  {
+   return function($2)
+   {
+    return $1(Utils.toSafe($2)+" interpreter did not understand utterance.");
+   };
+  }(Global.id))(name));
+  Dialogue.say(d,"Sorry I didn't understand what you meant.");
+  d.get_DialogueQuestions().length>0?(q=Seq.nth(0,d.get_DialogueQuestions()),Dialogue.haveProp(d,q.get_Name())?Dialogue.say(d,NLG.replace_tok("$0",d.get_Props().get_Item(q.get_Name()),q.get_Text())):Dialogue.say(d,q.get_Text())):void 0;
+ };
+ Dialogue.ask=function(d,moduleQuestions,q,v)
+ {
+  Dialogue.addProp(d,q,v);
+  Dialogue.pushq(d,moduleQuestions,q);
+  Dialogue.say(d,NLG.replace_tok("$0",v,Dialogue.getQuestion(moduleQuestions,q).$0.get_Text()));
+ };
+ Dialogue.pushq=function(d,moduleQuestions,questionName)
+ {
+  var m;
+  m=Dialogue.getQuestion(moduleQuestions,questionName);
+  m==null?(function($1)
+  {
+   return function($2)
+   {
+    return $1("No such question: "+Utils.toSafe($2));
+   };
+  }(Operators.FailWith))(questionName):d.get_DialogueQuestions().unshift(m.$0);
+ };
+ Dialogue.popq=function(d)
+ {
+  d.get_DialogueQuestions().shift();
+ };
+ Dialogue.popu=function(d)
+ {
+  d.get_Utterances().shift();
+ };
+ Dialogue.pushu=function(d,m)
+ {
+  d.get_Utterances().unshift(m);
+ };
+ Dialogue.haveQuestion=function(q,n)
+ {
+  return List.exists(function(q$1)
+  {
+   return q$1.get_Name()===n;
+  },q);
+ };
+ Dialogue.getQuestion=function(q,n)
+ {
+  return Seq.tryFind(function(q$1)
+  {
+   return q$1.get_Name()===n;
+  },q);
+ };
+ Dialogue.prop=function(d,k)
+ {
+  return d.get_Props().get_Item(k);
+ };
+ Dialogue.deleteProp=function(d,k)
+ {
+  d.get_Props().Remove(k);
+ };
+ Dialogue.addProp=function(d,k,v)
+ {
+  d.get_Props().Add(k,v);
+ };
+ Dialogue.haveProp=function(d,k)
+ {
+  return d.get_Props().ContainsKey(k);
+ };
+ Dialogue["sayRandom'"]=function(d,p)
+ {
+  Dialogue.sayRandom(d,p,"");
+ };
+ Dialogue.sayRandom=function(d,p,v)
+ {
+  var t;
+  t=NLG.getRandomPhrase(p,v);
+  d.get_Output().unshift(t);
+  d.get_Cui().Say(t);
+ };
+ Dialogue.say=function(d,t)
+ {
+  d.get_Output().unshift(t);
+  Dialogue["say'"](d,t);
+ };
+ Dialogue["say'"]=function(d,t)
+ {
+  d.get_Cui().Say(t);
+ };
+ Dialogue.echo=function(d,t)
+ {
+  (d.get_Cui())["EchoHtml'"](t);
+ };
+ Main.update=function(d)
+ {
+  var utterances,props,dialogueQuestions,m,$1,a,a$1,a$2,a$3,$2,a$4,a$5,$3,a$6,a$7,a$8,u,b,$4,a$9,a$10,a$11,b$1,$5,a$12,a$13,a$14,$6,a$15,a$16,a$17,b$2,$7,a$18,a$19,a$20,$8,a$21,a$22,a$23,$9,a$24,$10,a$25,$11,a$26,$12,b$3,$13,a$27,a$28,a$29,b$4,$14,a$30,$15,$16,a$31,a$32,$17;
+  function echo(t)
+  {
+   Dialogue.echo(d,t);
   }
   function say(t)
   {
-   responses.unshift(t);
-   _say(t);
+   Dialogue.say(d,t);
   }
   function sayRandom(p,v)
   {
-   var t;
-   t=CUI.getRandomPhrase(p,v);
-   responses.unshift(t);
-   return cui.Say(t);
-  }
-  function echo(t)
-  {
-   cui["EchoHtml'"](t);
-  }
-  function haveProp(k)
-  {
-   return props.ContainsKey(k);
-  }
-  function prop(k)
-  {
-   return props.get_Item(k);
+   return Dialogue.sayRandom(d,p,v);
   }
   function addProp(k,v)
   {
-   return props.Add(k,v);
+   return Dialogue.addProp(d,k,v);
   }
-  function deleteProp(k)
+  function prop(k)
   {
-   props.Remove(k);
+   return Dialogue.prop(d,k);
   }
   function user()
   {
    return prop("user");
   }
-  function popc()
+  function ask(q,v)
   {
-   utterances.shift();
+   return Dialogue.ask(d,Main.moduleQuestions(),q,v);
   }
-  function popq()
+  function User(a$33)
   {
-   tasks.shift();
+   return Dialogue.User_(d,a$33);
   }
-  function pushq(n)
+  function _User(a$33)
   {
-   var m$1;
-   m$1=Main.getTask(n);
-   m$1==null?(function($18)
-   {
-    return function($19)
-    {
-     return $18("No such task "+Utils.toSafe($19));
-    };
-   }(Operators.FailWith))(n):tasks.unshift(m$1.$0);
+   return Dialogue["User'_"](d,a$33);
   }
-  function ask(q$1,v)
+  function Response(n,a$33)
   {
-   addProp(q$1,v);
-   pushq(q$1);
-   Main.debug((function($18)
-   {
-    return function($19)
-    {
-     return $18("Added question: "+SMApp$Web_GeneratedPrintf.p$8($19)+".");
-    };
-   }(Global.id))(tasks[0]));
-   return say(ClientExtensions.replace_tok("$0",v,Main.getTask(q$1).$0.get_Prompt().get_Text()));
-  }
-  function PropSet(n,a$33)
-  {
-   return haveProp(n)?{
-    $:1,
-    $0:a$33
-   }:null;
-  }
-  function PropNotSet(n,a$33)
-  {
-   return!haveProp(n)?{
-    $:1,
-    $0:a$33
-   }:null;
-  }
-  function Assert(a$33)
-  {
-   var $18,a$34;
-   return(a$34=PropSet("user",a$33),a$34!=null&&a$34.$==1&&(tasks.length===0&&($18=a$34.$0,true)))?(popc(),{
-    $:1,
-    $0:$18
-   }):null;
-  }
-  function Response$1(n,a$33)
-  {
-   var $18,a$34,d;
-   return(a$34=PropSet("user",a$33),a$34!=null&&a$34.$==1&&(Main.haveTask(n)&&tasks.length>0&&tasks[0].get_Name()===n&&($18=a$34.$0,true)))?(popc(),popq(),haveProp(n)?(d=props.get_Item(n),(deleteProp(n),{
-    $:1,
-    $0:[$18,{
-     $:1,
-     $0:d
-    }]
-   })):{
-    $:1,
-    $0:[$18,null]
-   }):null;
+   return Dialogue.Response_(d,Main.moduleQuestions(),n,a$33);
   }
   function _Response(n,a$33)
   {
-   var $18,a$34,d;
-   return(a$34=PropNotSet("user",a$33),a$34!=null&&a$34.$==1&&(Main.haveTask(n)&&tasks.length>0&&tasks[0].get_Name()===n&&($18=a$34.$0,true)))?(popc(),popq(),haveProp(n)?(d=props.get_Item(n),(deleteProp(n),{
-    $:1,
-    $0:[$18,{
-     $:1,
-     $0:d
-    }]
-   })):{
-    $:1,
-    $0:[$18,null]
-   }):null;
-  }
-  function _Assert(a$33)
-  {
-   var $18,a$34;
-   return(a$34=PropNotSet("user",a$33),a$34!=null&&a$34.$==1&&(tasks.length===0&&($18=a$34.$0,true)))?(popc(),{
-    $:1,
-    $0:$18
-   }):null;
+   return Dialogue["Response'_"](d,Main.moduleQuestions(),n,a$33);
   }
   function Str(a$33)
   {
@@ -2091,8 +2158,8 @@
    var b$5;
    return Concurrency.Start((b$5=null,Concurrency.Delay(function()
    {
-    sayRandom(CUI.waitAddPhrases(),"symptom entry");
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addSymptomJournalEntry:1383687048",[user().Name,s,l,m$1]),function(a$33)
+    sayRandom(NLG.waitAddPhrases(),"symptom entry");
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addSymptomJournalEntry:-1573255930",[user().Name,s,l,m$1]),function(a$33)
     {
      return a$33==null?(say(function($18)
      {
@@ -2107,17 +2174,20 @@
     });
    })),null);
   }
+  utterances=d.$4;
+  props=d.$1;
+  dialogueQuestions=d.$2;
   Main.debug((((Runtime.Curried3(function($18,$19,$20)
   {
-   return $18("Starting utterances:"+Utils.prettyPrint($19)+". Starting tasks: "+Utils.prettyPrint($20)+".");
-  }))(Global.id))(utterances))(tasks));
+   return $18("Starting utterances:"+Utils.prettyPrint($19)+". Starting questions: "+Utils.prettyPrint($20)+".");
+  }))(Global.id))(utterances))(dialogueQuestions));
   m=List.ofSeq(Seq.take(utterances.length>=5?5:utterances.length,utterances));
-  m.$==1&&(a=(a$1=PropNotSet("started",m.$0),a$1!=null&&a$1.$==1?{
+  m.$==1&&(a=(a$1=Dialogue.PropNotSet_(d,"started",m.$0),a$1!=null&&a$1.$==1?{
    $:1,
    $0:a$1.$0
-  }:null),a!=null&&a.$==1&&(a$2=_Assert(a.$0),a$2!=null&&a$2.$==1&&(a$3=NLU$1.Intent$1("hello",a$2.$0),a$3!=null&&a$3.$==1&&(a$3.$0[1]==null&&m.$1.$==0))))?(props.Add("started",true),sayRandom(CUI.helloPhrases(),"")):m.$==1&&(a$4=_Assert(m.$0),a$4!=null&&a$4.$==1&&(a$5=NLU$1.Intent$1("hello",a$4.$0),a$5!=null&&a$5.$==1&&(a$5.$0[1]==null&&m.$1.$==0)))?say("Hello, tell me your name to get started."):m.$==1&&(a$6=_Assert(m.$0),a$6!=null&&a$6.$==1&&(a$7=NLU$1.Intent$1("hello",a$6.$0),a$7!=null&&a$7.$==1&&(a$8=NLU$1.Entity1Of1("contact",a$7.$0[1]),a$8!=null&&a$8.$==1&&(m.$1.$==0&&($3=a$8.$0,true)))))?(u=$3.get_Value(),sayRandom(CUI.waitRetrievePhrases(),"user name"),Concurrency.Start((b=null,Concurrency.Delay(function()
+  }:null),a!=null&&a.$==1&&(a$2=_User(a.$0),a$2!=null&&a$2.$==1&&(a$3=NLU$1.Intent$1("hello",a$2.$0),a$3!=null&&a$3.$==1&&(a$3.$0[1]==null&&m.$1.$==0))))?(props.Add("started",true),Dialogue["sayRandom'"](d,NLG.helloPhrases())):m.$==1&&(a$4=_User(m.$0),a$4!=null&&a$4.$==1&&(a$5=NLU$1.Intent$1("hello",a$4.$0),a$5!=null&&a$5.$==1&&(a$5.$0[1]==null&&m.$1.$==0)))?say("Hello, tell me your name to get started."):m.$==1&&(a$6=_User(m.$0),a$6!=null&&a$6.$==1&&(a$7=NLU$1.Intent$1("hello",a$6.$0),a$7!=null&&a$7.$==1&&(a$8=NLU$1.Entity1Of1("contact",a$7.$0[1]),a$8!=null&&a$8.$==1&&(m.$1.$==0&&($3=a$8.$0,true)))))?(u=$3.get_Value(),sayRandom(NLG.waitRetrievePhrases(),"user name"),Concurrency.Start((b=null,Concurrency.Delay(function()
   {
-   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:1049621054",[u]),function(a$33)
+   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:-1964848755",[u]),function(a$33)
    {
     var u$1;
     return a$33==null?(say((function($18)
@@ -2126,17 +2196,17 @@
      {
       return $18("I did not find a user with the name "+Utils.toSafe($19)+".");
      };
-    }(Global.id))(u)),ask("addUser",u),Concurrency.Zero()):(u$1=a$33.$0,Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.updateUserLastLogin:-1462779492",[u$1.Name]),function()
+    }(Global.id))(u)),ask("addUser",u),Concurrency.Zero()):(u$1=a$33.$0,Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.updateUserLastLogin:-329896276",[u$1.Name]),function()
     {
      props.Add("user",u$1);
-     sayRandom(CUI.helloUserPhrases(),(function($18)
+     sayRandom(NLG.helloUserPhrases(),(function($18)
      {
       return function($19)
       {
        return $18(Utils.prettyPrint($19));
       };
      }(Global.id))(props.get_Item("user")));
-     return u$1.LastLoggedIn!=null?Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.humanize:-394340710",[u$1.LastLoggedIn.$0]),function(a$34)
+     return u$1.LastLoggedIn!=null?Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.humanize:652369854",[u$1.LastLoggedIn.$0]),function(a$34)
      {
       say((function($18)
       {
@@ -2151,8 +2221,8 @@
    });
   })),null)):m.$==1&&(a$9=NLU$1.Yes(m.$0),a$9!=null&&a$9.$==1&&(a$10=_Response("addUser",a$9.$0),a$10!=null&&a$10.$==1&&(a$11=Str(a$10.$0[1]),a$11!=null&&a$11.$==1&&(m.$1.$==0&&($4=a$11.$0,true)))))?Concurrency.Start((b$1=null,Concurrency.Delay(function()
   {
-   sayRandom(CUI.waitAddPhrases(),"user");
-   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addUser:-1462779492",[$4]),function(a$33)
+   sayRandom(NLG.waitAddPhrases(),"user");
+   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addUser:-329896276",[$4]),function(a$33)
    {
     return a$33==null?(say((function($18)
     {
@@ -2174,9 +2244,9 @@
    {
     return $18("Ok I did not add the user "+Utils.toSafe($19)+". But you must login for me to help you.");
    };
-  }(Global.id))($5)):m.$==1&&(a$15=Assert(m.$0),a$15!=null&&a$15.$==1&&(a$16=NLU$1.Intent$1("hello",a$15.$0),a$16!=null&&a$16.$==1&&(a$16.$0[0]==null&&(a$17=NLU$1.Entity1Of1("contact",a$16.$0[1]),a$17!=null&&a$17.$==1&&(m.$1.$==0&&($6=a$17.$0,true))))))?Concurrency.Start((b$2=null,Concurrency.Delay(function()
+  }(Global.id))($5)):m.$==1&&(a$15=User(m.$0),a$15!=null&&a$15.$==1&&(a$16=NLU$1.Intent$1("hello",a$15.$0),a$16!=null&&a$16.$==1&&(a$16.$0[0]==null&&(a$17=NLU$1.Entity1Of1("contact",a$16.$0[1]),a$17!=null&&a$17.$==1&&(m.$1.$==0&&($6=a$17.$0,true))))))?Concurrency.Start((b$2=null,Concurrency.Delay(function()
   {
-   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:1049621054",[$6.get_Value()]),function(a$33)
+   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:-1964848755",[$6.get_Value()]),function(a$33)
    {
     return a$33==null?(say((function($18)
     {
@@ -2186,27 +2256,27 @@
      };
     }(Global.id))($6.get_Value())),Concurrency.Zero()):(ask("switchUser",a$33.$0.Name),Concurrency.Zero());
    });
-  })),null):m.$==1&&(a$18=NLU$1.Yes(m.$0),a$18!=null&&a$18.$==1&&(a$19=Response$1("switchUser",a$18.$0),a$19!=null&&a$19.$==1&&(a$20=Str(a$19.$0[1]),a$20!=null&&a$20.$==1&&(m.$1.$==0&&($7=a$20.$0,true)))))?(props.set_Item("user",$7),say((function($18)
+  })),null):m.$==1&&(a$18=NLU$1.Yes(m.$0),a$18!=null&&a$18.$==1&&(a$19=Response("switchUser",a$18.$0),a$19!=null&&a$19.$==1&&(a$20=Str(a$19.$0[1]),a$20!=null&&a$20.$==1&&(m.$1.$==0&&($7=a$20.$0,true)))))?(props.set_Item("user",$7),say((function($18)
   {
    return function($19)
    {
     return $18("Ok I switched to user "+Utils.prettyPrint($19)+".");
    };
-  }(Global.id))($7))):m.$==1&&(a$21=NLU$1.No(m.$0),a$21!=null&&a$21.$==1&&(a$22=Response$1("switchUser",a$21.$0),a$22!=null&&a$22.$==1&&(a$23=Str(a$22.$0[1]),a$23!=null&&a$23.$==1&&(m.$1.$==0&&($8=a$23.$0,true)))))?say((function($18)
+  }(Global.id))($7))):m.$==1&&(a$21=NLU$1.No(m.$0),a$21!=null&&a$21.$==1&&(a$22=Response("switchUser",a$21.$0),a$22!=null&&a$22.$==1&&(a$23=Str(a$22.$0[1]),a$23!=null&&a$23.$==1&&(m.$1.$==0&&($8=a$23.$0,true)))))?say((function($18)
   {
    return function($19)
    {
     return $18("Ok I did not switch to user "+Utils.toSafe($19)+".");
    };
-  }(Global.id))($8)):m.$==1&&(a$24=_Assert(m.$0),a$24!=null&&a$24.$==1?($10=NLU$1.Intent$1("kbquery",a$24.$0),$10!=null&&$10.$==1)?m.$1.$==0&&($9=a$24.$0,true):(a$25=Assert(m.$0),a$25!=null&&a$25.$==1&&(($11=NLU$1.Intent$1("kbquery",a$25.$0),$11!=null&&$11.$==1)&&(m.$1.$==0&&($9=a$25.$0,true)))):(a$26=Assert(m.$0),a$26!=null&&a$26.$==1&&(($12=NLU$1.Intent$1("kbquery",a$26.$0),$12!=null&&$12.$==1)&&(m.$1.$==0&&($9=a$26.$0,true)))))?Concurrency.Start((b$3=null,Concurrency.Delay(function()
+  }(Global.id))($8)):m.$==1&&(a$24=_User(m.$0),a$24!=null&&a$24.$==1?($10=NLU$1.Intent$1("kbquery",a$24.$0),$10!=null&&$10.$==1)?m.$1.$==0&&($9=a$24.$0,true):(a$25=User(m.$0),a$25!=null&&a$25.$==1&&(($11=NLU$1.Intent$1("kbquery",a$25.$0),$11!=null&&$11.$==1)&&(m.$1.$==0&&($9=a$25.$0,true)))):(a$26=User(m.$0),a$26!=null&&a$26.$==1&&(($12=NLU$1.Intent$1("kbquery",a$26.$0),$12!=null&&$12.$==1)&&(m.$1.$==0&&($9=a$26.$0,true)))))?Concurrency.Start((b$3=null,Concurrency.Delay(function()
   {
    return Concurrency.Bind(QnAMaker.getAnswer($9.get_Text()),function(a$33)
    {
     var s;
-    return Concurrency.Bind((s=Arrays.get(a$33.answers,0).answer,(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.mdtohtml:-907057203",[s])),function(a$34)
+    return Concurrency.Bind((s=Arrays.get(a$33.answers,0).answer,(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.mdtohtml:1938613710",[s])),function(a$34)
     {
      var s$1;
-     return Concurrency.Bind((s$1=Arrays.get(a$33.answers,0).answer,(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.mdtotext:-907057203",[s$1])),function(a$35)
+     return Concurrency.Bind((s$1=Arrays.get(a$33.answers,0).answer,(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.mdtotext:1938613710",[s$1])),function(a$35)
      {
       echo(a$34);
       say(a$35);
@@ -2214,63 +2284,68 @@
      });
     });
    });
-  })),null):m.$==1&&(a$27=Assert(m.$0),a$27!=null&&a$27.$==1&&(a$28=NLU$1.Intent$1("symptom",a$27.$0),a$28!=null&&a$28.$==1&&(a$29=NLU$1.Entity1OfAny("symptom_name",a$28.$0[1]),a$29!=null&&a$29.$==1&&(m.$1.$==0&&($13=a$29.$0,true)))))?Concurrency.Start((b$4=null,Concurrency.Delay(function()
+  })),null):m.$==1&&(a$27=User(m.$0),a$27!=null&&a$27.$==1&&(a$28=NLU$1.Intent$1("symptom",a$27.$0),a$28!=null&&a$28.$==1&&(a$29=NLU$1.Entity1OfAny("symptom_name",a$28.$0[1]),a$29!=null&&a$29.$==1&&(m.$1.$==0&&($13=a$29.$0,true)))))?Concurrency.Start((b$4=null,Concurrency.Delay(function()
   {
    say("Ok I'll add that entry to your symptom journal");
    addSymptom($13.get_Value(),null,null);
    return Concurrency.Zero();
-  })),null):m.$==1&&(a$30=NLU$1.Yes(m.$0),a$30!=null&&a$30.$==1&&(($15=Response$1("painVideo",a$30.$0),$15!=null&&$15.$==1)&&m.$1.$==0))?cui["EchoHtml'"]("<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/SkAqOditKN0\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>"):m.$==1&&(a$31=Assert(m.$0),a$31!=null&&a$31.$==1&&(a$32=NLU$1.Intent$1("medjournal",a$31.$0),a$32!=null&&a$32.$==1&&(($17=a$32.$0[1],$17!=null&&$17.$==1)&&(m.$1.$==0&&($16=a$32.$0[1].$0,true)))))?(say("ok I added that entry to your medication journal."),say("You should be careful not to take too many painkillers over a short period of time.")):(popc(),Main.debug("Main interpreter did not understand utterance."),say("Sorry I didn't understand what you meant."),tasks.length>0?(q=Seq.nth(0,tasks),haveProp(q.get_Name())?say(ClientExtensions.replace_tok("$0",props.get_Item(q.get_Name()),Global.String(q))):say(Global.String(q))):void 0);
+  })),null):m.$==1&&(a$30=NLU$1.Yes(m.$0),a$30!=null&&a$30.$==1&&(($15=Response("painVideo",a$30.$0),$15!=null&&$15.$==1)&&m.$1.$==0))?d.$0["EchoHtml'"]("<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/SkAqOditKN0\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>"):m.$==1&&(a$31=User(m.$0),a$31!=null&&a$31.$==1&&(a$32=NLU$1.Intent$1("medjournal",a$31.$0),a$32!=null&&a$32.$==1&&(($17=a$32.$0[1],$17!=null&&$17.$==1)&&(m.$1.$==0&&($16=a$32.$0[1].$0,true)))))?(say("ok I added that entry to your medication journal."),say("You should be careful not to take too many painkillers over a short period of time.")):Dialogue.noUnderstand(d,function(m$1)
+  {
+   Main.debug(m$1);
+  },Main.name());
   Main.debug((((Runtime.Curried3(function($18,$19,$20)
   {
    return $18("Ending utterances: "+Utils.prettyPrint($19)+". Ending questions:"+Utils.prettyPrint($20)+".");
-  }))(Global.id))(utterances))(tasks));
+  }))(Global.id))(utterances))(dialogueQuestions));
  };
- Main.haveTask=function(n)
+ Main.haveQuestion=function(n)
  {
   return List.exists(function(q)
   {
    return q.get_Name()===n;
-  },Main.tasks());
+  },Main.moduleQuestions());
  };
- Main.getTask=function(n)
+ Main.getQuestion=function(n)
  {
   return Seq.tryFind(function(q)
   {
    return q.get_Name()===n;
-  },Main.tasks());
+  },Main.moduleQuestions());
  };
- Main.tasks=function()
+ Main.moduleQuestions=function()
  {
   SC$4.$cctor();
-  return SC$4.tasks;
+  return SC$4.moduleQuestions;
  };
  Main.debug=function(m)
  {
-  ClientExtensions.debug("Main",m);
+  ClientExtensions.debug(Main.name(),m);
+ };
+ Main.name=function()
+ {
+  SC$4.$cctor();
+  return SC$4.name;
  };
  SC$4.$cctor=function()
  {
   SC$4.$cctor=Global.ignore;
-  SC$4.tasks=List.ofArray([new Task({
+  SC$4.name="Main";
+  SC$4.moduleQuestions=List.ofArray([new Question({
    $:0,
    $0:"addUser",
-   $1:new Response({
+   $1:"Do you want me to add the user $0?",
+   $2:{
     $:0,
-    $0:new SSML({
-     $:0,
-     $0:"Do you want me to add the user $0?"
-    })
-   })
-  }),new Task({
+    $0:true
+   }
+  }),new Question({
    $:0,
    $0:"switchUser",
-   $1:new Response({
+   $1:"Do you want me to switch to the user $0?",
+   $2:{
     $:0,
-    $0:new SSML({
-     $:0,
-     $0:"Do you want me to switch to the user $0?"
-    })
-   })
+    $0:true
+   }
   })]);
  };
  Client.run=function()
@@ -2351,11 +2426,11 @@
  };
  Client.sayRandom=function(t,phrases)
  {
-  Client.say(CUI.getRandomPhrase(phrases,t));
+  Client.say(NLG.getRandomPhrase(phrases,t));
  };
  Client.say=function(text)
  {
-  Client.Responses().unshift(text);
+  Client.Output().unshift(text);
   Client["say'"](text);
  };
  Client["say'"]=function(text)
@@ -2399,27 +2474,32 @@
  Client.push=function(m)
  {
   Client.Utterances().unshift(m);
-  return Client.Utterances();
+  return Client.Dialogue();
  };
- Client.Props=function()
+ Client.Dialogue=function()
  {
   SC$5.$cctor();
-  return SC$5.Props;
- };
- Client.Responses=function()
- {
-  SC$5.$cctor();
-  return SC$5.Responses;
- };
- Client.Tasks=function()
- {
-  SC$5.$cctor();
-  return SC$5.Tasks;
+  return SC$5.Dialogue;
  };
  Client.Utterances=function()
  {
   SC$5.$cctor();
   return SC$5.Utterances;
+ };
+ Client.Questions=function()
+ {
+  SC$5.$cctor();
+  return SC$5.Questions;
+ };
+ Client.Output=function()
+ {
+  SC$5.$cctor();
+  return SC$5.Output;
+ };
+ Client.Props=function()
+ {
+  SC$5.$cctor();
+  return SC$5.Props;
  };
  Client.wait=function(f)
  {
@@ -2478,7 +2558,7 @@
   SC$5.$cctor=Global.ignore;
   function _main(i,e)
   {
-   var intent,a,_trait,a$1,entity,a$2,$1,u;
+   var intent,a,_trait,a$1,entity,a$2,$1;
    Client.debug((((Runtime.Curried3(function($2,$3,$4)
    {
     return $2("Voice: "+Utils.prettyPrint($3)+" "+Utils.prettyPrint($4));
@@ -2498,17 +2578,17 @@
    intent==null&&(_trait==null&&entity==null)?void 0:(Client.debug(((((Runtime.Curried(function($2,$3,$4,$5)
    {
     return $2("Voice: "+SMApp$Web_GeneratedPrintf.p($3)+" "+SMApp$Web_GeneratedPrintf.p$3($4)+" "+SMApp$Web_GeneratedPrintf.p$5($5));
-   },4))(Global.id))(intent))(_trait))(entity)),u=Client.push(new Utterance$1({
+   },4))(Global.id))(intent))(_trait))(entity)),Main.update(Client.push(new Utterance$1({
     $:0,
     $0:"",
     $1:intent,
     $2:_trait,
     $3:entity
-   })),Main.update(Client.CUI(),Client.Props(),Client.Tasks(),Client.Responses(),u));
+   }))));
   }
   function main(term,command)
   {
-   var $1,$2,$3,voices,$4,a,a$1,a$2,a$3,u,b;
+   var $1,$2,$3,voices,$4,a,a$1,a$2,a$3,b;
    Client.set_CUI(CUI$1.New(Client.CUI().Voice,Client.CUI().Mic,term,Client.CUI().Avatar,Client.CUI().Caption));
    Unchecked.Equals(Client.CUI().Mic,null)?Client.initMic(_main):void 0;
    Unchecked.Equals(Client.CUI().Voice,null)?Client.initSpeech():void 0;
@@ -2523,9 +2603,9 @@
    {
     return function($6)
     {
-     return $5("Tasks: "+Utils.prettyPrint($6));
+     return $5("Questions: "+Utils.prettyPrint($6));
     };
-   }(Global.id))(Client.Tasks()))):($3=Text.Voices(command),$3!=null&&$3.$==1)?(voices=ClientExtensions.toArray(ClientExtensions.speechSynthesis().getVoices()),(Client["say'"]((function($5)
+   }(Global.id))(Client.Questions()))):($3=Text.Voices(command),$3!=null&&$3.$==1)?(voices=ClientExtensions.toArray(ClientExtensions.speechSynthesis().getVoices()),(Client["say'"]((function($5)
    {
     return function($6)
     {
@@ -2543,17 +2623,17 @@
     {
      return $5("Quick Text: "+SMApp$Web_GeneratedPrintf.p$7($6)+".");
     };
-   }(Global.id))($4)),u=Client.push($4),Main.update(Client.CUI(),Client.Props(),Client.Tasks(),Client.Responses(),u),Client.set_ClientState(ClientState.ClientReady)):Client.CUI().Wait((b=null,Concurrency.Delay(function()
+   }(Global.id))($4)),Main.update(Client.push($4)),Client.set_ClientState(ClientState.ClientReady)):Client.CUI().Wait((b=null,Concurrency.Delay(function()
    {
     Client.set_ClientState(ClientState.ClientUnderstand);
     Text.getUtterance(command,function(meaning)
     {
-     var a$4,m,u$1;
+     var a$4,m;
      a$4=Text.HasUtterance(meaning);
      a$4!=null&&a$4.$==1?(m=a$4.$0,Client.debug(((((Runtime.Curried(function($5,$6,$7,$8)
      {
       return $5("Text: Intent: "+SMApp$Web_GeneratedPrintf.p($6)+", Traits: "+SMApp$Web_GeneratedPrintf.p$3($7)+", Entities: "+SMApp$Web_GeneratedPrintf.p$5($8));
-     },4))(Global.id))(m.get_Intent()))(m.get_Traits()))(m.get_Entities())),u$1=Client.push(m),Main.update(Client.CUI(),Client.Props(),Client.Tasks(),Client.Responses(),u$1)):(Client.debug("Text: Did not receive a meaning from the server."),Client["say'"]("Sorry I did not understand what you said."));
+     },4))(Global.id))(m.get_Intent()))(m.get_Traits()))(m.get_Entities())),Main.update(Client.push(m))):(Client.debug("Text: Did not receive a meaning from the server."),Client["say'"]("Sorry I did not understand what you said."));
     });
     Client.set_ClientState(ClientState.ClientReady);
     return Concurrency.Zero();
@@ -2562,10 +2642,18 @@
   SC$5.CUI=CUI$1.New(null,null,null,(SDK.applicationId="4277115329081938617",sdk=new Global.SDKConnection(),web=new Global.WebAvatar(),web.version=8.5,web.connection=sdk,web.avatar="20926186",web.voice="cmu-slt",web.voiceMod="default",web.width=175,web.createBox(),web.addMessage(""),web.processMessages(0),web),false);
   SC$5.MicState=MicState.MicNotInitialized;
   SC$5.ClientState=ClientState.ClientNotInitialzed;
-  SC$5.Utterances=[];
-  SC$5.Tasks=[];
-  SC$5.Responses=[];
   SC$5.Props=new Dictionary.New$5();
+  SC$5.Output=[];
+  SC$5.Questions=[];
+  SC$5.Utterances=[];
+  SC$5.Dialogue=new Dialogue$1({
+   $:0,
+   $0:Client.CUI(),
+   $1:Client.Props(),
+   $2:Client.Questions(),
+   $3:Client.Output(),
+   $4:Client.Utterances()
+  });
   SC$5.synth=Global.speechSynthesis;
   SC$5.Main=new Interpreter({
    $:0,
@@ -2593,18 +2681,6 @@
  {
   return"{"+("id = "+Utils.prettyPrint($1.id))+"; "+("name = "+Utils.prettyPrint($1.name))+"; "+("confidence = "+Utils.prettyPrint($1.confidence))+"}";
  };
- SMApp$Web_GeneratedPrintf.p$8=function($1)
- {
-  return"Task ("+Utils.prettyPrint($1.$0)+", "+SMApp$Web_GeneratedPrintf.p$9($1.$1)+")";
- };
- SMApp$Web_GeneratedPrintf.p$9=function($1)
- {
-  return $1.$==1?"Html ("+SMApp$Web_GeneratedPrintf.p$10($1.$0)+", "+Utils.prettyPrint($1.$1)+")":"Ssml "+SMApp$Web_GeneratedPrintf.p$10($1.$0);
- };
- SMApp$Web_GeneratedPrintf.p$10=function($1)
- {
-  return"SSML "+Utils.prettyPrint($1.$0);
- };
  SMApp$Web_GeneratedPrintf.p$2=function($1)
  {
   return $1==null?"null":"Some "+Utils.prettyPrint($1.$0);
@@ -2630,7 +2706,7 @@
  };
  SMApp$Web_GeneratedPrintf.p$6=function($1)
  {
-  return"Entity ("+Utils.prettyPrint($1.$0)+", "+Utils.prettyPrint($1.$1)+", "+SMApp$Web_GeneratedPrintf.p$2($1.$2)+")";
+  return"Entity ("+Utils.prettyPrint($1.$0)+", "+Utils.prettyPrint($1.$1)+", "+Utils.prettyPrint($1.$2)+", "+SMApp$Web_GeneratedPrintf.p$2($1.$3)+")";
  };
  SMApp$Web_GeneratedPrintf.p$5=function($1)
  {
