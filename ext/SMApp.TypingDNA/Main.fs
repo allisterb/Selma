@@ -6,7 +6,7 @@ open WebSharper.InterfaceGenerator
 
 module Definition =
     let TypingDNAOptions =
-        Pattern.Config "Options"{
+        Pattern.Config "TypingDNAOptions"{
             Required=[
                 "type", T<int>
             ]

@@ -14,6 +14,7 @@ open SMApp.WebSpeech
 open SMApp.Microphone
 open SMApp.BotLibre
 open SMApp.Compromise
+open SMApp.TypingDNA
 
 open Dialogue
 
@@ -108,6 +109,7 @@ module Client =
             )
         do mic.Connect("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT")
 
+    let dna = new TypingDNA()
     /// Main interpreter
     let Main =             
         /// Mic interpreter
@@ -143,7 +145,8 @@ module Client =
             match command with
             (* Quick commands *)
             | Text.Blank -> say' "Tell me what you want me to do or ask me a question."
-            | Text.Debug ->  
+            | Text.Debug ->
+                debug <| dna.GetTypingPattern(new TypingDNAOptions(``type`` = 0, Length = 100))
                 debug <| sprintf "Utterances: %A" Utterances
                 debug <| sprintf "Questions: %A" Questions
             | Text.Voices -> 

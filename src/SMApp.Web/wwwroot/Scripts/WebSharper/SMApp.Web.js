@@ -2159,7 +2159,7 @@
    return Concurrency.Start((b$5=null,Concurrency.Delay(function()
    {
     sayRandom(NLG.waitAddPhrases(),"symptom entry");
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addSymptomJournalEntry:-1343088649",[user().Name,s,l,m$1]),function(a$33)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addSymptomJournalEntry:-1455673746",[user().Name,s,l,m$1]),function(a$33)
     {
      return a$33==null?(say(function($18)
      {
@@ -2187,7 +2187,7 @@
    $0:a$1.$0
   }:null),a!=null&&a.$==1&&(a$2=_User(a.$0),a$2!=null&&a$2.$==1&&(a$3=NLU$1.Intent$1("hello",a$2.$0),a$3!=null&&a$3.$==1&&(a$3.$0[1]==null&&m.$1.$==0))))?(props.Add("started",true),Dialogue["sayRandom'"](d,NLG.helloPhrases())):m.$==1&&(a$4=_User(m.$0),a$4!=null&&a$4.$==1&&(a$5=NLU$1.Intent$1("hello",a$4.$0),a$5!=null&&a$5.$==1&&(a$5.$0[1]==null&&m.$1.$==0)))?say("Hello, tell me your name to get started."):m.$==1&&(a$6=_User(m.$0),a$6!=null&&a$6.$==1&&(a$7=NLU$1.Intent$1("hello",a$6.$0),a$7!=null&&a$7.$==1&&(a$8=NLU$1.Entity1Of1("contact",a$7.$0[1]),a$8!=null&&a$8.$==1&&(m.$1.$==0&&($3=a$8.$0,true)))))?(u=$3.get_Value(),sayRandom(NLG.waitRetrievePhrases(),"user name"),Concurrency.Start((b=null,Concurrency.Delay(function()
   {
-   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:-684408991",[u]),function(a$33)
+   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:-2112269937",[u]),function(a$33)
    {
     var u$1;
     return a$33==null?(say((function($18)
@@ -2196,7 +2196,7 @@
      {
       return $18("I did not find a user with the name "+Utils.toSafe($19)+".");
      };
-    }(Global.id))(u)),ask("addUser",u),Concurrency.Zero()):(u$1=a$33.$0,Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.updateUserLastLogin:1415149300",[u$1.Name]),function()
+    }(Global.id))(u)),ask("addUser",u),Concurrency.Zero()):(u$1=a$33.$0,Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.updateUserLastLogin:815324637",[u$1.Name]),function()
     {
      props.Add("user",u$1);
      sayRandom(NLG.helloUserPhrases(),(function($18)
@@ -2206,7 +2206,7 @@
        return $18(Utils.prettyPrint($19));
       };
      }(Global.id))(props.get_Item("user")));
-     return u$1.LastLoggedIn!=null?Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.humanize:974602273",[u$1.LastLoggedIn.$0]),function(a$34)
+     return u$1.LastLoggedIn!=null?Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.humanize:1665269217",[u$1.LastLoggedIn.$0]),function(a$34)
      {
       say((function($18)
       {
@@ -2222,7 +2222,7 @@
   })),null)):m.$==1&&(a$9=NLU$1.Yes(m.$0),a$9!=null&&a$9.$==1&&(a$10=_Response("addUser",a$9.$0),a$10!=null&&a$10.$==1&&(a$11=Str(a$10.$0[1]),a$11!=null&&a$11.$==1&&(m.$1.$==0&&($4=a$11.$0,true)))))?Concurrency.Start((b$1=null,Concurrency.Delay(function()
   {
    sayRandom(NLG.waitAddPhrases(),"user");
-   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addUser:1415149300",[$4]),function(a$33)
+   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addUser:815324637",[$4]),function(a$33)
    {
     return a$33==null?(say((function($18)
     {
@@ -2246,7 +2246,7 @@
    };
   }(Global.id))($5)):m.$==1&&(a$15=User(m.$0),a$15!=null&&a$15.$==1&&(a$16=NLU$1.Intent$1("hello",a$15.$0),a$16!=null&&a$16.$==1&&(a$16.$0[0]==null&&(a$17=NLU$1.Entity1Of1("contact",a$16.$0[1]),a$17!=null&&a$17.$==1&&(m.$1.$==0&&($6=a$17.$0,true))))))?Concurrency.Start((b$2=null,Concurrency.Delay(function()
   {
-   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:-684408991",[$6.get_Value()]),function(a$33)
+   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:-2112269937",[$6.get_Value()]),function(a$33)
    {
     return a$33==null?(say((function($18)
     {
@@ -2273,10 +2273,10 @@
    return Concurrency.Bind(QnAMaker.getAnswer($9.get_Text()),function(a$33)
    {
     var s;
-    return Concurrency.Bind((s=Arrays.get(a$33.answers,0).answer,(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.mdtohtml:-1142009928",[s])),function(a$34)
+    return Concurrency.Bind((s=Arrays.get(a$33.answers,0).answer,(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.mdtohtml:844952031",[s])),function(a$34)
     {
      var s$1;
-     return Concurrency.Bind((s$1=Arrays.get(a$33.answers,0).answer,(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.mdtotext:-1142009928",[s$1])),function(a$35)
+     return Concurrency.Bind((s$1=Arrays.get(a$33.answers,0).answer,(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.mdtotext:844952031",[s$1])),function(a$35)
      {
       echo(a$34);
       say(a$35);
@@ -2363,6 +2363,11 @@
  {
   SC$5.$cctor();
   return SC$5.Main;
+ };
+ Client.dna=function()
+ {
+  SC$5.$cctor();
+  return SC$5.dna;
  };
  Client.initMic=function(interpret)
  {
@@ -2589,12 +2594,14 @@
   }
   function main(term,command)
   {
-   var $1,$2,$3,voices,$4,a,a$1,a$2,a$3,b;
+   var $1,$2,r$1,$3,voices,$4,a,a$1,a$2,a$3,b;
    Client.set_CUI(CUI$1.New(Client.CUI().Voice,Client.CUI().Mic,term,Client.CUI().Avatar,Client.CUI().Caption));
    Unchecked.Equals(Client.CUI().Mic,null)?Client.initMic(_main):void 0;
    Unchecked.Equals(Client.CUI().Voice,null)?Client.initSpeech():void 0;
    Client.ClientState().$===0?Client.set_ClientState(ClientState.ClientReady):void 0;
-   return($1=Text.Blank(command),$1!=null&&$1.$==1)?Client["say'"]("Tell me what you want me to do or ask me a question."):($2=Text.Debug(command),$2!=null&&$2.$==1)?(Client.debug((function($5)
+   return($1=Text.Blank(command),$1!=null&&$1.$==1)?Client["say'"]("Tell me what you want me to do or ask me a question."):($2=Text.Debug(command),$2!=null&&$2.$==1)?(Client.debug(Client.dna().getTypingPattern((r$1={
+    type:0
+   },r$1.length=100,r$1))),Client.debug((function($5)
    {
     return function($6)
     {
@@ -2656,6 +2663,7 @@
    $4:Client.Utterances()
   });
   SC$5.synth=Global.speechSynthesis;
+  SC$5.dna=new Global.TypingDNA();
   SC$5.Main=new Interpreter({
    $:0,
    $0:function($1)

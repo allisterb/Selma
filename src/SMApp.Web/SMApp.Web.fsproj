@@ -58,6 +58,9 @@
     <Reference Include="SMApp.Microphone">
       <HintPath>..\..\ext\SMApp.Microphone\bin\Debug\netstandard2.0\SMApp.Microphone.dll</HintPath>
     </Reference>
+    <Reference Include="SMApp.TypingDNA">
+      <HintPath>..\..\ext\SMApp.TypingDNA\bin\Debug\netstandard2.0\SMApp.TypingDNA.dll</HintPath>
+    </Reference>
     <Reference Include="SMApp.WebSpeech">
       <HintPath>..\..\ext\SMApp.WebSpeech\bin\Debug\netstandard2.0\SMApp.WebSpeech.dll</HintPath>
     </Reference>
