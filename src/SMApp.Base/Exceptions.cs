@@ -6,7 +6,7 @@ namespace SMApp
 {
     public class ApiNotInitializedException : Exception
     {
-        public ApiNotInitializedException(Api api) : base($"The {api.GetType().Name} Api is not initialized.") {}
+        public ApiNotInitializedException(Runtime api) : base($"The {api.GetType().Name} Api is not initialized.") {}
     }
 
     public class AudioApiException : Exception

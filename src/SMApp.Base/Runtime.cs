@@ -15,10 +15,10 @@ using Microsoft.Extensions.Configuration.UserSecrets;
 
 namespace SMApp
 {
-    public abstract class Api
+    public abstract class Runtime
     {
         #region Constructors
-        static Api()
+        static Runtime()
         {
             if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("KUBERNETES_PORT")) || !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("OPENSHIFT_BUILD_NAMESPACE")))
             {
@@ -53,7 +53,7 @@ namespace SMApp
 
             HttpClient.DefaultRequestHeaders.UserAgent.ParseAdd("SMApp/0.1");
         }
-        public Api(CancellationToken ct)
+        public Runtime(CancellationToken ct)
         {
             if (Logger == null)
             {
@@ -62,7 +62,7 @@ namespace SMApp
             CancellationToken = ct;
             Type = this.GetType();
         }
-        public Api(): this(Cts.Token) {}
+        public Runtime(): this(Cts.Token) {}
 
         #endregion
 
@@ -117,7 +117,7 @@ namespace SMApp
             }
         }
 
-        public static string Config(string i) => Api.Configuration[i];
+        public static string Config(string i) => Runtime.Configuration[i];
            
         public static void Info(string messageTemplate, params object[] args) => Logger.Info(messageTemplate, args);
 

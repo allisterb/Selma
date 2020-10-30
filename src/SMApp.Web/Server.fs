@@ -15,7 +15,7 @@ open SMApp.Models
     
 module Server =        
     let private pgdb =
-        Sql.host (Api.Config("PGSQL"))
+        Sql.host (Runtime.Config("PGSQL"))
         |> Sql.port 5432
         |> Sql.username "smapp"
         |> Sql.password "smapp"
@@ -33,6 +33,9 @@ module Server =
 
     [<Rpc>]
     let mdtotext(s:string) = async { return Markdig.Markdown.ToPlainText s }
+
+    [<Rpc>]
+    let enrollUser (uid:string) (pattern: string) = async { return! TypingDNA.savePattern uid pattern }
 
     [<Rpc>]
     let getUser(user:string) : Async<User option> = 

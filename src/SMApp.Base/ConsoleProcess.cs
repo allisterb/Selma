@@ -13,7 +13,7 @@ namespace SMApp
 
     public delegate void OnError(string line);
 
-    public class ConsoleProcess : Api, IDisposable
+    public class ConsoleProcess : Runtime, IDisposable
     {
         #region Constructors
         public ConsoleProcess(string cmd, string[] args, bool relativeToAssemblyDir = true, OnExit onExit = null, OnOutput onOutput = null,  OnError onError = null)

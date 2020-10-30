@@ -10,6 +10,7 @@
     <Compile Include="Babelfy.fs" />
     <Compile Include="Witai.fs" />
     <Compile Include="QnAMaker.fs" />
+    <Compile Include="TypingDNA.fs" />
     <Compile Include="NLG.fs" />
     <Compile Include="NLU.fs" />
     <Compile Include="CUI.fs" />
@@ -32,6 +33,7 @@
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Npgsql.FSharp" Version="3.7.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="3.4.0" />
+    <PackageReference Include="System.Net.Http" Version="4.3.2" />
     <PackageReference Include="WebSharper" Version="4.6.7.408" />
     <PackageReference Include="WebSharper.FSharp" Version="4.6.7.408" />
     <PackageReference Include="WebSharper.UI" Version="4.6.3.219" />
@@ -42,6 +44,7 @@
     <ProjectReference Include="..\..\ext\Alexa.NET.Conversations\Alexa.NET.Conversations\Alexa.NET.Conversations.csproj" />
     <ProjectReference Include="..\..\ext\Humanizer\src\Humanizer\Humanizer.csproj" />
     <ProjectReference Include="..\SMApp.Base.Fs\SMApp.Base.Fs.fsproj" />
+    <ProjectReference Include="..\SMApp.Base\SMApp.Base.csproj" />
     <ProjectReference Include="..\SMApp.Core\SMApp.Core.fsproj" />
     <ProjectReference Include="..\SMApp.Logger.Serilog\SMApp.Logger.Serilog.csproj" />
   </ItemGroup>

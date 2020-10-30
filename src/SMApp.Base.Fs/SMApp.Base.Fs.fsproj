@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Runtime.fs" />
     <Compile Include="NLP.fs" />
-    <Compile Include="Api.fs" />
   </ItemGroup>
 
   <ItemGroup>
