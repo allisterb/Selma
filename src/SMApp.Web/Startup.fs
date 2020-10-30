@@ -42,7 +42,7 @@ module Program =
     let main args =
         let config = new LoggerConfiguration()
         Log.Logger <- config.MinimumLevel.Information().Enrich.FromLogContext().WriteTo.Console().CreateLogger()
-        do Api.SetLogger(new SerilogLogger());
+        do Runtime.SetLogger(new SerilogLogger());
         do BuildWebHost(args).Run()
         do Log.CloseAndFlush()
         0

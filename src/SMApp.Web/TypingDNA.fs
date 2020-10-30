@@ -5,6 +5,8 @@ open System.Text
 open System.Net.Http
 open System.Net.Http.Headers
 
+open WebSharper
+
 open SMApp
 
 module TypingDNA =
@@ -14,6 +16,14 @@ module TypingDNA =
     let private baseUrl = "https://api.typingdna.com/{0}/{1}";
     let private contentType = "application/x-www-form-urlencoded"; 
     
+    [<JavaScript>]
+    type Response = {
+        name: string
+        message: string
+        message_code: int
+        status: int
+    }
+
     let savePattern (id: string) (tp: string) =
         async {
             use httpClient = new HttpClient()
@@ -21,6 +31,7 @@ module TypingDNA =
             httpClient.DefaultRequestHeaders.Authorization <- new AuthenticationHeaderValue("Basic", authString);
             let data = new FormUrlEncodedContent([|new System.Collections.Generic.KeyValuePair<string, string>("tp", tp)|])
             use! response = httpClient.PostAsync(String.Format(baseUrl, "save", id), data) |> Async.AwaitTask 
-            return! response.Content.ReadAsStringAsync() |> Async.AwaitTask
+            let! content = response.Content.ReadAsStringAsync() |> Async.AwaitTask 
+            return content |> Json.Deserialize<Response>
         }
 

@@ -71,7 +71,7 @@ module Main =
                     do! Server.updateUserLastLogin u.Name |> Async.Ignore
                     props.Add("user", u)
                     sayRandom helloUserPhrases <| sprintf "%A" props.["user"]
-                    if u.LastLoggedIn.IsSome then 
+                    if Option.isSome u.LastLoggedIn then 
                         let! h = Server.humanize u.LastLoggedIn.Value
                         say <| sprintf "You last logged in %s." h 
                 | None _ -> 
@@ -83,10 +83,10 @@ module Main =
             async { 
                 do sayRandom waitAddPhrases "user"
                 match! Server.addUser u with 
-                | Some _ -> 
+                | Ok _ -> 
                     addProp "user" u
                     say <| sprintf "Hello %A, nice to meet you." props.["user"]
-                | None _ -> 
+                | Error _ -> 
                     say <| sprintf "Sorry I was not able to add the user %s to the system." u
             } |> Async.Start
 
@@ -96,9 +96,9 @@ module Main =
             async { 
                 do sayRandom waitAddPhrases "symptom entry"
                 match! Server.addSymptomJournalEntry (user().Name) s l m with 
-                | Some _ -> 
+                | Ok _ -> 
                     say <| sprintf "OK I added that %s symptom to your journal." s 
-                | None _ -> 
+                | Error _ -> 
                     say <| sprintf "Sorry I wasn't able to add that symptom to your journal. Could you try again?"
             } |> Async.Start 
 
@@ -113,14 +113,14 @@ module Main =
 
         (* Hello *)
         
-        | Start(User'(Intent "hello" (_, None)))::[] ->  
+        | Start(User'(Intent "greet" (_, None)))::[] ->  
                 props.Add("started", true)
                 sayRandom' helloPhrases
-        | User'(Intent "hello" (_, None))::[] -> say "Hello, tell me your name to get started."
+        | User'(Intent "greet" (_, None))::[] -> say "Hello, tell me your name to get started."
 
         (* User login *)
         
-        | User'(Intent "hello" (_, Entity1Of1 "contact" u))::[] -> loginUser u.Value
+        | User'(Intent "greet" (_, Entity1Of1 "name" u))::[] -> loginUser u.Value
         
         (* User add *)
         
@@ -131,7 +131,7 @@ module Main =
 
         (* User switch *)
         
-        | User(Intent "hello" (None, Entity1Of1 "contact" u))::[] -> 
+        | User(Intent "hello" (None, Entity1Of1 "name" u))::[] -> 
             async {
                 match! Server.getUser u.Value with
                 | Some user -> ask "switchUser" user.Name

@@ -24,7 +24,7 @@ module Server =
         |> Sql.config "Pooling=true"
         |> Sql.formatConnectionString
         |> Sql.connect
-
+ 
     [<Rpc>]
     let humanize(date:DateTime) = async { return date.Humanize() }
 
@@ -35,7 +35,7 @@ module Server =
     let mdtotext(s:string) = async { return Markdig.Markdown.ToPlainText s }
 
     [<Rpc>]
-    let enrollUser (uid:string) (pattern: string) = async { return! TypingDNA.savePattern uid pattern }
+    let addUserTypingPattern (id:string) (tp: string) = async { return! TypingDNA.savePattern id tp }
 
     [<Rpc>]
     let getUser(user:string) : Async<User option> = 
@@ -52,29 +52,31 @@ module Server =
             | Error exn -> errex "Error retrieving user {0} to database." exn [user]; None)
 
     [<Rpc>]
-    let addUser (user:string) : Async<unit Option> =
+    let addUser (user:string) : Async<Result<unit, exn>> =
         pgdb
         |> Sql.query "INSERT INTO public.smapp_user(user_name, last_logged_in) VALUES (@u, @d);"
         |> Sql.parameters [("u", Sql.string user); ("d", Sql.timestamp (DateTime.Now))]
         |> Sql.executeNonQueryAsync
         |> Async.map(
             function 
-            | Ok n -> (if n > 0 then infof "Added user {0} to database." [user]; Some() else None) 
-            | Error exn -> errex "Error adding user {0} to database." exn [user]; None)
+            | Ok n -> if n > 0 then Ok(infof "Added user {0} to database." [user]) else Error(exn("Insert user returned 0."))
+            | Error exn as e -> errex "Error adding user {0} to database." exn [user]; Error exn
+            )
 
     [<Rpc>]
-    let updateUserLastLogin (user:string) : Async<unit option> =
+    let updateUserLastLogin (user:string) : Async<Result<unit, exn>> =
         pgdb
         |> Sql.query "UPDATE public.smapp_user SET last_logged_in=@d WHERE user_name=@u;"
         |> Sql.parameters [("u", Sql.string user); ("d", Sql.timestamp (DateTime.Now))]
         |> Sql.executeNonQueryAsync
-        |> Async.map(
+        |> Async.map (
             function 
-            | Ok n -> (if n > 0 then infof "Updated user {0} last login time in database." [user]; Some() else None) 
-            | Error exn -> errex "Error updating user {0} last login time in database." exn [user]; None)
+            | Ok n -> if n > 0 then Ok(infof "Updated user {0} last login time in database." [user]) else Error(exn("Insert user returned 0.")) 
+            | Error exn -> errex "Error updating user {0} last login time in database." exn [user]; Error exn
+        )
 
     [<Rpc>]
-    let addSymptomJournalEntry (user:string) (name:string) (location:string option) (magnitude:int option) : Async<unit Option> =
+    let addSymptomJournalEntry (user:string) (name:string) (location:string option) (magnitude:int option) : Async<Result<unit, exn>> =
         pgdb
         |> Sql.query "INSERT INTO public.physical_symptom_journal(user_name, name, date, magnitude, location) VALUES (@u, @n, @d, @m, @l);"
         |> Sql.parameters [
@@ -87,8 +89,9 @@ module Server =
         |> Sql.executeNonQueryAsync
         |> Async.map(
             function 
-            | Ok n -> (if n > 0 then infof "Added symptom {0} for user {1} to database." [name;user]; Some() else None) 
-            | Error exn -> errex "Did not add symptom {0} for user {1} to database" exn [name;user]; None)
+            | Ok n -> if n > 0 then Ok(infof "Added symptom {0} for user {1} to database." [name;user]) else Error(exn("Insert into symptom journal entry affected 0 rows."))
+            | Error exn -> errex "Did not add symptom {0} for user {1} to database" exn [name;user]; Error exn
+        )
     
     [<Rpc>]
     let getSymptomJournal(userName:string) : Async<SymptomEntry list option> = 
