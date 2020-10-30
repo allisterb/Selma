@@ -64,14 +64,14 @@ module Main =
         (* Interpreter logic begins here *)
         match utterances |> Seq.take (if utterances.Count >= 5 then 5 else utterances.Count) |> List.ofSeq with
         (* Agenda *)
-        | Agenda "User" _ -> User.update d
+        | Agenda User.name  -> User.update d
 
         (* Greet *)
         | Start(User'(Intent "greet" (_, None)))::[] ->  
-                props.Add("started", true)
-                handle "hello" (fun _ -> sayRandom' helloPhrases)
+                add "started" true
+                handle "Hello" (fun _ -> sayRandom' helloPhrases)
 
-        | User'(Intent "greet" (_, None))::[] -> handle "hello" (fun _ -> say "Hello, tell me your name to get started.")
+        | User'(Intent "greet" (_, None))::[] -> handle "Hello" (fun _ -> say "Hello, tell me your name to get started.")
           
         (* Dispatch *)
         /// User login

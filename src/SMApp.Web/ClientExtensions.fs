@@ -3,12 +3,15 @@
 
 namespace SMApp.Web
 
+open System
+
 open WebSharper
 open WebSharper.JavaScript
 open WebSharper.UI
 open WebSharper.UI.Client
 open WebSharper.UI.Html
 open WebSharper.JQuery
+open WebSharper.SweetAlert
 
 open SMApp.JQueryTerminal
 open SMApp.WebSpeech
@@ -52,9 +55,20 @@ module ClientExtensions =
         let el = JS.Document.CreateElement "div"
         do doc |> Doc.RunAppend el
         
-
     let elementHTML (d:Dom.Element) = d.InnerHTML
 
+    let questionBox title text action = 
+        let box = 
+            let b = SweetAlert.Box (
+                        TitleText = title,
+                        Text = text,
+                        Type = "question",
+                        Input = "text",
+                        ConfirmButtonText = "Ok"
+            ) 
+            b |> SweetAlert.ShowBox
+        box.Then(Action<string>(action))
+        
 [<JavaScript>]
 type _Html =
    | Elem of string * _Html list

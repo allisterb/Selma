@@ -150,13 +150,13 @@ module Client =
             | Text.Blank -> say' "Tell me what you want me to do or ask me a question."
             | Text.Debug ->
                 debug <| CUI.TypingDNA.GetTypingPattern(new TypingDNAOptions(``type`` = 0, Length = 100))
+                questionBox "Test" "Enter text here" (fun t -> debug t)
                 debug <| sprintf "Utterances: %A" Utterances
                 debug <| sprintf "Questions: %A" Questions
             | Text.Voices -> 
                 let voices = speechSynthesis().GetVoices() |> toArray    
                 sprintf "There are currently %i voices installed on this computer or device." voices.Length |> say'
                 voices |> Array.iteri (fun i v -> sprintf "Voice %i. Name: %s, Local: %A." i v.Name v.LocalService |> say')
-
             | _ ->
                 match ClientState with
                 | ClientUnderstand -> say' "I'm still trying to understand what you said before."
