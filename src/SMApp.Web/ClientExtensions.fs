@@ -15,6 +15,7 @@ open WebSharper.SweetAlert
 
 open SMApp.JQueryTerminal
 open SMApp.WebSpeech
+open SMApp.TypingDNA
 
 [<AutoOpen; JavaScript>]
 module ClientExtensions =
@@ -38,7 +39,6 @@ module ClientExtensions =
     let toLower (s:string) = s.ToLower()
 
     let termOutput() = JQuery(".terminal-output").Get().[0]
-
 
     [<Direct("window.speechSynthesis")>]
     let speechSynthesis() = X<SpeechSynthesis>

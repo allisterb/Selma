@@ -1,6 +1,7 @@
 ﻿namespace SMApp.Web
 
 open System
+open System.Collections.Generic
 open System.Text
 open System.Net.Http
 open System.Net.Http.Headers
@@ -8,6 +9,7 @@ open System.Net.Http.Headers
 open WebSharper
 
 open SMApp
+open SMApp.TypingDNA
 
 module TypingDNA =
     let private apiKey = Runtime.Config("TYPINGDNA_KEY")
@@ -24,15 +26,21 @@ module TypingDNA =
         status: int
     }
 
+    [<JavaScript>]
+    let getSameTextTypingPattern (text:string) (dna: TypingDNA.TypingDNA) =
+        let opt = new TypingDNAOptions(1, Text = text, CaseSensitive = true)
+        dna.GetTypingPattern(opt)
+
     let savePattern (id: string) (tp: string) =
         async {
             try
                 use httpClient = new HttpClient()
                 do httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(contentType))
                 httpClient.DefaultRequestHeaders.Authorization <- new AuthenticationHeaderValue("Basic", authString);
-                let data = new FormUrlEncodedContent([|new System.Collections.Generic.KeyValuePair<string, string>("tp", tp)|])
+                let data = new FormUrlEncodedContent([|new KeyValuePair<string, string>("tp", tp)|])
                 use! response = httpClient.PostAsync(String.Format(baseUrl, "save", id), data) |> Async.AwaitTask 
                 let! content = response.Content.ReadAsStringAsync() |> Async.AwaitTask 
+                infof "Received {0} from TypingDNA API." [content]
                 return content |> Json.Deserialize<Response> |> Ok
             with error -> return Error error
         }

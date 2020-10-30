@@ -112,13 +112,14 @@ module User =
         | User'(Intent "greet" (_, Entity1Of1 "name" u))::[] -> handle "loginUser" (fun _ -> loginUser u.Value)
 
         /// User pass phrase
-        | Response' "inputPassPhrase" (_, Str user) as u::[] -> handle' "addUser" (fun _ -> say("I got the input text " + u.Text)) //addUser user u.Text
-
+        | Response' "inputPassPhrase" (_, Str user) as u::[] -> handle' "addUser" (fun _ -> 
+            cui.TypingDNA.Stop() 
+            let pattern = cui.GetSameTextTypingPattern u.Text
+            addUser user pattern
+         ) 
         (* User add *)
-        | Yes(Response' "addUser" (_, Str user))::[] -> handle' "inputPassPhrase" (fun _ -> ask "inputPassPhrase" user update)
+        | Yes(Response' "addUser" (_, Str user))::[] -> handle' "inputPassPhrase" (fun _ -> cui.TypingDNA.Start(); ask "inputPassPhrase" user update)
         | No(Response' "addUser" (_, Str user))::[] -> handle' "no" (fun _ -> say <| sprintf "Ok I did not add the user %s. But you must login for me to help you." user)
-
-        //| Assert'(_) ::[] -> say "Could you introduce yourself so we can get started?"
 
         (* User switch *)
         

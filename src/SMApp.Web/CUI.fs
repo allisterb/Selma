@@ -84,3 +84,6 @@ module CUI =
                  let voices = voices' |> toArray    
                  sprintf "There are currently %i voices installed on this computer or device." voices.Length |> x.Say
                  voices |> Array.iteri (fun i v -> sprintf "Voice %i. Name: %s, Local: %A." i v.Name v.LocalService |> x.Say)
+
+         member x.GetSameTextTypingPattern(text:string) =
+            TypingDNA.getSameTextTypingPattern text x.TypingDNA

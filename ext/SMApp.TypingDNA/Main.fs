@@ -12,7 +12,7 @@ module Definition =
             ]
             Optional=
             [
-                "text", T<bool>
+                "text", T<string>
                 "textId", T<int>
                 "length", T<int>
                 "targetId", T<string>

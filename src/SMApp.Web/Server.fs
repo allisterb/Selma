@@ -25,6 +25,7 @@ module Server =
         |> Sql.formatConnectionString
         |> Sql.connect
  
+    (* Text transformation functions *)
     [<Rpc>]
     let humanize(date:DateTime) = async { return date.Humanize() }
 
@@ -34,11 +35,9 @@ module Server =
     [<Rpc>]
     let mdtotext(s:string) = async { return Markdig.Markdown.ToPlainText s }
 
+    (* User functions *)
     [<Rpc>]
-    let addUserTypingPattern (id:string) (tp: string) = 
-        async { 
-            return! TypingDNA.savePattern id tp 
-        }
+    let addUserTypingPattern (id:string) (tp: string) = async { return! TypingDNA.savePattern id tp }
 
     [<Rpc>]
     let getUser(user:string) : Async<User option> = 
@@ -66,7 +65,6 @@ module Server =
             | Error exn as e -> errex "Error adding user {0} to database." exn [user]; Error exn
             )
 
-
     [<Rpc>]
     let updateUserLastLogin (user:string) : Async<Result<unit, exn>> =
         pgdb
@@ -79,6 +77,7 @@ module Server =
             | Error exn -> errex "Error updating user {0} last login time in database." exn [user]; Error exn
         )
 
+    (* Symptom journal functions *)
     [<Rpc>]
     let addSymptomJournalEntry (user:string) (name:string) (location:string option) (magnitude:int option) : Async<Result<unit, exn>> =
         pgdb

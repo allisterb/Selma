@@ -11,6 +11,7 @@
     <Compile Include="Witai.fs" />
     <Compile Include="QnAMaker.fs" />
     <Compile Include="TypingDNA.fs" />
+    <Compile Include="FacialRecognition.fs" />
     <Compile Include="NLG.fs" />
     <Compile Include="NLU.fs" />
     <Compile Include="CUI.fs" />

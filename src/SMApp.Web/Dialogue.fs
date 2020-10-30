@@ -65,12 +65,12 @@ module Dialogue =
      
     let handle (d:Dialogue) (debug:string -> unit) (m:string) (f:unit->unit) =
         popu d
-        debug <| sprintf "Handle: %s" m
+        debug <| sprintf "Handle: %s." m
         f()
 
     let handle' (d:Dialogue) (debug:string -> unit) (m:string) (f:unit->unit) =
         popt d
-        debug <| sprintf "Turn end: %s" m
+        debug <| sprintf "Turn end: %s." m
         f()
 
     let dispatch (d:Dialogue) (debug:string -> unit) (targetModule:string) (target:Dialogue->unit) =

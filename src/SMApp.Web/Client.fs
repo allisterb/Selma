@@ -20,7 +20,11 @@ open Dialogue
 
 [<JavaScript>]
 module Client =
-   (* CUI state *)
+   
+    [<Inline "video">]
+    let video = X<Dom.Element>
+    
+    (* CUI state *)
     let mutable CUI = {
         Voice = None
         Mic = None
@@ -149,8 +153,6 @@ module Client =
             (* Quick commands *)
             | Text.Blank -> say' "Tell me what you want me to do or ask me a question."
             | Text.Debug ->
-                debug <| CUI.TypingDNA.GetTypingPattern(new TypingDNAOptions(``type`` = 0, Length = 100))
-                questionBox "Test" "Enter text here" (fun t -> debug t)
                 debug <| sprintf "Utterances: %A" Utterances
                 debug <| sprintf "Questions: %A" Questions
             | Text.Voices -> 
@@ -166,7 +168,8 @@ module Client =
                     | Text.QuickHello m 
                     | Text.QuickHelp m 
                     | Text.QuickYes m
-                    | Text.QuickNo m -> 
+                    | Text.QuickNo m 
+                    | Text.QuickNumber m -> 
                         debug <| sprintf "Quick Text: %A." m                        
                         m |> push |> Main.update
                         ClientState <- ClientReady
