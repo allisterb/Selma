@@ -39,16 +39,20 @@ module NLU =
 
     type Utterance' = Trait list option * Entity list option
 
-    type Question = Question of string * string * QuestionType with 
-        member x.Name = let (Question(n, _, _)) = x in n 
-        member x.Text = let (Question(_, t, _)) = x in t
-        member x.Type = let (Question(_, _, ty)) = x in ty
+    type Question = Question of string * string * QuestionType * string with 
+        member x.Name = let (Question(n, _, _, _)) = x in n 
+        member x.Text = let (Question(_, t, _, _)) = x in t
+        member x.Type = let (Question(_, _, ty, _)) = x in ty
+        member x.Module = let (Question(_, _, _, m)) = x in m
         override x.ToString() = sprintf "Name: %s Text: %s" x.Name x.Text
     
     and QuestionType =
+    | UserData of string 
     | Verification of bool
     | Disjunctive of string * string
     | ConceptCompletion of string
+
+    type Form = Form of string * Question list
     
     let (|Intent|_|) n :Utterance -> Utterance' option= 
         function
@@ -90,6 +94,13 @@ module NLU =
         function 
         | Intent "reject" (None, None) as m -> Some m
         |  _ -> None
+
+    let (|Str|_|) : obj option -> string option =
+        function
+        | Some s when (s :? string) -> Some (s :?> string)
+        | _ -> None
+
+    
 
     [<RequireQualifiedAccess>]
     module Voice =

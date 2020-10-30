@@ -40,6 +40,10 @@ module Client =
             web.ProcessMessages(0)
             web
         Caption = false
+        TypingDNA = 
+            let dna = new TypingDNA()
+            do dna.Stop()
+            dna
     }
     let mutable MicState = MicNotInitialized
     let mutable ClientState = ClientNotInitialzed
@@ -109,7 +113,6 @@ module Client =
             )
         do mic.Connect("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT")
 
-    let dna = new TypingDNA()
     /// Main interpreter
     let Main =             
         /// Mic interpreter
@@ -146,7 +149,7 @@ module Client =
             (* Quick commands *)
             | Text.Blank -> say' "Tell me what you want me to do or ask me a question."
             | Text.Debug ->
-                debug <| dna.GetTypingPattern(new TypingDNAOptions(``type`` = 0, Length = 100))
+                debug <| CUI.TypingDNA.GetTypingPattern(new TypingDNAOptions(``type`` = 0, Length = 100))
                 debug <| sprintf "Utterances: %A" Utterances
                 debug <| sprintf "Questions: %A" Questions
             | Text.Voices -> 

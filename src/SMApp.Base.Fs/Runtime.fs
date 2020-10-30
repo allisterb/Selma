@@ -2,6 +2,9 @@
 
 [<AutoOpen>]
 module Runtme =
+    let (|Force|) (l:Lazy<_>) =
+        l.Force()
+
     let info = Runtime.Info
 
     let debug = Runtime.Debug

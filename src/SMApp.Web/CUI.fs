@@ -14,6 +14,7 @@ open SMApp.JQueryTerminal
 open SMApp.WebSpeech
 open SMApp.Microphone
 open SMApp.BotLibre
+open SMApp.TypingDNA
 
 [<AutoOpen;JavaScript>]
 module CUI =
@@ -35,6 +36,7 @@ module CUI =
          Term: Terminal
          Avatar: WebAvatar
          Caption: bool
+         TypingDNA: TypingDNA
      }
      with
          member x.Echo' (text:string) = x.Term.Disable(); x.Term.Echo text; x.Term.Enable()
