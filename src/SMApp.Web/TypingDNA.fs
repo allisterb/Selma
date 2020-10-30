@@ -26,12 +26,14 @@ module TypingDNA =
 
     let savePattern (id: string) (tp: string) =
         async {
-            use httpClient = new HttpClient()
-            do httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(contentType))
-            httpClient.DefaultRequestHeaders.Authorization <- new AuthenticationHeaderValue("Basic", authString);
-            let data = new FormUrlEncodedContent([|new System.Collections.Generic.KeyValuePair<string, string>("tp", tp)|])
-            use! response = httpClient.PostAsync(String.Format(baseUrl, "save", id), data) |> Async.AwaitTask 
-            let! content = response.Content.ReadAsStringAsync() |> Async.AwaitTask 
-            return content |> Json.Deserialize<Response>
+            try
+                use httpClient = new HttpClient()
+                do httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(contentType))
+                httpClient.DefaultRequestHeaders.Authorization <- new AuthenticationHeaderValue("Basic", authString);
+                let data = new FormUrlEncodedContent([|new System.Collections.Generic.KeyValuePair<string, string>("tp", tp)|])
+                use! response = httpClient.PostAsync(String.Format(baseUrl, "save", id), data) |> Async.AwaitTask 
+                let! content = response.Content.ReadAsStringAsync() |> Async.AwaitTask 
+                return content |> Json.Deserialize<Response> |> Ok
+            with error -> return Error error
         }
 

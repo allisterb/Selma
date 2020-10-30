@@ -35,7 +35,10 @@ module Server =
     let mdtotext(s:string) = async { return Markdig.Markdown.ToPlainText s }
 
     [<Rpc>]
-    let addUserTypingPattern (id:string) (tp: string) = async { return! TypingDNA.savePattern id tp }
+    let addUserTypingPattern (id:string) (tp: string) = 
+        async { 
+            return! TypingDNA.savePattern id tp 
+        }
 
     [<Rpc>]
     let getUser(user:string) : Async<User option> = 
@@ -62,6 +65,7 @@ module Server =
             | Ok n -> if n > 0 then Ok(infof "Added user {0} to database." [user]) else Error(exn("Insert user returned 0."))
             | Error exn as e -> errex "Error adding user {0} to database." exn [user]; Error exn
             )
+
 
     [<Rpc>]
     let updateUserLastLogin (user:string) : Async<Result<unit, exn>> =

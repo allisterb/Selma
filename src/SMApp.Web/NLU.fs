@@ -44,13 +44,13 @@ module NLU =
         member x.Text = let (Question(_, t, _, _)) = x in t
         member x.Type = let (Question(_, _, ty, _)) = x in ty
         member x.Module = let (Question(_, _, _, m)) = x in m
-        override x.ToString() = sprintf "Name: %s Text: %s" x.Name x.Text
+        override x.ToString() = sprintf "Name: %s Text: %s Type: %A Module: %s" x.Name x.Text x.Type x.Module
     
     and QuestionType =
-    | UserData of string 
-    | Verification of bool
-    | Disjunctive of string * string
-    | ConceptCompletion of string
+    | UserData
+    | Verification
+    | Disjunctive
+    | ConceptCompletion
 
     type Form = Form of string * Question list
     
@@ -101,7 +101,6 @@ module NLU =
         | _ -> None
 
     
-
     [<RequireQualifiedAccess>]
     module Voice =
         type Entity' = {body:string; ``end``:int; start: int; suggested:bool; value:string}
@@ -289,45 +288,26 @@ module NLU =
         
         let (|HasUtterance|_|) :Utterance' option ->(Utterance option) =
             function
-            | Some(Utterance'(sentence, [], entities, traits)) when entities.Length > 0 -> 
-                let entities' = 
-                    entities 
-                    |> List.where(fun e -> e.Confidence > entityConfidenceThreshold) 
-                    |> List.map(fun e -> Entity(e.Name, e.Role |> toLower, e.Value, Some(e.Confidence)))
-                let traits' = 
-                    traits 
-                    |> List.where(fun t -> t.Confidence > entityConfidenceThreshold) 
-                    |> List.map(fun t -> Trait(t.Name |> toLower, t.Value, Some(t.Confidence)))
-                Utterance(sentence, None, Some traits', Some entities') |> Some
-
-            | Some(Utterance'(sentence, intents, [], [])) as m when intents.Length > 0 && m.Value.TopIntent.Confidence > intentConfidenceThreshold  -> 
-                    Utterance(sentence, Some(Intent(m.Value.TopIntent.Name |> toLower, Some m.Value.TopIntent.Confidence)), None, None) |> Some
-            
-            | Some(Utterance'(sentence, intents, _, [])) as m when intents.Length > 0 && m.Value.TopIntent.Confidence > intentConfidenceThreshold  -> 
-                    let entities' = 
-                        m.Value.Entities |> 
-                        List.where(fun e -> e.Confidence > entityConfidenceThreshold) 
-                        |> List.map(fun e -> Entity(e.Name, e.Role |> toLower, e.Value, Some(e.Confidence)))
-                    Utterance(sentence, Some(Intent(m.Value.TopIntent.Name |> toLower, Some m.Value.TopIntent.Confidence)), None, Some(entities')) |> Some
-
-            | Some(Utterance'(sentence, intents, [], _)) as m when intents.Length > 0 && m.Value.TopIntent.Confidence > intentConfidenceThreshold  -> 
-                    let traits' = 
-                        m.Value.Traits |> 
-                        List.where(fun e -> e.Confidence > entityConfidenceThreshold) 
-                        |> List.map(fun e -> Trait(e.Name |> toLower, e.Value, Some(e.Confidence)))
-                    Utterance(sentence, Some(Intent(m.Value.TopIntent.Name |> toLower, Some m.Value.TopIntent.Confidence)), Some(traits'), None) |> Some
-
-            | Some(Utterance'(sentence, intents, _, _)) as m when intents.Length > 0 && m.Value.TopIntent.Confidence > intentConfidenceThreshold  -> 
-                    let entities' = 
-                        m.Value.Entities |> 
-                        List.where(fun e -> e.Confidence > entityConfidenceThreshold) 
-                        |> List.map(fun e -> Entity(e.Name, e.Role |> toLower, e.Value, Some(e.Confidence))) 
-                    let traits' = 
-                        m.Value.Traits |> 
-                        List.where(fun e -> e.Confidence > entityConfidenceThreshold) 
-                        |> List.map(fun e -> Trait(e.Name |> toLower, e.Value, Some(e.Confidence))) 
-                    Utterance(sentence, Some(Intent(m.Value.TopIntent.Name |> toLower, Some m.Value.TopIntent.Confidence)), Some(traits'), Some(entities')) |> Some
-            
+            | Some(Utterance'(sentence, intents', entities', traits')) as m when entities'.Length > 0 -> 
+                let intent = 
+                    match intents' with
+                    | [] -> None
+                    | _ -> Intent(m.Value.TopIntent.Name, Some(m.Value.TopIntent.Confidence)) |> Some 
+                let entities = 
+                    match entities' with
+                    | [] -> None
+                    | _ -> entities'
+                            |> List.where(fun e -> e.Confidence > entityConfidenceThreshold) 
+                            |> List.map(fun e -> Entity(e.Name, e.Role |> toLower, e.Value, Some(e.Confidence)))
+                            |> Some
+                let traits = 
+                    match traits' with
+                    | [] -> None
+                    | _ -> traits'
+                            |> List.where(fun t -> t.Confidence > entityConfidenceThreshold) 
+                            |> List.map(fun t -> Trait(t.Name |> toLower, t.Value, Some(t.Confidence)))
+                            |> Some
+                Utterance(sentence, intent, traits, entities) |> Some            
             | _ -> None        
 
     [<RequireQualifiedAccess>]

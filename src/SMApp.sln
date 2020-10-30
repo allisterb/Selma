@@ -65,7 +65,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NativeLibraryManager", "..\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CherubNLP", "..\ext\CherubNLP\CherubNLP\CherubNLP.csproj", "{BBDCE124-ED0A-4784-9C7A-99B6B1708895}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMApp.CLI", "SMApp.CLI\SMApp.CLI.csproj", "{A32CE04B-10B9-4D7D-8FA0-2C5239A2783D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMApp.CLI", "SMApp.CLI\SMApp.CLI.csproj", "{A32CE04B-10B9-4D7D-8FA0-2C5239A2783D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

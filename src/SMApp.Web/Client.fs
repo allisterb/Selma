@@ -177,7 +177,7 @@ module Client =
                             NLU.Text.getUtterance command (fun meaning ->
                                 match meaning with
                                 | Text.HasUtterance m -> 
-                                    debug <| sprintf "Text: Intent: %A, Traits: %A, Entities: %A" m.Intent m.Traits m.Entities
+                                    debug <| sprintf "Text: Intent: %A, Traits: %A, Entities: %A." m.Intent m.Traits m.Entities
                                     m |> push |> Main.update
                                 | _ -> 
                                     debug "Text: Did not receive a meaning from the server." 

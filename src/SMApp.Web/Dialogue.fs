@@ -43,17 +43,25 @@ module Dialogue =
     let pushu (d:Dialogue) (m:Utterance) = d.Utterances.Push m 
     let popu (d:Dialogue) = d.Utterances.Pop() |> ignore
     let popq(d: Dialogue) = d.DialogueQuestions.Pop() |> ignore
+    
     let pushq (d:Dialogue) (moduleQuestions: Question list) (questionName:string) = 
         match getQuestion moduleQuestions questionName with
         | Some q -> d.DialogueQuestions.Push q
         | None -> failwithf "No such question: %s" questionName
+    
     let popt (d:Dialogue) =
         popu d |> ignore
         popq d |> ignore
-    let ask (d:Dialogue) (moduleQuestions: Question list) q v =
+    
+    let ask (d:Dialogue) (moduleQuestions: Question list) q v (target:Dialogue -> unit)=
+        let question = Option.get <| getQuestion moduleQuestions  q
         add d q v
-        pushq d (moduleQuestions: Question list) q
-        let _q = getQuestion moduleQuestions  q in say d <| replace_tok "$0" v _q.Value.Text
+        pushq d moduleQuestions q
+        let text = replace_tok "$0" v question.Text
+        say d <| text
+        match question.Type with
+        | UserData -> questionBox "User Input" text (fun input -> pushu d (Utterance(input, None, None, None)); target d)
+        | _ -> ()
      
     let handle (d:Dialogue) (debug:string -> unit) (m:string) (f:unit->unit) =
         popu d
@@ -81,7 +89,7 @@ module Dialogue =
     (* Dialogue patterns *)
     let (|Agenda_|_|) (d:Dialogue) (n:string) :Utterance list -> unit option =
         function
-        | _ when d.DialogueQuestions.Count > 0  && d.DialogueQuestions.Peek().Name = n -> Some ()
+        | _ when d.DialogueQuestions.Count > 0  && d.DialogueQuestions.Peek().Module = n -> Some ()
         | _ -> None
 
     let (|PropSet_|_|) (d:Dialogue) (n:string) :Utterance -> Utterance option =
