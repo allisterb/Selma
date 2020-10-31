@@ -27,6 +27,13 @@ module Server =
  
     (* Text transformation functions *)
     [<Rpc>]
+    let getVoiceProfileId(id:string) =
+        async {
+            let! p = AzureSpeech.createVoiceProfile()
+            return p.Id
+        }
+
+    [<Rpc>]
     let humanize(date:DateTime) = async { return date.Humanize() }
 
     [<Rpc>]
@@ -35,6 +42,7 @@ module Server =
     [<Rpc>]
     let mdtotext(s:string) = async { return Markdig.Markdown.ToPlainText s }
 
+    (* Authentication functions *)
     (* User functions *)
     [<Rpc>]
     let addUserTypingPattern (id:string) (tp: string) = async { return! TypingDNA.savePattern id tp }

@@ -153,6 +153,10 @@ module Client =
                 debug <| sprintf "Utterances: %A" Utterances
                 debug <| sprintf "Questions: %A" Questions
                 debug <| lastMicData()
+                questionBox "resr" "rest" "640px" "480px" (fun _ -> ())
+                let e = JQuery(".swal2-content").Get().[0].FirstChild |> As<Dom.Element>
+                let c = createCanvas "c1" "640" "480" e
+                startCamera JS.Document.Body c
             | Text.Voices -> 
                 let voices = speechSynthesis().GetVoices() |> toArray    
                 sprintf "There are currently %i voices installed on this computer or device." voices.Length |> say'

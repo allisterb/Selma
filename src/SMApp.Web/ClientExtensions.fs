@@ -62,22 +62,24 @@ module ClientExtensions =
         
     let elementHTML (d:Dom.Element) = d.InnerHTML
 
-    let createCanvas (id:string) (width:int) (height:int) (el:Dom.Element) =
-        let c = JS.Document.CreateElement("canvas")
-        canvas[eid id; attr.width (width.ToString()); attr.height (height.ToString())][] |> Doc.Run c
-        el.AppendChild c |> ignore
-        c |> As<CanvasElement>
+    let createCanvas (id:string) (width:string) (height:string) (parent:Dom.Element) =
+        canvas[eid id; attr.width width; attr.height height][] |> Doc.Run parent
+        parent.FirstChild |> As<CanvasElement>
 
-    let questionBox title text action = 
+    [<Direct "startCamera($container, $canvasElement)">]
+    let startCamera (container:Dom.Element) (canvasElement:Dom.Element) = X<unit>
+    
+    let questionBox title text width height action = 
         let box = 
             let b = SweetAlert.Box (
                         TitleText = title,
                         Text = text,
                         Type = "question",
+                        Html = sprintf "<div style=\"width:%s;height:%s\"></div>" width height,
                         Input = "text",
                         ConfirmButtonText = "Ok"
-            ) 
-            b |> SweetAlert.ShowBox
+            )
+            b |> SweetAlert.ShowBox           
         box.Then(Action<string>(action))
         
 [<JavaScript>]

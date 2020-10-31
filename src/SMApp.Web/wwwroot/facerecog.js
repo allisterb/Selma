@@ -126,7 +126,7 @@ function stopVideoProcessing() {
 function stopCamera() {
     if (!streaming) return;
     stopVideoProcessing();
-    document.getElementById("canvasOutput").getContext("2d").clearRect(0, 0, width, height);
+    canvasOutput.getContext("2d").clearRect(0, 0, width, height);
     video.pause();
     video.srcObject=null;
     stream.getVideoTracks()[0].stop();

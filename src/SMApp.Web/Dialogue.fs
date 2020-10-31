@@ -60,7 +60,7 @@ module Dialogue =
         let text = replace_tok "$0" v question.Text
         say d <| text
         match question.Type with
-        | UserData -> questionBox "User Input" text (fun input -> pushu d (Utterance(input, None, None, None)); target d)
+        | UserData -> questionBox "User Input" "320px" "240px" text (fun input -> pushu d (Utterance(input, None, None, None)); target d)
         | _ -> ()
      
     let handle (d:Dialogue) (debug:string -> unit) (m:string) (f:unit->unit) =

@@ -6,12 +6,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="ClientExtensions.fs" />
+    <Compile Include="Authentication.fs" />
     <Compile Include="Bootstrap.fs" />
     <Compile Include="Babelfy.fs" />
     <Compile Include="Witai.fs" />
     <Compile Include="QnAMaker.fs" />
-    <Compile Include="TypingDNA.fs" />
-    <Compile Include="FacialRecognition.fs" />
     <Compile Include="NLG.fs" />
     <Compile Include="NLU.fs" />
     <Compile Include="CUI.fs" />
@@ -33,6 +32,7 @@
   <ItemGroup>
     <PackageReference Include="Markdig" Version="0.22.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.CognitiveServices.Speech" Version="1.14.0" />
     <PackageReference Include="Npgsql.FSharp" Version="3.7.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="3.4.0" />
     <PackageReference Include="System.Net.Http" Version="4.3.2" />

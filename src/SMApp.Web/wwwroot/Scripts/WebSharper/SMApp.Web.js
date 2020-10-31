@@ -1,7 +1,7 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Web,ClientExtensions,_Html,htmModule,SC$1,Bs,NLU,Babelfy,ApiResponse,TokenFragment,CharFragment,Witai,Utterance,Intent,Entity,Trait,_Utterance,_Value,QnAMaker,ITSQuestion,ITSAnswerContext,ITSAnswer,ITSAnswers,TypingDNA,Response,FacialRecognition,NLG,SC$2,NLU$1,Intent$1,Trait$1,Entity$1,Utterance$1,Question,QuestionType,Voice,_Entity,Text,_Utterance$1,_Intent,_Entity$1,_Trait,Domain,SC$3,CUI,MicState,ClientState,Interpreter,CUI$1,Dialogue,Dialogue$1,User,SC$4,Main,SC$5,Client,SC$6,SMApp$Web_GeneratedPrintf,GeneratedPrintf,WebSharper,UI,Doc,AttrProxy,Client$1,Templates,Arrays,IntelliFactory,Runtime,Utils,console,$,Strings,List,Seq,AttrModule,Concurrency,JSON,Random,Collections,Map,JavaScript,Pervasives,SDK,Operators,Remoting,AjaxRemotingProvider,Wit,document,Unchecked,Dictionary;
+ var Global,SMApp,Web,ClientExtensions,_Html,htmModule,SC$1,TypingDNA,Response,Bs,NLU,Babelfy,ApiResponse,TokenFragment,CharFragment,Witai,Utterance,Intent,Entity,Trait,_Utterance,_Value,QnAMaker,ITSQuestion,ITSAnswerContext,ITSAnswer,ITSAnswers,NLG,SC$2,NLU$1,Intent$1,Trait$1,Entity$1,Utterance$1,Question,QuestionType,Voice,_Entity,Text,_Utterance$1,_Intent,_Entity$1,_Trait,Domain,SC$3,CUI,MicState,ClientState,Interpreter,CUI$1,Dialogue,Dialogue$1,User,SC$4,Main,SC$5,Client,SC$6,SMApp$Web_GeneratedPrintf,GeneratedPrintf,IntelliFactory,Runtime,WebSharper,Utils,UI,Doc,AttrProxy,Client$1,Templates,Arrays,console,$,Strings,List,Seq,AttrModule,Concurrency,JSON,Random,Collections,Map,JavaScript,Pervasives,SDK,Operators,Remoting,AjaxRemotingProvider,Wit,document,Unchecked,Dictionary;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Web=SMApp.Web=SMApp.Web||{};
@@ -9,6 +9,8 @@
  _Html=Web._Html=Web._Html||{};
  htmModule=Web.htmModule=Web.htmModule||{};
  SC$1=Global.StartupCode$SMApp_Web$ClientExtensions=Global.StartupCode$SMApp_Web$ClientExtensions||{};
+ TypingDNA=Web.TypingDNA=Web.TypingDNA||{};
+ Response=TypingDNA.Response=TypingDNA.Response||{};
  Bs=Web.Bs=Web.Bs||{};
  NLU=SMApp.NLU=SMApp.NLU||{};
  Babelfy=NLU.Babelfy=NLU.Babelfy||{};
@@ -27,9 +29,6 @@
  ITSAnswerContext=QnAMaker.ITSAnswerContext=QnAMaker.ITSAnswerContext||{};
  ITSAnswer=QnAMaker.ITSAnswer=QnAMaker.ITSAnswer||{};
  ITSAnswers=QnAMaker.ITSAnswers=QnAMaker.ITSAnswers||{};
- TypingDNA=Web.TypingDNA=Web.TypingDNA||{};
- Response=TypingDNA.Response=TypingDNA.Response||{};
- FacialRecognition=Web.FacialRecognition=Web.FacialRecognition||{};
  NLG=Web.NLG=Web.NLG||{};
  SC$2=Global.StartupCode$SMApp_Web$NLG=Global.StartupCode$SMApp_Web$NLG||{};
  NLU$1=Web.NLU=Web.NLU||{};
@@ -63,16 +62,16 @@
  SC$6=Global.StartupCode$SMApp_Web$Client=Global.StartupCode$SMApp_Web$Client||{};
  SMApp$Web_GeneratedPrintf=Global.SMApp$Web_GeneratedPrintf=Global.SMApp$Web_GeneratedPrintf||{};
  GeneratedPrintf=Global.GeneratedPrintf=Global.GeneratedPrintf||{};
+ IntelliFactory=Global.IntelliFactory;
+ Runtime=IntelliFactory&&IntelliFactory.Runtime;
  WebSharper=Global.WebSharper;
+ Utils=WebSharper&&WebSharper.Utils;
  UI=WebSharper&&WebSharper.UI;
  Doc=UI&&UI.Doc;
  AttrProxy=UI&&UI.AttrProxy;
  Client$1=UI&&UI.Client;
  Templates=Client$1&&Client$1.Templates;
  Arrays=WebSharper&&WebSharper.Arrays;
- IntelliFactory=Global.IntelliFactory;
- Runtime=IntelliFactory&&IntelliFactory.Runtime;
- Utils=WebSharper&&WebSharper.Utils;
  console=Global.console;
  $=Global.jQuery;
  Strings=WebSharper&&WebSharper.Strings;
@@ -94,6 +93,10 @@
  document=Global.document;
  Unchecked=WebSharper&&WebSharper.Unchecked;
  Dictionary=Collections&&Collections.Dictionary;
+ ClientExtensions.startCamera=function(container,canvasElement)
+ {
+  return Global.startCamera(container,canvasElement);
+ };
  ClientExtensions.speechSynthesis=function()
  {
   return Global.speechSynthesis;
@@ -102,20 +105,21 @@
  {
   return Global.lastMicData;
  };
- ClientExtensions.questionBox=function(title,text,action)
+ ClientExtensions.questionBox=function(title,text,width,height,action)
  {
   var r,r$1;
-  (r=Global.Sweetalert2((r$1={},r$1.titleText=title,r$1.text=text,r$1.type="question",r$1.input="text",r$1.confirmButtonText="Ok",r$1)),r).then(action);
+  (r=Global.Sweetalert2((r$1={},r$1.titleText=title,r$1.text=text,r$1.type="question",r$1.html=(((Runtime.Curried3(function($1,$2,$3)
+  {
+   return $1("<div style=\"width:"+Utils.toSafe($2)+";height:"+Utils.toSafe($3)+"\"></div>");
+  }))(Global.id))(width))(height),r$1.input="text",r$1.confirmButtonText="Ok",r$1)),r).then(action);
  };
- ClientExtensions.createCanvas=function(id,width,height,el)
+ ClientExtensions.createCanvas=function(id,width,height,parent)
  {
-  var c,a;
-  c=self.document.createElement("canvas");
-  a=Doc.Element("canvas",[ClientExtensions.eid(id),AttrProxy.Create("width",Global.String(width)),AttrProxy.Create("height",Global.String(height))],[]);
+  var a;
+  a=Doc.Element("canvas",[ClientExtensions.eid(id),AttrProxy.Create("width",width),AttrProxy.Create("height",height)],[]);
   Templates.LoadLocalTemplates("");
-  Doc.Run(c,a);
-  el.appendChild(c);
-  return c;
+  Doc.Run(parent,a);
+  return parent.firstChild;
  };
  ClientExtensions.elementHTML=function(d)
  {
@@ -558,6 +562,22 @@
    return htmModule.elem("strong",c);
   };
  };
+ Response.New=function(name,message,message_code,status)
+ {
+  return{
+   name:name,
+   message:message,
+   message_code:message_code,
+   status:status
+  };
+ };
+ TypingDNA.getSameTextTypingPattern=function(text,dna)
+ {
+  var r;
+  return dna.getTypingPattern((r={
+   type:1
+  },r.text=text,r.caseSensitive=true,r));
+ };
  Bs.Radio=function(lbl,extras,target,labelExtras,targetExtras)
  {
   return Doc.Element("div",new List.T({
@@ -811,26 +831,6 @@
   {
    return a.apply(null,[$1,$2,$3]);
   });
- };
- Response.New=function(name,message,message_code,status)
- {
-  return{
-   name:name,
-   message:message,
-   message_code:message_code,
-   status:status
-  };
- };
- TypingDNA.getSameTextTypingPattern=function(text,dna)
- {
-  var r;
-  return dna.getTypingPattern((r={
-   type:1
-  },r.text=text,r.caseSensitive=true,r));
- };
- FacialRecognition.startCamera=function(container,canvasElement)
- {
-  return Global.startCamera(container,canvasElement);
  };
  NLG.waitAddPhrases=function()
  {
@@ -2001,7 +2001,7 @@
   Dialogue.pushq(d,moduleQuestions,q);
   text=NLG.replace_tok("$0",v,question.get_Text());
   Dialogue.say(d,text);
-  question.get_Type().$==0?ClientExtensions.questionBox("User Input",text,function(input)
+  question.get_Type().$==0?ClientExtensions.questionBox("User Input","320px","240px",text,function(input)
   {
    Dialogue.pushu(d,new Utterance$1({
     $:0,
@@ -2163,7 +2163,7 @@
    sayRandom(NLG.waitRetrievePhrases(),"user name");
    Concurrency.Start((b$3=null,Concurrency.Delay(function()
    {
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:-863027630",[u$1]),function(a$29)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:1868958283",[u$1]),function(a$29)
     {
      var u$2;
      return a$29==null?(say((function($17)
@@ -2175,7 +2175,7 @@
      }(Global.id))(u$1)),ask("addUser",u$1,function(d$3)
      {
       User.update(d$3);
-     }),Concurrency.Zero()):(u$2=a$29.$0,Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.updateUserLastLogin:1220368753",[u$2.Name]),function()
+     }),Concurrency.Zero()):(u$2=a$29.$0,Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.updateUserLastLogin:1425723001",[u$2.Name]),function()
      {
       add("user",u$2);
       sayRandom(NLG.helloUserPhrases(),(function($17)
@@ -2185,7 +2185,7 @@
         return $17(Utils.prettyPrint($18));
        };
       }(Global.id))(props.get_Item("user")));
-      return u$2.LastLoggedIn!=null?Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.humanize:1038771280",[u$2.LastLoggedIn.$0]),function(a$30)
+      return u$2.LastLoggedIn!=null?Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.humanize:148239048",[u$2.LastLoggedIn.$0]),function(a$30)
       {
        say((function($17)
        {
@@ -2206,7 +2206,7 @@
    return Concurrency.Start((b$3=null,Concurrency.Delay(function()
    {
     sayRandom(NLG.waitAddPhrases(),"user");
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addUser:1220368753",[u$1]),function(a$29)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addUser:1425723001",[u$1]),function(a$29)
     {
      return a$29.$==1?(say((function($17)
      {
@@ -2214,7 +2214,7 @@
       {
        return $17("Sorry I was not able to add the user "+Utils.toSafe($18)+" to the system.");
       };
-     }(Global.id))(u$1)),Concurrency.Zero()):Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addUserTypingPattern:-1474357268",[u$1,tp]),function(a$30)
+     }(Global.id))(u$1)),Concurrency.Zero()):Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addUserTypingPattern:-56249556",[u$1,tp]),function(a$30)
      {
       return a$30.$==1?(say((function($17)
       {
@@ -2239,7 +2239,7 @@
    return Concurrency.Start((b$3=null,Concurrency.Delay(function()
    {
     sayRandom(NLG.waitAddPhrases(),"symptom entry");
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addSymptomJournalEntry:789165849",[user$1().Name,s,l,m$1]),function(a$29)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addSymptomJournalEntry:-1944634735",[user$1().Name,s,l,m$1]),function(a$29)
     {
      return a$29.$==1?(say(function($17)
      {
@@ -2293,7 +2293,7 @@
    }(Global.id))($4));
   }):m.$==1&&(a$11=User$1(m.$0),a$11!=null&&a$11.$==1&&(a$12=NLU$1.Intent$1("hello",a$11.$0),a$12!=null&&a$12.$==1&&(a$12.$0[0]==null&&(a$13=NLU$1.Entity1Of1("name",a$12.$0[1]),a$13!=null&&a$13.$==1&&(m.$1.$==0&&($5=a$13.$0,true))))))?Concurrency.Start((b=null,Concurrency.Delay(function()
   {
-   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:-863027630",[$5.get_Value()]),function(a$29)
+   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:1868958283",[$5.get_Value()]),function(a$29)
    {
     return a$29==null?(say((function($17)
     {
@@ -2323,10 +2323,10 @@
    return Concurrency.Bind(QnAMaker.getAnswer($8.get_Text()),function(a$29)
    {
     var s;
-    return Concurrency.Bind((s=Arrays.get(a$29.answers,0).answer,(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.mdtohtml:-2143976427",[s])),function(a$30)
+    return Concurrency.Bind((s=Arrays.get(a$29.answers,0).answer,(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.mdtohtml:-971011443",[s])),function(a$30)
     {
      var s$1;
-     return Concurrency.Bind((s$1=Arrays.get(a$29.answers,0).answer,(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.mdtotext:-2143976427",[s$1])),function(a$31)
+     return Concurrency.Bind((s$1=Arrays.get(a$29.answers,0).answer,(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.mdtotext:-971011443",[s$1])),function(a$31)
      {
       echo(a$30);
       say(a$31);
@@ -2728,7 +2728,7 @@
   }
   function main(term,command)
   {
-   var $1,$2,$3,voices,$4,a,a$1,a$2,a$3,a$4,b;
+   var $1,$2,c,$3,voices,$4,a,a$1,a$2,a$3,a$4,b;
    Client.set_CUI(CUI$1.New(Client.CUI().Voice,Client.CUI().Mic,term,Client.CUI().Avatar,Client.CUI().Caption,Client.CUI().TypingDNA,Client.CUI().AudioEnd));
    Unchecked.Equals(Client.CUI().Mic,null)?Client.initMic(_main):void 0;
    Unchecked.Equals(Client.CUI().Voice,null)?Client.initSpeech():void 0;
@@ -2745,7 +2745,7 @@
     {
      return $5("Questions: "+Utils.prettyPrint($6));
     };
-   }(Global.id))(Client.Questions())),Client.debug(ClientExtensions.lastMicData())):($3=Text.Voices(command),$3!=null&&$3.$==1)?(voices=ClientExtensions.toArray(ClientExtensions.speechSynthesis().getVoices()),(Client["say'"]((function($5)
+   }(Global.id))(Client.Questions())),Client.debug(ClientExtensions.lastMicData()),ClientExtensions.questionBox("resr","rest","640px","480px",Global.ignore),c=ClientExtensions.createCanvas("c1","640","480",Arrays.get($(".swal2-content").get(),0).firstChild),ClientExtensions.startCamera(self.document.body,c)):($3=Text.Voices(command),$3!=null&&$3.$==1)?(voices=ClientExtensions.toArray(ClientExtensions.speechSynthesis().getVoices()),(Client["say'"]((function($5)
    {
     return function($6)
     {
