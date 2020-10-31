@@ -1,5 +1,12 @@
 // Camera video output
 let videoWidth, videoHeight;
+let video = null;
+
+let canvasOutput = null;
+let canvasInput = null;
+let canvasInputCtx = null;
+let canvasBuffer = null;
+let canvasBufferCtx = null;
 
 // whether streaming video from the camera.
 let streaming = false;
@@ -7,7 +14,17 @@ let streaming = false;
 // Camera stream
 let stream = null;
 
-function startCamera(video, canvasOutput) {
+let faceClassifier = null;
+let eyeClassifier = null;
+
+let src = null;
+let dstC1 = null;
+let dstC3 = null;
+let dstC4 = null;
+
+function startCamera(v, c) {
+    video = v
+    canvasOutput = c
     if (streaming) return;
     navigator.mediaDevices.getUserMedia({video: true, audio: false})
         .then(function(s) {
@@ -33,19 +50,6 @@ function startCamera(video, canvasOutput) {
     }, false);
 }
 
-let faceClassifier = null;
-let eyeClassifier = null;
-
-let src = null;
-let dstC1 = null;
-let dstC3 = null;
-let dstC4 = null;
-
-let canvasInput = null;
-let canvasInputCtx = null;
-
-let canvasBuffer = null;
-let canvasBufferCtx = null;
 
 function startVideoProcessing() {
   if (!streaming) { console.warn("Please startup your webcam"); return; }
@@ -70,10 +74,7 @@ function startVideoProcessing() {
 }
 
 function processVideo() {
-  let video = document.getElementById('video');
-  let canvasOutput = document.getElementById('canvasOutput');
   let canvasOutputCtx = canvasOutput.getContext('2d');
-
   stats.begin();
   canvasInputCtx.drawImage(video, 0, 0, videoWidth, videoHeight);
   let imageData = canvasInputCtx.getImageData(0, 0, videoWidth, videoHeight);
