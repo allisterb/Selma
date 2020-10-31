@@ -41,6 +41,10 @@
   toString:function()
   {
    return this.Name;
+  },
+  get_Create:function()
+  {
+   return User.New("",null);
   }
  },null,User);
  User.New=function(Name$1,LastLoggedIn)

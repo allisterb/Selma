@@ -43,10 +43,14 @@ module Server =
     let mdtotext(s:string) = async { return Markdig.Markdown.ToPlainText s }
 
     (* Authentication functions *)
-    (* User functions *)
     [<Rpc>]
     let addUserTypingPattern (id:string) (tp: string) = async { return! TypingDNA.savePattern id tp }
 
+    [<Rpc>]
+    let verifyUserTypingPattern (id:string) (tp: string) = async { return! TypingDNA.verifyPattern id tp }
+
+    (* User functions *)
+    
     [<Rpc>]
     let getUser(user:string) : Async<User option> = 
         pgdb

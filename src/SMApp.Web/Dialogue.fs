@@ -8,7 +8,25 @@ open WebSharper.JQuery
 open SMApp.Web
 
 [<JavaScript>]
+type Question = Question of string * string * QuestionType * string with 
+    member x.Name = let (Question(n, _, _, _)) = x in n 
+    member x.Text = let (Question(_, t, _, _)) = x in t
+    member x.Type = let (Question(_, _, ty, _)) = x in ty
+    member x.Module = let (Question(_, _, _, m)) = x in m
+    override x.ToString() = sprintf "Name: %s Text: %s Type: %A Module: %s" x.Name x.Text x.Type x.Module
+
+and [<JavaScript>] QuestionType =
+| UserAuthentication of (string->CanvasElement->unit)
+| Verification
+| Disjunctive
+| ConceptCompletion
+
+[<JavaScript>]
+type Form = Form of string * Question list
+
+[<JavaScript>]
 module Dialogue =
+
     type Dialogue = Dialogue of CUI * Dictionary<string, obj> * Stack<Question> * Stack<string> * Stack<Utterance> with
         member x.Cui = let (Dialogue(c,_, _, _, _)) = x in c 
         member x.Props = let (Dialogue(_,p, _, _, _)) = x in p
@@ -59,12 +77,15 @@ module Dialogue =
         add d q v
         pushq d moduleQuestions q
         let text = replace_tok "$0" v question.Text
-        say d <| text
+        //say d <| text
         match question.Type with
         | UserAuthentication f -> 
             d.Cui.TypingDNA.Reset()
             questionBox "Biometric Authentication" "" 640 480 (fun _ -> 
-                debug <| d.Cui.GetSameTextTypingPattern "Hello my name is John Brown" None
+                 let pattern =  d.Cui.GetSameTextTypingPattern "Hello my name is John Brown and I am an administrator" None
+                 debug <| "Text pattern: " + pattern
+                 let el = JQuery(".swal2-content").Get().[0].FirstChild.FirstChild |> As<CanvasElement>
+                 f pattern el
             )
             let input = JQuery(".swal2-input").Get().[0] |> As<Dom.Element> 
             do 

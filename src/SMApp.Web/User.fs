@@ -12,24 +12,14 @@ module User =
     let name = "User"
     let debug m = ClientExtensions.debug name m
     
-    let moduleQuestions = [ 
-        Question("inputPassPhrase", "Please type the phrase My name is {firstname} {lastname}", UserAuthentication (fun _ _ -> ()), name)
-        Question("addUser", "Do you want me to add the user $0?", Verification, name)
-        Question("switchUser", "Do you want me to switch to the user $0?", Verification, name)
-    ]
-    let getQuestion n = Dialogue.getQuestion moduleQuestions     
-    let haveQuestion n = Dialogue.haveQuestion moduleQuestions
-
     /// Update the dialogue state
     let rec update d =        
         let (Dialogue.Dialogue(cui, props, dialogueQuestions, output, utterances)) = d
-        debug <| sprintf "Starting utterances:%A. Starting questions: %A." utterances dialogueQuestions
-   
-        let echo = Dialogue.echo d
-        let say' = Dialogue.say' d
-        let say = Dialogue.say d
-        let sayRandom = Dialogue.sayRandom d
-        let sayRandom' = Dialogue.sayRandom' d
+
+        let dispatch = Dialogue.dispatch d debug
+        let handle = Dialogue.handle d debug
+        let handle' = Dialogue.handle' d debug
+        let didNotUnderstand() = Dialogue.didNotUnderstand d debug name
 
         (* Manage the dialogue state elements*)
         let have = Dialogue.have d
@@ -38,6 +28,34 @@ module User =
         let prop k = Dialogue.prop d k
         let user() :User = prop "user"
 
+        let moduleQuestions = [ 
+            Question("authenticateUser", "", UserAuthentication (fun p canvas ->  
+                if isNull p then
+                    cui.Say "Sorry I could not authenticate your pass phrase."
+                else
+                    async { 
+                            let! t = Server.verifyUserTypingPattern "john" (user().Name) 
+                            debug <| sprintf "TypingDNA: %A"  t
+                            match t with
+                            | Ok r -> if r.confidence > 50 then cui.Say "You are now authenticated." else cui.Say "Sorry I could not authenticate your passphrase."
+                            | Error e -> error e
+                    } |> Async.Start
+            ), name)
+            Question("addUser", "Do you want me to add the user $0?", Verification, name)
+            Question("switchUser", "Do you want me to switch to the user $0?", Verification, name)
+        ]
+        let getQuestion n = Dialogue.getQuestion moduleQuestions     
+        let haveQuestion n = Dialogue.haveQuestion moduleQuestions
+
+        debug <| sprintf "Starting utterances:%A. Starting questions: %A." utterances dialogueQuestions
+   
+        let echo = Dialogue.echo d
+        let say' = Dialogue.say' d
+        let say = Dialogue.say d
+        let sayRandom = Dialogue.sayRandom d
+        let sayRandom' = Dialogue.sayRandom' d
+
+
         let pushu  = Dialogue.pushu d
         let popu() = Dialogue.popu d
         let pushq = Dialogue.pushq d moduleQuestions
@@ -45,10 +63,6 @@ module User =
         let popt() = Dialogue.popt d
         let ask = Dialogue.ask d debug moduleQuestions
 
-        let dispatch = Dialogue.dispatch d debug
-        let handle = Dialogue.handle d debug
-        let handle' = Dialogue.handle' d debug
-        let didNotUnderstand() = Dialogue.didNotUnderstand d debug name
 
         (* Base dialogue patterns *)
         let (|PropSet|_|) = Dialogue.(|PropSet_|_|) d
@@ -63,13 +77,15 @@ module User =
             do sayRandom waitRetrievePhrases "user name"
             async { 
                 match! Server.getUser u with 
-                | Some u ->
-                    do! Server.updateUserLastLogin u.Name |> Async.Ignore
-                    add "user" u
+                | Some user ->
+                    do! Server.updateUserLastLogin user.Name |> Async.Ignore
+                    add "user" user
                     sayRandom helloUserPhrases <| sprintf "%A" props.["user"]
-                    if Option.isSome u.LastLoggedIn then 
-                        let! h = Server.humanize u.LastLoggedIn.Value
-                        say <| sprintf "You last logged in %s." h 
+                    if Option.isSome user.LastLoggedIn then 
+                        let! h = Server.humanize user.LastLoggedIn.Value
+                        say <| sprintf "You last logged in %s." h
+                        say "Since you will be accessing sensitive data I need to authenticate you via facial recognition and typing behaviour. Enter the pass phrase you were assigned during enrollment in the box provided. Then, look into your camera until you see the red box around your face and press the Ok button."
+                        ask "authenticateUser" u update
                 | None _ -> 
                     say <| sprintf "I did not find a user with the name %s." u
                     ask "addUser" u update
@@ -110,7 +126,7 @@ module User =
         match utterances |> Seq.take (if utterances.Count >= 5 then 5 else utterances.Count) |> List.ofSeq with
         /// User login
         | User'(Intent "greet" (_, Entity1Of1 "name" u))::[] -> handle "loginUser" (fun _ -> loginUser u.Value)
-
+        | User'(Intent "hello" (_, Entity1Of1 "contact" u))::[] -> handle "loginUser" (fun _ -> loginUser u.Value)
         /// User pass phrase
         | Response' "inputPassPhrase" (_, Str user) as u::[] -> handle' "addUser" (fun _ -> 
             cui.TypingDNA.Stop() 

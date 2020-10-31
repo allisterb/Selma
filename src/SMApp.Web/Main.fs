@@ -76,6 +76,7 @@ module Main =
         (* Dispatch *)
         /// User login
         | User'(Intent "greet" (_, Entity1Of1 "name" _))::[] -> dispatch User.name User.update
+        | User'(Intent "hello" (_, Entity1Of1 "contact" _))::[] -> dispatch User.name User.update
 
         | _ -> didNotUnderstand()
 

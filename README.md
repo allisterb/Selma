@@ -1,6 +1,6 @@
 # About
 ## App Url
-https://selma2-victor.apps.us-east-2.starter.openshift-online.com/
+https://bit.ly/3krS0FY
 
 ## What it does
 Selma is a multimodal CUI designed to provide accessible and inclusive access to self-management tools like medication trackers, mood and symptom trackers, dream and sleep journals, time, activity and exercise, trackers, personal planners, reliable knowledge bases on health conditions and diseases, and similar tools used in the management of chronic physical and mental diseases and disorders and conditions like ADHD or chronic pain where.self-management skills for life activities are critical.

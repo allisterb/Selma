@@ -19,11 +19,30 @@ open SMApp.TypingDNA
 
 module TypingDNA =
     [<JavaScript>]
-    type Response = {
+    type SaveResponse = {
         name: string
         message: string
         message_code: int
         status: int
+    }
+
+    [<JavaScript>]
+    type UserResponse = {
+        message: string
+        message_code: int
+        success: int
+        count:int
+        status: int
+    }
+
+    [<JavaScript>]
+    type VerifyResponse = {
+        message: string
+        message_code: int
+        success: int
+        result:int
+        score:int
+        confidence: int
     }
 
     [<JavaScript>]
@@ -49,7 +68,36 @@ module TypingDNA =
                 use!response = httpClient.PostAsync(String.Format(baseUrl, "save", userData), data) |> Async.AwaitTask 
                 let! content = response.Content.ReadAsStringAsync() |> Async.AwaitTask 
                 infof "Received {0} from TypingDNA API for saving pattern for user {1}/{2}." [content; id; userData]
-                return content |> Json.Deserialize<Response> |> Ok
+                return content |> Json.Deserialize<SaveResponse> |> Ok
+            with error -> return Error error.Message
+        }
+
+    let verifyPattern (id: string) (tp: string) =
+        async {
+            try
+                use httpClient = new HttpClient()
+                do httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(contentType))
+                httpClient.DefaultRequestHeaders.Authorization <- new AuthenticationHeaderValue("Basic", authString);
+                let data = new FormUrlEncodedContent([|new KeyValuePair<string, string>("tp", tp)|])
+                let userData = Convert.ToBase64String(md5Provider.ComputeHash(ASCIIEncoding.ASCII.GetBytes(id)))
+                use!response = httpClient.PostAsync(String.Format(baseUrl, "verify", userData), data) |> Async.AwaitTask 
+                let! content = response.Content.ReadAsStringAsync() |> Async.AwaitTask 
+                infof "Received {0} from TypingDNA API for verifying pattern for user {1}/{2}." [content; id; userData]
+                return content |> Json.Deserialize<VerifyResponse> |> Ok
+            with error -> return Error error.Message
+        }
+
+    let getUser (id: string)  =
+        async {
+            try
+                use httpClient = new HttpClient()
+                do httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(contentType))
+                httpClient.DefaultRequestHeaders.Authorization <- new AuthenticationHeaderValue("Basic", authString);
+                let userData = Convert.ToBase64String(md5Provider.ComputeHash(ASCIIEncoding.ASCII.GetBytes(id)))
+                use!response = httpClient.GetAsync(String.Format(baseUrl, "user", userData)) |> Async.AwaitTask 
+                let! content = response.Content.ReadAsStringAsync() |> Async.AwaitTask 
+                infof "Received {0} from TypingDNA API for saving pattern for user {1}/{2}." [content; id; userData]
+                return content |> Json.Deserialize<UserResponse> |> Ok
             with error -> return Error error
         }
 

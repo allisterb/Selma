@@ -26,6 +26,7 @@ module Models =
         LastLoggedIn:DateTime option
     }
     with 
+        member x.Create = {Name = ""; LastLoggedIn = None}
         override x.ToString() = x.Name
 
     type Patient = {

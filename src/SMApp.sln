@@ -20,6 +20,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{08D21D7A-6818-417B-900D-BD9F2B95B9B0}"
 	ProjectSection(SolutionItems) = preProject
 		..\docs\fsharpx2020\Easyccg.fsx = ..\docs\fsharpx2020\Easyccg.fsx
+		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deploy", "Deploy", "{471A2D10-FC79-4425-92A4-CF8234D86D1E}"

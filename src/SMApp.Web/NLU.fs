@@ -6,6 +6,7 @@ open WebSharper
 open WebSharper.JavaScript
 
 open SMApp.NLU
+open SMApp.Models
 
 [<JavaScript;AutoOpen>]
 module NLU =
@@ -38,21 +39,6 @@ module NLU =
         override x.ToString() = sprintf "%A %A %A" x.Intent x.Traits x.Entities
 
     type Utterance' = Trait list option * Entity list option
-
-    type Question = Question of string * string * QuestionType * string with 
-        member x.Name = let (Question(n, _, _, _)) = x in n 
-        member x.Text = let (Question(_, t, _, _)) = x in t
-        member x.Type = let (Question(_, _, ty, _)) = x in ty
-        member x.Module = let (Question(_, _, _, m)) = x in m
-        override x.ToString() = sprintf "Name: %s Text: %s Type: %A Module: %s" x.Name x.Text x.Type x.Module
-    
-    and QuestionType =
-    | UserAuthentication of (string->CanvasElement->unit)
-    | Verification
-    | Disjunctive
-    | ConceptCompletion
-
-    type Form = Form of string * Question list
     
     let (|Intent|_|) n :Utterance -> Utterance' option= 
         function
@@ -61,7 +47,7 @@ module NLU =
         
     let (|Entity1Of1|_|) (r:string) :Entity list option -> Entity option = 
         function
-        | Some(entity::[]) when entity.Role = r -> Some entity
+        | Some(entity::[]) when entity.Role = r || entity.Name = r -> Some entity
         | _ -> None
 
     let (|Entity1OfAny|_|) (r:string) :Entity list option -> Entity option = 
