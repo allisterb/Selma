@@ -69,13 +69,14 @@ module ClientExtensions =
     [<Direct "startCamera($container, $canvasElement)">]
     let startCamera (container:Dom.Element) (canvasElement:Dom.Element) = X<unit>
     
-    let questionBox title text width height action = 
+    let questionBox title text (width:int) (height:int) action = 
         let box = 
             let b = SweetAlert.Box (
                         TitleText = title,
                         Text = text,
                         Type = "question",
-                        Html = sprintf "<div style=\"width:%s;height:%s\"></div>" width height,
+                        Width = width.ToString(),
+                        Html = sprintf "<div style=\"width:%ipx;height:%ipx\"></div>" width height,
                         Input = "text",
                         ConfirmButtonText = "Ok"
             )
