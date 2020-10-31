@@ -2,6 +2,7 @@
 let videoWidth, videoHeight;
 let video = null;
 
+// Canvas and contexts for rendering video
 let canvasOutput = null;
 let canvasInput = null;
 let canvasInputCtx = null;
@@ -22,7 +23,11 @@ let dstC1 = null;
 let dstC3 = null;
 let dstC4 = null;
 
-function startCamera(v, c) {
+function startCamera(container, v, c) {
+    stats = new Stats();
+    stats.showPanel(0);
+    container.appendChild(stats.dom);
+
     video = v
     canvasOutput = c
     if (streaming) return;
@@ -50,121 +55,85 @@ function startCamera(v, c) {
     }, false);
 }
 
-
 function startVideoProcessing() {
-  if (!streaming) { console.warn("Please startup your webcam"); return; }
-  stopVideoProcessing();
-  canvasInput = document.createElement('canvas');
-  canvasInput.width = videoWidth;
-  canvasInput.height = videoHeight;
-  canvasInputCtx = canvasInput.getContext('2d');
+    if (!streaming) { console.warn("Please startup your webcam"); return; }
+    stopVideoProcessing();
+    canvasInput = document.createElement('canvas');
+    canvasInput.width = videoWidth;
+    canvasInput.height = videoHeight;
+    canvasInputCtx = canvasInput.getContext('2d');
   
-  canvasBuffer = document.createElement('canvas');
-  canvasBuffer.width = videoWidth;
-  canvasBuffer.height = videoHeight;
-  canvasBufferCtx = canvasBuffer.getContext('2d');
+    canvasBuffer = document.createElement('canvas');
+    canvasBuffer.width = videoWidth;
+    canvasBuffer.height = videoHeight;
+    canvasBufferCtx = canvasBuffer.getContext('2d');
   
-  srcMat = new cv.Mat(videoHeight, videoWidth, cv.CV_8UC4);
-  grayMat = new cv.Mat(videoHeight, videoWidth, cv.CV_8UC1);
+    srcMat = new cv.Mat(videoHeight, videoWidth, cv.CV_8UC4);
+    grayMat = new cv.Mat(videoHeight, videoWidth, cv.CV_8UC1);
   
-  faceClassifier = new cv.CascadeClassifier();
-  faceClassifier.load('haarcascade_frontalface_default.xml');
-    
-  requestAnimationFrame(processVideo);
+    faceClassifier = new cv.CascadeClassifier();
+    faceClassifier.load('haarcascade_frontalface_default.xml');
+ 
+    requestAnimationFrame(processVideo);
 }
 
 function processVideo() {
-  let canvasOutputCtx = canvasOutput.getContext('2d');
-  stats.begin();
-  canvasInputCtx.drawImage(video, 0, 0, videoWidth, videoHeight);
-  let imageData = canvasInputCtx.getImageData(0, 0, videoWidth, videoHeight);
-  srcMat.data.set(imageData.data);
-  cv.cvtColor(srcMat, grayMat, cv.COLOR_RGBA2GRAY);
-  let faces = [];
-  let eyes = [];
-  let size;
+    let canvasOutputCtx = canvasOutput.getContext('2d');
+    stats.begin();
+    canvasInputCtx.drawImage(video, 0, 0, videoWidth, videoHeight);
+    let imageData = canvasInputCtx.getImageData(0, 0, videoWidth, videoHeight);
+    srcMat.data.set(imageData.data);
+    cv.cvtColor(srcMat, grayMat, cv.COLOR_RGBA2GRAY);
+    let faces = [];
+    let size;
   
     let faceVect = new cv.RectVector();
     let faceMat = new cv.Mat();
-    /*
-    if (detectEye.checked) {
-        cv.pyrDown(grayMat, faceMat);
-        size = faceMat.size();
-    } else {
-        cv.pyrDown(grayMat, faceMat);
-        cv.pyrDown(faceMat, faceMat);
-        size = faceMat.size();
-    }
-    */
     cv.pyrDown(grayMat, faceMat);
     cv.pyrDown(faceMat, faceMat);
     size = faceMat.size();
-
     faceClassifier.detectMultiScale(faceMat, faceVect);
     for (let i = 0; i < faceVect.size(); i++) {
         let face = faceVect.get(i);
         faces.push(new cv.Rect(face.x, face.y, face.width, face.height));
-        /*
-        if (detectEye.checked) {
-        let eyeVect = new cv.RectVector();
-        let eyeMat = faceMat.getRoiRect(face);
-        eyeClassifier.detectMultiScale(eyeMat, eyeVect);
-        for (let i = 0; i < eyeVect.size(); i++) {
-            let eye = eyeVect.get(i);
-            eyes.push(new cv.Rect(face.x + eye.x, face.y + eye.y, eye.width, eye.height));
-        }
-        eyeMat.delete();
-        eyeVect.delete();
-        }
-        */
     }
     faceMat.delete();
     faceVect.delete();
-  
-  
-  canvasOutputCtx.drawImage(canvasInput, 0, 0, videoWidth, videoHeight);
-  drawResults(canvasOutputCtx, faces, 'red', size);
-  drawResults(canvasOutputCtx, eyes, 'yellow', size);
-  stats.end();
-  requestAnimationFrame(processVideo);
+    canvasOutputCtx.drawImage(canvasInput, 0, 0, videoWidth, videoHeight);
+    drawResults(canvasOutputCtx, faces, 'red', size);
+    stats.end();
+    requestAnimationFrame(processVideo);
 }
 
 function drawResults(ctx, results, color, size) {
-  for (let i = 0; i < results.length; ++i) {
-    let rect = results[i];
-    let xRatio = videoWidth/size.width;
-    let yRatio = videoHeight/size.height;
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = color;
-    ctx.strokeRect(rect.x*xRatio, rect.y*yRatio, rect.width*xRatio, rect.height*yRatio);
-  }
+    for (let i = 0; i < results.length; ++i) {
+      let rect = results[i];
+      let xRatio = videoWidth/size.width;
+      let yRatio = videoHeight/size.height;
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = color;
+      ctx.strokeRect(rect.x*xRatio, rect.y*yRatio, rect.width*xRatio, rect.height*yRatio);
+    }
 }
 
 function stopVideoProcessing() {
-  if (src != null && !src.isDeleted()) src.delete();
-  if (dstC1 != null && !dstC1.isDeleted()) dstC1.delete();
-  if (dstC3 != null && !dstC3.isDeleted()) dstC3.delete();
-  if (dstC4 != null && !dstC4.isDeleted()) dstC4.delete();
+    if (src != null && !src.isDeleted()) src.delete();
+    if (dstC1 != null && !dstC1.isDeleted()) dstC1.delete();
+    if (dstC3 != null && !dstC3.isDeleted()) dstC3.delete();
+    if (dstC4 != null && !dstC4.isDeleted()) dstC4.delete();
 }
 
 function stopCamera() {
-  if (!streaming) return;
-  stopVideoProcessing();
-  document.getElementById("canvasOutput").getContext("2d").clearRect(0, 0, width, height);
-  video.pause();
-  video.srcObject=null;
-  stream.getVideoTracks()[0].stop();
-  streaming = false;
-}
-
-function initUI() {
-  stats = new Stats();
-  stats.showPanel(0);
-  document.getElementById('container').appendChild(stats.dom);
+    if (!streaming) return;
+    stopVideoProcessing();
+    document.getElementById("canvasOutput").getContext("2d").clearRect(0, 0, width, height);
+    video.pause();
+    video.srcObject=null;
+    stream.getVideoTracks()[0].stop();
+    streaming = false;
 }
 
 function opencvIsReady() {
     console.log('OpenCV.js is ready');
-    initUI();
-    startCamera(document.getElementById("video"), document.getElementById("canvasOutput"));
+    //startCamera(document.getElementById('container'), document.getElementById("video"), document.getElementById("canvasOutput"));
 }
