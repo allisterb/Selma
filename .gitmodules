@@ -34,3 +34,6 @@
 [submodule "ext/NativeLibraryManager"]
 	path = ext/NativeLibraryManager
 	url = https://github.com/allisterb/NativeLibraryManager.git
+[submodule "ext/sweetalert"]
+	path = ext/sweetalert
+	url = https://github.com/allisterb/sweetalert.git
