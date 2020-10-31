@@ -44,6 +44,7 @@ module Client =
             let dna = new TypingDNA()
             do dna.Stop()
             dna
+        AudioEnd = new System.Collections.Generic.Queue<System.Action>()
     }
     let mutable MicState = MicNotInitialized
     let mutable ClientState = ClientNotInitialzed
@@ -112,7 +113,7 @@ module Client =
             | ClientNotInitialzed -> error "Client is not intialized."
             )
         do mic.Connect("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT")
-
+    
     /// Main interpreter
     let Main =             
         /// Mic interpreter
@@ -151,9 +152,7 @@ module Client =
             | Text.Debug ->
                 debug <| sprintf "Utterances: %A" Utterances
                 debug <| sprintf "Questions: %A" Questions
-                let j = createCanvas "dd" 50 50 JS.Document.Body
-                startCamera JS.Document.Body j 
-                debug j
+                debug <| lastMicData()
             | Text.Voices -> 
                 let voices = speechSynthesis().GetVoices() |> toArray    
                 sprintf "There are currently %i voices installed on this computer or device." voices.Length |> say'

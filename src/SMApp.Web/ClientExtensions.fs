@@ -40,6 +40,9 @@ module ClientExtensions =
 
     let termOutput() = JQuery(".terminal-output").Get().[0]
 
+    [<Direct("window.lastMicData")>]
+    let lastMicData() = X<Int16Array>
+
     [<Direct("window.speechSynthesis")>]
     let speechSynthesis() = X<SpeechSynthesis>
 

@@ -1,6 +1,7 @@
 ﻿namespace SMApp.Web
 
 open System
+open System.Collections.Generic
 
 open WebSharper
 open WebSharper.JavaScript
@@ -37,6 +38,7 @@ module CUI =
          Avatar: WebAvatar
          Caption: bool
          TypingDNA: TypingDNA
+         AudioEnd: Queue<Action>
      }
      with
          member x.Echo' (text:string) = x.Term.Disable(); x.Term.Echo text; x.Term.Enable()
