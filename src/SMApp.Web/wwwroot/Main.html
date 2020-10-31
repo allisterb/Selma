@@ -12,6 +12,7 @@
         <div class="row d-flex justify-content-center">
             <div id="main" ws-replace="Body"></div>
             <div id="microphone"></div>
+            <canvas class="center-block" id="canvasOutput" width=320 height=240></canvas>
         </div>
     </div>
     <div class="invisible">
@@ -21,7 +22,7 @@
         <script ws-replace="scripts"></script>
         <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
         <script src="https://threejs.org/examples/js/libs/stats.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.5/dat.gui.min.js"></script>
+        
         <script>
             var Module = {
                 wasmBinaryFile: 'https://huningxin.github.io/opencv.js/build/wasm/opencv_js.wasm',

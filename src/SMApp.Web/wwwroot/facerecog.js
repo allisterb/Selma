@@ -87,6 +87,7 @@ function processVideo() {
   
     let faceVect = new cv.RectVector();
     let faceMat = new cv.Mat();
+    /*
     if (detectEye.checked) {
         cv.pyrDown(grayMat, faceMat);
         size = faceMat.size();
@@ -95,10 +96,16 @@ function processVideo() {
         cv.pyrDown(faceMat, faceMat);
         size = faceMat.size();
     }
+    */
+    cv.pyrDown(grayMat, faceMat);
+    cv.pyrDown(faceMat, faceMat);
+    size = faceMat.size();
+
     faceClassifier.detectMultiScale(faceMat, faceVect);
     for (let i = 0; i < faceVect.size(); i++) {
         let face = faceVect.get(i);
         faces.push(new cv.Rect(face.x, face.y, face.width, face.height));
+        /*
         if (detectEye.checked) {
         let eyeVect = new cv.RectVector();
         let eyeMat = faceMat.getRoiRect(face);
@@ -110,6 +117,7 @@ function processVideo() {
         eyeMat.delete();
         eyeVect.delete();
         }
+        */
     }
     faceMat.delete();
     faceVect.delete();
