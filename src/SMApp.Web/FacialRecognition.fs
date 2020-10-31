@@ -16,18 +16,6 @@ open SMApp.TypingDNA
 
 [<AutoOpen; JavaScript>]
 module FacialRecognition =
-    let a = 0
-(*
-    let addVideoElement (el:Dom.Element) = 
-        let v = video [] []
-        v |> Doc.RunAppend el
-        v
-
-    let addCanvaElement (el:Dom.Element) = 
-        let v = canvas [eid "canvasOutput"; attr.width "320"; attr.height "240"] []
-        v |> Doc.RunAppend el
-        v
-
-        *)
-    //let startCamera = 
-
+    [<Direct "startCamera($container, $canvasElement)">]
+    let startCamera (container:Dom.Element) (canvasElement:Dom.Element) = X<unit>
+    

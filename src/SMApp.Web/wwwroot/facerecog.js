@@ -23,13 +23,13 @@ let dstC1 = null;
 let dstC3 = null;
 let dstC4 = null;
 
-function startCamera(container, v, c) {
+function startCamera(container, c) {
     stats = new Stats();
     stats.showPanel(0);
     container.appendChild(stats.dom);
-
-    video = v
+    video = document.getElementById("video");
     canvasOutput = c
+
     if (streaming) return;
     navigator.mediaDevices.getUserMedia({video: true, audio: false})
         .then(function(s) {
@@ -135,5 +135,5 @@ function stopCamera() {
 
 function opencvIsReady() {
     console.log('OpenCV.js is ready');
-    //startCamera(document.getElementById('container'), document.getElementById("video"), document.getElementById("canvasOutput"));
+    //startCamera(document.getElementById('container'), document.getElementById("canvasOutput"));
 }

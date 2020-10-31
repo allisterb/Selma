@@ -151,6 +151,9 @@ module Client =
             | Text.Debug ->
                 debug <| sprintf "Utterances: %A" Utterances
                 debug <| sprintf "Questions: %A" Questions
+                let j = createCanvas "dd" 50 50 JS.Document.Body
+                startCamera JS.Document.Body j 
+                debug j
             | Text.Voices -> 
                 let voices = speechSynthesis().GetVoices() |> toArray    
                 sprintf "There are currently %i voices installed on this computer or device." voices.Length |> say'

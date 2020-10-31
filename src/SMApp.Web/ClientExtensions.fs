@@ -59,6 +59,12 @@ module ClientExtensions =
         
     let elementHTML (d:Dom.Element) = d.InnerHTML
 
+    let createCanvas (id:string) (width:int) (height:int) (el:Dom.Element) =
+        let c = JS.Document.CreateElement("canvas")
+        canvas[eid id; attr.width (width.ToString()); attr.height (height.ToString())][] |> Doc.Run c
+        el.AppendChild c |> ignore
+        c |> As<CanvasElement>
+
     let questionBox title text action = 
         let box = 
             let b = SweetAlert.Box (
