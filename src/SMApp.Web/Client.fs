@@ -20,10 +20,6 @@ open Dialogue
 
 [<JavaScript>]
 module Client =
-   
-    [<Inline "video">]
-    let video = X<Dom.Element>
-    
     (* CUI state *)
     let mutable CUI = {
         Voice = None

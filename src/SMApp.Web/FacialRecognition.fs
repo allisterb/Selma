@@ -16,7 +16,8 @@ open SMApp.TypingDNA
 
 [<AutoOpen; JavaScript>]
 module FacialRecognition =
-
+    let a = 0
+(*
     let addVideoElement (el:Dom.Element) = 
         let v = video [] []
         v |> Doc.RunAppend el
@@ -27,6 +28,6 @@ module FacialRecognition =
         v |> Doc.RunAppend el
         v
 
-
+        *)
     //let startCamera = 
 

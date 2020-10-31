@@ -1,38 +1,36 @@
+// Camera video output
 let videoWidth, videoHeight;
 
 // whether streaming video from the camera.
 let streaming = false;
 
+// Camera stream
 let stream = null;
 
-function startCamera() {
-  let video = document.getElementById('video');
-  if (streaming) return;
-  navigator.mediaDevices.getUserMedia({video: true, audio: false})
-    .then(function(s) {
-    stream = s;
-    video.srcObject = s;
-    video.play();
-  })
-    .catch(function(err) {
-    console.log("An error occured! " + err);
-  });
+function startCamera(video, canvasOutput) {
+    if (streaming) return;
+    navigator.mediaDevices.getUserMedia({video: true, audio: false})
+        .then(function(s) {
+            stream = s;
+            video.srcObject = s;
+            video.play();
+        })
+        .catch(function (err) {
+            console.log("An error occured! " + err);
+        });
 
-  video.addEventListener("canplay", function(ev){
-      let video = document.getElementById('video');
-      let canvasOutput = document.getElementById('canvasOutput');
-      let canvasOutputCtx = canvasOutput.getContext('2d');
-      if (!streaming) {
-          videoWidth = video.videoWidth;
-          videoHeight = video.videoHeight;
-          video.setAttribute("width", videoWidth);
-          video.setAttribute("height", videoHeight);
-          canvasOutput.width = videoWidth;
-          canvasOutput.height = videoHeight;
-          streaming = true;
-    }
-    startVideoProcessing();
-  }, false);
+    video.addEventListener("canplay", function(ev) {
+        if (!streaming) {
+            videoWidth = video.videoWidth;
+            videoHeight = video.videoHeight;
+            video.setAttribute("width", videoWidth);
+            video.setAttribute("height", videoHeight);
+            canvasOutput.width = videoWidth;
+            canvasOutput.height = videoHeight;
+            streaming = true;
+        }
+        startVideoProcessing();
+    }, false);
 }
 
 let faceClassifier = null;
@@ -165,7 +163,7 @@ function initUI() {
 }
 
 function opencvIsReady() {
-  console.log('OpenCV.js is ready');
-  initUI();
-  startCamera();
+    console.log('OpenCV.js is ready');
+    initUI();
+    startCamera(document.getElementById("video"), document.getElementById("canvasOutput"));
 }

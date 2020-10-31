@@ -53,6 +53,8 @@ module ClientExtensions =
 
     let createElement doc =
         let el = JS.Document.CreateElement "div"
+        do JS.Document.AppendChild(el) |> ignore
+        
         do doc |> Doc.RunAppend el
         
     let elementHTML (d:Dom.Element) = d.InnerHTML
