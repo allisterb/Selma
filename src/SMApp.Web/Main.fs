@@ -39,7 +39,7 @@ module Main =
         let popu() = Dialogue.popu d
         let popq() = Dialogue.popq d
         let popt() = Dialogue.popt d
-        let ask = Dialogue.ask d moduleQuestions
+        let ask = Dialogue.ask d debug moduleQuestions
         
         let dispatch = Dialogue.dispatch d debug
         let handle = Dialogue.handle d debug

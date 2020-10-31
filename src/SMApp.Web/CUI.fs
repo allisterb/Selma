@@ -87,5 +87,16 @@ module CUI =
                  sprintf "There are currently %i voices installed on this computer or device." voices.Length |> x.Say
                  voices |> Array.iteri (fun i v -> sprintf "Voice %i. Name: %s, Local: %A." i v.Name v.LocalService |> x.Say)
 
-         member x.GetSameTextTypingPattern(text:string) =
-            TypingDNA.getSameTextTypingPattern text x.TypingDNA
+         member x.GetSameTextTypingPattern(text:string) (el:string option) =
+            let options = 
+                match el with
+                | Some e -> new TypingDNAOptions(1, Text = text, CaseSensitive = false, TargetId = e)
+                | None -> new TypingDNAOptions(1, Text = text, CaseSensitive = false)
+            x.TypingDNA.GetTypingPattern options
+
+         member x.MonitorTypingPattern(input:string option) = 
+            x.TypingDNA.Reset()
+            do if input.IsSome then x.TypingDNA.AddTarget input.Value
+            x.TypingDNA.Start()
+
+

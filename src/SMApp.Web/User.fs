@@ -13,7 +13,7 @@ module User =
     let debug m = ClientExtensions.debug name m
     
     let moduleQuestions = [ 
-        Question("inputPassPhrase", "Please type the phrase My name is {firstname} {lastname}", UserData, name)
+        Question("inputPassPhrase", "Please type the phrase My name is {firstname} {lastname}", UserAuthentication (fun _ _ -> ()), name)
         Question("addUser", "Do you want me to add the user $0?", Verification, name)
         Question("switchUser", "Do you want me to switch to the user $0?", Verification, name)
     ]
@@ -43,7 +43,7 @@ module User =
         let pushq = Dialogue.pushq d moduleQuestions
         let popq() = Dialogue.popq d
         let popt() = Dialogue.popt d
-        let ask = Dialogue.ask d moduleQuestions
+        let ask = Dialogue.ask d debug moduleQuestions
 
         let dispatch = Dialogue.dispatch d debug
         let handle = Dialogue.handle d debug
@@ -114,7 +114,7 @@ module User =
         /// User pass phrase
         | Response' "inputPassPhrase" (_, Str user) as u::[] -> handle' "addUser" (fun _ -> 
             cui.TypingDNA.Stop() 
-            let pattern = cui.GetSameTextTypingPattern u.Text
+            let pattern = cui.GetSameTextTypingPattern u.Text None
             addUser user pattern
          ) 
         (* User add *)

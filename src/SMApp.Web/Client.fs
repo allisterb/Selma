@@ -153,10 +153,19 @@ module Client =
                 debug <| sprintf "Utterances: %A" Utterances
                 debug <| sprintf "Questions: %A" Questions
                 debug <| lastMicData()
-                questionBox "Biometric Authentication" "Look at your camera and type the phrase foo." 640 480 (fun _ -> ())
+
+                CUI.TypingDNA.Reset()
+                questionBox "Biometric Authentication" "" 640 480 (fun _ -> 
+                    debug <| CUI.GetSameTextTypingPattern "Hello my name is John Brown" None
+                )
+                let input = JQuery(".swal2-input").Get().[0] |> As<Dom.Element> 
+                do 
+                    input.SetAttribute("id", "auth-input")
+                    CUI.MonitorTypingPattern None
                 let e = JQuery(".swal2-content").Get().[0].FirstChild |> As<Dom.Element>
-                let c = createCanvas "c1" "640" "480" e
+                let c = createCanvas "camera" "640" "480" e
                 startCamera JS.Document.Body c
+
             | Text.Voices -> 
                 let voices = speechSynthesis().GetVoices() |> toArray    
                 sprintf "There are currently %i voices installed on this computer or device." voices.Length |> say'

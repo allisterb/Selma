@@ -3,7 +3,8 @@
 open System.Collections.Generic
 
 open WebSharper
-
+open WebSharper.JavaScript
+open WebSharper.JQuery
 open SMApp.Web
 
 [<JavaScript>]
@@ -53,14 +54,26 @@ module Dialogue =
         popu d |> ignore
         popq d |> ignore
     
-    let ask (d:Dialogue) (moduleQuestions: Question list) q v (target:Dialogue -> unit)=
+    let ask (d:Dialogue) (debug:string -> unit) (moduleQuestions: Question list) q v (target:Dialogue -> unit)=
         let question = Option.get <| getQuestion moduleQuestions  q
         add d q v
         pushq d moduleQuestions q
         let text = replace_tok "$0" v question.Text
         say d <| text
         match question.Type with
-        | UserData -> questionBox "User Input" text 320 240 (fun input -> pushu d (Utterance(input, None, None, None)); target d)
+        | UserAuthentication f -> 
+            d.Cui.TypingDNA.Reset()
+            questionBox "Biometric Authentication" "" 640 480 (fun _ -> 
+                debug <| d.Cui.GetSameTextTypingPattern "Hello my name is John Brown" None
+            )
+            let input = JQuery(".swal2-input").Get().[0] |> As<Dom.Element> 
+            do 
+                input.SetAttribute("id", "auth-input")
+                d.Cui.MonitorTypingPattern None
+            let e = JQuery(".swal2-content").Get().[0].FirstChild |> As<Dom.Element>
+            let c = createCanvas "camera" "640" "480" e
+            startCamera JS.Document.Body c
+
         | _ -> ()
      
     let handle (d:Dialogue) (debug:string -> unit) (m:string) (f:unit->unit) =

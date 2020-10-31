@@ -47,7 +47,7 @@ module NLU =
         override x.ToString() = sprintf "Name: %s Text: %s Type: %A Module: %s" x.Name x.Text x.Type x.Module
     
     and QuestionType =
-    | UserData
+    | UserAuthentication of (string->CanvasElement->unit)
     | Verification
     | Disjunctive
     | ConceptCompletion

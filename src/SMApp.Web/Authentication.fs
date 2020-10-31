@@ -6,7 +6,8 @@ open System.IO
 open System.Text
 open System.Net.Http
 open System.Net.Http.Headers
-
+open System.Security.Cryptography
+open System.Text
 open System.Threading.Tasks;
 open Microsoft.CognitiveServices.Speech;
 open Microsoft.CognitiveServices.Speech.Audio;
@@ -35,7 +36,8 @@ module TypingDNA =
     let private authString = Convert.ToBase64String(Encoding.ASCII.GetBytes(String.Format("{0}:{1}", apiKey, apiSecret)));
     let private baseUrl = "https://api.typingdna.com/{0}/{1}";
     let private contentType = "application/x-www-form-urlencoded"; 
-    
+    let private md5Provider = new MD5CryptoServiceProvider()
+
     let savePattern (id: string) (tp: string) =
         async {
             try
@@ -43,9 +45,10 @@ module TypingDNA =
                 do httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(contentType))
                 httpClient.DefaultRequestHeaders.Authorization <- new AuthenticationHeaderValue("Basic", authString);
                 let data = new FormUrlEncodedContent([|new KeyValuePair<string, string>("tp", tp)|])
-                use! response = httpClient.PostAsync(String.Format(baseUrl, "save", id), data) |> Async.AwaitTask 
+                let userData = Convert.ToBase64String(md5Provider.ComputeHash(ASCIIEncoding.ASCII.GetBytes(id)))
+                use!response = httpClient.PostAsync(String.Format(baseUrl, "save", userData), data) |> Async.AwaitTask 
                 let! content = response.Content.ReadAsStringAsync() |> Async.AwaitTask 
-                infof "Received {0} from TypingDNA API." [content]
+                infof "Received {0} from TypingDNA API for saving pattern for user {1}/{2}." [content; id; userData]
                 return content |> Json.Deserialize<Response> |> Ok
             with error -> return Error error
         }
