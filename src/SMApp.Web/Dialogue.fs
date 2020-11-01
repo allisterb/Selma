@@ -8,29 +8,28 @@ open WebSharper.JQuery
 open SMApp.Web
 
 [<JavaScript>]
-type Question = Question of string * string * QuestionType * string with 
-    member x.Name = let (Question(n, _, _, _)) = x in n 
-    member x.Text = let (Question(_, t, _, _)) = x in t
-    member x.Type = let (Question(_, _, ty, _)) = x in ty
-    member x.Module = let (Question(_, _, _, m)) = x in m
-    override x.ToString() = sprintf "Name: %s Text: %s Type: %A Module: %s" x.Name x.Text x.Type x.Module
-
-and [<JavaScript>] QuestionType =
-| UserAuthentication of (string->CanvasElement->unit)
-| Verification
-| Disjunctive
-| ConceptCompletion
-
-[<JavaScript>]
-type Form = Form of string * Question list
-
-[<JavaScript>]
 type Dialogue = Dialogue of CUI * Dictionary<string, obj> * Stack<Question> * Stack<string> * Stack<Utterance> with
     member x.Cui = let (Dialogue(c,_, _, _, _)) = x in c 
     member x.Props = let (Dialogue(_,p, _, _, _)) = x in p
     member x.DialogueQuestions = let (Dialogue(_, _, dq, _, _)) = x in dq
     member x.Output = let (Dialogue(_, _, _, o, _)) = x in o
     member x.Utterances = let (Dialogue(_, _, _, _, u)) = x in u
+and 
+    [<JavaScript>] Question = Question of string * string * QuestionType  * (Dialogue->unit) with 
+        member x.Name = let (Question(n, _, _, _)) = x in n 
+        member x.Module = let (Question(_, m, _, _)) = x in m
+        member x.Type = let (Question(_, _, ty, _)) = x in ty
+        member x.Ask = let (Question(_, _, _, a)) = x in a
+        override x.ToString() = sprintf "Name: %s Module: %s Type: %A " x.Name x.Module x.Type
+and 
+    [<JavaScript>] QuestionType =
+    | UserAuthentication 
+    | Verification 
+    | Disjunctive 
+    | ConceptCompletion 
+
+[<JavaScript>]
+type Form = Form of string * Question list
 
 [<JavaScript>]
 module Dialogue =
@@ -51,48 +50,47 @@ module Dialogue =
  
     (* Manage the dialogue state elements*)
     let have (d:Dialogue) k = d.Props.ContainsKey k
-    let add<'a> (d:Dialogue) k (v:'a) = d.Props.Add(k, v)
-    let delete (d:Dialogue) k = d.Props.Remove k |> ignore
-    let prop<'a> (d:Dialogue) k :'a = d.Props.[k] :?> 'a
+    let prop<'a> (d:Dialogue) k :'a = if d.Props.ContainsKey k then d.Props.[k] :?> 'a else failwithf "The %s dialogue property does not exist." k
+    let add<'a> (d:Dialogue) (debug:string -> unit) k (v:'a) = 
+        d.Props.Add(k, v)
+        debug <| sprintf "Add property %s: %A." k v
+    
+    let remove (d:Dialogue) (debug:string -> unit) k = 
+        debug <| sprintf "Remove property %s." k
+        d.Props.Remove k |> ignore
  
-    let pushu (d:Dialogue) (m:Utterance) = d.Utterances.Push m 
-    let popu (d:Dialogue) = d.Utterances.Pop() |> ignore
-    let pushq (d:Dialogue) (q:Question) = d.DialogueQuestions.Push q
-    let popq(d: Dialogue) = d.DialogueQuestions.Pop() |> ignore
-    
-    let popt (d:Dialogue) =
-        popu d |> ignore
-        popq d |> ignore
-    
-    let ask (d:Dialogue) (debug:string -> unit) (target:Dialogue -> unit) (question:Question) =    
-        pushq d question
-        match question.Type with
-        | UserAuthentication f -> 
-            d.Cui.TypingDNA.Reset()
-            questionBox "Biometric Authentication" "" 640 480 (fun _ -> 
-                 let pattern =  d.Cui.GetSameTextTypingPattern "Hello my name is John Brown and I am an administrator" None
-                 debug <| "Text pattern: " + pattern
-                 let el = JQuery(".swal2-content").Get().[0].FirstChild.FirstChild |> As<CanvasElement>
-                 f pattern el
-            )
-            let input = JQuery(".swal2-input").Get().[0] |> As<Dom.Element> 
-            do 
-                input.SetAttribute("id", "auth-input")
-                d.Cui.MonitorTypingPattern None
-            let e = JQuery(".swal2-content").Get().[0].FirstChild |> As<Dom.Element>
-            let c = createCanvas "camera" "640" "480" e
-            startCamera JS.Document.Body c
+    let pushu (d:Dialogue) (debug:string -> unit) (m:Utterance) = 
+        debug <| sprintf "Push utterance %A." m
+        d.Utterances.Push m 
 
-        | _ -> ()
+    let popu (d:Dialogue) (debug:string -> unit) = 
+        let m = d.Utterances.Pop()
+        debug <| sprintf "Pop utterance %A." m
      
+    let pushq (d:Dialogue) (debug:string -> unit) (q:Question) = 
+        d.DialogueQuestions.Push q
+        debug <| sprintf "Push question %A." q
+
+    let popq(d: Dialogue) (debug:string -> unit) = 
+        let q = d.DialogueQuestions.Pop()
+        debug <| sprintf "Pop question %A." q
+    
+    let popt (d:Dialogue) (debug:string -> unit) =
+        popu d debug
+        popq d debug
+    
+    let ask (d:Dialogue) (debug:string -> unit) (target:Dialogue -> unit) (q:Question) =    
+        pushq d debug q
+        q.Ask(d)
+        
     let handle (d:Dialogue) (debug:string -> unit) (m:string) (f:unit->unit) =
-        popu d
-        debug <| sprintf "Handle: %s." m
+        popu d debug
+        debug <| sprintf "Handle utterance: %s." m
         f()
 
-    let handle' (d:Dialogue) (debug:string -> unit) (m:string) (f:unit->unit) =
-        popt d
-        debug <| sprintf "Turn end: %s." m
+    let endt (d:Dialogue) (debug:string -> unit) (m:string) (f:unit->unit) =
+        popt d debug
+        debug <| sprintf "End turn: %s." m
         f()
 
     let dispatch (d:Dialogue) (debug:string -> unit) (targetModule:string) (target:Dialogue->unit) =
@@ -102,16 +100,12 @@ module Dialogue =
     let didNotUnderstand (d:Dialogue) (debug:string -> unit) (name:string) =
         debug <| sprintf "%s interpreter did not understand utterance." name
         say d "Sorry I didn't understand what you meant."
-        if d.DialogueQuestions.Count > 0 then 
-            let q = Seq.item 0 d.DialogueQuestions in 
-            if have d q.Name then 
-                say d <| replace_tok "$0" (d.Props.[q.Name] :?> string) q.Text
-            else say d q.Text
+        if d.DialogueQuestions.Count > 0 then d.DialogueQuestions.Peek().Ask(d)
 
     (* Dialogue patterns *)
-    let (|Agenda_|_|) (d:Dialogue) (n:string) :Utterance list -> unit option =
+    let (|Agenda_|_|) (d:Dialogue) (m:string) :Utterance list -> unit option =
         function
-        | _ when d.DialogueQuestions.Count > 0  && d.DialogueQuestions.Peek().Module = n -> Some ()
+        | _ when d.DialogueQuestions.Count > 0 && d.DialogueQuestions.Peek().Module = m -> Some ()
         | _ -> None
 
     let (|PropSet_|_|) (d:Dialogue) (n:string) :Utterance -> Utterance option =
@@ -137,19 +131,11 @@ module Dialogue =
     let (|Response_|_|) (d:Dialogue) (n:string) :Utterance -> (Utterance * obj option) option =
          function
          | PropSet_ d "user" m when d.DialogueQuestions.Count > 0  && d.DialogueQuestions.Peek().Name = n -> 
-             if have d n then
-                 let v = d.Props.[n]
-                 delete d n
-                 Some(m, Some v)
-             else Some(m, None)
+             if have d n then Some(m, Some d.Props.[n]) else Some(m, None)
          | _ -> None
 
     let (|Response'_|_|) (d:Dialogue) (n:string) :Utterance -> (Utterance * obj option) option =
          function
          | PropNotSet_ d "user" m when d.DialogueQuestions.Count > 0  && d.DialogueQuestions.Peek().Name = n -> 
-             if have d n then
-                 let v = d.Props.[n]
-                 delete d n
-                 Some(m, Some v)
-             else Some(m, None)
+             if have d n then Some(m, Some d.Props.[n]) else Some(m, None) 
          | _ -> None

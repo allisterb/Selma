@@ -15,7 +15,7 @@ module Main =
     /// Update the dialogue state
     let update d =        
         let (Dialogue.Dialogue(cui, props, dialogueQuestions, output, utterances)) = d
-        debug <| sprintf "Starting utterances:%A. Starting questions: %A." utterances dialogueQuestions
+        debug <| sprintf "Module %s starting utterances:%A, questions: %A." name utterances dialogueQuestions
    
         let echo = Dialogue.echo d
         let say' = Dialogue.say' d
@@ -25,21 +25,20 @@ module Main =
 
         (* Manage the dialogue state elements*)
         let have = Dialogue.have d 
-        let add k v = Dialogue.add d k v
-        let delete = Dialogue.delete d
         let prop k  = Dialogue.prop d k
-        let user() :User = prop "user"
+        let add k v = Dialogue.add d debug k v
+        let remove = Dialogue.remove d debug
 
-        let pushu = Dialogue.pushu d
-        let pushq = Dialogue.pushq d
-        let popu() = Dialogue.popu d
-        let popq() = Dialogue.popq d
-        let popt() = Dialogue.popt d
+        let pushu = Dialogue.pushu d debug
+        let pushq = Dialogue.pushq d debug
+        let popu() = Dialogue.popu d debug
+        let popq() = Dialogue.popq d debug
+        let popt() = Dialogue.popt d debug
         let ask = Dialogue.ask d debug
         
         let dispatch = Dialogue.dispatch d debug
         let handle = Dialogue.handle d debug
-        let handle' = Dialogue.handle' d debug
+        let endt = Dialogue.endt d debug
         let didNotUnderstand() = Dialogue.didNotUnderstand d debug name
 
         (* Base dialogue patterns *)
@@ -60,20 +59,20 @@ module Main =
         (* Interpreter logic begins here *)
         match utterances |> Seq.take (if utterances.Count >= 5 then 5 else utterances.Count) |> List.ofSeq with
         (* Agenda *)
-        | Agenda User.name  -> User.update d
+        | Agenda User.name -> User.update d
 
         (* Greet *)
         | Start(User'(Intent "greet" (_, None)))::[] ->  
                 add "started" true
-                handle "Hello" (fun _ -> sayRandom' helloPhrases)
+                handle "greet" (fun _ -> sayRandom' helloPhrases)
 
-        | User'(Intent "greet" (_, None))::[] -> handle "Hello" (fun _ -> say "Hello, tell me your name to get started.")
+        | User'(Intent "greet" (_, None))::[] -> handle "greet" (fun _ -> say "Hello, tell me your name to get started.")
           
         (* Dispatch *)
-        /// User login
+        // User login
         | User'(Intent "greet" (_, Entity1Of1 "name" _))::[] -> dispatch User.name User.update
         | User'(Intent "hello" (_, Entity1Of1 "contact" _))::[] -> dispatch User.name User.update
 
         | _ -> didNotUnderstand()
 
-        debug <| sprintf "Ending utterances: %A. Ending questions:%A." utterances dialogueQuestions
+        debug <| sprintf "Module %s ending utterances:%A, questions: %A." name utterances dialogueQuestions

@@ -3,7 +3,8 @@
 open System.Collections.Generic
 
 open WebSharper
-
+open WebSharper.JavaScript
+open WebSharper.JQuery
 open SMApp.Models
 open SMApp.NLU
 
@@ -15,6 +16,7 @@ module User =
     /// Update the dialogue state
     let rec update d =        
         let (Dialogue.Dialogue(cui, props, dialogueQuestions, output, utterances)) = d
+        debug <| sprintf "Module %s starting utterances:%A, questions: %A." name utterances dialogueQuestions
 
         let echo = Dialogue.echo d
         let say' = Dialogue.say' d
@@ -23,25 +25,25 @@ module User =
         let sayRandom' = Dialogue.sayRandom' d
 
         (* Manage the dialogue state elements*)
-        let have = Dialogue.have d
-        let add k v  = Dialogue.add d k v
-        let delete = Dialogue.delete d
-        let prop k = Dialogue.prop d k
-        let user() :User = prop "user"
+        let have = Dialogue.have d 
+        let prop k  = Dialogue.prop d k
+        let add k v = Dialogue.add d debug k v
+        let remove = Dialogue.remove d debug
 
-        let pushu  = Dialogue.pushu d
-        let popu() = Dialogue.popu d
-        let pushq = Dialogue.pushq d
-        let popq() = Dialogue.popq d
-        let popt() = Dialogue.popt d
+        let pushu = Dialogue.pushu d debug
+        let pushq = Dialogue.pushq d debug
+        let popu() = Dialogue.popu d debug
+        let popq() = Dialogue.popq d debug
+        let popt() = Dialogue.popt d debug
         let ask = Dialogue.ask d debug
-
+        
         let dispatch = Dialogue.dispatch d debug
         let handle = Dialogue.handle d debug
-        let handle' = Dialogue.handle' d debug
+        let endt = Dialogue.endt d debug
         let didNotUnderstand() = Dialogue.didNotUnderstand d debug name
 
         (* Base dialogue patterns *)
+        let (|Agenda|_|) = Dialogue.(|Agenda_|_|) d
         let (|PropSet|_|) = Dialogue.(|PropSet_|_|) d
         let (|PropNotSet|_|) = Dialogue.(|PropNotSet_|_|) d
         let (|User|_|) = Dialogue.(|User_|_|) d
@@ -49,21 +51,38 @@ module User =
         let (|Response|_|) = Dialogue.(|Response_|_|) d
         let (|Response'|_|) = Dialogue.(|Response'_|_|) d
 
+        let user():User = prop "user"
+
         let authenticateUserQuestion u = 
-            Question("authenticateUser", "", UserAuthentication (fun p canvas ->  
-            if isNull p then
-                cui.Say "Sorry I could not authenticate your pass phrase."
-            else
-                async { 
-                        let! t = Server.verifyUserTypingPattern "john" u 
-                        debug <| sprintf "TypingDNA: %A"  t
-                        match t with
-                        | Ok r -> if r.confidence > 50 then cui.Say "You are now authenticated." else cui.Say "Sorry I could not authenticate your passphrase."
-                        | Error e -> error e
-                } |> Async.Start
-        ), name)
-        let addUserQuestion u = Question("addUser", sprintf "Do you want me to add the user %s?" u, Verification, name)
-        let switchUserQuestion u = Question("switchUser", sprintf "Do you want me to switch to the user %s" u, Verification, name)
+            Question("authenticateUser", name, UserAuthentication, fun d ->  
+                d.Cui.TypingDNA.Reset()
+                questionBox "Biometric Authentication" "" 640 480 (fun _ -> 
+                     //let el = JQuery(".swal2-content").Get().[0].FirstChild.FirstChild |> As<CanvasElement>
+                     //f pattern el
+                     let pattern =  d.Cui.GetSameTextTypingPattern "Hello my name is John Brown and I am an administrator" None
+                     debug <| "Received typing pattern pattern: " + pattern  
+                     if isNull pattern then
+                         add "authenticateUser" None
+
+                     else
+                         async { 
+                                 let! t = Server.verifyUserTypingPattern u pattern 
+                                 debug <| sprintf "TypingDNA: %A"  t
+                                 match t with
+                                 | Ok r -> add "authenticateUser" (Some r)
+                                 | Error e -> error e; add "authenticateUser" None 
+                         } |> Async.Start
+                )
+                let input = JQuery(".swal2-input").Get().[0] |> As<Dom.Element> 
+                do 
+                    input.SetAttribute("id", "auth-input")
+                    d.Cui.MonitorTypingPattern None
+                let e = JQuery(".swal2-content").Get().[0].FirstChild |> As<Dom.Element>
+                let c = createCanvas "camera" "640" "480" e
+                startCamera JS.Document.Body c
+            )
+        let addUserQuestion u = Question("addUser", name, Verification, fun _ -> say <| sprintf "Do you want me to add the user %s?" u)
+        let switchUserQuestion u = Question("switchUser", name, Verification, fun _ -> say <| sprintf "Do you want me to switch to the user %s" u)
         
         debug <| sprintf "Starting utterances:%A. Starting questions: %A." utterances dialogueQuestions
    
@@ -74,8 +93,8 @@ module User =
                 match! Server.getUser u with 
                 | Some user ->
                     do! Server.updateUserLastLogin user.Name |> Async.Ignore
-                    add "user" user
-                    sayRandom helloUserPhrases <| sprintf "%A" props.["user"]
+                    add "loginUser" user
+                    sayRandom helloUserPhrases <| sprintf "%A" user.Name
                     if Option.isSome user.LastLoggedIn then 
                         let! h = Server.humanize user.LastLoggedIn.Value
                         say <| sprintf "You last logged in %s." h
@@ -122,8 +141,9 @@ module User =
         /// User login
         | User'(Intent "greet" (_, Entity1Of1 "name" u))::[] -> handle "loginUser" (fun _ -> loginUser u.Value)
         | User'(Intent "hello" (_, Entity1Of1 "contact" u))::[] -> handle "loginUser" (fun _ -> loginUser u.Value)
+        
         /// User pass phrase
-        | Response' "inputPassPhrase" (_, Str user)::[] -> handle' "addUser" (fun _ -> 
+        | Response' "inputPassPhrase" (_, Str user)::[] -> endt "addUser" (fun _ -> 
             cui.TypingDNA.Stop() 
             let pattern = cui.GetSameTextTypingPattern user None
             addUser user pattern
@@ -181,6 +201,6 @@ module User =
 
         | _ -> didNotUnderstand()
 
-        debug <| sprintf "Ending utterances: %A. Ending questions:%A." utterances dialogueQuestions
+        debug <| sprintf "Module %s ending utterances:%A, questions: %A." name utterances dialogueQuestions
 
  

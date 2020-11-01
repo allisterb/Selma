@@ -1,7 +1,7 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Web,ClientExtensions,_Html,htmModule,SC$1,TypingDNA,SaveResponse,UserResponse,VerifyResponse,Bs,NLU,Babelfy,ApiResponse,TokenFragment,CharFragment,Witai,Utterance,Intent,Entity,Trait,_Utterance,_Value,QnAMaker,ITSQuestion,ITSAnswerContext,ITSAnswer,ITSAnswers,NLG,SC$2,NLU$1,Intent$1,Trait$1,Entity$1,Utterance$1,Voice,_Entity,Text,_Utterance$1,_Intent,_Entity$1,_Trait,Domain,SC$3,CUI,MicState,ClientState,Interpreter,CUI$1,Question,QuestionType,Dialogue,DialogueModule,User,SC$4,Main,SC$5,Client,SC$6,SMApp$Web_GeneratedPrintf,GeneratedPrintf,IntelliFactory,Runtime,WebSharper,UI,Doc,AttrProxy,Client$1,Templates,Arrays,Utils,console,$,Strings,List,Seq,AttrModule,Concurrency,JSON,Random,Collections,Map,JavaScript,Pervasives,SDK,Remoting,AjaxRemotingProvider,Wit,document,Unchecked,Dictionary;
+ var Global,SMApp,Web,ClientExtensions,_Html,htmModule,SC$1,TypingDNA,SaveResponse,UserResponse,VerifyResponse,Bs,NLU,Babelfy,ApiResponse,TokenFragment,CharFragment,Witai,Utterance,Intent,Entity,Trait,_Utterance,_Value,QnAMaker,ITSQuestion,ITSAnswerContext,ITSAnswer,ITSAnswers,NLG,SC$2,NLU$1,Intent$1,Trait$1,Entity$1,Utterance$1,Voice,_Entity,Text,_Utterance$1,_Intent,_Entity$1,_Trait,Domain,SC$3,CUI,MicState,ClientState,Interpreter,CUI$1,Dialogue,Question,QuestionType,DialogueModule,User,SC$4,Main,SC$5,Client,SC$6,SMApp$Web_GeneratedPrintf,GeneratedPrintf,IntelliFactory,Runtime,WebSharper,UI,Doc,AttrProxy,Client$1,Templates,Arrays,Utils,console,$,Strings,List,Seq,AttrModule,Concurrency,JSON,Random,Collections,Map,JavaScript,Pervasives,SDK,Operators,Remoting,AjaxRemotingProvider,Wit,document,Unchecked,Dictionary;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Web=SMApp.Web=SMApp.Web||{};
@@ -52,9 +52,9 @@
  ClientState=CUI.ClientState=CUI.ClientState||{};
  Interpreter=CUI.Interpreter=CUI.Interpreter||{};
  CUI$1=CUI.CUI=CUI.CUI||{};
+ Dialogue=Web.Dialogue=Web.Dialogue||{};
  Question=Web.Question=Web.Question||{};
  QuestionType=Web.QuestionType=Web.QuestionType||{};
- Dialogue=Web.Dialogue=Web.Dialogue||{};
  DialogueModule=Web.DialogueModule=Web.DialogueModule||{};
  User=Web.User=Web.User||{};
  SC$4=Global.StartupCode$SMApp_Web$User=Global.StartupCode$SMApp_Web$User||{};
@@ -88,6 +88,7 @@
  JavaScript=WebSharper&&WebSharper.JavaScript;
  Pervasives=JavaScript&&JavaScript.Pervasives;
  SDK=Global.SDK;
+ Operators=WebSharper&&WebSharper.Operators;
  Remoting=WebSharper&&WebSharper.Remoting;
  AjaxRemotingProvider=Remoting&&Remoting.AjaxRemotingProvider;
  Wit=Global.Wit;
@@ -1857,40 +1858,6 @@
    AudioEnd:AudioEnd
   });
  };
- Question=Web.Question=Runtime.Class({
-  toString:function()
-  {
-   return(((((Runtime.Curried(function($1,$2,$3,$4,$5)
-   {
-    return $1("Name: "+Utils.toSafe($2)+" Text: "+Utils.toSafe($3)+" Type: "+SMApp$Web_GeneratedPrintf.p$8($4)+" Module: "+Utils.toSafe($5));
-   },5))(Global.id))(this.get_Name()))(this.get_Text()))(this.get_Type()))(this.get_Module());
-  },
-  get_Module:function()
-  {
-   return this.$3;
-  },
-  get_Type:function()
-  {
-   return this.$2;
-  },
-  get_Text:function()
-  {
-   return this.$1;
-  },
-  get_Name:function()
-  {
-   return this.$0;
-  }
- },null,Question);
- QuestionType.ConceptCompletion={
-  $:3
- };
- QuestionType.Disjunctive={
-  $:2
- };
- QuestionType.Verification={
-  $:1
- };
  Dialogue=Web.Dialogue=Runtime.Class({
   get_Utterances:function()
   {
@@ -1913,30 +1880,67 @@
    return this.$0;
   }
  },null,Dialogue);
+ Question=Web.Question=Runtime.Class({
+  toString:function()
+  {
+   return((((Runtime.Curried(function($1,$2,$3,$4)
+   {
+    return $1("Name: "+Utils.toSafe($2)+" Module: "+Utils.toSafe($3)+" Type: "+SMApp$Web_GeneratedPrintf.p$8($4)+" ");
+   },4))(Global.id))(this.get_Name()))(this.get_Module()))(this.get_Type());
+  },
+  get_Ask:function()
+  {
+   return this.$3;
+  },
+  get_Type:function()
+  {
+   return this.$2;
+  },
+  get_Module:function()
+  {
+   return this.$1;
+  },
+  get_Name:function()
+  {
+   return this.$0;
+  }
+ },null,Question);
+ QuestionType.ConceptCompletion={
+  $:3
+ };
+ QuestionType.Disjunctive={
+  $:2
+ };
+ QuestionType.Verification={
+  $:1
+ };
+ QuestionType.UserAuthentication={
+  $:0
+ };
  DialogueModule["Response'_"]=function(d,n,a)
  {
-  var $1,a$1,v;
-  return(a$1=DialogueModule.PropNotSet_(d,"user",a),a$1!=null&&a$1.$==1&&(d.get_DialogueQuestions().length>0&&(d.get_DialogueQuestions())[0].get_Name()===n&&($1=a$1.$0,true)))?DialogueModule.have(d,n)?(v=d.get_Props().get_Item(n),(DialogueModule["delete"](d,n),{
+  var $1,a$1;
+  return(a$1=DialogueModule.PropNotSet_(d,"user",a),a$1!=null&&a$1.$==1&&(d.get_DialogueQuestions().length>0&&(d.get_DialogueQuestions())[0].get_Name()===n&&($1=a$1.$0,true)))?DialogueModule.have(d,n)?{
    $:1,
    $0:[$1,{
     $:1,
-    $0:v
+    $0:d.get_Props().get_Item(n)
    }]
-  })):{
+  }:{
    $:1,
    $0:[$1,null]
   }:null;
  };
  DialogueModule.Response_=function(d,n,a)
  {
-  var $1,a$1,v;
-  return(a$1=DialogueModule.PropSet_(d,"user",a),a$1!=null&&a$1.$==1&&(d.get_DialogueQuestions().length>0&&(d.get_DialogueQuestions())[0].get_Name()===n&&($1=a$1.$0,true)))?DialogueModule.have(d,n)?(v=d.get_Props().get_Item(n),(DialogueModule["delete"](d,n),{
+  var $1,a$1;
+  return(a$1=DialogueModule.PropSet_(d,"user",a),a$1!=null&&a$1.$==1&&(d.get_DialogueQuestions().length>0&&(d.get_DialogueQuestions())[0].get_Name()===n&&($1=a$1.$0,true)))?DialogueModule.have(d,n)?{
    $:1,
    $0:[$1,{
     $:1,
-    $0:v
+    $0:d.get_Props().get_Item(n)
    }]
-  })):{
+  }:{
    $:1,
    $0:[$1,null]
   }:null;
@@ -1971,16 +1975,15 @@
    $0:a
   }:null;
  };
- DialogueModule.Agenda_=function(d,n,a)
+ DialogueModule.Agenda_=function(d,m,a)
  {
-  return d.get_DialogueQuestions().length>0&&(d.get_DialogueQuestions())[0].get_Module()===n?{
+  return d.get_DialogueQuestions().length>0&&(d.get_DialogueQuestions())[0].get_Module()===m?{
    $:1,
    $0:null
   }:null;
  };
  DialogueModule.didNotUnderstand=function(d,debug,name)
  {
-  var q;
   debug((function($1)
   {
    return function($2)
@@ -1989,7 +1992,7 @@
    };
   }(Global.id))(name));
   DialogueModule.say(d,"Sorry I didn't understand what you meant.");
-  d.get_DialogueQuestions().length>0?(q=Seq.nth(0,d.get_DialogueQuestions()),DialogueModule.have(d,q.get_Name())?DialogueModule.say(d,NLG.replace_tok("$0",d.get_Props().get_Item(q.get_Name()),q.get_Text())):DialogueModule.say(d,q.get_Text())):void 0;
+  d.get_DialogueQuestions().length>0?((d.get_DialogueQuestions())[0].get_Ask())(d):void 0;
  };
  DialogueModule.dispatch=function(d,debug,targetModule,target)
  {
@@ -1999,76 +2002,114 @@
   },4))(Global.id))(targetModule))(d.get_Utterances()))(d.get_DialogueQuestions()));
   target(d);
  };
- DialogueModule["handle'"]=function(d,debug,m,f)
+ DialogueModule.endt=function(d,debug,m,f)
  {
-  DialogueModule.popt(d);
+  DialogueModule.popt(d,debug);
   debug((function($1)
   {
    return function($2)
    {
-    return $1("Turn end: "+Utils.toSafe($2)+".");
+    return $1("End turn: "+Utils.toSafe($2)+".");
    };
   }(Global.id))(m));
   f();
  };
  DialogueModule.handle=function(d,debug,m,f)
  {
-  DialogueModule.popu(d);
+  DialogueModule.popu(d,debug);
   debug((function($1)
   {
    return function($2)
    {
-    return $1("Handle: "+Utils.toSafe($2)+".");
+    return $1("Handle utterance: "+Utils.toSafe($2)+".");
    };
   }(Global.id))(m));
   f();
  };
- DialogueModule.ask=function(d,debug,target,question)
+ DialogueModule.ask=function(d,debug,target,q)
  {
-  var m,f,c;
-  DialogueModule.pushq(d,question);
-  m=question.get_Type();
-  m.$==0?(f=m.$0,d.get_Cui().TypingDNA.reset(),ClientExtensions.questionBox("Biometric Authentication","",640,480,function()
+  DialogueModule.pushq(d,debug,q);
+  (q.get_Ask())(d);
+ };
+ DialogueModule.popt=function(d,debug)
+ {
+  DialogueModule.popu(d,debug);
+  DialogueModule.popq(d,debug);
+ };
+ DialogueModule.popq=function(d,debug)
+ {
+  var q;
+  q=d.get_DialogueQuestions().shift();
+  debug((function($1)
   {
-   var pattern,el;
-   pattern=d.get_Cui().GetSameTextTypingPattern("Hello my name is John Brown and I am an administrator",null);
-   debug("Text pattern: "+pattern);
-   el=Arrays.get($(".swal2-content").get(),0).firstChild.firstChild;
-   (f(pattern))(el);
-  }),Arrays.get($(".swal2-input").get(),0).setAttribute("id","auth-input"),d.get_Cui().MonitorTypingPattern(null),c=ClientExtensions.createCanvas("camera","640","480",Arrays.get($(".swal2-content").get(),0).firstChild),ClientExtensions.startCamera(self.document.body,c)):void 0;
+   return function($2)
+   {
+    return $1("Pop question "+SMApp$Web_GeneratedPrintf.p$9($2)+".");
+   };
+  }(Global.id))(q));
  };
- DialogueModule.popt=function(d)
- {
-  DialogueModule.popu(d);
-  DialogueModule.popq(d);
- };
- DialogueModule.popq=function(d)
- {
-  d.get_DialogueQuestions().shift();
- };
- DialogueModule.pushq=function(d,q)
+ DialogueModule.pushq=function(d,debug,q)
  {
   d.get_DialogueQuestions().unshift(q);
+  debug((function($1)
+  {
+   return function($2)
+   {
+    return $1("Push question "+SMApp$Web_GeneratedPrintf.p$9($2)+".");
+   };
+  }(Global.id))(q));
  };
- DialogueModule.popu=function(d)
+ DialogueModule.popu=function(d,debug)
  {
-  d.get_Utterances().shift();
+  var m;
+  m=d.get_Utterances().shift();
+  debug((function($1)
+  {
+   return function($2)
+   {
+    return $1("Pop utterance "+SMApp$Web_GeneratedPrintf.p$7($2)+".");
+   };
+  }(Global.id))(m));
  };
- DialogueModule.pushu=function(d,m)
+ DialogueModule.pushu=function(d,debug,m)
  {
+  debug((function($1)
+  {
+   return function($2)
+   {
+    return $1("Push utterance "+SMApp$Web_GeneratedPrintf.p$7($2)+".");
+   };
+  }(Global.id))(m));
   d.get_Utterances().unshift(m);
+ };
+ DialogueModule.remove=function(d,debug,k)
+ {
+  debug((function($1)
+  {
+   return function($2)
+   {
+    return $1("Remove property "+Utils.toSafe($2)+".");
+   };
+  }(Global.id))(k));
+  d.get_Props().Remove(k);
+ };
+ DialogueModule.add=function(d,debug,k,v)
+ {
+  d.get_Props().Add(k,v);
+  debug((((Runtime.Curried3(function($1,$2,$3)
+  {
+   return $1("Add property "+Utils.toSafe($2)+":"+Utils.prettyPrint($3)+".");
+  }))(Global.id))(k))(v));
  };
  DialogueModule.prop=function(d,k)
  {
-  return d.get_Props().get_Item(k);
- };
- DialogueModule["delete"]=function(d,k)
- {
-  d.get_Props().Remove(k);
- };
- DialogueModule.add=function(d,k,v)
- {
-  d.get_Props().Add(k,v);
+  return d.get_Props().ContainsKey(k)?d.get_Props().get_Item(k):(function($1)
+  {
+   return function($2)
+   {
+    return $1("The "+Utils.toSafe($2)+" dialogue property does not exist.");
+   };
+  }(Operators.FailWith))(k);
  };
  DialogueModule.have=function(d,k)
  {
@@ -2113,17 +2154,16 @@
   {
    return DialogueModule.sayRandom(d,p,v);
   }
-  function add(k,v)
-  {
-   return DialogueModule.add(d,k,v);
-  }
   function prop(k)
   {
    return DialogueModule.prop(d,k);
   }
-  function user()
+  function add(k,v)
   {
-   return prop("user");
+   return DialogueModule.add(d,function(m$1)
+   {
+    User.debug(m$1);
+   },k,v);
   }
   function d$1(m$1)
   {
@@ -2145,37 +2185,49 @@
   {
    return DialogueModule.Response_(d,n,a$26);
   }
+  function user()
+  {
+   return prop("user");
+  }
   function authenticateUserQuestion(u)
   {
    return new Question({
     $:0,
     $0:"authenticateUser",
-    $1:"",
-    $2:{
-     $:0,
-     $0:function(p)
+    $1:User.name(),
+    $2:QuestionType.UserAuthentication,
+    $3:function(d$4)
+    {
+     var c;
+     d$4.get_Cui().TypingDNA.reset();
+     ClientExtensions.questionBox("Biometric Authentication","",640,480,function()
      {
-      return function()
+      var pattern,b$3;
+      pattern=d$4.get_Cui().GetSameTextTypingPattern("Hello my name is John Brown and I am an administrator",null);
+      User.debug("Received typing pattern pattern: "+pattern);
+      pattern==null?add("authenticateUser",null):Concurrency.Start((b$3=null,Concurrency.Delay(function()
       {
-       var b$3;
-       return p==null?cui.Say("Sorry I could not authenticate your pass phrase."):Concurrency.Start((b$3=null,Concurrency.Delay(function()
+       return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.verifyUserTypingPattern:-1353144921",[u,pattern]),function(a$26)
        {
-        return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.verifyUserTypingPattern:-697060909",["john",u]),function(a$26)
+        User.debug((function($16)
         {
-         User.debug((function($16)
+         return function($17)
          {
-          return function($17)
-          {
-           return $16("TypingDNA: "+SMApp$Web_GeneratedPrintf.p$9($17));
-          };
-         }(Global.id))(a$26));
-         return a$26.$==1?(ClientExtensions.error(a$26.$0),Concurrency.Zero()):a$26.$0.confidence>50?(cui.Say("You are now authenticated."),Concurrency.Zero()):(cui.Say("Sorry I could not authenticate your passphrase."),Concurrency.Zero());
-        });
-       })),null);
-      };
-     }
-    },
-    $3:User.name()
+          return $16("TypingDNA: "+SMApp$Web_GeneratedPrintf.p$10($17));
+         };
+        }(Global.id))(a$26));
+        return a$26.$==1?(ClientExtensions.error(a$26.$0),add("authenticateUser",null),Concurrency.Zero()):(add("authenticateUser",{
+         $:1,
+         $0:a$26.$0
+        }),Concurrency.Zero());
+       });
+      })),null);
+     });
+     Arrays.get($(".swal2-input").get(),0).setAttribute("id","auth-input");
+     d$4.get_Cui().MonitorTypingPattern(null);
+     c=ClientExtensions.createCanvas("camera","640","480",Arrays.get($(".swal2-content").get(),0).firstChild);
+     ClientExtensions.startCamera(self.document.body,c);
+    }
    });
   }
   function addUserQuestion(u)
@@ -2183,15 +2235,18 @@
    return new Question({
     $:0,
     $0:"addUser",
-    $1:(function($16)
-    {
-     return function($17)
-     {
-      return $16("Do you want me to add the user "+Utils.toSafe($17)+"?");
-     };
-    }(Global.id))(u),
+    $1:User.name(),
     $2:QuestionType.Verification,
-    $3:User.name()
+    $3:function()
+    {
+     say((function($16)
+     {
+      return function($17)
+      {
+       return $16("Do you want me to add the user "+Utils.toSafe($17)+"?");
+      };
+     }(Global.id))(u));
+    }
    });
   }
   function switchUserQuestion(u)
@@ -2199,15 +2254,18 @@
    return new Question({
     $:0,
     $0:"switchUser",
-    $1:(function($16)
-    {
-     return function($17)
-     {
-      return $16("Do you want me to switch to the user "+Utils.toSafe($17));
-     };
-    }(Global.id))(u),
+    $1:User.name(),
     $2:QuestionType.Verification,
-    $3:User.name()
+    $3:function()
+    {
+     say((function($16)
+     {
+      return function($17)
+      {
+       return $16("Do you want me to switch to the user "+Utils.toSafe($17));
+      };
+     }(Global.id))(u));
+    }
    });
   }
   function loginUser(u)
@@ -2216,7 +2274,7 @@
    sayRandom(NLG.waitRetrievePhrases(),"user name");
    Concurrency.Start((b$3=null,Concurrency.Delay(function()
    {
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:1952335863",[u]),function(a$26)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:321230371",[u]),function(a$26)
     {
      var user$1;
      return a$26==null?(say((function($16)
@@ -2228,17 +2286,17 @@
      }(Global.id))(u)),(ask(function(d$4)
      {
       User.update(d$4);
-     }))(addUserQuestion(u)),Concurrency.Zero()):(user$1=a$26.$0,Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.updateUserLastLogin:-1518036560",[user$1.Name]),function()
+     }))(addUserQuestion(u)),Concurrency.Zero()):(user$1=a$26.$0,Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.updateUserLastLogin:586114406",[user$1.Name]),function()
      {
-      add("user",user$1);
+      add("loginUser",user$1);
       sayRandom(NLG.helloUserPhrases(),(function($16)
       {
        return function($17)
        {
         return $16(Utils.prettyPrint($17));
        };
-      }(Global.id))(props.get_Item("user")));
-      return user$1.LastLoggedIn!=null?Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.humanize:296374240",[user$1.LastLoggedIn.$0]),function(a$27)
+      }(Global.id))(user$1.Name));
+      return user$1.LastLoggedIn!=null?Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.humanize:1960001999",[user$1.LastLoggedIn.$0]),function(a$27)
       {
        say((function($16)
        {
@@ -2264,7 +2322,7 @@
    return Concurrency.Start((b$3=null,Concurrency.Delay(function()
    {
     sayRandom(NLG.waitAddPhrases(),"user");
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addUser:-1518036560",[u]),function(a$26)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addUser:586114406",[u]),function(a$26)
     {
      return a$26.$==1?(say((function($16)
      {
@@ -2272,7 +2330,7 @@
       {
        return $16("Sorry I was not able to add the user "+Utils.toSafe($17)+" to the system.");
       };
-     }(Global.id))(u)),Concurrency.Zero()):Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addUserTypingPattern:2129763137",[u,tp]),function(a$27)
+     }(Global.id))(u)),Concurrency.Zero()):Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addUserTypingPattern:1699728314",[u,tp]),function(a$27)
      {
       return a$27.$==1?(say((function($16)
       {
@@ -2297,7 +2355,7 @@
    return Concurrency.Start((b$3=null,Concurrency.Delay(function()
    {
     sayRandom(NLG.waitAddPhrases(),"symptom entry");
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addSymptomJournalEntry:1931294837",[user().Name,s,l,m$1]),function(a$26)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addSymptomJournalEntry:1248977753",[user().Name,s,l,m$1]),function(a$26)
     {
      return a$26.$==1?(say(function($16)
      {
@@ -2320,6 +2378,10 @@
   props=d.$1;
   dialogueQuestions=d.$2;
   cui=d.$0;
+  User.debug(((((Runtime.Curried(function($16,$17,$18,$19)
+  {
+   return $16("Module "+Utils.toSafe($17)+" starting utterances:"+Utils.prettyPrint($18)+", questions: "+Utils.prettyPrint($19)+".");
+  },4))(Global.id))(User.name()))(utterances))(dialogueQuestions));
   ask=Runtime.Curried(DialogueModule.ask,2,[d,d$1]);
   handle=Runtime.Curried(DialogueModule.handle,2,[d,d$2]);
   User.debug((((Runtime.Curried3(function($16,$17,$18)
@@ -2333,13 +2395,13 @@
   }):m.$==1&&(a$3=_User(m.$0),a$3!=null&&a$3.$==1&&(a$4=NLU$1.Intent$1("hello",a$3.$0),a$4!=null&&a$4.$==1&&(a$5=NLU$1.Entity1Of1("contact",a$4.$0[1]),a$5!=null&&a$5.$==1&&(m.$1.$==0&&($2=a$5.$0,true)))))?(handle("loginUser"))(function()
   {
    loginUser($2.get_Value());
-  }):m.$==1&&(a$6=DialogueModule["Response'_"](d,"inputPassPhrase",m.$0),a$6!=null&&a$6.$==1&&(a$7=NLU$1.Str(a$6.$0[1]),a$7!=null&&a$7.$==1&&(m.$1.$==0&&($3=a$7.$0,true))))?((Runtime.Curried(DialogueModule["handle'"],2,[d,d$3]))("addUser"))(function()
+  }):m.$==1&&(a$6=DialogueModule["Response'_"](d,"inputPassPhrase",m.$0),a$6!=null&&a$6.$==1&&(a$7=NLU$1.Str(a$6.$0[1]),a$7!=null&&a$7.$==1&&(m.$1.$==0&&($3=a$7.$0,true))))?((Runtime.Curried(DialogueModule.endt,2,[d,d$3]))("addUser"))(function()
   {
    cui.TypingDNA.stop();
    addUser($3,cui.GetSameTextTypingPattern($3,null));
   }):m.$==1&&(a$8=User$1(m.$0),a$8!=null&&a$8.$==1&&(a$9=NLU$1.Intent$1("hello",a$8.$0),a$9!=null&&a$9.$==1&&(a$9.$0[0]==null&&(a$10=NLU$1.Entity1Of1("name",a$9.$0[1]),a$10!=null&&a$10.$==1&&(m.$1.$==0&&($4=a$10.$0,true))))))?Concurrency.Start((b=null,Concurrency.Delay(function()
   {
-   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:1952335863",[$4.get_Value()]),function(a$26)
+   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:321230371",[$4.get_Value()]),function(a$26)
    {
     return a$26==null?(say((function($16)
     {
@@ -2369,10 +2431,10 @@
    return Concurrency.Bind(QnAMaker.getAnswer($7.get_Text()),function(a$26)
    {
     var s;
-    return Concurrency.Bind((s=Arrays.get(a$26.answers,0).answer,(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.mdtohtml:1581252605",[s])),function(a$27)
+    return Concurrency.Bind((s=Arrays.get(a$26.answers,0).answer,(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.mdtohtml:-158563535",[s])),function(a$27)
     {
      var s$1;
-     return Concurrency.Bind((s$1=Arrays.get(a$26.answers,0).answer,(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.mdtotext:1581252605",[s$1])),function(a$28)
+     return Concurrency.Bind((s$1=Arrays.get(a$26.answers,0).answer,(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.mdtotext:-158563535",[s$1])),function(a$28)
      {
       echo(a$27);
       say(a$28);
@@ -2389,10 +2451,10 @@
   {
    User.debug(m$1);
   },User.name());
-  User.debug((((Runtime.Curried3(function($16,$17,$18)
+  User.debug(((((Runtime.Curried(function($16,$17,$18,$19)
   {
-   return $16("Ending utterances: "+Utils.prettyPrint($17)+". Ending questions:"+Utils.prettyPrint($18)+".");
-  }))(Global.id))(utterances))(dialogueQuestions));
+   return $16("Module "+Utils.toSafe($17)+" ending utterances:"+Utils.prettyPrint($18)+", questions: "+Utils.prettyPrint($19)+".");
+  },4))(Global.id))(User.name()))(utterances))(dialogueQuestions));
  };
  User.debug=function(m)
  {
@@ -2433,10 +2495,10 @@
   }
   utterances=d.$4;
   dialogueQuestions=d.$2;
-  Main.debug((((Runtime.Curried3(function($7,$8,$9)
+  Main.debug(((((Runtime.Curried(function($7,$8,$9,$10)
   {
-   return $7("Starting utterances:"+Utils.prettyPrint($8)+". Starting questions: "+Utils.prettyPrint($9)+".");
-  }))(Global.id))(utterances))(dialogueQuestions));
+   return $7("Module "+Utils.toSafe($8)+" starting utterances:"+Utils.prettyPrint($9)+", questions: "+Utils.prettyPrint($10)+".");
+  },4))(Global.id))(Main.name()))(utterances))(dialogueQuestions));
   dispatch=Runtime.Curried(DialogueModule.dispatch,2,[d,d$1]);
   handle=Runtime.Curried(DialogueModule.handle,2,[d,d$2]);
   m=List.ofSeq(Seq.take(utterances.length>=5?5:utterances.length,utterances));
@@ -2444,10 +2506,13 @@
   a!=null&&a.$==1?User.update(d):m.$==1&&(a$1=(a$2=DialogueModule.PropNotSet_(d,"started",m.$0),a$2!=null&&a$2.$==1?{
    $:1,
    $0:a$2.$0
-  }:null),a$1!=null&&a$1.$==1&&(a$3=_User(a$1.$0),a$3!=null&&a$3.$==1&&(a$4=NLU$1.Intent$1("greet",a$3.$0),a$4!=null&&a$4.$==1&&(a$4.$0[1]==null&&m.$1.$==0))))?(DialogueModule.add(d,"started",true),(handle("Hello"))(function()
+  }:null),a$1!=null&&a$1.$==1&&(a$3=_User(a$1.$0),a$3!=null&&a$3.$==1&&(a$4=NLU$1.Intent$1("greet",a$3.$0),a$4!=null&&a$4.$==1&&(a$4.$0[1]==null&&m.$1.$==0))))?(DialogueModule.add(d,function(m$1)
+  {
+   Main.debug(m$1);
+  },"started",true),(handle("greet"))(function()
   {
    _sayRandom(NLG.helloPhrases());
-  })):m.$==1&&(a$5=_User(m.$0),a$5!=null&&a$5.$==1&&(a$6=NLU$1.Intent$1("greet",a$5.$0),a$6!=null&&a$6.$==1&&(a$6.$0[1]==null&&m.$1.$==0)))?(handle("Hello"))(function()
+  })):m.$==1&&(a$5=_User(m.$0),a$5!=null&&a$5.$==1&&(a$6=NLU$1.Intent$1("greet",a$5.$0),a$6!=null&&a$6.$==1&&(a$6.$0[1]==null&&m.$1.$==0)))?(handle("greet"))(function()
   {
    say("Hello, tell me your name to get started.");
   }):m.$==1&&(a$7=_User(m.$0),a$7!=null&&a$7.$==1&&(a$8=NLU$1.Intent$1("greet",a$7.$0),a$8!=null&&a$8.$==1&&(($4=NLU$1.Entity1Of1("name",a$8.$0[1]),$4!=null&&$4.$==1)&&m.$1.$==0)))?(dispatch(User.name()))(function(d$3)
@@ -2460,10 +2525,10 @@
   {
    Main.debug(m$1);
   },Main.name());
-  Main.debug((((Runtime.Curried3(function($7,$8,$9)
+  Main.debug(((((Runtime.Curried(function($7,$8,$9,$10)
   {
-   return $7("Ending utterances: "+Utils.prettyPrint($8)+". Ending questions:"+Utils.prettyPrint($9)+".");
-  }))(Global.id))(utterances))(dialogueQuestions));
+   return $7("Module "+Utils.toSafe($8)+" ending utterances:"+Utils.prettyPrint($9)+", questions: "+Utils.prettyPrint($10)+".");
+  },4))(Global.id))(Main.name()))(utterances))(dialogueQuestions));
  };
  Main.debug=function(m)
  {
@@ -2804,7 +2869,7 @@
  };
  SMApp$Web_GeneratedPrintf.p$8=function($1)
  {
-  return $1.$==3?"ConceptCompletion":$1.$==2?"Disjunctive":$1.$==1?"Verification":"UserAuthentication <fun>";
+  return $1.$==3?"ConceptCompletion":$1.$==2?"Disjunctive":$1.$==1?"Verification":"UserAuthentication";
  };
  GeneratedPrintf.p=function($1)
  {
@@ -2818,6 +2883,10 @@
   return"{"+("id = "+Utils.prettyPrint($1.id))+"; "+("name = "+Utils.prettyPrint($1.name))+"; "+("confidence = "+Utils.prettyPrint($1.confidence))+"}";
  };
  SMApp$Web_GeneratedPrintf.p$9=function($1)
+ {
+  return"Question ("+Utils.prettyPrint($1.$0)+", "+Utils.prettyPrint($1.$1)+", "+SMApp$Web_GeneratedPrintf.p$8($1.$2)+", "+"<fun>"+")";
+ };
+ SMApp$Web_GeneratedPrintf.p$10=function($1)
  {
   return $1.$==1?"Error "+Utils.prettyPrint($1.$0):"Ok "+GeneratedPrintf.p$2($1.$0);
  };
