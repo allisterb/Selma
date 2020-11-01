@@ -25,15 +25,15 @@ and [<JavaScript>] QuestionType =
 type Form = Form of string * Question list
 
 [<JavaScript>]
-module Dialogue =
+type Dialogue = Dialogue of CUI * Dictionary<string, obj> * Stack<Question> * Stack<string> * Stack<Utterance> with
+    member x.Cui = let (Dialogue(c,_, _, _, _)) = x in c 
+    member x.Props = let (Dialogue(_,p, _, _, _)) = x in p
+    member x.DialogueQuestions = let (Dialogue(_, _, dq, _, _)) = x in dq
+    member x.Output = let (Dialogue(_, _, _, o, _)) = x in o
+    member x.Utterances = let (Dialogue(_, _, _, _, u)) = x in u
 
-    type Dialogue = Dialogue of CUI * Dictionary<string, obj> * Stack<Question> * Stack<string> * Stack<Utterance> with
-        member x.Cui = let (Dialogue(c,_, _, _, _)) = x in c 
-        member x.Props = let (Dialogue(_,p, _, _, _)) = x in p
-        member x.DialogueQuestions = let (Dialogue(_, _, dq, _, _)) = x in dq
-        member x.Output = let (Dialogue(_, _, _, o, _)) = x in o
-        member x.Utterances = let (Dialogue(_, _, _, _, u)) = x in u
-        
+[<JavaScript>]
+module Dialogue =
     let echo (d:Dialogue) t = d.Cui.EchoHtml' t
 
     let say' (d:Dialogue) t = d.Cui.Say t
@@ -50,34 +50,22 @@ module Dialogue =
     let sayRandom' (d:Dialogue) p = sayRandom d p ""
  
     (* Manage the dialogue state elements*)
-    let question mn name text t = Question(name, text, t, mn)
     let have (d:Dialogue) k = d.Props.ContainsKey k
     let add<'a> (d:Dialogue) k (v:'a) = d.Props.Add(k, v)
     let delete (d:Dialogue) k = d.Props.Remove k |> ignore
     let prop<'a> (d:Dialogue) k :'a = d.Props.[k] :?> 'a
  
-    let getQuestion (moduleQuestions:Question list) n = moduleQuestions |> List.tryFind(fun q -> q.Name = n)
-    let haveQuestion (moduleQuestions: Question list) n = moduleQuestions |> List.exists(fun q -> q.Name = n)
-
     let pushu (d:Dialogue) (m:Utterance) = d.Utterances.Push m 
     let popu (d:Dialogue) = d.Utterances.Pop() |> ignore
+    let pushq (d:Dialogue) (q:Question) = d.DialogueQuestions.Push q
     let popq(d: Dialogue) = d.DialogueQuestions.Pop() |> ignore
-    
-    let pushq (d:Dialogue) (moduleQuestions: Question list) (questionName:string) = 
-        match getQuestion moduleQuestions questionName with
-        | Some q -> d.DialogueQuestions.Push q
-        | None -> failwithf "No such question: %s" questionName
     
     let popt (d:Dialogue) =
         popu d |> ignore
         popq d |> ignore
     
-    let ask (d:Dialogue) (debug:string -> unit) (moduleQuestions: Question list) q v (target:Dialogue -> unit)=
-        let question = Option.get <| getQuestion moduleQuestions  q
-        add d q v
-        pushq d moduleQuestions q
-        let text = replace_tok "$0" v question.Text
-        //say d <| text
+    let ask (d:Dialogue) (debug:string -> unit) (target:Dialogue -> unit) (question:Question) =    
+        pushq d question
         match question.Type with
         | UserAuthentication f -> 
             d.Cui.TypingDNA.Reset()
@@ -146,9 +134,9 @@ module Dialogue =
          | PropNotSet_ d "user" m when d.DialogueQuestions.Count = 0 -> Some m
          | _ -> None
 
-    let (|Response_|_|) (d:Dialogue) (moduleQuestions: Question list) (n:string) :Utterance -> (Utterance * obj option) option =
+    let (|Response_|_|) (d:Dialogue) (n:string) :Utterance -> (Utterance * obj option) option =
          function
-         | PropSet_ d "user" m when haveQuestion moduleQuestions n && d.DialogueQuestions.Count > 0  && d.DialogueQuestions.Peek().Name = n -> 
+         | PropSet_ d "user" m when d.DialogueQuestions.Count > 0  && d.DialogueQuestions.Peek().Name = n -> 
              if have d n then
                  let v = d.Props.[n]
                  delete d n
@@ -156,9 +144,9 @@ module Dialogue =
              else Some(m, None)
          | _ -> None
 
-    let (|Response'_|_|) (d:Dialogue) (moduleQuestions: Question list) (n:string) :Utterance -> (Utterance * obj option) option =
+    let (|Response'_|_|) (d:Dialogue) (n:string) :Utterance -> (Utterance * obj option) option =
          function
-         | PropNotSet_ d "user" m when haveQuestion moduleQuestions n && d.DialogueQuestions.Count > 0  && d.DialogueQuestions.Peek().Name = n -> 
+         | PropNotSet_ d "user" m when d.DialogueQuestions.Count > 0  && d.DialogueQuestions.Peek().Name = n -> 
              if have d n then
                  let v = d.Props.[n]
                  delete d n

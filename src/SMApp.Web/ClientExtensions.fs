@@ -64,7 +64,8 @@ module ClientExtensions =
 
     let createCanvas (id:string) (width:string) (height:string) (parent:Dom.Element) =
         canvas[eid id; attr.width width; attr.height height][] |> Doc.Run parent
-        parent.FirstChild |> As<CanvasElement>
+        let ff = parent.FirstChild |> As<CanvasElement>
+        ff
 
     [<Direct "startCamera($container, $canvasElement)">]
     let startCamera (container:Dom.Element) (canvasElement:Dom.Element) = X<unit>

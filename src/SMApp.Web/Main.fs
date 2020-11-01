@@ -11,11 +11,7 @@ open SMApp.NLU
 module Main =
     let name = "Main"
     let debug m = ClientExtensions.debug name m
-    
-    let moduleQuestions:Question list = []
-    let getQuestion n = moduleQuestions |> List.tryFind(fun q -> q.Name = n)
-    let haveQuestion n = moduleQuestions |> List.exists(fun q -> q.Name = n)
-       
+           
     /// Update the dialogue state
     let update d =        
         let (Dialogue.Dialogue(cui, props, dialogueQuestions, output, utterances)) = d
@@ -35,11 +31,11 @@ module Main =
         let user() :User = prop "user"
 
         let pushu = Dialogue.pushu d
-        let pushq = Dialogue.pushq d moduleQuestions
+        let pushq = Dialogue.pushq d
         let popu() = Dialogue.popu d
         let popq() = Dialogue.popq d
         let popt() = Dialogue.popt d
-        let ask = Dialogue.ask d debug moduleQuestions
+        let ask = Dialogue.ask d debug
         
         let dispatch = Dialogue.dispatch d debug
         let handle = Dialogue.handle d debug
@@ -52,8 +48,8 @@ module Main =
         let (|PropNotSet|_|) = Dialogue.(|PropNotSet_|_|) d
         let (|User|_|) = Dialogue.(|User_|_|) d
         let (|User'|_|) = Dialogue.(|User'_|_|) d
-        let (|Response|_|) = Dialogue.(|Response_|_|) d moduleQuestions
-        let (|Response'|_|) = Dialogue.(|Response'_|_|) d moduleQuestions
+        let (|Response|_|) = Dialogue.(|Response_|_|) d
+        let (|Response'|_|) = Dialogue.(|Response'_|_|) d
         
         (* Module dialogue patterns *) 
         let (|Start|_|) :Utterance -> Utterance option=
