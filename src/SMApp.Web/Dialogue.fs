@@ -108,14 +108,13 @@ module Dialogue =
 
     let didNotUnderstand (d:Dialogue) (debug:string -> unit) (name:string) =
         debug <| sprintf "%s interpreter did not understand utterance." name
+        popu d debug
         say d "Sorry I didn't understand what you meant."
       
     (* Dialogue patterns *)
     let (|Agenda_|_|) (d:Dialogue) (debug:string -> unit) (m:string) :Utterance list -> unit option =
         function
-        | _ when d.DialogueQuestions.Count > 0 && d.DialogueQuestions.Peek().Module = m -> 
-            debug <| sprintf "Agenda is %A." (d.DialogueQuestions.Peek())
-            Some ()
+        | _ when d.DialogueQuestions.Count > 0 && d.DialogueQuestions.Peek().Module = m -> Some ()
         | _ -> None
 
     let (|PropSet_|_|) (d:Dialogue) (n:string) :Utterance -> Utterance option =
@@ -140,12 +139,12 @@ module Dialogue =
 
     let (|Form|_|) (d:Dialogue) (n:string) :Utterance -> Utterance option =
          function
-         | m when d.DialogueQuestions.Count > 0 && d.DialogueQuestions.Peek().Name = n && m.Intent = None && m.Traits = None && m.Entities = None && m.Text = n + "Form" -> Some m
+         | m when d.DialogueQuestions.Count > 0 && d.DialogueQuestions.Peek().Name = n && m.Text = "" && m.Intent.IsSome && m.Intent.Value.Name = n && m.Traits = None && m.Entities = None -> Some m
          | _ -> None
 
     let (|NotForm|_|) (d:Dialogue) (n:string) :Utterance -> Utterance option =
          function
-         | m when d.DialogueQuestions.Count > 0 && d.DialogueQuestions.Peek().Name = n && m.Intent.IsSome && not <| (m.Text = n + "Form") -> Some m
+         | m when d.DialogueQuestions.Count > 0 && d.DialogueQuestions.Peek().Name = n && m.Text <> "" -> Some m
          | _ -> None
 
     let (|Response_|_|) (d:Dialogue) (n:string) :Utterance -> (Utterance * obj option) option =
@@ -161,6 +160,3 @@ module Dialogue =
          | PropNotSet_ d "user" (NotForm d n m) ->
             if have d n then Some(m, Some d.Props.[n]) else Some(m, None)
          | _ -> None
-
-
-

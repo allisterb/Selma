@@ -152,6 +152,7 @@ module Client =
             | Text.Debug ->
                 debug <| sprintf "Utterances: %A" Utterances
                 debug <| sprintf "Questions: %A" Questions
+                for p in Props do debug <| sprintf "%s: %A"  p.Key p.Value
             | Text.Voices -> 
                 let voices = speechSynthesis().GetVoices() |> toArray    
                 sprintf "There are currently %i voices installed on this computer or device." voices.Length |> say'

@@ -56,8 +56,7 @@ module ClientExtensions =
 
     let createElement doc =
         let el = JS.Document.CreateElement "div"
-        do JS.Document.AppendChild(el) |> ignore
-        
+        do JS.Document.AppendChild(el) |> ignore        
         do doc |> Doc.RunAppend el
         
     let elementHTML (d:Dom.Element) = d.InnerHTML
@@ -67,12 +66,14 @@ module ClientExtensions =
         let c = parent.FirstChild |> As<CanvasElement>
         c
 
-    let createDialogBoxCanvas() =
+    let createDialogueBoxCanvas() =
         let e = JQuery(".swal2-content").Get().[0].FirstChild |> As<Dom.Element>
         let c = createCanvas "camera" "640" "480" e
         c
         
-    let getDialogBoxCanvas() = JQuery(".swal2-content").Get().[0].FirstChild.FirstChild
+    let getDialogueBoxCanvas() = JQuery(".swal2-content").Get().[0].FirstChild.FirstChild
+
+    let getDialogueBoxInput = JQuery(".swal2-input").Get().[0] |> As<Dom.Element>
 
     [<Direct "startCamera($container, $canvasElement)">]
     let startCamera (container:Dom.Element) (canvasElement:Dom.Element) = X<unit>

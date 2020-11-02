@@ -56,21 +56,13 @@ module User =
 
         let authenticateNewUserQuestion u = 
             Question("authenticateNewUser", name, UserAuthentication, fun d ->  
-                say <| sprintf "Enter the phrase hello my name is %s and I am an administrator." u
-                d.Cui.TypingDNA.Reset()
+                say <| sprintf "Enter the phrase hello my name is %s and I am an administrator." u     
                 questionBox "Biometric Authentication" "" 640 480 (fun _ ->
-                    //let el = JQuery(".swal2-content").Get().[0].FirstChild.FirstChild |> As<CanvasElement>
-                    //f pattern el
                     let pattern =  d.Cui.GetSameTextTypingPattern (sprintf "Hello my name is %s and I am an administrator" u) None
-                    debug <| "User entered typing pattern: " + pattern  
-                    Utterance(pattern, Some (Intent("authenticateNewUser", Some 1.0f)), None, None) |> pushu
-                    update d
+                    debug <| "User entered typing pattern: " + pattern               
                 )
-                let input = JQuery(".swal2-input").Get().[0] |> As<Dom.Element> 
-                do 
-                    input.SetAttribute("id", "auth-input")
-                    d.Cui.MonitorTypingPattern None
-                let c = createDialogBoxCanvas()
+                d.Cui.MonitorTypingPattern None
+                let c = createDialogueBoxCanvas()
                 startCamera JS.Document.Body c
             )
 
@@ -78,18 +70,16 @@ module User =
             Question("authenticateUser", name, UserAuthentication, fun d ->  
                 d.Cui.TypingDNA.Reset()
                 questionBox "Biometric Authentication" "" 640 480 (fun _ -> 
-                     //let el = JQuery(".swal2-content").Get().[0].FirstChild.FirstChild |> As<CanvasElement>
-                     //f pattern el
                      let pattern =  d.Cui.GetSameTextTypingPattern (sprintf "Hello my name is %s and I am an administrator" u) None
-                     debug <| "Received typing pattern: " + pattern  
-                     if isNull pattern then trigger("authenticateUserForm") else
+                     debug <| "User entered typing pattern: " + pattern  
+                     if isNull pattern then trigger("authenticateUser") else
                          async { 
                                  let! t = Server.verifyUserTypingPattern u pattern 
                                  debug <| sprintf "TypingDNA: %A"  t
                                  match t with
                                  | Ok r -> add "authenticateUser" (Some r)
                                  | Error e -> error e; add "authenticateUser" None
-                                 trigger("authenticateUserForm")
+                                 trigger "authenticateUser"
                          } |> Async.Start
                 )
 
@@ -101,7 +91,7 @@ module User =
                 let c = createCanvas "camera" "640" "480" e
                 startCamera JS.Document.Body c
             )
-        let addUserQuestion u = Question("addUser", name, Verification, fun _ -> say <| sprintf "Do you want me to add the user %s?" u)
+       
         let switchUserQuestion u = Question("switchUser", name, Verification, fun _ -> say <| sprintf "Do you want me to switch to the user %s" u)
         
         (* User functions *)
@@ -120,7 +110,7 @@ module User =
                         authenticateUserQuestion u |> ask
                 | None _ -> 
                     say <| sprintf "I did not find a user with the name %s." u
-                    addUserQuestion u |> ask
+                    Question("addUser", name, Verification, fun _ -> add "addUser" u; say <| sprintf "Do you want me to add the user %s?" u) |> ask
             } |> Async.Start
         
         let addUser u tp = 
@@ -168,6 +158,7 @@ module User =
         /// User add
         | Yes(Response' "addUser" (_, Str u))::[] -> endt "addUser" (fun _ -> let q = authenticateNewUserQuestion u in q.Ask(d))
         | No(Response' "addUser" (_, Str u))::[] -> endt "addUser" (fun _ -> say <| sprintf "Ok I did not add the user %s. But you must login for me to help you." u)
+        | Response' "authenticateNewUser" (_, r)::[] -> endt' "authenticateNewUser" (fun _ -> say "Authenticating new user.")
 
         (* User switch *)
         
@@ -218,4 +209,4 @@ module User =
 
         | _ -> didNotUnderstand()
 
-        debug <| sprintf "Module %s ending utterances:%A, questions: %A." name utterances dialogueQuestions
+        debug <| sprintf "%s ending utterances:%A, questions: %A." name utterances dialogueQuestions
