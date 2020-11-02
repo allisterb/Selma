@@ -64,8 +64,15 @@ module ClientExtensions =
 
     let createCanvas (id:string) (width:string) (height:string) (parent:Dom.Element) =
         canvas[eid id; attr.width width; attr.height height][] |> Doc.Run parent
-        let ff = parent.FirstChild |> As<CanvasElement>
-        ff
+        let c = parent.FirstChild |> As<CanvasElement>
+        c
+
+    let createDialogBoxCanvas() =
+        let e = JQuery(".swal2-content").Get().[0].FirstChild |> As<Dom.Element>
+        let c = createCanvas "camera" "640" "480" e
+        c
+        
+    let getDialogBoxCanvas() = JQuery(".swal2-content").Get().[0].FirstChild.FirstChild
 
     [<Direct "startCamera($container, $canvasElement)">]
     let startCamera (container:Dom.Element) (canvasElement:Dom.Element) = X<unit>

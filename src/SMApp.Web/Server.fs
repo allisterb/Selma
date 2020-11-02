@@ -27,13 +27,6 @@ module Server =
  
     (* Text transformation functions *)
     [<Rpc>]
-    let getVoiceProfileId(id:string) =
-        async {
-            let! p = AzureSpeech.createVoiceProfile()
-            return p.Id
-        }
-
-    [<Rpc>]
     let humanize(date:DateTime) = async { return date.Humanize() }
 
     [<Rpc>]
@@ -49,8 +42,22 @@ module Server =
     [<Rpc>]
     let verifyUserTypingPattern (id:string) (tp: string) = async { return! TypingDNA.verifyPattern id tp }
 
+    [<Rpc>]
+    let enrollUser (userName:string) (voiceData:JavaScript.Int16Array) =
+        async {
+            match! AzureSpeech.createVoiceProfile() with
+            | Error e -> return None
+            | Ok profile -> 
+                match! AzureSpeech.enrollVoiceProfile profile voiceData with
+                | Error e -> 
+                    errf "Azure Speech returned {0} when enrolling user {1}." [e; userName]
+                    return None
+                | Ok r -> 
+                    infof "Azure Speech audio profile enrollment for user {0} has: length {1}, speech length {2}, remaining enrollments {3}" [userName; r.AudioLength; r.AudioSpeechLength; r.RemainingEnrollmentsCount]
+                    return Some(r)
+        }
+
     (* User functions *)
-    
     [<Rpc>]
     let getUser(user:string) : Async<User option> = 
         pgdb
@@ -66,16 +73,16 @@ module Server =
             | Error exn -> errex "Error retrieving user {0} to database." exn [user]; None)
 
     [<Rpc>]
-    let addUser (user:string) : Async<Result<unit, exn>> =
+    let addUser (user:string) : Async<Result<unit, string>> =
         pgdb
         |> Sql.query "INSERT INTO public.smapp_user(user_name, last_logged_in) VALUES (@u, @d);"
         |> Sql.parameters [("u", Sql.string user); ("d", Sql.timestamp (DateTime.Now))]
         |> Sql.executeNonQueryAsync
         |> Async.map(
             function 
-            | Ok n -> if n > 0 then Ok(infof "Added user {0} to database." [user]) else Error(exn("Insert user returned 0."))
-            | Error exn as e -> errex "Error adding user {0} to database." exn [user]; Error exn
-            )
+            | Ok n -> if n > 0 then Ok(infof "Added user {0} to database." [user]) else Error("Insert user returned 0.")
+            | Error exn as e -> errex "Error adding user {0} to database." exn [user]; Error exn.Message
+        )
 
     [<Rpc>]
     let updateUserLastLogin (user:string) : Async<Result<unit, exn>> =

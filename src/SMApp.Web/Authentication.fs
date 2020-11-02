@@ -105,29 +105,43 @@ module AzureSpeech =
     let private apiKey = Runtime.Config("AZURE_SPEECH_KEY")
     let private region = "westus";
     let private config = SpeechConfig.FromSubscription(apiKey, region);
-    
+
     let createVoiceProfile () =
         async {
-            use client = new VoiceProfileClient(config)
-            return! client.CreateProfileAsync(VoiceProfileType.TextDependentVerification, "en-US") |> Async.AwaitTask
+            try
+                use client = new VoiceProfileClient(config)
+                let! r = client.CreateProfileAsync(VoiceProfileType.TextDependentVerification, "en-US") |> Async.AwaitTask
+                return Ok r
+            with error -> return Error error.Message
         }
 
-    let enrollVoiceProfile (profile:VoiceProfile, data:JavaScript.Int16Array) = 
+    let deleteVoiceProfile (profile: VoiceProfile) =
         async {
-            let _data = Array.create<int16> data.Length 0s
-            for i = 0 to data.Length - 1 do _data.[i] <- data.Get i
-            let buffer = Array.create<byte> (data.Length * 2) 0uy
-            do Buffer.BlockCopy(_data, 0, buffer, 0, buffer.Length)
-            debugf "Voice data buffer has length {0}." [buffer.Length]
-            use client = new VoiceProfileClient(config) 
-            let stream = new PushAudioInputStream()
-            use audio = AudioConfig.FromStreamInput(stream)
-            do stream.Write(buffer)
-            let! result = client.EnrollProfileAsync(profile,  audio) |> Async.AwaitTask
-            return 
-                match result.Reason with
-                | ResultReason.EnrolledVoiceProfile -> Ok(result)
-                | _ -> 
-                    let e = VoiceProfileEnrollmentCancellationDetails.FromResult(result)
-                    Error e
+            try
+                use client = new VoiceProfileClient(config)
+                let! r = client.DeleteProfileAsync profile |> Async.AwaitTask
+                return Ok r
+            with error -> return Error error.Message
+        }
+
+    let enrollVoiceProfile (profile:VoiceProfile) (data:JavaScript.Int16Array) = 
+        async {
+            try
+                let _data = Array.create<int16> data.Length 0s
+                for i = 0 to data.Length - 1 do _data.[i] <- data.Get i
+                let buffer = Array.create<byte> (data.Length * 2) 0uy
+                do Buffer.BlockCopy(_data, 0, buffer, 0, buffer.Length)
+                debugf "Voice data buffer has length {0} bytes." [buffer.Length]
+                use client = new VoiceProfileClient(config) 
+                let stream = new PushAudioInputStream()
+                use audio = AudioConfig.FromStreamInput(stream)
+                do stream.Write(buffer)
+                let! result = client.EnrollProfileAsync(profile,  audio) |> Async.AwaitTask
+                return 
+                    match result.Reason with
+                    | ResultReason.EnrolledVoiceProfile -> Ok(result)
+                    | _ -> 
+                        let e = VoiceProfileEnrollmentCancellationDetails.FromResult(result)
+                        Error e.ErrorDetails
+            with e -> return Error e.Message
         }

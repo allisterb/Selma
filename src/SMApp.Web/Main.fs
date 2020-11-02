@@ -23,7 +23,7 @@ module Main =
         let sayRandom = Dialogue.sayRandom d
         let sayRandom' = Dialogue.sayRandom' d
 
-        (* Manage the dialogue state elements*)
+        (* Manage the dialogue state elements t*)
         let have = Dialogue.have d 
         let prop k  = Dialogue.prop d k
         let add k v = Dialogue.add d debug k v
@@ -33,16 +33,16 @@ module Main =
         let pushq = Dialogue.pushq d debug
         let popu() = Dialogue.popu d debug
         let popq() = Dialogue.popq d debug
-        let popt() = Dialogue.popt d debug
-        let ask = Dialogue.ask d debug
         
         let dispatch = Dialogue.dispatch d debug
+        let ask = Dialogue.ask d debug
         let handle = Dialogue.handle d debug
         let endt = Dialogue.endt d debug
+        let endt' = Dialogue.endt' d debug
         let didNotUnderstand() = Dialogue.didNotUnderstand d debug name
 
         (* Base dialogue patterns *)
-        let (|Agenda|_|) = Dialogue.(|Agenda_|_|) d
+        let (|Agenda|_|) = Dialogue.(|Agenda_|_|) d debug
         let (|PropSet|_|) = Dialogue.(|PropSet_|_|) d
         let (|PropNotSet|_|) = Dialogue.(|PropNotSet_|_|) d
         let (|User|_|) = Dialogue.(|User_|_|) d
@@ -59,7 +59,9 @@ module Main =
         (* Interpreter logic begins here *)
         match utterances |> Seq.take (if utterances.Count >= 5 then 5 else utterances.Count) |> List.ofSeq with
         (* Agenda *)
-        | Agenda User.name -> User.update d
+        | Agenda User.name -> 
+            debug <| sprintf "Agenda is %A." (d.DialogueQuestions.Peek())
+            User.update d
 
         (* Greet *)
         | Start(User'(Intent "greet" (_, None)))::[] ->  

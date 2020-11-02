@@ -80,13 +80,11 @@ module NLU =
         function 
         | Intent "reject" (None, None) as m -> Some m
         |  _ -> None
-
+    
     let (|Str|_|) : obj option -> string option =
         function
         | Some s when (s :? string) -> Some (s :?> string)
         | _ -> None
-
-    
     [<RequireQualifiedAccess>]
     module Voice =
         type Entity' = {body:string; ``end``:int; start: int; suggested:bool; value:string}

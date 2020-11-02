@@ -60,26 +60,26 @@ module Dialogue =
         d.Props.Remove k |> ignore
  
     let pushu (d:Dialogue) (debug:string -> unit) (m:Utterance) = 
-        debug <| sprintf "Push utterance %A." m
+        debug <| sprintf "Push %A." m
         d.Utterances.Push m 
 
     let popu (d:Dialogue) (debug:string -> unit) = 
         let m = d.Utterances.Pop()
-        debug <| sprintf "Pop utterance %A." m
+        debug <| sprintf "Pop %A." m
      
     let pushq (d:Dialogue) (debug:string -> unit) (q:Question) = 
         d.DialogueQuestions.Push q
-        debug <| sprintf "Push question %A." q
+        debug <| sprintf "Push %A." q
 
     let popq(d: Dialogue) (debug:string -> unit) = 
         let q = d.DialogueQuestions.Pop()
-        debug <| sprintf "Pop question %A." q
-    
-    let popt (d:Dialogue) (debug:string -> unit) =
-        popu d debug
-        popq d debug
-    
-    let ask (d:Dialogue) (debug:string -> unit) (target:Dialogue -> unit) (q:Question) =    
+        debug <| sprintf "Pop %A." q
+        
+    let dispatch (d:Dialogue) (debug:string -> unit) (targetModule:string) (target:Dialogue->unit) =
+        debug <| sprintf "Dispatch to module %s utterances: %A questions: %A." targetModule d.Utterances d.DialogueQuestions
+        target d
+
+    let ask (d:Dialogue) (debug:string -> unit) (q:Question) =    
         pushq d debug q
         q.Ask(d)
         
@@ -89,23 +89,28 @@ module Dialogue =
         f()
 
     let endt (d:Dialogue) (debug:string -> unit) (m:string) (f:unit->unit) =
-        popt d debug
+        popu d debug
+        popq d debug
+        if have d m then remove d debug m
         debug <| sprintf "End turn: %s." m
         f()
 
-    let dispatch (d:Dialogue) (debug:string -> unit) (targetModule:string) (target:Dialogue->unit) =
-        debug <| sprintf "Dispatch to module %s utterances: %A questions: %A." targetModule d.Utterances d.DialogueQuestions
-        target d
+    let endt' (d:Dialogue) (debug:string -> unit) (m:string) (f:unit->unit) =
+        popq d debug
+        if have d m then remove d debug m
+        debug <| sprintf "End turn: %s." m
+        f()
        
     let didNotUnderstand (d:Dialogue) (debug:string -> unit) (name:string) =
         debug <| sprintf "%s interpreter did not understand utterance." name
         say d "Sorry I didn't understand what you meant."
-        if d.DialogueQuestions.Count > 0 then d.DialogueQuestions.Peek().Ask(d)
-
+      
     (* Dialogue patterns *)
-    let (|Agenda_|_|) (d:Dialogue) (m:string) :Utterance list -> unit option =
+    let (|Agenda_|_|) (d:Dialogue) (debug:string -> unit) (m:string) :Utterance list -> unit option =
         function
-        | _ when d.DialogueQuestions.Count > 0 && d.DialogueQuestions.Peek().Module = m -> Some ()
+        | _ when d.DialogueQuestions.Count > 0 && d.DialogueQuestions.Peek().Module = m -> 
+            debug <| sprintf "Agenda is %A." (d.DialogueQuestions.Peek())
+            Some ()
         | _ -> None
 
     let (|PropSet_|_|) (d:Dialogue) (n:string) :Utterance -> Utterance option =

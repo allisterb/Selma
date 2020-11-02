@@ -34,12 +34,12 @@ module User =
         let pushq = Dialogue.pushq d debug
         let popu() = Dialogue.popu d debug
         let popq() = Dialogue.popq d debug
-        let popt() = Dialogue.popt d debug
-        let ask = Dialogue.ask d debug
-        
+
         let dispatch = Dialogue.dispatch d debug
+        let ask = Dialogue.ask d debug
         let handle = Dialogue.handle d debug
         let endt = Dialogue.endt d debug
+        let endt' = Dialogue.endt' d debug
         let didNotUnderstand() = Dialogue.didNotUnderstand d debug name
 
         (* Base dialogue patterns *)
@@ -53,26 +53,49 @@ module User =
 
         let user():User = prop "user"
 
+        let authenticateNewUserQuestion u = 
+            Question("authenticateNewUser", name, UserAuthentication, fun d ->  
+                say <| sprintf "Enter the phrase hello my name is %s and I am an administrator." u
+                d.Cui.TypingDNA.Reset()
+                questionBox "Biometric Authentication" "" 640 480 (fun _ ->
+                    //let el = JQuery(".swal2-content").Get().[0].FirstChild.FirstChild |> As<CanvasElement>
+                    //f pattern el
+                    let pattern =  d.Cui.GetSameTextTypingPattern (sprintf "Hello my name is %s and I am an administrator" u) None
+                    debug <| "User entered typing pattern: " + pattern  
+                    Utterance(pattern, Some (Intent("authenticateNewUser", Some 1.0f)), None, None) |> pushu
+                    update d
+                )
+                let input = JQuery(".swal2-input").Get().[0] |> As<Dom.Element> 
+                do 
+                    input.SetAttribute("id", "auth-input")
+                    d.Cui.MonitorTypingPattern None
+                let c = createDialogBoxCanvas()
+                startCamera JS.Document.Body c
+            )
+
         let authenticateUserQuestion u = 
             Question("authenticateUser", name, UserAuthentication, fun d ->  
                 d.Cui.TypingDNA.Reset()
                 questionBox "Biometric Authentication" "" 640 480 (fun _ -> 
                      //let el = JQuery(".swal2-content").Get().[0].FirstChild.FirstChild |> As<CanvasElement>
                      //f pattern el
-                     let pattern =  d.Cui.GetSameTextTypingPattern "Hello my name is John Brown and I am an administrator" None
+                     let pattern =  d.Cui.GetSameTextTypingPattern (sprintf "Hello my name is %s and I am an administrator" u) None
                      debug <| "Received typing pattern pattern: " + pattern  
                      if isNull pattern then
-                         add "authenticateUser" None
-
+                         Utterance(pattern, Some (Intent("authenticateNewUser", Some 1.0f)), None, None) |> pushu
+                         
+                         update d
                      else
                          async { 
                                  let! t = Server.verifyUserTypingPattern u pattern 
                                  debug <| sprintf "TypingDNA: %A"  t
                                  match t with
                                  | Ok r -> add "authenticateUser" (Some r)
-                                 | Error e -> error e; add "authenticateUser" None 
+                                 | Error e -> error e; add "authenticateUser" None
+                                 update d
                          } |> Async.Start
                 )
+
                 let input = JQuery(".swal2-input").Get().[0] |> As<Dom.Element> 
                 do 
                     input.SetAttribute("id", "auth-input")
@@ -84,8 +107,6 @@ module User =
         let addUserQuestion u = Question("addUser", name, Verification, fun _ -> say <| sprintf "Do you want me to add the user %s?" u)
         let switchUserQuestion u = Question("switchUser", name, Verification, fun _ -> say <| sprintf "Do you want me to switch to the user %s" u)
         
-        debug <| sprintf "Starting utterances:%A. Starting questions: %A." utterances dialogueQuestions
-   
         (* User functions *)
         let loginUser u = 
             do sayRandom waitRetrievePhrases "user name"
@@ -99,23 +120,24 @@ module User =
                         let! h = Server.humanize user.LastLoggedIn.Value
                         say <| sprintf "You last logged in %s." h
                         say "Since you will be accessing sensitive data I need to authenticate you via facial recognition and typing behaviour. Enter the pass phrase you were assigned during enrollment in the box provided. Then, look into your camera until you see the red box around your face and press the Ok button."
-                        authenticateUserQuestion u |> ask update
+                        authenticateUserQuestion u |> ask
                 | None _ -> 
                     say <| sprintf "I did not find a user with the name %s." u
-                    addUserQuestion u |> ask  update
+                    addUserQuestion u |> ask
             } |> Async.Start
         
         let addUser u tp = 
             async { 
                 do sayRandom waitAddPhrases "user"
-                match! Server.addUser u  with 
+                match! Server.addUser u with 
                 | Ok _ -> 
                     match! Server.addUserTypingPattern u tp with
                     | Ok _ ->
                         add "user" u
                         say <| sprintf "Hello %A, nice to meet you." props.["user"]
                     | Error _ -> say <| sprintf "Sorry I was not able to add the user %s to the system." u 
-                | Error _ -> 
+                | Error e -> 
+                    error <| sprintf "Error adding user %s:%s." u e
                     say <| sprintf "Sorry I was not able to add the user %s to the system." u
             } |> Async.Start
 
@@ -143,21 +165,18 @@ module User =
         | User'(Intent "hello" (_, Entity1Of1 "contact" u))::[] -> handle "loginUser" (fun _ -> loginUser u.Value)
         
         /// User pass phrase
-        | Response' "inputPassPhrase" (_, Str user)::[] -> endt "addUser" (fun _ -> 
-            cui.TypingDNA.Stop() 
-            let pattern = cui.GetSameTextTypingPattern user None
-            addUser user pattern
-         ) 
-        (* User add *)
-        //| Yes(Response' "addUser" (_, Str user))::[] -> handle' "inputPassPhrase" (fun _ -> cui.TypingDNA.Start(); ask "inputPassPhrase" user update)
-        //| No(Response' "addUser" (_, Str user))::[] -> handle' "no" (fun _ -> say <| sprintf "Ok I did not add the user %s. But you must login for me to help you." user)
+        | Response' "authenticateUser" (_, r)::[] -> endt' "authenticateUser" (fun _ -> ()) 
+        
+        /// User add
+        | Yes(Response' "addUser" (_, Str u))::[] -> endt "addUser" (fun _ -> let q = authenticateNewUserQuestion u in q.Ask(d))
+        | No(Response' "addUser" (_, Str u))::[] -> endt "addUser" (fun _ -> say <| sprintf "Ok I did not add the user %s. But you must login for me to help you." u)
 
         (* User switch *)
         
         | User(Intent "hello" (None, Entity1Of1 "name" u))::[] -> 
             async {
                 match! Server.getUser u.Value with
-                | Some user -> switchUserQuestion user.Name |> ask update
+                | Some user -> switchUserQuestion user.Name |> ask
                 | None -> say <| sprintf "Sorry, the user %s does not exist." u.Value
             } |> Async.Start
         | Yes(Response "switchUser" (_, Str user))::[] ->
@@ -202,5 +221,3 @@ module User =
         | _ -> didNotUnderstand()
 
         debug <| sprintf "Module %s ending utterances:%A, questions: %A." name utterances dialogueQuestions
-
- 
