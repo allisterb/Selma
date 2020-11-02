@@ -34,12 +34,13 @@ module User =
         let pushq = Dialogue.pushq d debug
         let popu() = Dialogue.popu d debug
         let popq() = Dialogue.popq d debug
-
+        
         let dispatch = Dialogue.dispatch d debug
         let ask = Dialogue.ask d debug
         let handle = Dialogue.handle d debug
         let endt = Dialogue.endt d debug
         let endt' = Dialogue.endt' d debug
+        let trigger = Dialogue.trigger d debug update
         let didNotUnderstand() = Dialogue.didNotUnderstand d debug name
 
         (* Base dialogue patterns *)
@@ -50,7 +51,7 @@ module User =
         let (|User'|_|) = Dialogue.(|User'_|_|) d
         let (|Response|_|) = Dialogue.(|Response_|_|) d
         let (|Response'|_|) = Dialogue.(|Response'_|_|) d
-
+       
         let user():User = prop "user"
 
         let authenticateNewUserQuestion u = 
@@ -80,19 +81,15 @@ module User =
                      //let el = JQuery(".swal2-content").Get().[0].FirstChild.FirstChild |> As<CanvasElement>
                      //f pattern el
                      let pattern =  d.Cui.GetSameTextTypingPattern (sprintf "Hello my name is %s and I am an administrator" u) None
-                     debug <| "Received typing pattern pattern: " + pattern  
-                     if isNull pattern then
-                         Utterance(pattern, Some (Intent("authenticateNewUser", Some 1.0f)), None, None) |> pushu
-                         
-                         update d
-                     else
+                     debug <| "Received typing pattern: " + pattern  
+                     if isNull pattern then trigger("authenticateUserForm") else
                          async { 
                                  let! t = Server.verifyUserTypingPattern u pattern 
                                  debug <| sprintf "TypingDNA: %A"  t
                                  match t with
                                  | Ok r -> add "authenticateUser" (Some r)
                                  | Error e -> error e; add "authenticateUser" None
-                                 update d
+                                 trigger("authenticateUserForm")
                          } |> Async.Start
                 )
 
@@ -160,12 +157,13 @@ module User =
             
         (* Interpreter logic begins here *)
         match utterances |> Seq.take (if utterances.Count >= 5 then 5 else utterances.Count) |> List.ofSeq with
+        
         /// User login
         | User'(Intent "greet" (_, Entity1Of1 "name" u))::[] -> handle "loginUser" (fun _ -> loginUser u.Value)
         | User'(Intent "hello" (_, Entity1Of1 "contact" u))::[] -> handle "loginUser" (fun _ -> loginUser u.Value)
         
-        /// User pass phrase
-        | Response' "authenticateUser" (_, r)::[] -> endt' "authenticateUser" (fun _ -> ()) 
+        /// User authentication
+        | Response' "authenticateUser" (_, r)::[] -> endt' "authenticateUser" (fun _ -> say "You are now authenticated.") 
         
         /// User add
         | Yes(Response' "addUser" (_, Str u))::[] -> endt "addUser" (fun _ -> let q = authenticateNewUserQuestion u in q.Ask(d))

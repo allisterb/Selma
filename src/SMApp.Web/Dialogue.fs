@@ -96,11 +96,16 @@ module Dialogue =
         f()
 
     let endt' (d:Dialogue) (debug:string -> unit) (m:string) (f:unit->unit) =
+        do if d.DialogueQuestions.Peek().Name <> m then failwith "%A is not at the top of the stack."
         popq d debug
         if have d m then remove d debug m
         debug <| sprintf "End turn: %s." m
         f()
        
+    let trigger (d:Dialogue) (debug:string -> unit) (target:Dialogue->unit) (name:string) =
+        pushu d debug (Utterance(name, None, None, None))
+        target d
+
     let didNotUnderstand (d:Dialogue) (debug:string -> unit) (name:string) =
         debug <| sprintf "%s interpreter did not understand utterance." name
         say d "Sorry I didn't understand what you meant."
@@ -133,14 +138,29 @@ module Dialogue =
          | PropNotSet_ d "user" m when d.DialogueQuestions.Count = 0 -> Some m
          | _ -> None
 
+    let (|Form|_|) (d:Dialogue) (n:string) :Utterance -> Utterance option =
+         function
+         | m when d.DialogueQuestions.Count > 0 && d.DialogueQuestions.Peek().Name = n && m.Intent = None && m.Traits = None && m.Entities = None && m.Text = n + "Form" -> Some m
+         | _ -> None
+
+    let (|NotForm|_|) (d:Dialogue) (n:string) :Utterance -> Utterance option =
+         function
+         | m when d.DialogueQuestions.Count > 0 && d.DialogueQuestions.Peek().Name = n && m.Intent.IsSome && not <| (m.Text = n + "Form") -> Some m
+         | _ -> None
+
     let (|Response_|_|) (d:Dialogue) (n:string) :Utterance -> (Utterance * obj option) option =
          function
-         | PropSet_ d "user" m when d.DialogueQuestions.Count > 0  && d.DialogueQuestions.Peek().Name = n -> 
-             if have d n then Some(m, Some d.Props.[n]) else Some(m, None)
+         | PropSet_ d "user" (Form d n m) 
+         | PropSet_ d "user" (NotForm d n m) ->
+            if have d n then Some(m, Some d.Props.[n]) else Some(m, None)
          | _ -> None
 
     let (|Response'_|_|) (d:Dialogue) (n:string) :Utterance -> (Utterance * obj option) option =
          function
-         | PropNotSet_ d "user" m when d.DialogueQuestions.Count > 0  && d.DialogueQuestions.Peek().Name = n -> 
-             if have d n then Some(m, Some d.Props.[n]) else Some(m, None) 
+         | PropNotSet_ d "user" (Form d n m) 
+         | PropNotSet_ d "user" (NotForm d n m) ->
+            if have d n then Some(m, Some d.Props.[n]) else Some(m, None)
          | _ -> None
+
+
+
