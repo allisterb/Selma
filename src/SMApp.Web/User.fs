@@ -56,9 +56,13 @@ module User =
 
         let authenticateNewUserQuestion u = 
             Question("authenticateNewUser", name, UserAuthentication, fun d ->  
-                say <| sprintf "Enter the phrase hello my name is %s and I am a user." u     
                 let passPhrase = sprintf "Hello my name is %s and I am a user" u
+                say <| sprintf "Enter the phrase %s." passPhrase 
+                
                 let handleBoxInput () = 
+                    let image = getCameraCanvas().ToDataURL();
+                    debug <|sprintf "User image is %s" image
+                    stopCamera()
                     let pattern =  d.Cui.GetSameTextTypingPattern passPhrase None
                     let text = getDialogueBoxInput().Value
                     debug <| sprintf "User entered typing pattern %s for text %s" pattern text
@@ -66,20 +70,24 @@ module User =
                         say "Sorry you did not enter the passphrase correctly. Please try again."
                         false
                     else
+                        add "authenticateNewUser" (Some (u, pattern, image))
                         true
-                let rec showBox() = questionBox "Biometric Authentication" "" 640 480 (fun _ ->
-                    if handleBoxInput() then trigger "authenticateNewUser" else showBox()
+                
+                let collectData() = 
+                    d.Cui.MonitorTypingPattern None
+                    let c = createDialogueBoxCanvas()
+                    startCamera JS.Document.Body c
+                
+                let rec box() = questionBox "Biometric Authentication" "" 640 480 None (Some collectData) (fun _ ->
+                    if handleBoxInput() then trigger "authenticateNewUser" else box()
                 )
-                showBox()
-                d.Cui.MonitorTypingPattern None
-                let c = createDialogueBoxCanvas()
-                startCamera JS.Document.Body c
+                box()
             )
 
         let authenticateUserQuestion u = 
             Question("authenticateUser", name, UserAuthentication, fun d ->  
                 d.Cui.TypingDNA.Reset()
-                questionBox "Biometric Authentication" "" 640 480 (fun _ -> 
+                questionBox "Biometric Authentication" "" 640 480 None None (fun _ -> 
                      let pattern =  d.Cui.GetSameTextTypingPattern (sprintf "Hello my name is %s and I am an administrator" u) None
                      debug <| sprintf "User entered typing pattern %s" pattern  
                      if isNull pattern then trigger("authenticateUser") else
@@ -94,9 +102,7 @@ module User =
                 )
 
                 let input = JQuery(".swal2-input").Get().[0] |> As<Dom.Element> 
-                do 
-                    input.SetAttribute("id", "auth-input")
-                    d.Cui.MonitorTypingPattern None
+                do d.Cui.MonitorTypingPattern None
                 let e = JQuery(".swal2-content").Get().[0].FirstChild |> As<Dom.Element>
                 let c = createCanvas "camera" "640" "480" e
                 startCamera JS.Document.Body c
@@ -156,14 +162,16 @@ module User =
         }
             
         (* Interpreter logic begins here *)
-        match utterances |> Seq.take (if utterances.Count >= 5 then 5 else utterances.Count) |> List.ofSeq with
+        match Dialogue.frame utterances with
         
         /// User login
         | User'(Intent "greet" (_, Entity1Of1 "name" u))::[] -> handle "loginUser" (fun _ -> loginUser u.Value)
         | User'(Intent "hello" (_, Entity1Of1 "contact" u))::[] -> handle "loginUser" (fun _ -> loginUser u.Value)
         
         /// User authentication
-        | Response' "authenticateUser" (_, r)::[] -> endt "authenticateUser" (fun _ -> say "You are now authenticated.") 
+        | Response' "authenticateUser" (_, r)::[] -> endt "authenticateUser" (fun _ -> 
+            ()
+            ) 
         
         /// User add
         | Yes(Response' "addUser" (_, Str u))::[] -> endt "addUser" (fun _ -> let q = authenticateNewUserQuestion u in ask q)

@@ -126,11 +126,15 @@ function stopVideoProcessing() {
 function stopCamera() {
     if (!streaming) return;
     stopVideoProcessing();
-    canvasOutput.getContext("2d").clearRect(0, 0, width, height);
+    canvasOutput.getContext("2d").clearRect(0, 0, canvasOutput.width, canvasOutput.height);
     video.pause();
     video.srcObject=null;
     stream.getVideoTracks()[0].stop();
     streaming = false;
+}
+
+function getCameraCanvas() {
+    return canvasOutput;
 }
 
 function opencvIsReady() {

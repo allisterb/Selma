@@ -71,15 +71,21 @@ module ClientExtensions =
         let c = createCanvas "camera" "640" "480" e
         c
         
-    let getDialogueBoxCanvas() = JQuery(".swal2-content").Get().[0].FirstChild.FirstChild
+    let getDialogueBoxCanvas() = JQuery("canvas.swal2-content").Get().[0] |> As<CanvasElement> //FirstChild.FirstChild
 
     let getDialogueBoxInput() = JQuery(".swal2-input").Get().[0] |> As<HTMLInputElement>
-
+    
     [<Direct "startCamera($container, $canvasElement)">]
     let startCamera (container:Dom.Element) (canvasElement:Dom.Element) = X<unit>
     
-    let questionBox title text (width:int) (height:int) action = 
-        let box = 
+    [<Direct "stopCamera()">]
+    let stopCamera () = X<unit>
+
+    [<Direct "getCameraCanvas()">]
+    let getCameraCanvas() = X<CanvasElement>
+
+    let questionBox title text (width:int) (height:int) (onCreate:(Box->unit) option) (onShow:(unit->unit) option) onInput = 
+        let prom = 
             let b = SweetAlert.Box (
                         TitleText = title,
                         Text = text,
@@ -89,8 +95,10 @@ module ClientExtensions =
                         Input = "text",
                         ConfirmButtonText = "Ok"
             )
-            b |> SweetAlert.ShowBox           
-        box.Then(Action<string>(action))
+            do if onCreate.IsSome then onCreate.Value b
+            b |> SweetAlert.ShowBox
+        do if onShow.IsSome then onShow.Value()
+        prom.Then(Action<string>(onInput))
         
 [<JavaScript>]
 type _Html =

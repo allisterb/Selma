@@ -76,4 +76,4 @@ module Main =
 
         | _ -> didNotUnderstand()
 
-        debug <| sprintf "Module %s ending utterances:%A, questions: %A." name utterances dialogueQuestions
+        Dialogue.debugInterpreterEnd d debug name

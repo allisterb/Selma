@@ -104,6 +104,8 @@ module Dialogue =
         popu d debug
         say d "Sorry I didn't understand what you meant."
       
+    let frame (utterances:Stack<Utterance>) = utterances |> Seq.take (if utterances.Count >= 5 then 5 else utterances.Count) |> List.ofSeq
+    
     let debugInterpreterStart (d:Dialogue) (debug:string -> unit) (name:string) =
         debug <| sprintf "%s starting utterances:%A, questions: %A." name d.Utterances d.DialogueQuestions
     
