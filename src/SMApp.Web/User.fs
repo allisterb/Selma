@@ -15,9 +15,10 @@ module User =
     
     /// Update the dialogue state
     let rec update d =        
-        let (Dialogue.Dialogue(cui, props, dialogueQuestions, output, utterances)) = d
-        debug <| sprintf "Module %s starting utterances:%A, questions: %A." name utterances dialogueQuestions
+        Dialogue.debugInterpreterStart d debug name
 
+        let (Dialogue.Dialogue(cui, props, dialogueQuestions, output, utterances)) = d
+        
         let echo = Dialogue.echo d
         let say' = Dialogue.say' d
         let say = Dialogue.say d
@@ -39,7 +40,6 @@ module User =
         let ask = Dialogue.ask d debug
         let handle = Dialogue.handle d debug
         let endt = Dialogue.endt d debug
-        let endt' = Dialogue.endt' d debug
         let trigger = Dialogue.trigger d debug update
         let didNotUnderstand() = Dialogue.didNotUnderstand d debug name
 
@@ -56,11 +56,21 @@ module User =
 
         let authenticateNewUserQuestion u = 
             Question("authenticateNewUser", name, UserAuthentication, fun d ->  
-                say <| sprintf "Enter the phrase hello my name is %s and I am an administrator." u     
-                questionBox "Biometric Authentication" "" 640 480 (fun _ ->
-                    let pattern =  d.Cui.GetSameTextTypingPattern (sprintf "Hello my name is %s and I am an administrator" u) None
-                    debug <| "User entered typing pattern: " + pattern               
+                say <| sprintf "Enter the phrase hello my name is %s and I am a user." u     
+                let passPhrase = sprintf "Hello my name is %s and I am a user" u
+                let handleBoxInput () = 
+                    let pattern =  d.Cui.GetSameTextTypingPattern passPhrase None
+                    let text = getDialogueBoxInput().Value
+                    debug <| sprintf "User entered typing pattern %s for text %s" pattern text
+                    if text.ToLower() <> passPhrase.ToLower() then
+                        say "Sorry you did not enter the passphrase correctly. Please try again."
+                        false
+                    else
+                        true
+                let rec showBox() = questionBox "Biometric Authentication" "" 640 480 (fun _ ->
+                    if handleBoxInput() then trigger "authenticateNewUser" else showBox()
                 )
+                showBox()
                 d.Cui.MonitorTypingPattern None
                 let c = createDialogueBoxCanvas()
                 startCamera JS.Document.Body c
@@ -71,7 +81,7 @@ module User =
                 d.Cui.TypingDNA.Reset()
                 questionBox "Biometric Authentication" "" 640 480 (fun _ -> 
                      let pattern =  d.Cui.GetSameTextTypingPattern (sprintf "Hello my name is %s and I am an administrator" u) None
-                     debug <| "User entered typing pattern: " + pattern  
+                     debug <| sprintf "User entered typing pattern %s" pattern  
                      if isNull pattern then trigger("authenticateUser") else
                          async { 
                                  let! t = Server.verifyUserTypingPattern u pattern 
@@ -153,12 +163,12 @@ module User =
         | User'(Intent "hello" (_, Entity1Of1 "contact" u))::[] -> handle "loginUser" (fun _ -> loginUser u.Value)
         
         /// User authentication
-        | Response' "authenticateUser" (_, r)::[] -> endt' "authenticateUser" (fun _ -> say "You are now authenticated.") 
+        | Response' "authenticateUser" (_, r)::[] -> endt "authenticateUser" (fun _ -> say "You are now authenticated.") 
         
         /// User add
-        | Yes(Response' "addUser" (_, Str u))::[] -> endt "addUser" (fun _ -> let q = authenticateNewUserQuestion u in q.Ask(d))
+        | Yes(Response' "addUser" (_, Str u))::[] -> endt "addUser" (fun _ -> let q = authenticateNewUserQuestion u in ask q)
         | No(Response' "addUser" (_, Str u))::[] -> endt "addUser" (fun _ -> say <| sprintf "Ok I did not add the user %s. But you must login for me to help you." u)
-        | Response' "authenticateNewUser" (_, r)::[] -> endt' "authenticateNewUser" (fun _ -> say "Authenticating new user.")
+        | Response' "authenticateNewUser" (_, _)::[] -> endt "authenticateNewUser" (fun _ -> say "Authenticating new user.")
 
         (* User switch *)
         
@@ -209,4 +219,4 @@ module User =
 
         | _ -> didNotUnderstand()
 
-        debug <| sprintf "%s ending utterances:%A, questions: %A." name utterances dialogueQuestions
+        Dialogue.debugInterpreterEnd d debug name

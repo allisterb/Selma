@@ -73,7 +73,7 @@ module ClientExtensions =
         
     let getDialogueBoxCanvas() = JQuery(".swal2-content").Get().[0].FirstChild.FirstChild
 
-    let getDialogueBoxInput = JQuery(".swal2-input").Get().[0] |> As<Dom.Element>
+    let getDialogueBoxInput() = JQuery(".swal2-input").Get().[0] |> As<HTMLInputElement>
 
     [<Direct "startCamera($container, $canvasElement)">]
     let startCamera (container:Dom.Element) (canvasElement:Dom.Element) = X<unit>

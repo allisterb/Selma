@@ -53,7 +53,7 @@ module Dialogue =
     let prop<'a> (d:Dialogue) k :'a = if d.Props.ContainsKey k then d.Props.[k] :?> 'a else failwithf "The %s dialogue property does not exist." k
     let add<'a> (d:Dialogue) (debug:string -> unit) k (v:'a) = 
         d.Props.Add(k, v)
-        debug <| sprintf "Add property %s: %A." k v
+        debug <| sprintf "Add property %s:%A." k v
     
     let remove (d:Dialogue) (debug:string -> unit) k = 
         debug <| sprintf "Remove property %s." k
@@ -85,21 +85,14 @@ module Dialogue =
         
     let handle (d:Dialogue) (debug:string -> unit) (m:string) (f:unit->unit) =
         popu d debug
-        debug <| sprintf "Handle utterance: %s." m
+        debug <| sprintf "Handle utterance %s." m
         f()
 
     let endt (d:Dialogue) (debug:string -> unit) (m:string) (f:unit->unit) =
         popu d debug
         popq d debug
         if have d m then remove d debug m
-        debug <| sprintf "End turn: %s." m
-        f()
-
-    let endt' (d:Dialogue) (debug:string -> unit) (m:string) (f:unit->unit) =
-        do if d.DialogueQuestions.Peek().Name <> m then failwith "%A is not at the top of the stack."
-        popq d debug
-        if have d m then remove d debug m
-        debug <| sprintf "End turn: %s." m
+        debug <| sprintf "End turn %s." m
         f()
        
     let trigger (d:Dialogue) (debug:string -> unit) (target:Dialogue->unit) (name:string) =
@@ -111,6 +104,12 @@ module Dialogue =
         popu d debug
         say d "Sorry I didn't understand what you meant."
       
+    let debugInterpreterStart (d:Dialogue) (debug:string -> unit) (name:string) =
+        debug <| sprintf "%s starting utterances:%A, questions: %A." name d.Utterances d.DialogueQuestions
+    
+    let debugInterpreterEnd (d:Dialogue) (debug:string -> unit) (name:string) =
+        debug <| sprintf "%s ending utterances:%A, questions: %A." name d.Utterances d.DialogueQuestions
+    
     (* Dialogue patterns *)
     let (|Agenda_|_|) (d:Dialogue) (debug:string -> unit) (m:string) :Utterance list -> unit option =
         function

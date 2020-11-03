@@ -38,7 +38,6 @@ module Main =
         let ask = Dialogue.ask d debug
         let handle = Dialogue.handle d debug
         let endt = Dialogue.endt d debug
-        let endt' = Dialogue.endt' d debug
         let didNotUnderstand() = Dialogue.didNotUnderstand d debug name
 
         (* Base dialogue patterns *)

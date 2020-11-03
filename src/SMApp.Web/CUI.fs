@@ -93,6 +93,7 @@ module CUI =
             x.TypingDNA.Start()
 
          member x.GetSameTextTypingPattern(text:string) (el:string option) =
+            //x.TypingDNA.Stop()
             let options = 
                 match el with
                 | Some e -> new TypingDNAOptions(1, Text = text, CaseSensitive = false, TargetId = e)
