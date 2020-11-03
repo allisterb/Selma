@@ -85,6 +85,17 @@ module NLU =
         function
         | Some s when (s :? string) -> Some (s :?> string)
         | _ -> None
+
+    let (|StrA|_|) : obj option -> (string array) option =
+        function
+        | Some s when (s :? System.Array) -> 
+            let arr = s :?> obj array
+            if arr.Length = 0 then failwith "This array object is empty."
+            match arr.[0] with
+            | :? string -> Some (s :?> string array)
+            | _ -> None
+        | _ -> None
+
     [<RequireQualifiedAccess>]
     module Voice =
         type Entity' = {body:string; ``end``:int; start: int; suggested:bool; value:string}

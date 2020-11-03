@@ -59,27 +59,23 @@ module User =
                 let passPhrase = sprintf "Hello my name is %s and I am a user" u
                 say <| sprintf "Enter the phrase %s." passPhrase 
                 
-                let handleBoxInput () = 
-                    let image = getCameraCanvas().ToDataURL();
-                    debug <|sprintf "User image is %s" image
-                    stopCamera()
-                    let pattern =  d.Cui.GetSameTextTypingPattern passPhrase None
-                    let text = getDialogueBoxInput().Value
-                    debug <| sprintf "User entered typing pattern %s for text %s" pattern text
-                    if text.ToLower() <> passPhrase.ToLower() then
-                        say "Sorry you did not enter the passphrase correctly. Please try again."
-                        false
-                    else
-                        add "authenticateNewUser" (Some (u, pattern, image))
-                        true
-                
                 let collectData() = 
                     d.Cui.MonitorTypingPattern None
                     let c = createDialogueBoxCanvas()
                     startCamera JS.Document.Body c
                 
-                let rec box() = questionBox "Biometric Authentication" "" 640 480 None (Some collectData) (fun _ ->
-                    if handleBoxInput() then trigger "authenticateNewUser" else box()
+                let rec box() = questionBox "Biometric Authentication" "" 640 480 None (Some collectData) (fun text ->  
+                    let image = getCameraCanvas().ToDataURL();
+                    debug <|sprintf "User image is %s..." (image.Substring(0, 10))
+                    stopCamera()
+                    let pattern =  d.Cui.GetSameTextTypingPattern passPhrase None
+                    debug <| sprintf "User entered typing pattern %s for text %s" pattern text
+                    if text.ToLower() <> passPhrase.ToLower() then
+                        say "Sorry you did not enter the passphrase correctly. Please try again."
+                        box()
+                    else
+                        add "authenticateNewUser" [|u; pattern; image|]
+                        trigger "authenticateNewUser"
                 )
                 box()
             )
@@ -170,13 +166,15 @@ module User =
         
         /// User authentication
         | Response' "authenticateUser" (_, r)::[] -> endt "authenticateUser" (fun _ -> 
-            ()
+            match r with
+            | None -> debug "authenticateUser cancelled."
+            | _ -> () 
             ) 
         
         /// User add
-        | Yes(Response' "addUser" (_, Str u))::[] -> endt "addUser" (fun _ -> let q = authenticateNewUserQuestion u in ask q)
         | No(Response' "addUser" (_, Str u))::[] -> endt "addUser" (fun _ -> say <| sprintf "Ok I did not add the user %s. But you must login for me to help you." u)
-        | Response' "authenticateNewUser" (_, _)::[] -> endt "authenticateNewUser" (fun _ -> say "Authenticating new user.")
+        | Yes(Response' "addUser" (_, Str u))::[] -> endt "addUser" (fun _ -> let q = authenticateNewUserQuestion u in ask q)
+        | Response' "authenticateNewUser" (_, StrA u)::[] -> endt "authenticateNewUser" (fun _ -> addUser u.[0] u.[1])
 
         (* User switch *)
         

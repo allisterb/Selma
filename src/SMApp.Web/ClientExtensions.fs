@@ -85,7 +85,7 @@ module ClientExtensions =
     let getCameraCanvas() = X<CanvasElement>
 
     let questionBox title text (width:int) (height:int) (onCreate:(Box->unit) option) (onShow:(unit->unit) option) onInput = 
-        let prom = 
+        let box, prom = 
             let b = SweetAlert.Box (
                         TitleText = title,
                         Text = text,
@@ -96,10 +96,10 @@ module ClientExtensions =
                         ConfirmButtonText = "Ok"
             )
             do if onCreate.IsSome then onCreate.Value b
-            b |> SweetAlert.ShowBox
+            b, b |> SweetAlert.ShowBox
         do if onShow.IsSome then onShow.Value()
         prom.Then(Action<string>(onInput))
-        
+       
 [<JavaScript>]
 type _Html =
    | Elem of string * _Html list
