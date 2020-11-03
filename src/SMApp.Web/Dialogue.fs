@@ -79,14 +79,23 @@ module Dialogue =
         debug <| sprintf "Dispatch to module %s utterances: %A questions: %A." targetModule d.Utterances d.DialogueQuestions
         target d
 
-    let ask (d:Dialogue) (debug:string -> unit) (q:Question) =    
-        pushq d debug q
-        q.Ask(d)
-        
     let handle (d:Dialogue) (debug:string -> unit) (m:string) (f:unit->unit) =
         popu d debug
         debug <| sprintf "Handle utterance %s." m
         f()
+
+    let ask (d:Dialogue) (debug:string -> unit) (q:Question) =    
+        pushq d debug q
+        q.Ask(d)
+        
+    let trigger (d:Dialogue) (debug:string -> unit) (target:Dialogue->unit) (name:string) =
+        pushu d debug (Utterance(name, None, None, None))
+        target d
+
+    let cancel (d:Dialogue) (debug:string -> unit) =
+        let q = d.DialogueQuestions.Peek()
+        popq d debug 
+        debug <| sprintf "Cancel %A." q 
 
     let endt (d:Dialogue) (debug:string -> unit) (m:string) (f:unit->unit) =
         popu d debug
@@ -95,10 +104,6 @@ module Dialogue =
         debug <| sprintf "End turn %s." m
         f()
        
-    let trigger (d:Dialogue) (debug:string -> unit) (target:Dialogue->unit) (name:string) =
-        pushu d debug (Utterance(name, None, None, None))
-        target d
-
     let didNotUnderstand (d:Dialogue) (debug:string -> unit) (name:string) =
         debug <| sprintf "%s interpreter did not understand utterance." name
         popu d debug

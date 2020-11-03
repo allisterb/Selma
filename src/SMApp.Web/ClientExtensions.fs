@@ -84,8 +84,8 @@ module ClientExtensions =
     [<Direct "getCameraCanvas()">]
     let getCameraCanvas() = X<CanvasElement>
 
-    let questionBox title text (width:int) (height:int) (onCreate:(Box->unit) option) (onShow:(unit->unit) option) onInput = 
-        let box, prom = 
+    let questionBox title text (width:int) (height:int) (onCreate:(Box->unit) option) (onShow:(unit->unit) option) (onInput:obj->unit) (onCancel:obj->unit) = 
+        let prom = 
             let b = SweetAlert.Box (
                         TitleText = title,
                         Text = text,
@@ -93,13 +93,16 @@ module ClientExtensions =
                         Width = width.ToString(),
                         Html = sprintf "<div style=\"width:%ipx;height:%ipx\"></div>" width height,
                         Input = "text",
+                        ShowCancelButton = true,
+                        AllowOutsideClick = false,
                         ConfirmButtonText = "Ok"
+
             )
             do if onCreate.IsSome then onCreate.Value b
-            b, b |> SweetAlert.ShowBox
+            b |> SweetAlert.ShowBox
         do if onShow.IsSome then onShow.Value()
-        prom.Then(Action<string>(onInput))
-       
+        prom.Then(Action<obj>(onInput), Action<obj>(onCancel))  |> ignore
+         
 [<JavaScript>]
 type _Html =
    | Elem of string * _Html list

@@ -37,10 +37,11 @@ module User =
         let popq() = Dialogue.popq d debug
         
         let dispatch = Dialogue.dispatch d debug
-        let ask = Dialogue.ask d debug
         let handle = Dialogue.handle d debug
-        let endt = Dialogue.endt d debug
+        let ask = Dialogue.ask d debug
         let trigger = Dialogue.trigger d debug update
+        let cancel() = Dialogue.cancel d debug
+        let endt = Dialogue.endt d debug
         let didNotUnderstand() = Dialogue.didNotUnderstand d debug name
 
         (* Base dialogue patterns *)
@@ -53,60 +54,40 @@ module User =
         let (|Response'|_|) = Dialogue.(|Response'_|_|) d
        
         let user():User = prop "user"
-
-        let authenticateNewUserQuestion u = 
-            Question("authenticateNewUser", name, UserAuthentication, fun d ->  
-                let passPhrase = sprintf "Hello my name is %s and I am a user" u
+        
+        (* User functions *)
+        let authenticateUser u = 
+            Question("authenticateUser", name, UserAuthentication, fun d ->  
+                let passPhrase = sprintf "Hello my name is %s and I am an administrator" u
                 say <| sprintf "Enter the phrase %s." passPhrase 
-                
+
                 let collectData() = 
                     d.Cui.MonitorTypingPattern None
                     let c = createDialogueBoxCanvas()
                     startCamera JS.Document.Body c
-                
-                let rec box() = questionBox "Biometric Authentication" "" 640 480 None (Some collectData) (fun text ->  
-                    let image = getCameraCanvas().ToDataURL();
-                    debug <|sprintf "User image is %s..." (image.Substring(0, 10))
-                    stopCamera()
-                    let pattern =  d.Cui.GetSameTextTypingPattern passPhrase None
-                    debug <| sprintf "User entered typing pattern %s for text %s" pattern text
-                    if text.ToLower() <> passPhrase.ToLower() then
-                        say "Sorry you did not enter the passphrase correctly. Please try again."
-                        box()
-                    else
-                        add "authenticateNewUser" [|u; pattern; image|]
-                        trigger "authenticateNewUser"
-                )
+
+                let rec box() = 
+                    questionBox "Biometric Authentication" "" 640 480 None (Some collectData) (fun o ->  
+                        let text = o :?> string
+                        let image = getCameraCanvas().ToDataURL();
+                        debug <|sprintf "User image is %s..." (image.Substring(0, 10))
+                        stopCamera()
+                        let pattern =  d.Cui.GetSameTextTypingPattern passPhrase None
+                        debug <| sprintf "User entered typing pattern %s for text %s" pattern text
+                        if text.ToLower() <> passPhrase.ToLower() then
+                            say "Sorry you did not enter the passphrase correctly. Please try again."
+                            box()
+                        else
+                            add "authenticateUser" [|u; pattern; image|]
+                            trigger "authenticateUser"
+                        
+                    ) (fun _ -> 
+                        stopCamera()
+                        say "Ok but you must login for me to help you." 
+                        cancel())
                 box()
             )
 
-        let authenticateUserQuestion u = 
-            Question("authenticateUser", name, UserAuthentication, fun d ->  
-                d.Cui.TypingDNA.Reset()
-                questionBox "Biometric Authentication" "" 640 480 None None (fun _ -> 
-                     let pattern =  d.Cui.GetSameTextTypingPattern (sprintf "Hello my name is %s and I am an administrator" u) None
-                     debug <| sprintf "User entered typing pattern %s" pattern  
-                     if isNull pattern then trigger("authenticateUser") else
-                         async { 
-                                 let! t = Server.verifyUserTypingPattern u pattern 
-                                 debug <| sprintf "TypingDNA: %A"  t
-                                 match t with
-                                 | Ok r -> add "authenticateUser" (Some r)
-                                 | Error e -> error e; add "authenticateUser" None
-                                 trigger "authenticateUser"
-                         } |> Async.Start
-                )
-
-                let input = JQuery(".swal2-input").Get().[0] |> As<Dom.Element> 
-                do d.Cui.MonitorTypingPattern None
-                let e = JQuery(".swal2-content").Get().[0].FirstChild |> As<Dom.Element>
-                let c = createCanvas "camera" "640" "480" e
-                startCamera JS.Document.Body c
-            )
-       
-        let switchUserQuestion u = Question("switchUser", name, Verification, fun _ -> say <| sprintf "Do you want me to switch to the user %s" u)
-        
-        (* User functions *)
         let loginUser u = 
             do sayRandom waitRetrievePhrases "user name"
             async { 
@@ -119,12 +100,44 @@ module User =
                         let! h = Server.humanize user.LastLoggedIn.Value
                         say <| sprintf "You last logged in %s." h
                         say "Since you will be accessing sensitive data I need to authenticate you via facial recognition and typing behaviour. Enter the pass phrase you were assigned during enrollment in the box provided. Then, look into your camera until you see the red box around your face and press the Ok button."
-                        authenticateUserQuestion u |> ask
+                        authenticateUser u |> ask
                 | None _ -> 
                     say <| sprintf "I did not find a user with the name %s." u
                     Question("addUser", name, Verification, fun _ -> add "addUser" u; say <| sprintf "Do you want me to add the user %s?" u) |> ask
             } |> Async.Start
         
+        let authenticateNewUser u = 
+            Question("authenticateNewUser", name, UserAuthentication, fun d ->  
+                let passPhrase = sprintf "Hello my name is %s and I am an administrator" u
+                say <| sprintf "Enter the phrase %s." passPhrase 
+                
+                let collectData() = 
+                    d.Cui.MonitorTypingPattern None
+                    let c = createDialogueBoxCanvas()
+                    startCamera JS.Document.Body c
+                
+                let rec box() = 
+                    questionBox "Biometric Authentication" "" 640 480 None (Some collectData) (fun o ->  
+                        let text = o :?> string
+                        let image = getCameraCanvas().ToDataURL();
+                        debug <|sprintf "User image is %s..." (image.Substring(0, 10))
+                        stopCamera()
+                        let pattern =  d.Cui.GetSameTextTypingPattern passPhrase None
+                        debug <| sprintf "User entered typing pattern %s for text %s" pattern text
+                        if text.ToLower() <> passPhrase.ToLower() then
+                            say "Sorry you did not enter the passphrase correctly. Please try again."
+                            box()
+                        else
+                            add "authenticateNewUser" [|u; pattern; image|]
+                            trigger "authenticateNewUser"
+                        
+                    ) (fun _ -> 
+                        stopCamera()
+                        say <| sprintf "Ok I did not add the user %s. But you must login for me to help you." u
+                        cancel())
+                box()
+            )
+
         let addUser u tp = 
             async { 
                 do sayRandom waitAddPhrases "user"
@@ -139,6 +152,10 @@ module User =
                     error <| sprintf "Error adding user %s:%s." u e
                     say <| sprintf "Sorry I was not able to add the user %s to the system." u
             } |> Async.Start
+
+               
+        let switchUserQuestion u = Question("switchUser", name, Verification, fun _ -> say <| sprintf "Do you want me to switch to the user %s" u)
+        
 
         (* Symptom journal functions *) 
         let addSymptom s l m = 
@@ -173,8 +190,12 @@ module User =
         
         /// User add
         | No(Response' "addUser" (_, Str u))::[] -> endt "addUser" (fun _ -> say <| sprintf "Ok I did not add the user %s. But you must login for me to help you." u)
-        | Yes(Response' "addUser" (_, Str u))::[] -> endt "addUser" (fun _ -> let q = authenticateNewUserQuestion u in ask q)
-        | Response' "authenticateNewUser" (_, StrA u)::[] -> endt "authenticateNewUser" (fun _ -> addUser u.[0] u.[1])
+        | Yes(Response' "addUser" (_, Str u))::[] -> endt "addUser" (fun _ -> let q = authenticateNewUser u in ask q)
+        | Response' "authenticateNewUser" (_, r)::[] -> endt "authenticateNewUser" (fun _ -> 
+            match r with
+            | StrA u -> addUser u.[0] u.[1]
+            | _ -> debug "addUser cancelled."
+            )
 
         (* User switch *)
         

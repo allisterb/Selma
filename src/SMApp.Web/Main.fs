@@ -13,7 +13,7 @@ module Main =
     let debug m = ClientExtensions.debug name m
            
     /// Update the dialogue state
-    let update d =        
+    let rec update d =        
         let (Dialogue.Dialogue(cui, props, dialogueQuestions, output, utterances)) = d
         debug <| sprintf "Module %s starting utterances:%A, questions: %A." name utterances dialogueQuestions
    
@@ -35,8 +35,9 @@ module Main =
         let popq() = Dialogue.popq d debug
         
         let dispatch = Dialogue.dispatch d debug
-        let ask = Dialogue.ask d debug
         let handle = Dialogue.handle d debug
+        let ask = Dialogue.ask d debug
+        let trigger = Dialogue.trigger d debug update
         let endt = Dialogue.endt d debug
         let didNotUnderstand() = Dialogue.didNotUnderstand d debug name
 
