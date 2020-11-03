@@ -1,7 +1,7 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Web,ClientExtensions,_Html,htmModule,SC$1,TypingDNA,SaveResponse,UserResponse,VerifyResponse,Bs,NLU,Babelfy,ApiResponse,TokenFragment,CharFragment,Witai,Utterance,Intent,Entity,Trait,_Utterance,_Value,QnAMaker,ITSQuestion,ITSAnswerContext,ITSAnswer,ITSAnswers,NLG,SC$2,NLU$1,Intent$1,Trait$1,Entity$1,Utterance$1,Voice,_Entity,Text,_Utterance$1,_Intent,_Entity$1,_Trait,Domain,SC$3,CUI,MicState,ClientState,Interpreter,CUI$1,Dialogue,Question,QuestionType,DialogueModule,User,SC$4,Main,SC$5,Client,SC$6,SMApp$Web_GeneratedPrintf,GeneratedPrintf,IntelliFactory,Runtime,WebSharper,Arrays,UI,Doc,AttrProxy,Client$1,Templates,Utils,console,$,Strings,List,Seq,AttrModule,Concurrency,JSON,Random,Collections,Map,JavaScript,Pervasives,Operators,SDK,Unchecked,Remoting,AjaxRemotingProvider,Wit,document,Dictionary;
+ var Global,SMApp,Web,ClientExtensions,_Html,htmModule,SC$1,TypingDNA,SaveResponse,UserResponse,VerifyResponse,Bs,NLU,Babelfy,ApiResponse,TokenFragment,CharFragment,Witai,Utterance,Intent,Entity,Trait,_Utterance,_Value,QnAMaker,ITSQuestion,ITSAnswerContext,ITSAnswer,ITSAnswers,NLG,SC$2,NLU$1,Intent$1,Trait$1,Entity$1,Utterance$1,Voice,_Entity,Text,_Utterance$1,_Intent,_Entity$1,_Trait,Domain,SC$3,CUI,MicState,ClientState,Interpreter,CUI$1,Dialogue,Question,QuestionType,DialogueModule,User,SC$4,Symptoms,SC$5,Main,SC$6,Client,SC$7,SMApp$Web_GeneratedPrintf,GeneratedPrintf,IntelliFactory,Runtime,WebSharper,Arrays,UI,Doc,AttrProxy,Client$1,Templates,Utils,console,$,Strings,List,Seq,AttrModule,Concurrency,JSON,Random,Collections,Map,JavaScript,Pervasives,ClientSideJson,Provider,SDK,Unchecked,Operators,Remoting,AjaxRemotingProvider,Wit,document,Dictionary;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Web=SMApp.Web=SMApp.Web||{};
@@ -58,10 +58,12 @@
  DialogueModule=Web.DialogueModule=Web.DialogueModule||{};
  User=Web.User=Web.User||{};
  SC$4=Global.StartupCode$SMApp_Web$User=Global.StartupCode$SMApp_Web$User||{};
+ Symptoms=Web.Symptoms=Web.Symptoms||{};
+ SC$5=Global.StartupCode$SMApp_Web$Symptoms=Global.StartupCode$SMApp_Web$Symptoms||{};
  Main=Web.Main=Web.Main||{};
- SC$5=Global.StartupCode$SMApp_Web$Main=Global.StartupCode$SMApp_Web$Main||{};
+ SC$6=Global.StartupCode$SMApp_Web$Main=Global.StartupCode$SMApp_Web$Main||{};
  Client=Web.Client=Web.Client||{};
- SC$6=Global.StartupCode$SMApp_Web$Client=Global.StartupCode$SMApp_Web$Client||{};
+ SC$7=Global.StartupCode$SMApp_Web$Client=Global.StartupCode$SMApp_Web$Client||{};
  SMApp$Web_GeneratedPrintf=Global.SMApp$Web_GeneratedPrintf=Global.SMApp$Web_GeneratedPrintf||{};
  GeneratedPrintf=Global.GeneratedPrintf=Global.GeneratedPrintf||{};
  IntelliFactory=Global.IntelliFactory;
@@ -87,9 +89,11 @@
  Map=Collections&&Collections.Map;
  JavaScript=WebSharper&&WebSharper.JavaScript;
  Pervasives=JavaScript&&JavaScript.Pervasives;
- Operators=WebSharper&&WebSharper.Operators;
+ ClientSideJson=WebSharper&&WebSharper.ClientSideJson;
+ Provider=ClientSideJson&&ClientSideJson.Provider;
  SDK=Global.SDK;
  Unchecked=WebSharper&&WebSharper.Unchecked;
+ Operators=WebSharper&&WebSharper.Operators;
  Remoting=WebSharper&&WebSharper.Remoting;
  AjaxRemotingProvider=Remoting&&Remoting.AjaxRemotingProvider;
  Wit=Global.Wit;
@@ -1619,13 +1623,22 @@
  };
  NLU$1.StrA=function(a)
  {
-  var $1;
-  return a!=null&&a.$==1&&(a.$0 instanceof Global.Array&&($1=a.$0,true))?(Arrays.length($1)===0?Operators.FailWith("This array object is empty."):void 0,typeof Arrays.get($1,0)=="string"?{
-   $:1,
-   $0:$1
-  }:null):null;
+  if(a!=null&&a.$==1)
+   try
+   {
+    return{
+     $:1,
+     $0:((Provider.DecodeArray(Provider.Id()))())(JSON.parse(a.$0))
+    };
+   }
+   catch(m)
+   {
+    return null;
+   }
+  else
+   return null;
  };
- NLU$1.Str=function(a)
+ NLU$1.PStr=function(a)
  {
   var $1;
   return a!=null&&a.$==1&&(typeof a.$0=="string"&&($1=a.$0,true))?{
@@ -1949,31 +1962,37 @@
  };
  DialogueModule["Response'_"]=function(d,n,a)
  {
-  var $1,a$1,a$2,a$3,a$4,a$5,a$6;
-  return(a$1=DialogueModule.PropNotSet_(d,"user",a),a$1!=null&&a$1.$==1?(a$2=DialogueModule.Form(d,n,a$1.$0),a$2!=null&&a$2.$==1?($1=a$2.$0,true):(a$3=DialogueModule.PropNotSet_(d,"user",a),a$3!=null&&a$3.$==1&&(a$4=DialogueModule.NotForm(d,n,a$3.$0),a$4!=null&&a$4.$==1&&($1=a$4.$0,true)))):(a$5=DialogueModule.PropNotSet_(d,"user",a),a$5!=null&&a$5.$==1&&(a$6=DialogueModule.NotForm(d,n,a$5.$0),a$6!=null&&a$6.$==1&&($1=a$6.$0,true))))?DialogueModule.have(d,n)?{
+  var $1,a$1,a$2,a$3,a$4,a$5,a$6,p;
+  return(a$1=DialogueModule.PropNotSet_(d,"user",a),a$1!=null&&a$1.$==1?(a$2=DialogueModule.Form(d,n,a$1.$0),a$2!=null&&a$2.$==1?($1=a$2.$0,true):(a$3=DialogueModule.PropNotSet_(d,"user",a),a$3!=null&&a$3.$==1&&(a$4=DialogueModule.NotForm(d,n,a$3.$0),a$4!=null&&a$4.$==1&&($1=a$4.$0,true)))):(a$5=DialogueModule.PropNotSet_(d,"user",a),a$5!=null&&a$5.$==1&&(a$6=DialogueModule.NotForm(d,n,a$5.$0),a$6!=null&&a$6.$==1&&($1=a$6.$0,true))))?(p=DialogueModule.have(d,n)?{
+   $:1,
+   $0:DialogueModule.prop(d,n)
+  }:null,$1.get_Text()!==""?{
    $:1,
    $0:[$1,{
     $:1,
-    $0:d.get_Props().get_Item(n)
-   }]
+    $0:$1.get_Text()
+   },p]
   }:{
    $:1,
-   $0:[$1,null]
-  }:null;
+   $0:[$1,null,p]
+  }):null;
  };
  DialogueModule.Response_=function(d,n,a)
  {
-  var $1,a$1,a$2,a$3,a$4,a$5,a$6;
-  return(a$1=DialogueModule.PropSet_(d,"user",a),a$1!=null&&a$1.$==1?(a$2=DialogueModule.Form(d,n,a$1.$0),a$2!=null&&a$2.$==1?($1=a$2.$0,true):(a$3=DialogueModule.PropSet_(d,"user",a),a$3!=null&&a$3.$==1&&(a$4=DialogueModule.NotForm(d,n,a$3.$0),a$4!=null&&a$4.$==1&&($1=a$4.$0,true)))):(a$5=DialogueModule.PropSet_(d,"user",a),a$5!=null&&a$5.$==1&&(a$6=DialogueModule.NotForm(d,n,a$5.$0),a$6!=null&&a$6.$==1&&($1=a$6.$0,true))))?DialogueModule.have(d,n)?{
+  var $1,a$1,a$2,a$3,a$4,a$5,a$6,p;
+  return(a$1=DialogueModule.PropSet_(d,"user",a),a$1!=null&&a$1.$==1?(a$2=DialogueModule.Form(d,n,a$1.$0),a$2!=null&&a$2.$==1?($1=a$2.$0,true):(a$3=DialogueModule.PropSet_(d,"user",a),a$3!=null&&a$3.$==1&&(a$4=DialogueModule.NotForm(d,n,a$3.$0),a$4!=null&&a$4.$==1&&($1=a$4.$0,true)))):(a$5=DialogueModule.PropSet_(d,"user",a),a$5!=null&&a$5.$==1&&(a$6=DialogueModule.NotForm(d,n,a$5.$0),a$6!=null&&a$6.$==1&&($1=a$6.$0,true))))?(p=DialogueModule.have(d,n)?{
+   $:1,
+   $0:DialogueModule.prop(d,n)
+  }:null,$1.get_Text()!==""?{
    $:1,
    $0:[$1,{
     $:1,
-    $0:d.get_Props().get_Item(n)
-   }]
+    $0:$1.get_Text()
+   },p]
   }:{
    $:1,
-   $0:[$1,null]
-  }:null;
+   $0:[$1,null,p]
+  }):null;
  };
  DialogueModule.NotForm=function(d,n,a)
  {
@@ -1984,7 +2003,10 @@
  };
  DialogueModule.Form=function(d,n,a)
  {
-  return d.get_DialogueQuestions().length>0&&(d.get_DialogueQuestions())[0].get_Name()===n&&a.get_Text()===""&&a.get_Intent()!=null&&a.get_Intent().$0.get_Name()===n&&Unchecked.Equals(a.get_Traits(),null)&&Unchecked.Equals(a.get_Entities(),null)?{
+  return d.get_DialogueQuestions().length>0&&(d.get_DialogueQuestions())[0].get_Name()===n&&a.get_Intent()!=null&&a.get_Intent().$0.get_Name()===n&&Unchecked.Equals(a.get_Intent().$0.get_Confidence(),{
+   $:1,
+   $0:1
+  })&&Unchecked.Equals(a.get_Traits(),null)&&Unchecked.Equals(a.get_Entities(),null)?{
    $:1,
    $0:a
   }:null;
@@ -2070,10 +2092,14 @@
   }(Global.id))(m));
   f();
  };
- DialogueModule.cancel=function(d,debug)
+ DialogueModule.cancel=function(d,debug,qn)
  {
   var q;
   q=(d.get_DialogueQuestions())[0];
+  q.get_Name()!==qn?(((Runtime.Curried3(function($1,$2,$3)
+  {
+   return $1(SMApp$Web_GeneratedPrintf.p$9($2)+" at the top of the stack does not have the name "+Utils.toSafe($3)+".");
+  }))(Operators.FailWith))(q))(qn):void 0;
   DialogueModule.popq(d,debug);
   debug((function($1)
   {
@@ -2083,12 +2109,22 @@
    };
   }(Global.id))(q));
  };
- DialogueModule.trigger=function(d,debug,target,name)
+ DialogueModule.trigger=function(d,debug,target,name,data)
  {
   DialogueModule.pushu(d,debug,new Utterance$1({
    $:0,
-   $0:name,
-   $1:null,
+   $0:JSON.stringify(data),
+   $1:{
+    $:1,
+    $0:new Intent$1({
+     $:0,
+     $0:name,
+     $1:{
+      $:1,
+      $0:1
+     }
+    })
+   },
    $2:null,
    $3:null
   }));
@@ -2224,11 +2260,7 @@
  };
  User.update=function(d)
  {
-  var props,handle,ask,trigger,endt,m,$1,a,a$1,a$2,$2,a$3,a$4,a$5,$3,a$6,$4,a$7,a$8,a$9,$5,a$10,a$11,a$12,$6,a$13,$7,a$14,a$15,a$16,b,$8,a$17,a$18,a$19,$9,a$20,a$21,a$22,$10,a$23,$11,a$24,$12,a$25,$13,b$1,$14,a$26,a$27,a$28,b$2,$15,a$29,$16,$17,a$30,a$31,$18;
-  function echo(t$1)
-  {
-   DialogueModule.echo(d,t$1);
-  }
+  var handle,ask,trigger,cancel,endt,m,$1,a,a$1,a$2,$2,a$3,a$4,a$5,$3,a$6,a$7,$4,a$8,a$9,a$10,$5,a$11,a$12,a$13,$6,a$14,a$15,$7,a$16,a$17,a$18,b,$8,a$19,a$20,a$21,$9,a$22,a$23,a$24;
   function say(t$1)
   {
    DialogueModule.say(d,t$1);
@@ -2236,10 +2268,6 @@
   function sayRandom(p,v)
   {
    return DialogueModule.sayRandom(d,p,v);
-  }
-  function prop(k)
-  {
-   return DialogueModule.prop(d,k);
   }
   function add(k,v)
   {
@@ -2260,40 +2288,29 @@
   {
    User.debug(m$1);
   }
-  function t(d$5)
+  function t(d$6)
   {
-   User.update(d$5);
-  }
-  function cancel()
-  {
-   DialogueModule.cancel(d,function(m$1)
-   {
-    User.debug(m$1);
-   });
+   User.update(d$6);
   }
   function d$4(m$1)
   {
    User.debug(m$1);
   }
-  function User$1(a$32)
+  function d$5(m$1)
   {
-   return DialogueModule.User_(d,a$32);
+   User.debug(m$1);
   }
-  function _User(a$32)
+  function _User(a$25)
   {
-   return DialogueModule["User'_"](d,a$32);
+   return DialogueModule["User'_"](d,a$25);
   }
-  function Response(n,a$32)
+  function Response(n,a$25)
   {
-   return DialogueModule.Response_(d,n,a$32);
+   return DialogueModule.Response_(d,n,a$25);
   }
-  function _Response(n,a$32)
+  function _Response(n,a$25)
   {
-   return DialogueModule["Response'_"](d,n,a$32);
-  }
-  function user()
-  {
-   return prop("user");
+   return DialogueModule["Response'_"](d,n,a$25);
   }
   function authenticateUser(u)
   {
@@ -2302,13 +2319,13 @@
     $0:"authenticateUser",
     $1:User.name(),
     $2:QuestionType.UserAuthentication,
-    $3:function(d$5)
+    $3:function(d$6)
     {
      var passPhrase;
      function collectData()
      {
       var c;
-      d$5.get_Cui().MonitorTypingPattern(null);
+      d$6.get_Cui().MonitorTypingPattern(null);
       c=ClientExtensions.createDialogueBoxCanvas();
       ClientExtensions.startCamera(self.document.body,c);
      }
@@ -2321,39 +2338,39 @@
       {
        var image,pattern;
        image=ClientExtensions.getCameraCanvas().toDataURL();
-       User.debug((function($19)
+       User.debug((function($10)
        {
-        return function($20)
+        return function($11)
         {
-         return $19("User image is "+Utils.toSafe($20)+"...");
+         return $10("User image is "+Utils.toSafe($11)+"...");
         };
        }(Global.id))(Strings.Substring(image,0,10)));
        ClientExtensions.stopCamera();
-       pattern=d$5.get_Cui().GetSameTextTypingPattern(passPhrase,null);
-       User.debug((((Runtime.Curried3(function($19,$20,$21)
+       pattern=d$6.get_Cui().GetSameTextTypingPattern(passPhrase,null);
+       User.debug((((Runtime.Curried3(function($10,$11,$12)
        {
-        return $19("User entered typing pattern "+Utils.toSafe($20)+" for text "+Utils.toSafe($21));
+        return $10("User entered typing pattern "+Utils.toSafe($11)+" for text "+Utils.toSafe($12));
        }))(Global.id))(pattern))(o));
-       o.toLowerCase()!==passPhrase.toLowerCase()?(say("Sorry you did not enter the passphrase correctly. Please try again."),box()):(add("authenticateUser",[u,pattern,image]),trigger("authenticateUser"));
+       o.toLowerCase()!==passPhrase.toLowerCase()?(say("Sorry, you did not enter the passphrase correctly. Please try again."),box()):(trigger("authenticateUser"))([u,pattern,image]);
       },function()
       {
-       ClientExtensions.stopCamera();
        say("Ok but you must login for me to help you.");
-       cancel();
+       ClientExtensions.stopCamera();
+       cancel("authenticateUser");
       });
      }
-     passPhrase=(function($19)
+     passPhrase=(function($10)
      {
-      return function($20)
+      return function($11)
       {
-       return $19("Hello my name is "+Utils.toSafe($20)+" and I am an administrator");
+       return $10("Hello my name is "+Utils.toSafe($11)+" and I am an administrator");
       };
      }(Global.id))(u);
-     say((function($19)
+     say((function($10)
      {
-      return function($20)
+      return function($11)
       {
-       return $19("Enter the phrase "+Utils.toSafe($20)+".");
+       return $10("Enter the phrase "+Utils.toSafe($11)+".");
       };
      }(Global.id))(passPhrase));
      box();
@@ -2362,18 +2379,18 @@
   }
   function loginUser(u)
   {
-   var b$3;
+   var b$1;
    sayRandom(NLG.waitRetrievePhrases(),"user name");
-   Concurrency.Start((b$3=null,Concurrency.Delay(function()
+   Concurrency.Start((b$1=null,Concurrency.Delay(function()
    {
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:-1889803330",[u]),function(a$32)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:-1640239448",[u]),function(a$25)
     {
-     var user$1;
-     return a$32==null?(say((function($19)
+     var user;
+     return a$25==null?(say((function($10)
      {
-      return function($20)
+      return function($11)
       {
-       return $19("I did not find a user with the name "+Utils.toSafe($20)+".");
+       return $10("I did not find a user with the name "+Utils.toSafe($11)+".");
       };
      }(Global.id))(u)),ask(new Question({
       $:0,
@@ -2383,34 +2400,32 @@
       $3:function()
       {
        add("addUser",u);
-       say((function($19)
+       say((function($10)
        {
-        return function($20)
+        return function($11)
         {
-         return $19("Do you want me to add the user "+Utils.toSafe($20)+"?");
+         return $10("Do you want me to add the user "+Utils.toSafe($11)+"?");
         };
        }(Global.id))(u));
       }
-     })),Concurrency.Zero()):(user$1=a$32.$0,Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.updateUserLastLogin:-1714890238",[user$1.Name]),function()
+     })),Concurrency.Zero()):(user=a$25.$0,Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.updateUserLastLogin:389651686",[user.Name]),function()
      {
-      add("loginUser",user$1);
-      sayRandom(NLG.helloUserPhrases(),(function($19)
+      sayRandom(NLG.helloUserPhrases(),(function($10)
       {
-       return function($20)
+       return function($11)
        {
-        return $19(Utils.prettyPrint($20));
+        return $10(Utils.prettyPrint($11));
        };
-      }(Global.id))(user$1.Name));
-      return user$1.LastLoggedIn!=null?Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.humanize:289654139",[user$1.LastLoggedIn.$0]),function(a$33)
+      }(Global.id))(user.Name));
+      return user.LastLoggedIn!=null?Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.humanize:169528580",[user.LastLoggedIn.$0]),function(a$26)
       {
-       say((function($19)
+       say((function($10)
        {
-        return function($20)
+        return function($11)
         {
-         return $19("You last logged in "+Utils.toSafe($20)+".");
+         return $10("You last logged in "+Utils.toSafe($11)+".");
         };
-       }(Global.id))(a$33));
-       say("Since you will be accessing sensitive data I need to authenticate you via facial recognition and typing behaviour. Enter the pass phrase you were assigned during enrollment in the box provided. Then, look into your camera until you see the red box around your face and press the Ok button.");
+       }(Global.id))(a$26));
        ask(authenticateUser(u));
        return Concurrency.Zero();
       }):Concurrency.Zero();
@@ -2425,13 +2440,13 @@
     $0:"authenticateNewUser",
     $1:User.name(),
     $2:QuestionType.UserAuthentication,
-    $3:function(d$5)
+    $3:function(d$6)
     {
      var passPhrase;
      function collectData()
      {
       var c;
-      d$5.get_Cui().MonitorTypingPattern(null);
+      d$6.get_Cui().MonitorTypingPattern(null);
       c=ClientExtensions.createDialogueBoxCanvas();
       ClientExtensions.startCamera(self.document.body,c);
      }
@@ -2444,86 +2459,50 @@
       {
        var image,pattern;
        image=ClientExtensions.getCameraCanvas().toDataURL();
-       User.debug((function($19)
+       User.debug((function($10)
        {
-        return function($20)
+        return function($11)
         {
-         return $19("User image is "+Utils.toSafe($20)+"...");
+         return $10("User image is "+Utils.toSafe($11)+"...");
         };
        }(Global.id))(Strings.Substring(image,0,10)));
        ClientExtensions.stopCamera();
-       pattern=d$5.get_Cui().GetSameTextTypingPattern(passPhrase,null);
-       User.debug((((Runtime.Curried3(function($19,$20,$21)
+       pattern=d$6.get_Cui().GetSameTextTypingPattern(passPhrase,null);
+       User.debug((((Runtime.Curried3(function($10,$11,$12)
        {
-        return $19("User entered typing pattern "+Utils.toSafe($20)+" for text "+Utils.toSafe($21));
+        return $10("User entered typing pattern "+Utils.toSafe($11)+" for text "+Utils.toSafe($12));
        }))(Global.id))(pattern))(o));
-       o.toLowerCase()!==passPhrase.toLowerCase()?(say("Sorry you did not enter the passphrase correctly. Please try again."),box()):(add("authenticateNewUser",[u,pattern,image]),trigger("authenticateNewUser"));
+       o.toLowerCase()!==passPhrase.toLowerCase()?(say("Sorry you did not enter the passphrase correctly. Please try again."),box()):(trigger("authenticateNewUser"))([u,pattern,image]);
       },function()
       {
        ClientExtensions.stopCamera();
-       say((function($19)
+       say((function($10)
        {
-        return function($20)
+        return function($11)
         {
-         return $19("Ok I did not add the user "+Utils.toSafe($20)+". But you must login for me to help you.");
+         return $10("Ok I did not add the user "+Utils.toSafe($11)+". But you must login for me to help you.");
         };
        }(Global.id))(u));
-       cancel();
+       cancel("authenticateUser");
       });
      }
-     passPhrase=(function($19)
+     passPhrase=(function($10)
      {
-      return function($20)
+      return function($11)
       {
-       return $19("Hello my name is "+Utils.toSafe($20)+" and I am an administrator");
+       return $10("Hello my name is "+Utils.toSafe($11)+" and I am an administrator");
       };
      }(Global.id))(u);
-     say((function($19)
+     say((function($10)
      {
-      return function($20)
+      return function($11)
       {
-       return $19("Enter the phrase "+Utils.toSafe($20)+".");
+       return $10("Enter the phrase "+Utils.toSafe($11)+".");
       };
      }(Global.id))(passPhrase));
      box();
     }
    });
-  }
-  function addUser(u,tp)
-  {
-   var b$3;
-   return Concurrency.Start((b$3=null,Concurrency.Delay(function()
-   {
-    sayRandom(NLG.waitAddPhrases(),"user");
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addUser:1809208550",[u]),function(a$32)
-    {
-     return a$32.$==1?(ClientExtensions.error((((Runtime.Curried3(function($19,$20,$21)
-     {
-      return $19("Error adding user "+Utils.toSafe($20)+":"+Utils.toSafe($21)+".");
-     }))(Global.id))(u))(a$32.$0)),say((function($19)
-     {
-      return function($20)
-      {
-       return $19("Sorry I was not able to add the user "+Utils.toSafe($20)+" to the system.");
-      };
-     }(Global.id))(u)),Concurrency.Zero()):Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addUserTypingPattern:1590689002",[u,tp]),function(a$33)
-     {
-      return a$33.$==1?(say((function($19)
-      {
-       return function($20)
-       {
-        return $19("Sorry I was not able to add the user "+Utils.toSafe($20)+" to the system.");
-       };
-      }(Global.id))(u)),Concurrency.Zero()):(add("user",u),say((function($19)
-      {
-       return function($20)
-       {
-        return $19("Hello "+Utils.prettyPrint($20)+", nice to meet you.");
-       };
-      }(Global.id))(props.get_Item("user"))),Concurrency.Zero());
-     });
-    });
-   })),null);
   }
   function switchUserQuestion(u)
   {
@@ -2534,52 +2513,31 @@
     $2:QuestionType.Verification,
     $3:function()
     {
-     say((function($19)
+     say((function($10)
      {
-      return function($20)
+      return function($11)
       {
-       return $19("Do you want me to switch to the user "+Utils.toSafe($20));
+       return $10("Do you want me to switch to the user "+Utils.toSafe($11));
       };
      }(Global.id))(u));
     }
    });
   }
-  function addSymptom(s,l,m$1)
-  {
-   var b$3;
-   return Concurrency.Start((b$3=null,Concurrency.Delay(function()
-   {
-    sayRandom(NLG.waitAddPhrases(),"symptom entry");
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addSymptomJournalEntry:1083782219",[user().Name,s,l,m$1]),function(a$32)
-    {
-     return a$32.$==1?(say(function($19)
-     {
-      return $19("Sorry I wasn't able to add that symptom to your journal. Could you try again?");
-     }(Global.id)),Concurrency.Zero()):(say((function($19)
-     {
-      return function($20)
-      {
-       return $19("OK I added that "+Utils.toSafe($20)+" symptom to your journal.");
-      };
-     }(Global.id))(s)),Concurrency.Zero());
-    });
-   })),null);
-  }
   DialogueModule.debugInterpreterStart(d,function(m$1)
   {
    User.debug(m$1);
   },User.name());
-  props=d.$1;
   handle=Runtime.Curried(DialogueModule.handle,2,[d,d$1]);
   ask=function(q)
   {
    DialogueModule.ask(d,d$2,q);
   };
-  trigger=function(n)
+  trigger=Runtime.Curried(DialogueModule.trigger,2,[d,d$3,t]);
+  cancel=function(q)
   {
-   DialogueModule.trigger(d,d$3,t,n);
+   DialogueModule.cancel(d,d$4,q);
   };
-  endt=Runtime.Curried(DialogueModule.endt,2,[d,d$4]);
+  endt=Runtime.Curried(DialogueModule.endt,2,[d,d$5]);
   m=DialogueModule.frame(d.$4);
   m.$==1&&(a=_User(m.$0),a!=null&&a.$==1&&(a$1=NLU$1.Intent$1("greet",a.$0),a$1!=null&&a$1.$==1&&(a$2=NLU$1.Entity1Of1("name",a$1.$0[1]),a$2!=null&&a$2.$==1&&(m.$1.$==0&&($1=a$2.$0,true)))))?(handle("loginUser"))(function()
   {
@@ -2587,73 +2545,61 @@
   }):m.$==1&&(a$3=_User(m.$0),a$3!=null&&a$3.$==1&&(a$4=NLU$1.Intent$1("hello",a$3.$0),a$4!=null&&a$4.$==1&&(a$5=NLU$1.Entity1Of1("contact",a$4.$0[1]),a$5!=null&&a$5.$==1&&(m.$1.$==0&&($2=a$5.$0,true)))))?(handle("loginUser"))(function()
   {
    loginUser($2.get_Value());
-  }):m.$==1&&(a$6=_Response("authenticateUser",m.$0),a$6!=null&&a$6.$==1&&(m.$1.$==0&&($3=a$6.$0[1],true)))?(endt("authenticateUser"))(function()
+  }):m.$==1&&(a$6=_Response("authenticateUser",m.$0),a$6!=null&&a$6.$==1&&(a$7=NLU$1.StrA(a$6.$0[1]),a$7!=null&&a$7.$==1&&(m.$1.$==0&&($3=a$7.$0,true))))?(endt("authenticateUser"))(function()
   {
-   if($3==null)
-    User.debug("authenticateUser cancelled.");
-  }):m.$==1&&(a$7=NLU$1.No(m.$0),a$7!=null&&a$7.$==1&&(a$8=_Response("addUser",a$7.$0),a$8!=null&&a$8.$==1&&(a$9=NLU$1.Str(a$8.$0[1]),a$9!=null&&a$9.$==1&&(m.$1.$==0&&($4=a$9.$0,true)))))?(endt("addUser"))(function()
-  {
-   say((function($19)
+   say((function($10)
    {
-    return function($20)
+    return function($11)
     {
-     return $19("Ok I did not add the user "+Utils.toSafe($20)+". But you must login for me to help you.");
+     return $10("Authenticate user "+Utils.toSafe($11)+".");
+    };
+   }(Global.id))(Arrays.get($3,0)));
+  }):m.$==1&&(a$8=NLU$1.No(m.$0),a$8!=null&&a$8.$==1&&(a$9=_Response("addUser",a$8.$0),a$9!=null&&a$9.$==1&&(a$10=NLU$1.PStr(a$9.$0[2]),a$10!=null&&a$10.$==1&&(m.$1.$==0&&($4=a$10.$0,true)))))?(endt("addUser"))(function()
+  {
+   say((function($10)
+   {
+    return function($11)
+    {
+     return $10("Ok I did not add the user "+Utils.toSafe($11)+". But you must login for me to help you.");
     };
    }(Global.id))($4));
-  }):m.$==1&&(a$10=NLU$1.Yes(m.$0),a$10!=null&&a$10.$==1&&(a$11=_Response("addUser",a$10.$0),a$11!=null&&a$11.$==1&&(a$12=NLU$1.Str(a$11.$0[1]),a$12!=null&&a$12.$==1&&(m.$1.$==0&&($5=a$12.$0,true)))))?(endt("addUser"))(function()
+  }):m.$==1&&(a$11=NLU$1.Yes(m.$0),a$11!=null&&a$11.$==1&&(a$12=_Response("addUser",a$11.$0),a$12!=null&&a$12.$==1&&(a$13=NLU$1.PStr(a$12.$0[2]),a$13!=null&&a$13.$==1&&(m.$1.$==0&&($5=a$13.$0,true)))))?(endt("addUser"))(function()
   {
    ask(authenticateNewUser($5));
-  }):m.$==1&&(a$13=_Response("authenticateNewUser",m.$0),a$13!=null&&a$13.$==1&&(m.$1.$==0&&($6=a$13.$0[1],true)))?(endt("authenticateNewUser"))(function()
+  }):m.$==1&&(a$14=_Response("authenticateNewUser",m.$0),a$14!=null&&a$14.$==1&&(a$15=NLU$1.StrA(a$14.$0[1]),a$15!=null&&a$15.$==1&&(m.$1.$==0&&($6=a$15.$0,true))))?(endt("authenticateNewUser"))(function()
   {
-   var a$32,u;
-   a$32=NLU$1.StrA($6);
-   a$32!=null&&a$32.$==1?(u=a$32.$0,addUser(Arrays.get(u,0),Arrays.get(u,1))):User.debug("addUser cancelled.");
-  }):m.$==1&&(a$14=User$1(m.$0),a$14!=null&&a$14.$==1&&(a$15=NLU$1.Intent$1("hello",a$14.$0),a$15!=null&&a$15.$==1&&(a$15.$0[0]==null&&(a$16=NLU$1.Entity1Of1("name",a$15.$0[1]),a$16!=null&&a$16.$==1&&(m.$1.$==0&&($7=a$16.$0,true))))))?Concurrency.Start((b=null,Concurrency.Delay(function()
-  {
-   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:-1889803330",[$7.get_Value()]),function(a$32)
+   say((function($10)
    {
-    return a$32==null?(say((function($19)
+    return function($11)
     {
-     return function($20)
+     return $10("Authenticate new user "+Utils.toSafe($11)+".");
+    };
+   }(Global.id))(Arrays.get($6,0)));
+  }):m.$==1&&(a$16=DialogueModule.User_(d,m.$0),a$16!=null&&a$16.$==1&&(a$17=NLU$1.Intent$1("hello",a$16.$0),a$17!=null&&a$17.$==1&&(a$17.$0[0]==null&&(a$18=NLU$1.Entity1Of1("name",a$17.$0[1]),a$18!=null&&a$18.$==1&&(m.$1.$==0&&($7=a$18.$0,true))))))?Concurrency.Start((b=null,Concurrency.Delay(function()
+  {
+   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:-1640239448",[$7.get_Value()]),function(a$25)
+   {
+    return a$25==null?(say((function($10)
+    {
+     return function($11)
      {
-      return $19("Sorry, the user "+Utils.toSafe($20)+" does not exist.");
+      return $10("Sorry, the user "+Utils.toSafe($11)+" does not exist.");
      };
-    }(Global.id))($7.get_Value())),Concurrency.Zero()):(ask(switchUserQuestion(a$32.$0.Name)),Concurrency.Zero());
+    }(Global.id))($7.get_Value())),Concurrency.Zero()):(ask(switchUserQuestion(a$25.$0.Name)),Concurrency.Zero());
    });
-  })),null):m.$==1&&(a$17=NLU$1.Yes(m.$0),a$17!=null&&a$17.$==1&&(a$18=Response("switchUser",a$17.$0),a$18!=null&&a$18.$==1&&(a$19=NLU$1.Str(a$18.$0[1]),a$19!=null&&a$19.$==1&&(m.$1.$==0&&($8=a$19.$0,true)))))?(props.set_Item("user",$8),say((function($19)
+  })),null):m.$==1&&(a$19=NLU$1.Yes(m.$0),a$19!=null&&a$19.$==1&&(a$20=Response("switchUser",a$19.$0),a$20!=null&&a$20.$==1&&(a$21=NLU$1.PStr(a$20.$0[2]),a$21!=null&&a$21.$==1&&(m.$1.$==0&&($8=a$21.$0,true)))))?(d.$1.set_Item("user",$8),say((function($10)
   {
-   return function($20)
+   return function($11)
    {
-    return $19("Ok I switched to user "+Utils.prettyPrint($20)+".");
+    return $10("Ok I switched to user "+Utils.prettyPrint($11)+".");
    };
-  }(Global.id))($8))):m.$==1&&(a$20=NLU$1.No(m.$0),a$20!=null&&a$20.$==1&&(a$21=Response("switchUser",a$20.$0),a$21!=null&&a$21.$==1&&(a$22=NLU$1.Str(a$21.$0[1]),a$22!=null&&a$22.$==1&&(m.$1.$==0&&($9=a$22.$0,true)))))?say((function($19)
+  }(Global.id))($8))):m.$==1&&(a$22=NLU$1.No(m.$0),a$22!=null&&a$22.$==1&&(a$23=Response("switchUser",a$22.$0),a$23!=null&&a$23.$==1&&(a$24=NLU$1.PStr(a$23.$0[2]),a$24!=null&&a$24.$==1&&(m.$1.$==0&&($9=a$24.$0,true)))))?say((function($10)
   {
-   return function($20)
+   return function($11)
    {
-    return $19("Ok I did not switch to user "+Utils.toSafe($20)+".");
+    return $10("Ok I did not switch to user "+Utils.toSafe($11)+".");
    };
-  }(Global.id))($9)):m.$==1&&(a$23=_User(m.$0),a$23!=null&&a$23.$==1?($11=NLU$1.Intent$1("kbquery",a$23.$0),$11!=null&&$11.$==1)?m.$1.$==0&&($10=a$23.$0,true):(a$24=User$1(m.$0),a$24!=null&&a$24.$==1&&(($12=NLU$1.Intent$1("kbquery",a$24.$0),$12!=null&&$12.$==1)&&(m.$1.$==0&&($10=a$24.$0,true)))):(a$25=User$1(m.$0),a$25!=null&&a$25.$==1&&(($13=NLU$1.Intent$1("kbquery",a$25.$0),$13!=null&&$13.$==1)&&(m.$1.$==0&&($10=a$25.$0,true)))))?Concurrency.Start((b$1=null,Concurrency.Delay(function()
-  {
-   return Concurrency.Bind(QnAMaker.getAnswer($10.get_Text()),function(a$32)
-   {
-    var s;
-    return Concurrency.Bind((s=Arrays.get(a$32.answers,0).answer,(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.mdtohtml:-1180746796",[s])),function(a$33)
-    {
-     var s$1;
-     return Concurrency.Bind((s$1=Arrays.get(a$32.answers,0).answer,(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.mdtotext:-1180746796",[s$1])),function(a$34)
-     {
-      echo(a$33);
-      say(a$34);
-      return Concurrency.Zero();
-     });
-    });
-   });
-  })),null):m.$==1&&(a$26=User$1(m.$0),a$26!=null&&a$26.$==1&&(a$27=NLU$1.Intent$1("symptom",a$26.$0),a$27!=null&&a$27.$==1&&(a$28=NLU$1.Entity1OfAny("symptom_name",a$27.$0[1]),a$28!=null&&a$28.$==1&&(m.$1.$==0&&($14=a$28.$0,true)))))?Concurrency.Start((b$2=null,Concurrency.Delay(function()
-  {
-   say("Ok I'll add that entry to your symptom journal");
-   addSymptom($14.get_Value(),null,null);
-   return Concurrency.Zero();
-  })),null):m.$==1&&(a$29=NLU$1.Yes(m.$0),a$29!=null&&a$29.$==1&&(($16=Response("painVideo",a$29.$0),$16!=null&&$16.$==1)&&m.$1.$==0))?d.$0["EchoHtml'"]("<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/SkAqOditKN0\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>"):m.$==1&&(a$30=User$1(m.$0),a$30!=null&&a$30.$==1&&(a$31=NLU$1.Intent$1("medjournal",a$30.$0),a$31!=null&&a$31.$==1&&(($18=a$31.$0[1],$18!=null&&$18.$==1)&&(m.$1.$==0&&($17=a$31.$0[1].$0,true)))))?(say("ok I added that entry to your medication journal."),say("You should be careful not to take too many painkillers over a short period of time.")):DialogueModule.didNotUnderstand(d,function(m$1)
+  }(Global.id))($9)):DialogueModule.didNotUnderstand(d,function(m$1)
   {
    User.debug(m$1);
   },User.name());
@@ -2675,6 +2621,103 @@
  {
   SC$4.$cctor=Global.ignore;
   SC$4.name="User";
+ };
+ Symptoms.update=function(d)
+ {
+  var m,$1,a,a$1,a$2,b,$2,a$3,$3,$4,a$4,a$5,$5,$6,a$6,$7,b$1;
+  function echo(t)
+  {
+   DialogueModule.echo(d,t);
+  }
+  function say(t)
+  {
+   DialogueModule.say(d,t);
+  }
+  function sayRandom(p,v)
+  {
+   return DialogueModule.sayRandom(d,p,v);
+  }
+  function prop(k)
+  {
+   return DialogueModule.prop(d,k);
+  }
+  function User$1(a$7)
+  {
+   return DialogueModule.User_(d,a$7);
+  }
+  function user()
+  {
+   return prop("user");
+  }
+  function addSymptom(s,l,m$1)
+  {
+   var b$2;
+   return Concurrency.Start((b$2=null,Concurrency.Delay(function()
+   {
+    sayRandom(NLG.waitAddPhrases(),"symptom entry");
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addSymptomJournalEntry:1150199733",[user().Name,s,l,m$1]),function(a$7)
+    {
+     return a$7.$==1?(say(function($8)
+     {
+      return $8("Sorry I wasn't able to add that symptom to your journal. Could you try again?");
+     }(Global.id)),Concurrency.Zero()):(say((function($8)
+     {
+      return function($9)
+      {
+       return $8("OK I added that "+Utils.toSafe($9)+" symptom to your journal.");
+      };
+     }(Global.id))(s)),Concurrency.Zero());
+    });
+   })),null);
+  }
+  DialogueModule.debugInterpreterStart(d,function(m$1)
+  {
+   Symptoms.debug(m$1);
+  },Symptoms.name());
+  m=DialogueModule.frame(d.$4);
+  m.$==1&&(a=User$1(m.$0),a!=null&&a.$==1&&(a$1=NLU$1.Intent$1("symptom",a.$0),a$1!=null&&a$1.$==1&&(a$2=NLU$1.Entity1OfAny("symptom_name",a$1.$0[1]),a$2!=null&&a$2.$==1&&(m.$1.$==0&&($1=a$2.$0,true)))))?Concurrency.Start((b=null,Concurrency.Delay(function()
+  {
+   say("Ok I'll add that entry to your symptom journal");
+   addSymptom($1.get_Value(),null,null);
+   return Concurrency.Zero();
+  })),null):m.$==1&&(a$3=NLU$1.Yes(m.$0),a$3!=null&&a$3.$==1&&(($3=DialogueModule.Response_(d,"painVideo",a$3.$0),$3!=null&&$3.$==1)&&m.$1.$==0))?d.$0["EchoHtml'"]("<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/SkAqOditKN0\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>"):m.$==1&&(a$4=User$1(m.$0),a$4!=null&&a$4.$==1&&(a$5=NLU$1.Intent$1("medjournal",a$4.$0),a$5!=null&&a$5.$==1&&(($5=a$5.$0[1],$5!=null&&$5.$==1)&&(m.$1.$==0&&($4=a$5.$0[1].$0,true)))))?(say("ok I added that entry to your medication journal."),say("You should be careful not to take too many painkillers over a short period of time.")):m.$==1&&(a$6=User$1(m.$0),a$6!=null&&a$6.$==1&&(($7=NLU$1.Intent$1("kbquery",a$6.$0),$7!=null&&$7.$==1)&&(m.$1.$==0&&($6=a$6.$0,true))))?Concurrency.Start((b$1=null,Concurrency.Delay(function()
+  {
+   return Concurrency.Bind(QnAMaker.getAnswer($6.get_Text()),function(a$7)
+   {
+    var s;
+    return Concurrency.Bind((s=Arrays.get(a$7.answers,0).answer,(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.mdtohtml:148154198",[s])),function(a$8)
+    {
+     var s$1;
+     return Concurrency.Bind((s$1=Arrays.get(a$7.answers,0).answer,(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.mdtotext:148154198",[s$1])),function(a$9)
+     {
+      echo(a$8);
+      say(a$9);
+      return Concurrency.Zero();
+     });
+    });
+   });
+  })),null):DialogueModule.didNotUnderstand(d,function(m$1)
+  {
+   Symptoms.debug(m$1);
+  },Symptoms.name());
+  DialogueModule.debugInterpreterEnd(d,function(m$1)
+  {
+   Symptoms.debug(m$1);
+  },Symptoms.name());
+ };
+ Symptoms.debug=function(m)
+ {
+  ClientExtensions.debug(Symptoms.name(),m);
+ };
+ Symptoms.name=function()
+ {
+  SC$5.$cctor();
+  return SC$5.name;
+ };
+ SC$5.$cctor=function()
+ {
+  SC$5.$cctor=Global.ignore;
+  SC$5.name="Symptoms";
  };
  Main.update=function(d)
  {
@@ -2750,13 +2793,13 @@
  };
  Main.name=function()
  {
-  SC$5.$cctor();
-  return SC$5.name;
+  SC$6.$cctor();
+  return SC$6.name;
  };
- SC$5.$cctor=function()
+ SC$6.$cctor=function()
  {
-  SC$5.$cctor=Global.ignore;
-  SC$5.name="Main";
+  SC$6.$cctor=Global.ignore;
+  SC$6.name="Main";
  };
  Client.run=function()
  {
@@ -2771,8 +2814,8 @@
  };
  Client.Main=function()
  {
-  SC$6.$cctor();
-  return SC$6.Main;
+  SC$7.$cctor();
+  return SC$7.Main;
  };
  Client.initMic=function(interpret)
  {
@@ -2879,8 +2922,8 @@
  };
  Client.synth=function()
  {
-  SC$6.$cctor();
-  return SC$6.synth;
+  SC$7.$cctor();
+  return SC$7.synth;
  };
  Client.push=function(m)
  {
@@ -2889,28 +2932,28 @@
  };
  Client.Dialogue=function()
  {
-  SC$6.$cctor();
-  return SC$6.Dialogue;
+  SC$7.$cctor();
+  return SC$7.Dialogue;
  };
  Client.Utterances=function()
  {
-  SC$6.$cctor();
-  return SC$6.Utterances;
+  SC$7.$cctor();
+  return SC$7.Utterances;
  };
  Client.Questions=function()
  {
-  SC$6.$cctor();
-  return SC$6.Questions;
+  SC$7.$cctor();
+  return SC$7.Questions;
  };
  Client.Output=function()
  {
-  SC$6.$cctor();
-  return SC$6.Output;
+  SC$7.$cctor();
+  return SC$7.Output;
  };
  Client.Props=function()
  {
-  SC$6.$cctor();
-  return SC$6.Props;
+  SC$7.$cctor();
+  return SC$7.Props;
  };
  Client.wait=function(f)
  {
@@ -2935,38 +2978,38 @@
  };
  Client.ClientState=function()
  {
-  SC$6.$cctor();
-  return SC$6.ClientState;
+  SC$7.$cctor();
+  return SC$7.ClientState;
  };
  Client.set_ClientState=function($1)
  {
-  SC$6.$cctor();
-  SC$6.ClientState=$1;
+  SC$7.$cctor();
+  SC$7.ClientState=$1;
  };
  Client.MicState=function()
  {
-  SC$6.$cctor();
-  return SC$6.MicState;
+  SC$7.$cctor();
+  return SC$7.MicState;
  };
  Client.set_MicState=function($1)
  {
-  SC$6.$cctor();
-  SC$6.MicState=$1;
+  SC$7.$cctor();
+  SC$7.MicState=$1;
  };
  Client.CUI=function()
  {
-  SC$6.$cctor();
-  return SC$6.CUI;
+  SC$7.$cctor();
+  return SC$7.CUI;
  };
  Client.set_CUI=function($1)
  {
-  SC$6.$cctor();
-  SC$6.CUI=$1;
+  SC$7.$cctor();
+  SC$7.CUI=$1;
  };
- SC$6.$cctor=function()
+ SC$7.$cctor=function()
  {
   var sdk,web,dna,r;
-  SC$6.$cctor=Global.ignore;
+  SC$7.$cctor=Global.ignore;
   function _main(i,e)
   {
    var intent,a,_trait,a$1,entity,a$2,$1;
@@ -3086,14 +3129,14 @@
       }
     }
   }
-  SC$6.CUI=CUI$1.New(null,null,null,(SDK.applicationId="4277115329081938617",sdk=new Global.SDKConnection(),web=new Global.WebAvatar(),web.version=8.5,web.connection=sdk,web.avatar="20926186",web.voice="cmu-slt",web.voiceMod="default",web.width=175,web.createBox(),web.addMessage(""),web.processMessages(0),web),false,(dna=new Global.TypingDNA(),(dna.stop(),dna)),[]);
-  SC$6.MicState=MicState.MicNotInitialized;
-  SC$6.ClientState=ClientState.ClientNotInitialzed;
-  SC$6.Props=new Dictionary.New$5();
-  SC$6.Output=[];
-  SC$6.Questions=[];
-  SC$6.Utterances=[];
-  SC$6.Dialogue=new Dialogue({
+  SC$7.CUI=CUI$1.New(null,null,null,(SDK.applicationId="4277115329081938617",sdk=new Global.SDKConnection(),web=new Global.WebAvatar(),web.version=8.5,web.connection=sdk,web.avatar="20926186",web.voice="cmu-slt",web.voiceMod="default",web.width=175,web.createBox(),web.addMessage(""),web.processMessages(0),web),false,(dna=new Global.TypingDNA(),(dna.stop(),dna)),[]);
+  SC$7.MicState=MicState.MicNotInitialized;
+  SC$7.ClientState=ClientState.ClientNotInitialzed;
+  SC$7.Props=new Dictionary.New$5();
+  SC$7.Output=[];
+  SC$7.Questions=[];
+  SC$7.Utterances=[];
+  SC$7.Dialogue=new Dialogue({
    $:0,
    $0:Client.CUI(),
    $1:Client.Props(),
@@ -3101,8 +3144,8 @@
    $3:Client.Output(),
    $4:Client.Utterances()
   });
-  SC$6.synth=Global.speechSynthesis;
-  SC$6.Main=new Interpreter({
+  SC$7.synth=Global.speechSynthesis;
+  SC$7.Main=new Interpreter({
    $:0,
    $0:function($1)
    {

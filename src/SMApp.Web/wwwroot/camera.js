@@ -1,8 +1,11 @@
+var cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;
 // Camera video output
 let videoWidth, videoHeight;
 let video = null;
 
 // Canvas and contexts for rendering video
+let cameraContainer = null;
+let cameraAnimationFrameId = null;
 let canvasOutput = null;
 let canvasInput = null;
 let canvasInputCtx = null;
@@ -27,6 +30,7 @@ function startCamera(container, c) {
     stats = new Stats();
     stats.showPanel(0);
     container.appendChild(stats.dom);
+    cameraContainer = container;
     video = document.getElementById("video");
     canvasOutput = c
 
@@ -74,7 +78,7 @@ function startVideoProcessing() {
     faceClassifier = new cv.CascadeClassifier();
     faceClassifier.load('haarcascade_frontalface_default.xml');
  
-    requestAnimationFrame(processVideo);
+    cameraAnimationFrameId = requestAnimationFrame(processVideo);
 }
 
 function processVideo() {
@@ -102,7 +106,7 @@ function processVideo() {
     canvasOutputCtx.drawImage(canvasInput, 0, 0, videoWidth, videoHeight);
     drawResults(canvasOutputCtx, faces, 'red', size);
     stats.end();
-    requestAnimationFrame(processVideo);
+    cameraAnimationFrameId = requestAnimationFrame(processVideo);
 }
 
 function drawResults(ctx, results, color, size) {
@@ -131,6 +135,8 @@ function stopCamera() {
     video.srcObject=null;
     stream.getVideoTracks()[0].stop();
     streaming = false;
+    cameraContainer.removeChild(stats.dom);
+    cancelAnimationFrame(cameraAnimationFrameId);
 }
 
 function getCameraCanvas() {

@@ -40,7 +40,7 @@ module User =
         let handle = Dialogue.handle d debug
         let ask = Dialogue.ask d debug
         let trigger = Dialogue.trigger d debug update
-        let cancel() = Dialogue.cancel d debug
+        let cancel = Dialogue.cancel d debug
         let endt = Dialogue.endt d debug
         let didNotUnderstand() = Dialogue.didNotUnderstand d debug name
 
@@ -75,16 +75,15 @@ module User =
                         let pattern =  d.Cui.GetSameTextTypingPattern passPhrase None
                         debug <| sprintf "User entered typing pattern %s for text %s" pattern text
                         if text.ToLower() <> passPhrase.ToLower() then
-                            say "Sorry you did not enter the passphrase correctly. Please try again."
+                            say "Sorry, you did not enter the passphrase correctly. Please try again."
                             box()
                         else
-                            add "authenticateUser" [|u; pattern; image|]
-                            trigger "authenticateUser"
-                        
+                            [|u; pattern; image|] |> trigger "authenticateUser"
                     ) (fun _ -> 
+                        say "Ok but you must login for me to help you."
                         stopCamera()
-                        say "Ok but you must login for me to help you." 
-                        cancel())
+                        cancel "authenticateUser"
+                      )
                 box()
             )
 
@@ -94,12 +93,10 @@ module User =
                 match! Server.getUser u with 
                 | Some user ->
                     do! Server.updateUserLastLogin user.Name |> Async.Ignore
-                    add "loginUser" user
                     sayRandom helloUserPhrases <| sprintf "%A" user.Name
                     if Option.isSome user.LastLoggedIn then 
                         let! h = Server.humanize user.LastLoggedIn.Value
                         say <| sprintf "You last logged in %s." h
-                        say "Since you will be accessing sensitive data I need to authenticate you via facial recognition and typing behaviour. Enter the pass phrase you were assigned during enrollment in the box provided. Then, look into your camera until you see the red box around your face and press the Ok button."
                         authenticateUser u |> ask
                 | None _ -> 
                     say <| sprintf "I did not find a user with the name %s." u
@@ -127,14 +124,12 @@ module User =
                         if text.ToLower() <> passPhrase.ToLower() then
                             say "Sorry you did not enter the passphrase correctly. Please try again."
                             box()
-                        else
-                            add "authenticateNewUser" [|u; pattern; image|]
-                            trigger "authenticateNewUser"
-                        
+                        else [|u; pattern; image|] |> trigger "authenticateNewUser"
                     ) (fun _ -> 
                         stopCamera()
                         say <| sprintf "Ok I did not add the user %s. But you must login for me to help you." u
-                        cancel())
+                        cancel "authenticateNewUser"
+                      )
                 box()
             )
 
@@ -155,95 +150,38 @@ module User =
 
                
         let switchUserQuestion u = Question("switchUser", name, Verification, fun _ -> say <| sprintf "Do you want me to switch to the user %s" u)
-        
-
-        (* Symptom journal functions *) 
-        let addSymptom s l m = 
-            async { 
-                do sayRandom waitAddPhrases "symptom entry"
-                match! Server.addSymptomJournalEntry (user().Name) s l m with 
-                | Ok _ -> 
-                    say <| sprintf "OK I added that %s symptom to your journal." s 
-                | Error _ -> 
-                    say <| sprintf "Sorry I wasn't able to add that symptom to your journal. Could you try again?"
-            } |> Async.Start 
-
-        let getSymptomJournal u =  
-            async {
-                do sayRandom waitRetrievePhrases "symptom journal"
-                return! Server.getSymptomJournal u 
-        }
-            
+          
         (* Interpreter logic begins here *)
         match Dialogue.frame utterances with
-        
         /// User login
         | User'(Intent "greet" (_, Entity1Of1 "name" u))::[] -> handle "loginUser" (fun _ -> loginUser u.Value)
         | User'(Intent "hello" (_, Entity1Of1 "contact" u))::[] -> handle "loginUser" (fun _ -> loginUser u.Value)
         
         /// User authentication
-        | Response' "authenticateUser" (_, r)::[] -> endt "authenticateUser" (fun _ -> 
-            match r with
-            | None -> debug "authenticateUser cancelled."
-            | _ -> () 
-            ) 
+        | Response' "authenticateUser" (_, StrA user, _)::[] -> endt "authenticateUser" (fun _ ->
+            say <| sprintf "Authenticate user %s." user.[0]
+          ) 
         
         /// User add
-        | No(Response' "addUser" (_, Str u))::[] -> endt "addUser" (fun _ -> say <| sprintf "Ok I did not add the user %s. But you must login for me to help you." u)
-        | Yes(Response' "addUser" (_, Str u))::[] -> endt "addUser" (fun _ -> let q = authenticateNewUser u in ask q)
-        | Response' "authenticateNewUser" (_, r)::[] -> endt "authenticateNewUser" (fun _ -> 
-            match r with
-            | StrA u -> addUser u.[0] u.[1]
-            | _ -> debug "addUser cancelled."
-            )
+        | No(Response' "addUser" (_, _, PStr u))::[] -> endt "addUser" (fun _ -> say <| sprintf "Ok I did not add the user %s. But you must login for me to help you." u)
+        | Yes(Response' "addUser" (_, _, PStr u))::[] -> endt "addUser" (fun _ -> let q = authenticateNewUser u in ask q)
+        | Response' "authenticateNewUser" (_, StrA user, _)::[] -> endt "authenticateNewUser" (fun _ -> 
+            say <| sprintf "Authenticate new user %s." user.[0]
+          )
 
-        (* User switch *)
-        
+        /// User switch
         | User(Intent "hello" (None, Entity1Of1 "name" u))::[] -> 
             async {
                 match! Server.getUser u.Value with
                 | Some user -> switchUserQuestion user.Name |> ask
                 | None -> say <| sprintf "Sorry, the user %s does not exist." u.Value
             } |> Async.Start
-        | Yes(Response "switchUser" (_, Str user))::[] ->
+        | Yes(Response "switchUser" (_, _, PStr user))::[] ->
             props.["user"] <- user
             say <| sprintf "Ok I switched to user %A." user  
-        | No(Response "switchUser" (_, Str user))::[] -> 
+        | No(Response "switchUser" (_, _, PStr user))::[] -> 
             say <| sprintf "Ok I did not switch to user %s." user
         
-
-        (* KB query *)
-
-        | User'(Intent "kbquery" (_, _) as u)::[]
-        | User(Intent "kbquery" (_, _) as u)::[] -> 
-            async {
-                let! a = QnAMaker.getAnswer u.Text 
-                let! html = a.answers.[0].answer |> Server.mdtohtml
-                let! text = a.answers.[0].answer |> Server.mdtotext
-                echo html
-                say text
-            } |> Async.Start
-
-        (* Symptoms *)
-
-        | User(Intent "symptom" (_, Entity1OfAny "symptom_name" s))::[] ->
-            async {
-                say "Ok I'll add that entry to your symptom journal"
-                addSymptom s.Value None (None)
-                //let! j = getSymptomJournal (user().Name)
-                //say <| sprintf "I see this is the 3rd time today you've had pain %s" (user())
-                //ask "painVideo" ""
-            } 
-            |> Async.Start
-
-        | Yes(Response "painVideo"(_, _))::[] -> cui.EchoHtml'("""<iframe width="560" height="315" src="https://www.youtube.com/embed/SkAqOditKN0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>""")
-            
-        (* Meds *)
-
-        | User(Intent "medjournal" (_, Some en))::[] ->
-            say "ok I added that entry to your medication journal."
-            say "You should be careful not to take too many painkillers over a short period of time."
-
         | _ -> didNotUnderstand()
 
         Dialogue.debugInterpreterEnd d debug name

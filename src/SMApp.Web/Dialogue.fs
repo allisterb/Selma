@@ -88,12 +88,13 @@ module Dialogue =
         pushq d debug q
         q.Ask(d)
         
-    let trigger (d:Dialogue) (debug:string -> unit) (target:Dialogue->unit) (name:string) =
-        pushu d debug (Utterance(name, None, None, None))
+    let trigger<'a> (d:Dialogue) (debug:string -> unit) (target:Dialogue->unit) (name:string) (data:'a)=
+        pushu d debug (Utterance(Json.Stringify data, Some(Intent(name, Some 1.0f)), None, None))
         target d
 
-    let cancel (d:Dialogue) (debug:string -> unit) =
+    let cancel (d:Dialogue) (debug:string -> unit) (qn:string) =
         let q = d.DialogueQuestions.Peek()
+        if q.Name <> qn then failwithf "%A at the top of the stack does not have the name %s." q qn
         popq d debug 
         debug <| sprintf "Cancel %A." q 
 
@@ -145,7 +146,7 @@ module Dialogue =
 
     let (|Form|_|) (d:Dialogue) (n:string) :Utterance -> Utterance option =
          function
-         | m when d.DialogueQuestions.Count > 0 && d.DialogueQuestions.Peek().Name = n && m.Text = "" && m.Intent.IsSome && m.Intent.Value.Name = n && m.Traits = None && m.Entities = None -> Some m
+         | m when d.DialogueQuestions.Count > 0 && d.DialogueQuestions.Peek().Name = n && m.Intent.IsSome && m.Intent.Value.Name = n && m.Intent.Value.Confidence = Some(1.0f) && m.Traits = None && m.Entities = None -> Some m
          | _ -> None
 
     let (|NotForm|_|) (d:Dialogue) (n:string) :Utterance -> Utterance option =
@@ -153,16 +154,18 @@ module Dialogue =
          | m when d.DialogueQuestions.Count > 0 && d.DialogueQuestions.Peek().Name = n && m.Text <> "" -> Some m
          | _ -> None
 
-    let (|Response_|_|) (d:Dialogue) (n:string) :Utterance -> (Utterance * obj option) option =
+    let (|Response_|_|) (d:Dialogue) (n:string) :Utterance -> (Utterance * string option * obj option) option =
          function
          | PropSet_ d "user" (Form d n m) 
-         | PropSet_ d "user" (NotForm d n m) ->
-            if have d n then Some(m, Some d.Props.[n]) else Some(m, None)
+         | PropSet_ d "user" (NotForm d n m) -> 
+            let p = if have d n then Some(prop d n) else None 
+            if m.Text <> "" then Some (m, Some(m.Text), p) else Some(m, None, p)
          | _ -> None
 
-    let (|Response'_|_|) (d:Dialogue) (n:string) :Utterance -> (Utterance * obj option) option =
+    let (|Response'_|_|) (d:Dialogue) (n:string) :Utterance -> (Utterance * string option * obj option) option =
          function
          | PropNotSet_ d "user" (Form d n m) 
-         | PropNotSet_ d "user" (NotForm d n m) ->
-            if have d n then Some(m, Some d.Props.[n]) else Some(m, None)
+         | PropNotSet_ d "user" (NotForm d n m) -> 
+            let p = if have d n then Some(prop d n) else None
+            if m.Text <> "" then Some (m, Some(m.Text), p) else Some(m, None, p)
          | _ -> None

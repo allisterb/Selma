@@ -81,19 +81,18 @@ module NLU =
         | Intent "reject" (None, None) as m -> Some m
         |  _ -> None
     
-    let (|Str|_|) : obj option -> string option =
+    let (|PStr|_|) : obj option -> string option =
         function
         | Some s when (s :? string) -> Some (s :?> string)
         | _ -> None
 
-    let (|StrA|_|) : obj option -> (string array) option =
+    let (|StrA|_|) : string option -> string[] option =
         function
-        | Some s when (s :? System.Array) -> 
-            let arr = s :?> obj array
-            if arr.Length = 0 then failwith "This array object is empty."
-            match arr.[0] with
-            | :? string -> Some (s :?> string array)
-            | _ -> None
+        | Some s ->
+            try
+                let a = Json.Deserialize<string array> s
+                Some a
+            with _ -> None
         | _ -> None
 
     [<RequireQualifiedAccess>]
