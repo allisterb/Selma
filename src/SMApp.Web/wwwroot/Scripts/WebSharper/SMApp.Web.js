@@ -2302,13 +2302,6 @@
    },function()
    {
     ClientExtensions.stopCamera();
-    say((function($1)
-    {
-     return function($2)
-     {
-      return $1("Ok I did not add the user "+Utils.toSafe($2)+". But you must login for me to help you.");
-     };
-    }(Global.id))(u));
     cancel(q.get_Name());
    });
   }
@@ -2380,7 +2373,7 @@
    sayRandom(NLG.waitRetrievePhrases(),"user name");
    Concurrency.Start((b$1=null,Concurrency.Delay(function()
    {
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:-1783153049",[u]),function(a$25)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:344122505",[u]),function(a$25)
     {
      var user;
      return a$25==null?(say((function($10)
@@ -2405,7 +2398,7 @@
         };
        }(Global.id))(u));
       }
-     })),Concurrency.Zero()):(user=a$25.$0,Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.updateUserLastLogin:1024486337",[user.Name]),function()
+     })),Concurrency.Zero()):(user=a$25.$0,Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.updateUserLastLogin:-2113692322",[user.Name]),function()
      {
       sayRandom(NLG.helloUserPhrases(),(function($10)
       {
@@ -2414,7 +2407,7 @@
         return $10(Utils.prettyPrint($11));
        };
       }(Global.id))(user.Name));
-      return user.LastLoggedIn!=null?Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.humanize:187368003",[user.LastLoggedIn.$0]),function(a$26)
+      return user.LastLoggedIn!=null?Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.humanize:-2092234153",[user.LastLoggedIn.$0]),function(a$26)
       {
        say((function($10)
        {
@@ -2490,7 +2483,7 @@
    }(Global.id))(Arrays.get($3,0)));
    Concurrency.Start((b$1=null,Concurrency.Delay(function()
    {
-    return(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.detectFaceAttributes:-1388372182",[Arrays.get($3,2)]);
+    return(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.detectFaceAttributes:-1355483315",[Arrays.get($3,2)]);
    })),null);
   }):m.$==1&&(a$8=NLU$1.No(m.$0),a$8!=null&&a$8.$==1&&(a$9=_Response("addUser",a$8.$0),a$9!=null&&a$9.$==1&&(a$10=NLU$1.PStr(a$9.$0[2]),a$10!=null&&a$10.$==1&&(m.$1.$==0&&($4=a$10.$0,true)))))?(endt("addUser"))(function()
   {
@@ -2527,7 +2520,7 @@
    }(Global.id))(Arrays.get($6,0)));
   }):m.$==1&&(a$16=DialogueModule.User_(d,m.$0),a$16!=null&&a$16.$==1&&(a$17=NLU$1.Intent$1("hello",a$16.$0),a$17!=null&&a$17.$==1&&(a$17.$0[0]==null&&(a$18=NLU$1.Entity1Of1("name",a$17.$0[1]),a$18!=null&&a$18.$==1&&(m.$1.$==0&&($7=a$18.$0,true))))))?Concurrency.Start((b=null,Concurrency.Delay(function()
   {
-   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:-1783153049",[$7.get_Value()]),function(a$25)
+   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:344122505",[$7.get_Value()]),function(a$25)
    {
     return a$25==null?(say((function($10)
     {
@@ -2605,7 +2598,7 @@
    return Concurrency.Start((b$2=null,Concurrency.Delay(function()
    {
     sayRandom(NLG.waitAddPhrases(),"symptom entry");
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addSymptomJournalEntry:525459844",[user().Name,s,l,m$1]),function(a$7)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addSymptomJournalEntry:-534636673",[user().Name,s,l,m$1]),function(a$7)
     {
      return a$7.$==1?(say(function($8)
      {
@@ -2635,10 +2628,10 @@
    return Concurrency.Bind(QnAMaker.getAnswer($6.get_Text()),function(a$7)
    {
     var s;
-    return Concurrency.Bind((s=Arrays.get(a$7.answers,0).answer,(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.mdtohtml:-193959774",[s])),function(a$8)
+    return Concurrency.Bind((s=Arrays.get(a$7.answers,0).answer,(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.mdtohtml:1060253906",[s])),function(a$8)
     {
      var s$1;
-     return Concurrency.Bind((s$1=Arrays.get(a$7.answers,0).answer,(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.mdtotext:-193959774",[s$1])),function(a$9)
+     return Concurrency.Bind((s$1=Arrays.get(a$7.answers,0).answer,(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.mdtotext:1060253906",[s$1])),function(a$9)
      {
       echo(a$8);
       say(a$9);

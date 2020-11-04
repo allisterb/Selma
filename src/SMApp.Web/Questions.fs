@@ -36,8 +36,7 @@ module Questions =
                     box()
                 else [|u; pattern; image|] |> trigger) (fun _ -> 
                     stopCamera()
-                    say <| sprintf "Ok I did not add the user %s. But you must login for me to help you." u
-                    cancel q.Name
+                    cancel q.Name 
                 )
         box()
 

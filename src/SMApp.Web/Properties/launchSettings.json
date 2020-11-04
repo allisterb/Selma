@@ -19,6 +19,8 @@
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
+        "AZURE_FACE_KEY": "2c3db2d84e3e44d4af11cf43eda4ef76",
+        "AZURE_FACE_ENDPOINT": "https://lerna-face.cognitiveservices.azure.com/",
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "applicationUrl": "https://localhost:5001;http://localhost:5000"
