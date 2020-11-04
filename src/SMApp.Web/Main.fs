@@ -36,10 +36,11 @@ module Main =
         
         let dispatch = Dialogue.dispatch d debug
         let handle = Dialogue.handle d debug
-        let ask = Dialogue.ask d debug
         let trigger = Dialogue.trigger d debug update
         let endt = Dialogue.endt d debug
         let didNotUnderstand() = Dialogue.didNotUnderstand d debug name
+
+        let ask = Questions.ask d debug
 
         (* Base dialogue patterns *)
         let (|Agenda|_|) = Dialogue.(|Agenda_|_|) d debug
@@ -51,13 +52,13 @@ module Main =
         let (|Response'|_|) = Dialogue.(|Response'_|_|) d
         
         (* Module dialogue patterns *) 
-        let (|Start|_|) :Utterance -> Utterance option=
+        let (|Start|_|) =
             function
             | PropNotSet "started" m -> Some m
             | _ -> None
    
         (* Interpreter logic begins here *)
-        match utterances |> Seq.take (if utterances.Count >= 5 then 5 else utterances.Count) |> List.ofSeq with
+        match Dialogue.frame utterances with
         (* Agenda *)
         | Agenda User.name -> 
             debug <| sprintf "Agenda is %A." (d.DialogueQuestions.Peek())

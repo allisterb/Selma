@@ -16,6 +16,7 @@
     <Compile Include="CUI.fs" />
     <Compile Include="Server.fs" />
     <Compile Include="Dialogue.fs" />
+    <Compile Include="Questions.fs" />
     <Compile Include="User.fs" />
     <Compile Include="Symptoms.fs" />
     <Compile Include="Main.fs" />

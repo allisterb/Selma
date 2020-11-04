@@ -57,6 +57,12 @@ module Server =
                     return Some(r)
         }
 
+    [<Rpc>]
+    let detectFaceAttributes (dataUrl:string) = 
+        async { 
+            return! AzureFace.detectFaceAttribute <| AzureFace.getImageFromDataUrl dataUrl
+        }
+
     (* User functions *)
     [<Rpc>]
     let getUser(user:string) : Async<User option> = 

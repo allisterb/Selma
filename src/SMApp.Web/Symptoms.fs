@@ -38,11 +38,12 @@ module Symptoms =
         
         let dispatch = Dialogue.dispatch d debug
         let handle = Dialogue.handle d debug
-        let ask = Dialogue.ask d debug
         let trigger = Dialogue.trigger d debug update
         let cancel = Dialogue.cancel d debug
         let endt = Dialogue.endt d debug
         let didNotUnderstand() = Dialogue.didNotUnderstand d debug name
+
+        let ask = Questions.ask d debug
 
         (* Base dialogue patterns *)
         let (|Agenda|_|) = Dialogue.(|Agenda_|_|) d

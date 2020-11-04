@@ -4,11 +4,13 @@ open System
 open System.Collections.Generic
 open System.IO
 open System.Text
+open System.Text.RegularExpressions
 open System.Net.Http
 open System.Net.Http.Headers
 open System.Security.Cryptography
 open System.Text
 open System.Threading.Tasks;
+open Microsoft.Azure.CognitiveServices.Vision.Face
 open Microsoft.CognitiveServices.Speech;
 open Microsoft.CognitiveServices.Speech.Audio;
 
@@ -102,7 +104,8 @@ module TypingDNA =
         }
 
 module AzureSpeech =
-    let private apiKey = Runtime.Config("AZURE_SPEECH_KEY")
+    let private apiKey = Runtime.Config "AZURE_SPEECH_KEY"
+    let private endpoint = Runtime.Config "AZURE_SPEECH_ENDPOINT"
     let private region = "westus";
     let private config = SpeechConfig.FromSubscription(apiKey, region);
 
@@ -144,4 +147,35 @@ module AzureSpeech =
                         let e = VoiceProfileEnrollmentCancellationDetails.FromResult(result)
                         Error e.ErrorDetails
             with e -> return Error e.Message
+        }
+
+module AzureFace =
+    let private apiKey = Runtime.Config "AZURE_FACE_KEY"
+    let private endpoint = Runtime.Config "AZURE_FACE_ENDPOINT"
+    let private client = new FaceClient(new ApiKeyServiceClientCredentials(apiKey), [||])
+    let private gid = "selma-person-group-id"
+    client.Endpoint <- endpoint
+
+    let getImageFromDataUrl(s:string) = 
+        //let m = Regex.Match(s, @"data:image/(?<type>.+?),(?<data>.+)")
+        //let base64Data = m.Groups.["data"].Value
+        let base64Data = s.Split(',') |> Seq.last
+        Convert.FromBase64String(base64Data);
+
+    let getGroup() =
+        async {
+                let! groups = client.PersonGroup.ListAsync() |> Async.AwaitTask                             
+                match groups |> Seq.tryFind(fun g -> g.PersonGroupId = gid) with
+                | Some g -> return g
+                | None ->
+                    infof "Creating Azure Face person group {0}." [gid]
+                    do! client.PersonGroup.CreateAsync (gid) |> Async.AwaitTask
+                    let! groups' = client.PersonGroup.ListAsync() |> Async.AwaitTask
+                    return groups' |> Seq.find (fun g ->g.PersonGroupId = gid)
+        }
+    
+    let detectFaceAttribute(img:byte[]) =
+        async {
+            let! f = client.Face.DetectWithStreamAsync(new MemoryStream(img)) |> Async.AwaitTask
+            infof "Faces: {0}. {1}." [f.Count; f]
         }

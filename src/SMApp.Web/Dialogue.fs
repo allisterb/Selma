@@ -19,11 +19,11 @@ and
         member x.Name = let (Question(n, _, _, _)) = x in n 
         member x.Module = let (Question(_, m, _, _)) = x in m
         member x.Type = let (Question(_, _, ty, _)) = x in ty
-        member x.Ask = let (Question(_, _, _, a)) = x in a
+        member x.Target = let (Question(_, _, _, a)) = x in a
         override x.ToString() = sprintf "Name: %s Module: %s Type: %A " x.Name x.Module x.Type
 and 
     [<JavaScript>] QuestionType =
-    | UserAuthentication 
+    | UserAuthentication of string
     | Verification 
     | Disjunctive 
     | ConceptCompletion 
@@ -83,10 +83,6 @@ module Dialogue =
         popu d debug
         debug <| sprintf "Handle utterance %s." m
         f()
-
-    let ask (d:Dialogue) (debug:string -> unit) (q:Question) =    
-        pushq d debug q
-        q.Ask(d)
         
     let trigger<'a> (d:Dialogue) (debug:string -> unit) (target:Dialogue->unit) (name:string) (data:'a)=
         pushu d debug (Utterance(Json.Stringify data, Some(Intent(name, Some 1.0f)), None, None))
