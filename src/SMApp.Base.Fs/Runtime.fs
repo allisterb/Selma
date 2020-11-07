@@ -2,6 +2,8 @@
 
 [<AutoOpen>]
 module Runtme =
+    let isVal = Option.isSome
+
     let mapa f xAsync = async {
         // get the contents of xAsync 
         let! x = xAsync 
@@ -34,6 +36,8 @@ module Runtme =
         // as f will return an Async
         return! f x
     }
+
+    let await = Async.AwaitTask
 
     let info = Runtime.Info
 

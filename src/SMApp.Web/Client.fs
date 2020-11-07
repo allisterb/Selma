@@ -44,7 +44,7 @@ module Client =
             let dna = new TypingDNA()
             do dna.Stop()
             dna
-        AudioEnd = new System.Collections.Generic.Queue<System.Action>()
+        AudioHandlers = new Dictionary<string, Int16Array->unit>()
     }
     let mutable MicState = MicNotInitialized
     let mutable ClientState = ClientNotInitialzed
@@ -65,7 +65,6 @@ module Client =
     let Dialogue = Dialogue(CUI, Props, Questions, Output, Utterances)
     let push (m:Utterance) = Utterances.Push m; Dialogue
 
-
     (* Speech *)
     let synth = Window.SpeechSynthesis
 
@@ -83,7 +82,8 @@ module Client =
         if CUI.Voice = None then  
             debug "No female browser speech synthesis voice is available. Using CMU SLT Female voice via TTS."
 
-    let say' text = CUI.Say text                
+    let say' text = CUI.Say text         
+    
 
     let say text =
         Output.Push text
@@ -98,17 +98,29 @@ module Client =
         do mic.onConnecting <- (fun _ -> MicState <- MicConnecting; debug "Mic connecting...")
         do mic.onDisconnected <- (fun _ -> MicState <- MicDisconnected;debug "Mic disconnected.")
         do mic.onAudioStart <- (fun _ -> MicState <- MicAudioStart;debug "Mic audio start...")
-        do mic.onAudioEnd <- (fun _ -> MicState <- MicAudioEnd;debug "Mic audio end."; debug (JS.Window.GetJS("lastMicData")))
+        do mic.onAudioEnd <- (fun _ -> 
+            debug "Mic audio end." 
+            for kv in CUI.AudioHandlers do 
+                debug <| sprintf "Executing audio handler %s." kv.Key
+                MicState <- MicAudioHandled kv.Key
+                let h = kv.Value
+                CUI.AudioHandlers.Remove kv.Key |> ignore
+                h(lastMicData())
+        )
         do mic.onError <- (fun s -> MicState <- MicError s; debug (sprintf "Mic error : %s." s))
         do mic.onReady <- (fun _ -> MicState <- MicReady; debug "Mic ready.")
         do mic.onResult <- (fun i e -> 
             match ClientState with
             | ClientReady ->
-                if not (isNull i || isNull e) then 
-                    MicState <- MicResult(i,e) 
-                    debug <| sprintf "Mic result: %A %A." i e; interpret (i,e)
-                else 
-                    debug "Mic: No result returned."        
+                match MicState with
+                | MicAudioHandled _ -> ()
+                | _ ->
+                    if not (isNull i || isNull e) then 
+                        MicState <- MicResult(i,e) 
+                        debug <| sprintf "Mic result: %A %A." i e
+                        interpret (i,e)
+                    else 
+                        debug "Mic: No result returned."        
             | ClientUnderstand -> echo "I'm still trying to understand what you said before."
             | ClientNotInitialzed -> error "Client is not intialized."
             )

@@ -38,7 +38,18 @@ module ClientExtensions =
     
     let toLower (s:string) = s.ToLower()
 
-    let termOutput() = JQuery(".terminal-output").Get().[0]
+    [<Direct "$('#term').terminal().disable()">]
+    let disableTerminal() = X<unit>
+
+    [<Direct "$('#term').terminal().enable()">]
+    let enableTerminal() = X<unit>
+
+    let terminalOutput() = JQuery(".terminal-output").Get().[0]
+
+    [<Direct "$('#term').terminal()">]
+    let Terminal = X<Terminal>
+
+    let getMic() = JQuery("#microphone").Get().[0]
 
     [<Direct("window.lastMicData")>]
     let lastMicData() = X<Int16Array>
@@ -53,18 +64,22 @@ module ClientExtensions =
     let dindex (n:int) = Attr.Create "data-index" (n.ToString())
     
     let container c = div [cls "container"] c
-
+    
+    let getContainer() = JQuery("#container").Get().[0].FirstChild |> As<Dom.Element>
+    
     let createElement doc =
         let el = JS.Document.CreateElement "div"
         do JS.Document.AppendChild(el) |> ignore        
         do doc |> Doc.RunAppend el
         
     let elementHTML (d:Dom.Element) = d.InnerHTML
-
+    
     let createCanvas (id:string) (width:string) (height:string) (parent:Dom.Element) =
         canvas[eid id; attr.width width; attr.height height][] |> Doc.Run parent
         let c = parent.FirstChild |> As<CanvasElement>
         c
+
+    let getDialogueBoxContent() = JQuery(".swal2-content").Get().[0].FirstChild |> As<Dom.Element>
 
     let createDialogueBoxCanvas() =
         let e = JQuery(".swal2-content").Get().[0].FirstChild |> As<Dom.Element>
@@ -92,16 +107,15 @@ module ClientExtensions =
                         Type = "question",
                         Width = width.ToString(),
                         Html = sprintf "<div style=\"width:%ipx;height:%ipx\"></div>" width height,
-                        Input = "text",
-                        ShowCancelButton = true,
-                        AllowOutsideClick = false,
-                        ConfirmButtonText = "Ok"
-
+                        AllowOutsideClick = false
             )
+            do Terminal.Disable()
             do if onCreate.IsSome then onCreate.Value b
             b |> SweetAlert.ShowBox
         do if onShow.IsSome then onShow.Value()
-        prom.Then(Action<obj>(onInput), Action<obj>(onCancel))  |> ignore
+        prom.Then(Action<obj>(onInput), Action<obj>(onCancel)) |> ignore
+
+    let confirmQuestionBox = SweetAlert.ClickConfirm
          
 [<JavaScript>]
 type _Html =

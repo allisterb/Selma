@@ -67,15 +67,16 @@ module User =
                     if Option.isSome user.LastLoggedIn then 
                         let! h = Server.humanize user.LastLoggedIn.Value
                         say <| sprintf "You last logged in %s." h
-                        Question("authenticateUser", name, UserAuthentication u, update) |> ask
+                        Question("authenticateUser", name, UserAuthentication u, None, update) |> ask
                 | None _ -> 
                     say <| sprintf "I did not find a user with the name %s." u
-                    Question("addUser", name, Verification, fun _ -> add "addUser" u; say <| sprintf "Do you want me to add the user %s?" u) |> ask
+                    Question("addUser", name, Verification, None, fun _ -> add "addUser" u; say <| sprintf "Do you want me to add the user %s?" u) |> ask
             } |> Async.Start
         
         let addUser u tp = 
             async { 
                 do sayRandom waitAddPhrases "user"
+                //match! Server.en
                 match! Server.addUser u with 
                 | Ok _ -> 
                     match! Server.addUserTypingPattern u tp with
@@ -89,7 +90,7 @@ module User =
             } |> Async.Start
 
                
-        let switchUserQuestion u = Question("switchUser", name, Verification, fun _ -> say <| sprintf "Do you want me to switch to the user %s" u)
+        let switchUserQuestion u = Question("switchUser", name, Verification, None, fun _ -> say <| sprintf "Do you want me to switch to the user %s" u)
           
         (* Interpreter logic begins here *)
         match Dialogue.frame utterances with
@@ -99,16 +100,18 @@ module User =
         
         /// User authentication
         | Response' "authenticateUser" (_, StrA user, _)::[] -> endt "authenticateUser" (fun _ ->
-            say <| sprintf "Authenticate user %s." user.[0]
+            debug user
             async { 
-                return! Server.detectFaceAttributes user.[2]  
+                match! Server.hasFace user.[2] with
+                | false -> say <| sprintf "Sorry I did not detect a face in the camera image. Make sure you can see the red square around your face in the camera window when you click the OK button." 
+                | true -> say "Face detected"
             } |> Async.Start
           ) 
         
         /// User add
         | No(Response' "addUser" (_, _, PStr u))::[] -> endt "addUser" (fun _ -> say <| sprintf "Ok I did not add the user %s. But you must login for me to help you." u)
-        | Yes(Response' "addUser" (_, _, PStr u))::[] -> endt "addUser" (fun _ -> Question("authenticateNewUser", name, UserAuthentication u, update) |> ask)
-        | Response' "authenticateNewUser" (_, StrA user, _)::[] -> endt "authenticateNewUser" (fun _ -> 
+        | Yes(Response' "addUser" (_, _, PStr u))::[] -> endt "addUser" (fun _ -> Question("authenticateNewUser1", name, UserAuthentication u, None, update) |> ask)
+        | Response' "authenticateNewUser1" (_, StrA user, _)::[] -> endt "authenticateNewUser1" (fun _ -> 
             say <| sprintf "Authenticate new user %s." user.[0]
           )
 

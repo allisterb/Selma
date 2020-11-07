@@ -15,11 +15,12 @@ type Dialogue = Dialogue of CUI * Dictionary<string, obj> * Stack<Question> * St
     member x.Output = let (Dialogue(_, _, _, o, _)) = x in o
     member x.Utterances = let (Dialogue(_, _, _, _, u)) = x in u
 and 
-    [<JavaScript>] Question = Question of string * string * QuestionType  * (Dialogue->unit) with 
-        member x.Name = let (Question(n, _, _, _)) = x in n 
-        member x.Module = let (Question(_, m, _, _)) = x in m
-        member x.Type = let (Question(_, _, ty, _)) = x in ty
-        member x.Target = let (Question(_, _, _, a)) = x in a
+    [<JavaScript>] Question = Question of string * string * QuestionType  * obj[] option * (Dialogue->unit) with 
+        member x.Name = let (Question(n, _, _, _,_)) = x in n 
+        member x.Module = let (Question(_, m, _, _,_)) = x in m
+        member x.Type = let (Question(_, _, ty, _, _)) = x in ty
+        member x.Params = let (Question(_, _, _, p, _)) = x in p
+        member x.Target = let (Question(_, _, _, _, a)) = x in a
         override x.ToString() = sprintf "Name: %s Module: %s Type: %A " x.Name x.Module x.Type
 and 
     [<JavaScript>] QuestionType =

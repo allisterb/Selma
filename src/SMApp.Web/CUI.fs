@@ -20,7 +20,7 @@ open SMApp.TypingDNA
 [<AutoOpen;JavaScript>]
 module CUI =
         
-    type MicState = MicNotInitialized | MicConnecting | MicDisconnected | MicAudioStart | MicAudioEnd | MicReady | MicError of string | MicResult of obj * obj
+    type MicState = MicNotInitialized | MicConnecting | MicDisconnected | MicAudioStart | MicAudioEnd | MicReady | MicError of string | MicAudioHandled of string | MicResult of obj * obj
 
     type ClientState = ClientNotInitialzed | ClientReady | ClientUnderstand 
 
@@ -38,7 +38,7 @@ module CUI =
          Avatar: WebAvatar
          Caption: bool
          TypingDNA: TypingDNA
-         AudioEnd: Queue<Action>
+         AudioHandlers: Dictionary<string, Int16Array->unit>
      }
      with
          member x.Echo' (text:string) = x.Term.Disable(); x.Term.Echo text; x.Term.Enable()
@@ -59,7 +59,7 @@ module CUI =
 
          member x.SayDoc (d:Doc) =
            let i =  JQuery(".terminal-output").Get().[0].ChildNodes.Length
-           div [cls "terminal-command"; dindex (i + 1)] [d] |> Doc.RunAppend (termOutput())
+           div [cls "terminal-command"; dindex (i + 1)] [d] |> Doc.RunAppend (terminalOutput())
 
          member x.SayAngry m =
            async {

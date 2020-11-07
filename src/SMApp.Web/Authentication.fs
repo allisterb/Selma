@@ -153,29 +153,82 @@ module AzureFace =
     let private apiKey = Runtime.Config "AZURE_FACE_KEY"
     let private endpoint = Runtime.Config "AZURE_FACE_ENDPOINT"
     let private client = new FaceClient(new ApiKeyServiceClientCredentials(apiKey), [||])
-    let private gid = "selma-person-group-id"
+    let private gid = "selma-person-gid"
     client.Endpoint <- endpoint
+    
+    let getImageFromDataUrl(s:string) = s.Split(',') |> Seq.last |> Convert.FromBase64String
+       
+    let getPersonGroup() =
+        async {                
+            let! groups = client.PersonGroup.ListAsync() |> Async.AwaitTask                             
+            match groups |> Seq.tryFind(fun g -> g.PersonGroupId = gid) with
+            | Some g -> return g
+            | None ->
+                infof "Creating Azure Face person group {0}." [gid]
+                do! client.PersonGroup.CreateAsync (gid) |> Async.AwaitTask
+                let! groups' = client.PersonGroup.ListAsync() |> Async.AwaitTask
+                return groups' |> Seq.find (fun g ->g.PersonGroupId = gid) 
+        }
 
-    let getImageFromDataUrl(s:string) = 
-        //let m = Regex.Match(s, @"data:image/(?<type>.+?),(?<data>.+)")
-        //let base64Data = m.Groups.["data"].Value
-        let base64Data = s.Split(',') |> Seq.last
-        Convert.FromBase64String(base64Data);
-
-    let getGroup() =
+    let addPerson(pid:string) =
         async {
-                let! groups = client.PersonGroup.ListAsync() |> Async.AwaitTask                             
-                match groups |> Seq.tryFind(fun g -> g.PersonGroupId = gid) with
-                | Some g -> return g
-                | None ->
-                    infof "Creating Azure Face person group {0}." [gid]
-                    do! client.PersonGroup.CreateAsync (gid) |> Async.AwaitTask
-                    let! groups' = client.PersonGroup.ListAsync() |> Async.AwaitTask
-                    return groups' |> Seq.find (fun g ->g.PersonGroupId = gid)
+            try
+                let! g = getPersonGroup()
+                let! p = client.PersonGroupPerson.CreateAsync(g.PersonGroupId, pid) |> await
+                if isNull p then 
+                    let e = sprintf "Could not create Azure Face person using id %s." pid
+                    err e; return Error e
+                else
+                    infof "Added Azure Face person with id {0}." [p.Name]; return Ok p
+            with e -> return Error e.Message
+        }
+
+    let getPerson(uid:string) =
+        async {
+            try
+                let! g = getPersonGroup()
+                let! p = client.PersonGroupPerson.GetAsync(g.PersonGroupId, Guid.Parse uid) |> await
+                if isNull p then 
+                    let e = sprintf "Could not get Azure Face person with id %s." uid
+                    err e;
+                    return Error e  
+                else return Ok p
+            with e -> return Error e.Message
         }
     
-    let detectFaceAttribute(img:byte[]) =
+    let detectFaceAttributes(img:byte[]) =
         async {
-            let! f = client.Face.DetectWithStreamAsync(new MemoryStream(img)) |> Async.AwaitTask
-            infof "Faces: {0}. {1}." [f.Count; f]
+            let! f = client.Face.DetectWithStreamAsync(new MemoryStream(img), recognitionModel = Models.RecognitionModel.Recognition03) |> Async.AwaitTask
+            infof "Detected faces: {0}." [f.Count]
+            return 
+                match f.Count with
+                | 0 -> None
+                | _ -> 
+                    //info f.[0].
+                    infof "Age: {0}" [f.[0].FaceAttributes.Age.Value.ToString()] 
+                    f.[0] |> Some
+        }
+
+    let detectFace(img:byte[]) =
+        async {
+            let! f = client.Face.DetectWithStreamAsync(new MemoryStream(img), recognitionModel = Models.RecognitionModel.Recognition01, detectionModel = Models.DetectionModel.Detection02) |> Async.AwaitTask
+            infof "Detected faces: {0}." [f.Count]
+            return 
+                match f.Count with
+                | 0 -> None
+                | _ -> f.[0] |> Some
+        }
+
+    let enrollPersonFace (p:Models.Person) (img:byte[]) =
+        async {
+            try
+                match! detectFace img with
+                | None -> 
+                    let e = "The image does not contain a face."
+                    err e; return Error e 
+                | Some f -> 
+                    let! pf = client.PersonGroupPerson.AddFaceFromStreamAsync(gid, p.PersonId, new MemoryStream(img), 
+                                detectionModel = Models.DetectionModel.Detection02) |> await
+                    infof "Added face with id {0} for user face_profile id id {1}." [pf.PersistedFaceId; p.PersonId]; return Ok pf
+            with error -> return Error error.Message
         }

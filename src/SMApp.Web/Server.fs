@@ -58,9 +58,38 @@ module Server =
         }
 
     [<Rpc>]
-    let detectFaceAttributes (dataUrl:string) = 
-        async { 
-            return! AzureFace.detectFaceAttribute <| AzureFace.getImageFromDataUrl dataUrl
+    let detectFace (dataUrl:string) = AzureFace.detectFace <| AzureFace.getImageFromDataUrl dataUrl
+        
+    [<Rpc>]
+    let hasFace (dataUrl:string) = 
+        async {
+            let! f = detectFace dataUrl
+            return isVal f
+        }
+
+    [<Rpc>]
+    let detectFaceAttributes (dataUrl:string) = AzureFace.detectFaceAttributes <| AzureFace.getImageFromDataUrl dataUrl
+
+    [<Rpc>]
+    let authUserFace(imageDataUrl:string) =
+        async {
+            match! detectFace imageDataUrl with
+            | None -> return false
+            | Some f -> 
+                infof "{0}" [f.FaceAttributes.Age.Value.ToString()]
+                return true
+        }
+
+    [<Rpc>]
+    let enrollUserFace(un: string, imgDataUrl:string) = 
+        async {
+            let uid = Guid.NewGuid().ToString()
+            match! AzureFace.addPerson uid with
+            | Ok p -> 
+                match! imgDataUrl |> AzureFace.getImageFromDataUrl |> AzureFace.enrollPersonFace p with
+                | Ok _ -> return Ok uid
+                | Error e -> return Error e 
+            | Error e -> return Error e
         }
 
     (* User functions *)
@@ -94,6 +123,18 @@ module Server =
     let updateUserLastLogin (user:string) : Async<Result<unit, exn>> =
         pgdb
         |> Sql.query "UPDATE public.smapp_user SET last_logged_in=@d WHERE user_name=@u;"
+        |> Sql.parameters [("u", Sql.string user); ("d", Sql.timestamp (DateTime.Now))]
+        |> Sql.executeNonQueryAsync
+        |> Async.map (
+            function 
+            | Ok n -> if n > 0 then Ok(infof "Updated user {0} last login time in database." [user]) else Error(exn("Insert user returned 0.")) 
+            | Error exn -> errex "Error updating user {0} last login time in database." exn [user]; Error exn
+        )
+
+    [<Rpc>]
+    let updateUserTypingProfileId (user:string) (tid:string) : Async<Result<unit, exn>> =
+        pgdb
+        |> Sql.query "UPDATE public.smapp_user SET typig_logge_in=@d WHERE user_name=@u;"
         |> Sql.parameters [("u", Sql.string user); ("d", Sql.timestamp (DateTime.Now))]
         |> Sql.executeNonQueryAsync
         |> Async.map (
