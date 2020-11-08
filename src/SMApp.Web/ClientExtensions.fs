@@ -79,12 +79,12 @@ module ClientExtensions =
         let c = parent.FirstChild |> As<CanvasElement>
         c
 
-    let getDialogueBoxContent() = JQuery(".swal2-content").Get().[0].FirstChild |> As<Dom.Element>
-
     let createDialogueBoxCanvas() =
-        let e = JQuery(".swal2-content").Get().[0].FirstChild |> As<Dom.Element>
+        let e = JQuery("#swal2-content").Get().[0].FirstChild |> As<Dom.Element>
         let c = createCanvas "camera" "640" "480" e
         c
+
+    let getDialogueBoxContent() = JQuery("#swal2-content").Get().[0].FirstChild |> As<Dom.Element>
         
     let getDialogueBoxCanvas() = JQuery("canvas.swal2-content").Get().[0] |> As<CanvasElement> //FirstChild.FirstChild
 
@@ -104,14 +104,14 @@ module ClientExtensions =
             let b = SweetAlert.Box (
                         TitleText = title,
                         Text = text,
-                        Type = "question",
+                        Icon = "question",
                         Width = width.ToString(),
-                        Html = sprintf "<div style=\"width:%ipx;height:%ipx\"></div>" width height,
+                        Html = sprintf "<div class='swal2-content-custom'; style=\"width:%ipx;height:%ipx\"></div>" width height,
                         AllowOutsideClick = false
             )
-            do Terminal.Disable()
+            do Terminal.Disable()   
             do if onCreate.IsSome then onCreate.Value b
-            b |> SweetAlert.ShowBox
+            b |> SweetAlert.Fire
         do if onShow.IsSome then onShow.Value()
         prom.Then(Action<obj>(onInput), Action<obj>(onCancel)) |> ignore
 

@@ -27,6 +27,7 @@ module Questions =
 
                 let setupBox2(b:SweetAlert.Box) =
                     b.ConfirmButtonClass <- "invisible"
+                    b.ShowCancelButton <- true
 
                 let collectFaceAndTypingData() =
                     d.Cui.MonitorTypingPattern None
@@ -48,7 +49,7 @@ module Questions =
                             let data = [|u; pattern; image|]
                             do getDialogueBoxContent().AppendChild(getMic()) |> ignore
                             d.Cui.AudioHandlers.Add("VoiceAuthentication", fun v -> let j = v |> Json.Serialize in confirmQuestionBox(); Array.append data [|j|] |> trigger)
-                        questionBox "Biometric Authentication" "" 480 160  (Some setupBox2) (Some collectVoiceData)  (fun _ -> ()) 
+                        questionBox "Biometric Authentication" "" 640 480 (Some setupBox2) (Some collectVoiceData)  (fun _ -> ()) 
                             (fun _ -> say "Ok but you must login for me to help you."; cancel q.Name)
                     )        
                     (fun _ -> 

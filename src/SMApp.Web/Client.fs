@@ -165,6 +165,16 @@ module Client =
                 debug <| sprintf "Utterances: %A" Utterances
                 debug <| sprintf "Questions: %A" Questions
                 for p in Props do debug <| sprintf "%s: %A"  p.Key p.Value
+                let b = 
+                    SweetAlert.Box (
+                        TitleText = "tEST",
+                        Text = "TEST",
+                        Icon = "question",
+                        AllowOutsideClick = false,
+                        ProgressSteps = [|1;2;3|]
+
+                    )
+                WebSharper.SweetAlert.SweetAlert.Mixin(b).Queue([|SweetAlert.Box (TitleText = "2"); SweetAlert.Box (TitleText = "3")|]) |> ignore
             | Text.Voices -> 
                 let voices = speechSynthesis().GetVoices() |> toArray    
                 sprintf "There are currently %i voices installed on this computer or device." voices.Length |> say'

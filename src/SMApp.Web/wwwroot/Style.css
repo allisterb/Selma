@@ -31,3 +31,7 @@
     width: 30px;
 }
 */
+
+.swal2-popup {
+    width: unset
+}

@@ -158,6 +158,11 @@ module AzureFace =
     
     let getImageFromDataUrl(s:string) = s.Split(',') |> Seq.last |> Convert.FromBase64String
        
+    let savePersonFaceToDisk(img:byte[], u:string) =
+        let file = System.IO.File.Create(u + ".png")
+        do file.Write(img, 0, img.Length)
+        infof "Wrote face snapshot to {0}." [Path.GetFullPath u + ".png"] 
+
     let getPersonGroup() =
         async {                
             let! groups = client.PersonGroup.ListAsync() |> Async.AwaitTask                             
@@ -216,7 +221,11 @@ module AzureFace =
             return 
                 match f.Count with
                 | 0 -> None
-                | _ -> f.[0] |> Some
+                | _ ->
+                    let file = System.IO.File.Create("detect-face.png")
+                    do file.Write(img, 0, img.Length)
+                    infof "Wrote face snapshot to {0}." [Path.GetFullPath "detect-face.png"]
+                    f.[0]|> Some
         }
 
     let enrollPersonFace (p:Models.Person) (img:byte[]) =
