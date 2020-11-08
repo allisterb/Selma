@@ -34,29 +34,31 @@ module Questions =
                     let c = createDialogueBoxCanvas()
                     startCamera JS.Document.Body c
 
-                questionBox "Biometric Authentication" "" 640 480 (Some setupBox1) (Some collectFaceAndTypingData) (fun o ->  
-                    let text = o :?> string
-                    let image = getCameraCanvas().ToDataURL();
-                    debug <|sprintf "User image is %s..." (image.Substring(0, 10))
-                    stopCamera()
-                    let pattern =  d.Cui.GetSameTextTypingPattern passPhrase None
-                    debug <| sprintf "User entered typing pattern %s for text %s" pattern text
-                    if text.ToLower() <> passPhrase.ToLower() then
-                        say "Sorry you did not enter the passphrase correctly. Please try again."
-                        box()
-                    else 
-                        let collectVoiceData () =
-                            let data = [|u; pattern; image|]
-                            do getDialogueBoxContent().AppendChild(getMic()) |> ignore
-                            d.Cui.AudioHandlers.Add("VoiceAuthentication", fun v -> let j = v |> Json.Serialize in confirmQuestionBox(); Array.append data [|j|] |> trigger)
-                        questionBox "Biometric Authentication" "" 640 480 (Some setupBox2) (Some collectVoiceData)  (fun _ -> ()) 
-                            (fun _ -> say "Ok but you must login for me to help you."; cancel q.Name)
-                    )        
-                    (fun _ -> 
-                        say "Ok but you must login for me to help you."
+                questionBox "Biometric Authentication" "" (Some (640, 480)) (Some setupBox1) (Some collectFaceAndTypingData) (fun o ->
+                    match o.IsConfirmed with
+                    | true ->
+                        let text = o.Value :?> string
+                        let image = getCameraCanvas().ToDataURL();
+                        debug <|sprintf "User image is %s..." (image.Substring(0, 10))
                         stopCamera()
-                        cancel q.Name 
-                 ) 
+                        let pattern =  d.Cui.GetSameTextTypingPattern passPhrase None
+                        debug <| sprintf "User entered typing pattern %s for text %s" pattern text
+                        if text.ToLower() <> passPhrase.ToLower() then
+                            say "Sorry you did not enter the passphrase correctly. Please try again."
+                            box()
+                        else 
+                            let collectVoiceData () =
+                                let data = [|u; pattern; image|]
+                                do getDialogueBoxContent().AppendChild(getMic()) |> ignore
+                                d.Cui.AudioHandlers.Add("VoiceAuthentication", fun v -> let j = v |> Json.Serialize in confirmQuestionBox(); Array.append data [|j|] |> trigger)
+                            questionBox "Biometric Authentication" "" None (Some setupBox2) (Some collectVoiceData)  (
+                                fun o -> 
+                                    if not o.IsConfirmed then 
+                                        do d.Cui.AudioHandlers.Remove("VoiceAuthentication") |> ignore
+                                        say "OK but you must login for me to help you."
+                            )    
+                    | false -> say "OK but you must login for me to help you."        
+                    )        
             box()
 
         Dialogue.pushq d debug q

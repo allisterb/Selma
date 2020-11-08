@@ -17,7 +17,7 @@
 }
 
 .invisible {
-    display:none
+    display:none !important
 }
 /*
     font-size: unset;

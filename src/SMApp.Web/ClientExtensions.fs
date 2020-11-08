@@ -99,22 +99,33 @@ module ClientExtensions =
     [<Direct "getCameraCanvas()">]
     let getCameraCanvas() = X<CanvasElement>
 
-    let questionBox title text (width:int) (height:int) (onCreate:(Box->unit) option) (onShow:(unit->unit) option) (onInput:obj->unit) (onCancel:obj->unit) = 
+    let questionBox title text (dim:(int * int) option) (onCreate:(Box->unit) option) (onShow:(unit->unit) option) (onInput:SweetAlertResult<obj>->unit) = 
         let prom = 
-            let b = SweetAlert.Box (
+            let b = 
+                match dim with
+                | (Some(width, height)) -> 
+                    SweetAlert.Box (
+                                TitleText = title,
+                                Text = text,
+                                Icon = "question",
+                                Width = width.ToString(),
+                                Html = sprintf "<div class=\"swal2-content-custom\" style=\"width:%ipx;height:%ipx\"></div>" width height,
+                                AllowOutsideClick = false
+                    )
+                | None -> 
+                    SweetAlert.Box (
                         TitleText = title,
                         Text = text,
                         Icon = "question",
-                        Width = width.ToString(),
-                        Html = sprintf "<div class='swal2-content-custom'; style=\"width:%ipx;height:%ipx\"></div>" width height,
+                        Html = "<div></div>",
                         AllowOutsideClick = false
-            )
+                    )
             do Terminal.Disable()   
             do if onCreate.IsSome then onCreate.Value b
             b |> SweetAlert.Fire
         do if onShow.IsSome then onShow.Value()
-        prom.Then(Action<obj>(onInput), Action<obj>(onCancel)) |> ignore
-
+        prom.Then(Action<SweetAlertResult<obj>>(onInput))
+        
     let confirmQuestionBox = SweetAlert.ClickConfirm
          
 [<JavaScript>]
