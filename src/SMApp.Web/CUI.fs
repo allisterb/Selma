@@ -37,8 +37,8 @@ module CUI =
          Term: Terminal
          Avatar: WebAvatar
          Caption: bool
-         TypingDNA: TypingDNA
          AudioHandlers: Dictionary<string, Int16Array->unit>
+         TypingDNA: TypingDNA
      }
      with
          member x.Echo' (text:string) = x.Term.Disable(); x.Term.Echo text; x.Term.Enable()
@@ -86,20 +86,6 @@ module CUI =
                  let voices = voices' |> toArray    
                  sprintf "There are currently %i voices installed on this computer or device." voices.Length |> x.Say
                  voices |> Array.iteri (fun i v -> sprintf "Voice %i. Name: %s, Local: %A." i v.Name v.LocalService |> x.Say)
-
-         member x.MonitorTypingPattern(input:string option) = 
-            x.TypingDNA.Reset()
-            do if input.IsSome then x.TypingDNA.AddTarget input.Value
-            x.TypingDNA.Start()
-
-         member x.GetSameTextTypingPattern(text:string) (el:string option) =
-            //x.TypingDNA.Stop()
-            let options = 
-                match el with
-                | Some e -> new TypingDNAOptions(1, Text = text, CaseSensitive = false, TargetId = e)
-                | None -> new TypingDNAOptions(1, Text = text, CaseSensitive = false)
-            x.TypingDNA.GetTypingPattern options
-
 
 
 

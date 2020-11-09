@@ -7,15 +7,14 @@ open WebSharper.InterfaceGenerator
 module Definition =
     let TypingDNAOptions =
         Pattern.Config "TypingDNAOptions"{
-            Required=[
-                "type", T<int>
-            ]
+            Required=[]
             Optional=
             [
+                "type", T<int>
                 "text", T<string>
                 "textId", T<int>
                 "length", T<int>
-                "targetId", T<string>
+                "targetId", T<Dom.Element>
                 "caseSensitive", T<bool>
             ]
         }
@@ -24,8 +23,8 @@ module Definition =
         Class "TypingDNA"
         |+> Instance [
                 "getTypingPattern" => TypingDNAOptions ^-> T<string>
-                "addTarget" => T<string> ^-> T<unit>
-                "removeTarget" => T<string> ^-> T<unit>
+                "addTarget" => T<Dom.Element> ^-> T<unit>
+                "removeTarget" => T<Dom.Element> ^-> T<unit>
                 "start" => T<unit> ^-> T<unit>
                 "stop" => T<unit> ^-> T<unit>
                 "reset" => T<unit> ^-> T<unit>

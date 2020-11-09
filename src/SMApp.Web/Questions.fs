@@ -5,7 +5,7 @@ open System.Collections.Generic
 open WebSharper
 open WebSharper.JavaScript
 open WebSharper.JQuery
-open SMApp.Web
+open SMApp.TypingDNA
 
 [<JavaScript>]
 module Questions =
@@ -15,33 +15,31 @@ module Questions =
             let say = Dialogue.say d
             let trigger = Dialogue.trigger d debug q.Target q.Name
             let cancel = Dialogue.cancel d debug 
-            
             let passPhrase = sprintf "Hello my name is %s and I am an administrator" u
             say <| sprintf "Enter the phrase %s." passPhrase 
                 
+            let setupBox1(b:SweetAlert.Box) =
+                b.Input <- "text"
+                b.ShowCancelButton <- true
+                b.ConfirmButtonText <- "Ok"
+               
+            let setupBox2(b:SweetAlert.Box) =
+                b.ConfirmButtonClass <- "invisible"
+                b.ShowCancelButton <- true
+                
+            let collectFaceAndTypingData() =
+                let c = createDialogueBoxCanvas()
+                startCamera JS.Document.Body c
+            
             let rec box() = 
-                let setupBox1(b:SweetAlert.Box) =
-                    b.Input <- "text"
-                    b.ShowCancelButton <- true
-                    b.ConfirmButtonText <- "Ok"
-
-                let setupBox2(b:SweetAlert.Box) =
-                    b.ConfirmButtonClass <- "invisible"
-                    b.ShowCancelButton <- true
-
-                let collectFaceAndTypingData() =
-                    d.Cui.MonitorTypingPattern None
-                    let c = createDialogueBoxCanvas()
-                    startCamera JS.Document.Body c
-
-                questionBox "Biometric Authentication" "" (Some (640, 480)) (Some setupBox1) (Some collectFaceAndTypingData) (fun o ->
+                questionBox "Biometric Authentication" "" (Some (640, 480)) (Some setupBox1) (Some (collectFaceAndTypingData)) (fun o ->
                     match o.IsConfirmed with
                     | true ->
+                        let pattern = d.Cui.TypingDNA.GetTypingPattern(new TypingDNAOptions(Type = 1, Text = passPhrase, CaseSensitive = false))
                         let text = o.Value :?> string
                         let image = getCameraCanvas().ToDataURL();
                         debug <|sprintf "User image is %s..." (image.Substring(0, 10))
                         stopCamera()
-                        let pattern =  d.Cui.GetSameTextTypingPattern passPhrase None
                         debug <| sprintf "User entered typing pattern %s for text %s" pattern text
                         if text.ToLower() <> passPhrase.ToLower() then
                             say "Sorry you did not enter the passphrase correctly. Please try again."

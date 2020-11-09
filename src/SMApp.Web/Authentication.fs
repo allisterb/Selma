@@ -47,11 +47,6 @@ module TypingDNA =
         confidence: int
     }
 
-    [<JavaScript>]
-    let getSameTextTypingPattern (text:string) (dna: TypingDNA.TypingDNA) =
-        let opt = new TypingDNAOptions(1, Text = text, CaseSensitive = true)
-        dna.GetTypingPattern(opt)
-
     let private apiKey = Runtime.Config("TYPINGDNA_KEY")
     let private apiSecret = Runtime.Config("TYPINGDNA_SECRET")
     let private authString = Convert.ToBase64String(Encoding.ASCII.GetBytes(String.Format("{0}:{1}", apiKey, apiSecret)));

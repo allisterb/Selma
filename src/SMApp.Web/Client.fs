@@ -40,11 +40,8 @@ module Client =
             web.ProcessMessages(0)
             web
         Caption = false
-        TypingDNA = 
-            let dna = new TypingDNA()
-            do dna.Stop()
-            dna
         AudioHandlers = new Dictionary<string, Int16Array->unit>()
+        TypingDNA = new TypingDNA()
     }
     let mutable MicState = MicNotInitialized
     let mutable ClientState = ClientNotInitialzed
@@ -165,16 +162,9 @@ module Client =
                 debug <| sprintf "Utterances: %A" Utterances
                 debug <| sprintf "Questions: %A" Questions
                 for p in Props do debug <| sprintf "%s: %A"  p.Key p.Value
-                let b = 
-                    SweetAlert.Box (
-                        TitleText = "tEST",
-                        Text = "TEST",
-                        Icon = "question",
-                        AllowOutsideClick = false,
-                        ProgressSteps = [|1;2;3|]
-
-                    )
-                WebSharper.SweetAlert.SweetAlert.Mixin(b).Queue([|SweetAlert.Box (TitleText = "2"); SweetAlert.Box (TitleText = "3")|]) |> ignore
+                //debug (CUI.GetSameTextTypingPattern "debug" None)
+                let pattern = CUI.TypingDNA.GetTypingPattern(new TypingDNAOptions(Type = 1, Text = "hello my name is", CaseSensitive = false))
+                debug pattern
             | Text.Voices -> 
                 let voices = speechSynthesis().GetVoices() |> toArray    
                 sprintf "There are currently %i voices installed on this computer or device." voices.Length |> say'

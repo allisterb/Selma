@@ -86,7 +86,7 @@ module ClientExtensions =
 
     let getDialogueBoxContent() = JQuery("#swal2-content").Get().[0].FirstChild |> As<Dom.Element>
         
-    let getDialogueBoxCanvas() = JQuery("canvas.swal2-content").Get().[0] |> As<CanvasElement> //FirstChild.FirstChild
+    let getDialogueBoxCanvas() = JQuery("canvas.swal2-content").Get().[0] |> As<CanvasElement> 
 
     let getDialogueBoxInput() = JQuery(".swal2-input").Get().[0] |> As<HTMLInputElement>
     
@@ -119,8 +119,7 @@ module ClientExtensions =
                         Icon = "question",
                         Html = "<div></div>",
                         AllowOutsideClick = false
-                    )
-            do Terminal.Disable()   
+                    )   
             do if onCreate.IsSome then onCreate.Value b
             b |> SweetAlert.Fire
         do if onShow.IsSome then onShow.Value()
