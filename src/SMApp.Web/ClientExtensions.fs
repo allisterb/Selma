@@ -99,7 +99,7 @@ module ClientExtensions =
     [<Direct "getCameraCanvas()">]
     let getCameraCanvas() = X<CanvasElement>
 
-    let questionBox title text (dim:(int * int) option) (onCreate:(Box->unit) option) (onShow:(unit->unit) option) (onInput:SweetAlertResult<obj>->unit) = 
+    let questionBox title text (queueSteps: int[] option) (dim:(int * int) option) (onCreate:(Box->unit) option) (onShow:(unit->unit) option) (onInput:SweetAlertResult<obj>->unit)= 
         let prom = 
             let b = 
                 match dim with
@@ -121,7 +121,14 @@ module ClientExtensions =
                         AllowOutsideClick = false
                     )   
             do if onCreate.IsSome then onCreate.Value b
-            b |> SweetAlert.Fire
+            //b |> SweetAlert.Fire
+            
+            match queueSteps with
+            | None -> b |> SweetAlert.Fire
+            | Some s -> 
+                b.ProgressSteps <- queueSteps.Value
+                (SweetAlert.Mixin b).Queue([|b|])
+            
         do if onShow.IsSome then onShow.Value()
         prom.Then(Action<SweetAlertResult<obj>>(onInput))
         

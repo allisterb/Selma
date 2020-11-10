@@ -13,10 +13,7 @@ open SMApp.JQueryTerminal
 open SMApp.WebSpeech
 open SMApp.Microphone
 open SMApp.BotLibre
-open SMApp.Compromise
 open SMApp.TypingDNA
-
-open Dialogue
 
 [<JavaScript>]
 module Client =
@@ -81,7 +78,6 @@ module Client =
 
     let say' text = CUI.Say text         
     
-
     let say text =
         Output.Push text
         say' text
@@ -161,10 +157,14 @@ module Client =
             | Text.Debug ->
                 debug <| sprintf "Utterances: %A" Utterances
                 debug <| sprintf "Questions: %A" Questions
-                for p in Props do debug <| sprintf "%s: %A"  p.Key p.Value
+                for p in Props do debug <| sprintf "%s: %A"  p.Key p.Value                
+                SweetAlert.SweetAlert.Mixin(SweetAlert.Box(TitleText ="1", Html="<div></div>")).Queue([|SweetAlert.Box(TitleText ="2"); SweetAlert.Box(TitleText ="3")|]) |> ignore
+                //let c = createDialogueBoxCanvas()
+                //startCamera JS.Document.Body c
+                //let q = SweetAlert.Box(Title="foo").mi
                 //debug (CUI.GetSameTextTypingPattern "debug" None)
-                let pattern = CUI.TypingDNA.GetTypingPattern(new TypingDNAOptions(Type = 1, Text = "hello my name is", CaseSensitive = false))
-                debug pattern
+                //let pattern = CUI.TypingDNA.GetTypingPattern(new TypingDNAOptions(Type = 1, Text = "hello my name is", CaseSensitive = false))
+                //debug pattern
             | Text.Voices -> 
                 let voices = speechSynthesis().GetVoices() |> toArray    
                 sprintf "There are currently %i voices installed on this computer or device." voices.Length |> say'

@@ -30,9 +30,9 @@ module Questions =
             let collectFaceAndTypingData() =
                 let c = createDialogueBoxCanvas()
                 startCamera JS.Document.Body c
-            
-            let rec box() = 
-                questionBox "Biometric Authentication" "" (Some (640, 480)) (Some setupBox1) (Some (collectFaceAndTypingData)) (fun o ->
+               
+            let rec box(c:int, data: string array array) = 
+                questionBox "Biometric Authentication" "" (Some [|1;2|]) (Some (640, 480)) (Some setupBox1) (Some (collectFaceAndTypingData)) (fun o ->
                     match o.IsConfirmed with
                     | true ->
                         let pattern = d.Cui.TypingDNA.GetTypingPattern(new TypingDNAOptions(Type = 1, Text = passPhrase, CaseSensitive = false))
@@ -43,13 +43,20 @@ module Questions =
                         debug <| sprintf "User entered typing pattern %s for text %s" pattern text
                         if text.ToLower() <> passPhrase.ToLower() then
                             say "Sorry you did not enter the passphrase correctly. Please try again."
-                            box()
+                            box(c, data)
                         else 
                             let collectVoiceData () =
                                 let data = [|u; pattern; image|]
                                 do getDialogueBoxContent().AppendChild(getMic()) |> ignore
-                                d.Cui.AudioHandlers.Add("VoiceAuthentication", fun v -> let j = v |> Json.Serialize in confirmQuestionBox(); Array.append data [|j|] |> trigger)
-                            questionBox "Biometric Authentication" "" None (Some setupBox2) (Some collectVoiceData)  (
+                                d.Cui.AudioHandlers.Add("VoiceAuthentication", 
+                                                            fun v -> 
+                                                                let j = v |> Json.Serialize in 
+                                                                confirmQuestionBox()
+                                                                ///let d = Array.append data [|j|]
+                                                                //let data' = 
+                                                                //if d = 3 then trigger(d)
+                                                            )
+                            questionBox "Biometric Authentication" "" None None (Some setupBox2) (Some collectVoiceData)  (
                                 fun o -> 
                                     if not o.IsConfirmed then 
                                         do d.Cui.AudioHandlers.Remove("VoiceAuthentication") |> ignore
@@ -57,7 +64,7 @@ module Questions =
                             )    
                     | false -> say "OK but you must login for me to help you."        
                     )        
-            box()
+            box(0, [||])
 
         Dialogue.pushq d debug q
         match q.Type with
