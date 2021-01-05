@@ -32,7 +32,7 @@ module Questions =
                 startCamera JS.Document.Body c
                
             let rec box(c:int, data: string array array) = 
-                questionBox "Biometric Authentication" "" (Some [|1;2|]) (Some (640, 480)) (Some setupBox1) (Some (collectFaceAndTypingData)) (fun o ->
+                questionBox "Biometric Authentication" "" (Some (boxesWithTitles [|"2"; "3"|])) (Some (640, 480)) (Some setupBox1) (Some (collectFaceAndTypingData)) (fun o ->
                     match o.IsConfirmed with
                     | true ->
                         let pattern = d.Cui.TypingDNA.GetTypingPattern(new TypingDNAOptions(Type = 1, Text = passPhrase, CaseSensitive = false))

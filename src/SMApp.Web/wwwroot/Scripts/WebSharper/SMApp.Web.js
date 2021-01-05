@@ -1,11 +1,12 @@
 (function()
 {
  "use strict";
- var Global,SMApp,Web,ClientExtensions,_Html,htmModule,SC$1,TypingDNA,SaveResponse,UserResponse,VerifyResponse,Bs,NLU,Babelfy,ApiResponse,TokenFragment,CharFragment,Witai,Utterance,Intent,Entity,Trait,_Utterance,_Value,QnAMaker,ITSQuestion,ITSAnswerContext,ITSAnswer,ITSAnswers,NLG,SC$2,NLU$1,Intent$1,Trait$1,Entity$1,Utterance$1,Voice,_Entity,Text,_Utterance$1,_Intent,_Entity$1,_Trait,Domain,SC$3,CUI,MicState,ClientState,Interpreter,CUI$1,Dialogue,Question,QuestionType,DialogueModule,Questions,User,SC$4,Symptoms,SC$5,Main,SC$6,Client,SC$7,SMApp$Web_GeneratedPrintf,GeneratedPrintf,SweetAlert,IntelliFactory,Runtime,WebSharper,Arrays,UI,Doc,AttrProxy,Client$1,Templates,Utils,console,$,Strings,List,Seq,AttrModule,Concurrency,JSON,Random,Collections,Map,JavaScript,Pervasives,ClientSideJson,Provider,SDK,Unchecked,Operators,Remoting,AjaxRemotingProvider,Wit,document,Dictionary;
+ var Global,SMApp,Web,ClientExtensions,SweetAlert,_Html,htmModule,SC$1,TypingDNA,SaveResponse,UserResponse,VerifyResponse,Bs,NLU,Babelfy,ApiResponse,TokenFragment,CharFragment,Witai,Utterance,Intent,Entity,Trait,_Utterance,_Value,QnAMaker,ITSQuestion,ITSAnswerContext,ITSAnswer,ITSAnswers,NLG,SC$2,NLU$1,Intent$1,Trait$1,Entity$1,Utterance$1,Voice,_Entity,Text,_Utterance$1,_Intent,_Entity$1,_Trait,Domain,SC$3,CUI,MicState,ClientState,Interpreter,CUI$1,Dialogue,Question,QuestionType,DialogueModule,Questions,User,SC$4,Symptoms,SC$5,Main,SC$6,Client,SC$7,SMApp$Web_GeneratedPrintf,GeneratedPrintf,WebSharper,Arrays,SweetAlert$1,IntelliFactory,Runtime,Operators,UI,Doc,AttrProxy,Client$1,Templates,Utils,console,$,Strings,List,Seq,AttrModule,Concurrency,JSON,Random,Collections,Map,JavaScript,Pervasives,ClientSideJson,Provider,SDK,Unchecked,Remoting,AjaxRemotingProvider,Wit,document,Dictionary;
  Global=self;
  SMApp=Global.SMApp=Global.SMApp||{};
  Web=SMApp.Web=SMApp.Web||{};
  ClientExtensions=Web.ClientExtensions=Web.ClientExtensions||{};
+ SweetAlert=ClientExtensions.SweetAlert=ClientExtensions.SweetAlert||{};
  _Html=Web._Html=Web._Html||{};
  htmModule=Web.htmModule=Web.htmModule||{};
  SC$1=Global.StartupCode$SMApp_Web$ClientExtensions=Global.StartupCode$SMApp_Web$ClientExtensions||{};
@@ -67,11 +68,12 @@
  SC$7=Global.StartupCode$SMApp_Web$Client=Global.StartupCode$SMApp_Web$Client||{};
  SMApp$Web_GeneratedPrintf=Global.SMApp$Web_GeneratedPrintf=Global.SMApp$Web_GeneratedPrintf||{};
  GeneratedPrintf=Global.GeneratedPrintf=Global.GeneratedPrintf||{};
- SweetAlert=Global.SweetAlert;
- IntelliFactory=Global.IntelliFactory;
- Runtime=IntelliFactory&&IntelliFactory.Runtime;
  WebSharper=Global.WebSharper;
  Arrays=WebSharper&&WebSharper.Arrays;
+ SweetAlert$1=Global.SweetAlert;
+ IntelliFactory=Global.IntelliFactory;
+ Runtime=IntelliFactory&&IntelliFactory.Runtime;
+ Operators=WebSharper&&WebSharper.Operators;
  UI=WebSharper&&WebSharper.UI;
  Doc=UI&&UI.Doc;
  AttrProxy=UI&&UI.AttrProxy;
@@ -95,7 +97,6 @@
  Provider=ClientSideJson&&ClientSideJson.Provider;
  SDK=Global.SDK;
  Unchecked=WebSharper&&WebSharper.Unchecked;
- Operators=WebSharper&&WebSharper.Operators;
  Remoting=WebSharper&&WebSharper.Remoting;
  AjaxRemotingProvider=Remoting&&Remoting.AjaxRemotingProvider;
  Wit=Global.Wit;
@@ -133,19 +134,38 @@
  {
   return Global.$("#term").terminal().disable();
  };
+ ClientExtensions.boxesWithTitles=function(boxes)
+ {
+  return Arrays.map(function(b)
+  {
+   var r;
+   r={};
+   r.titleText=b;
+   return r;
+  },boxes);
+ };
  ClientExtensions.confirmQuestionBox=function()
  {
-  SweetAlert.clickConfirm();
+  SweetAlert$1.clickConfirm();
  };
  ClientExtensions.questionBox=function(title,text,queueSteps,dim,onCreate,onShow,onInput)
  {
-  var prom,b,r,width,r$1;
+  var prom,b,r,width,r$1,s;
   prom=(b=dim==null?(r={},r.titleText=title,r.text=text,r.icon="question",r.html="<div></div>",r.allowOutsideClick=false,r):(width=dim.$0[0],(r$1={},r$1.titleText=title,r$1.text=text,r$1.icon="question",r$1.width=Global.String(width),r$1.html=(((Runtime.Curried3(function($1,$2,$3)
   {
    return $1("<div class=\"swal2-content-custom\" style=\"width:"+Global.String($2)+"px;height:"+Global.String($3)+"px\"></div>");
-  }))(Global.id))(width))(dim.$0[1]),r$1.allowOutsideClick=false,r$1)),(onCreate!=null?onCreate.$0(b):void 0,queueSteps!=null&&queueSteps.$==1?(b.progressSteps=queueSteps.$0,SweetAlert.mixin(b).queue([b])):SweetAlert.fire(b)));
+  }))(Global.id))(width))(dim.$0[1]),r$1.allowOutsideClick=false,r$1)),(onCreate!=null?onCreate.$0(b):void 0,queueSteps!=null&&queueSteps.$==1?(s=queueSteps.$0,(b.progressSteps=Arrays.ofSeq(Operators.range(1,Arrays.length(s))),SweetAlert$1.mixin(b).queue(Arrays.create(Arrays.length(s),b)))):SweetAlert$1.fire(b)));
   onShow!=null?onShow.$0():void 0;
   prom.then(onInput);
+ };
+ SweetAlert.get_QueueBoxes=function()
+ {
+  var o;
+  o=SweetAlert$1.mixin({});
+  return function(a)
+  {
+   return o.queue(a);
+  };
  };
  ClientExtensions.getDialogueBoxInput=function()
  {
@@ -2293,7 +2313,7 @@
    data=t$1[1];
    ClientExtensions.questionBox("Biometric Authentication","",{
     $:1,
-    $0:[1,2]
+    $0:ClientExtensions.boxesWithTitles(["2","3"])
    },{
     $:1,
     $0:[640,480]
@@ -2403,7 +2423,7 @@
    sayRandom(NLG.waitRetrievePhrases(),"user name");
    Concurrency.Start((b$1=null,Concurrency.Delay(function()
    {
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:-409042660",[u]),function(a$25)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:1355099892",[u]),function(a$25)
     {
      var user;
      return a$25==null?(say((function($10)
@@ -2429,7 +2449,7 @@
         };
        }(Global.id))(u));
       }
-     })),Concurrency.Zero()):(user=a$25.$0,Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.updateUserLastLogin:2095252002",[user.Name]),function()
+     })),Concurrency.Zero()):(user=a$25.$0,Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.updateUserLastLogin:134107504",[user.Name]),function()
      {
       sayRandom(NLG.helloUserPhrases(),(function($10)
       {
@@ -2438,7 +2458,7 @@
         return $10(Utils.prettyPrint($11));
        };
       }(Global.id))(user.Name));
-      return user.LastLoggedIn!=null?Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.humanize:-1098882674",[user.LastLoggedIn.$0]),function(a$26)
+      return user.LastLoggedIn!=null?Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.humanize:-1821636148",[user.LastLoggedIn.$0]),function(a$26)
       {
        say((function($10)
        {
@@ -2510,7 +2530,7 @@
    User.debug($3);
    Concurrency.Start((b$1=null,Concurrency.Delay(function()
    {
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.hasFace:-516897579",[Arrays.get($3,2)]),function(a$25)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.hasFace:357222155",[Arrays.get($3,2)]),function(a$25)
     {
      return a$25?(say("Face detected"),Concurrency.Zero()):(say(function($10)
      {
@@ -2554,7 +2574,7 @@
    }(Global.id))(Arrays.get($6,0)));
   }):m.$==1&&(a$16=DialogueModule.User_(d,m.$0),a$16!=null&&a$16.$==1&&(a$17=NLU$1.Intent$1("hello",a$16.$0),a$17!=null&&a$17.$==1&&(a$17.$0[0]==null&&(a$18=NLU$1.Entity1Of1("name",a$17.$0[1]),a$18!=null&&a$18.$==1&&(m.$1.$==0&&($7=a$18.$0,true))))))?Concurrency.Start((b=null,Concurrency.Delay(function()
   {
-   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:-409042660",[$7.get_Value()]),function(a$25)
+   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:1355099892",[$7.get_Value()]),function(a$25)
    {
     return a$25==null?(say((function($10)
     {
@@ -2632,7 +2652,7 @@
    return Concurrency.Start((b$2=null,Concurrency.Delay(function()
    {
     sayRandom(NLG.waitAddPhrases(),"symptom entry");
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addSymptomJournalEntry:1671242931",[user().Name,s,l,m$1]),function(a$7)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addSymptomJournalEntry:184599257",[user().Name,s,l,m$1]),function(a$7)
     {
      return a$7.$==1?(say(function($8)
      {
@@ -2662,10 +2682,10 @@
    return Concurrency.Bind(QnAMaker.getAnswer($6.get_Text()),function(a$7)
    {
     var s;
-    return Concurrency.Bind((s=Arrays.get(a$7.answers,0).answer,(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.mdtohtml:1781242712",[s])),function(a$8)
+    return Concurrency.Bind((s=Arrays.get(a$7.answers,0).answer,(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.mdtohtml:-2095920726",[s])),function(a$8)
     {
      var s$1;
-     return Concurrency.Bind((s$1=Arrays.get(a$7.answers,0).answer,(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.mdtotext:1781242712",[s$1])),function(a$9)
+     return Concurrency.Bind((s$1=Arrays.get(a$7.answers,0).answer,(new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.mdtotext:-2095920726",[s$1])),function(a$9)
      {
       echo(a$8);
       say(a$9);
@@ -3092,7 +3112,7 @@
        {
         e.Dispose();
        }
-       SweetAlert.mixin((r$1={},r$1.titleText="1",r$1.html="<div></div>",r$1)).queue([(r$2={},r$2.titleText="2",r$2),(r$3={},r$3.titleText="3",r$3)]);
+       (SweetAlert.get_QueueBoxes())([(r$1={},r$1.titleText="1",r$1),(r$2={},r$2.titleText="2",r$2),(r$3={},r$3.titleText="3",r$3)]);
        return;
       }
      else

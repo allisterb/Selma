@@ -158,7 +158,7 @@ module Client =
                 debug <| sprintf "Utterances: %A" Utterances
                 debug <| sprintf "Questions: %A" Questions
                 for p in Props do debug <| sprintf "%s: %A"  p.Key p.Value                
-                SweetAlert.SweetAlert.Mixin(SweetAlert.Box(TitleText ="1", Html="<div></div>")).Queue([|SweetAlert.Box(TitleText ="2"); SweetAlert.Box(TitleText ="3")|]) |> ignore
+                SweetAlert.SweetAlert.QueueBoxes([|SweetAlert.Box(TitleText ="1"); SweetAlert.Box(TitleText ="2"); SweetAlert.Box(TitleText ="3")|]) |> ignore
                 //let c = createDialogueBoxCanvas()
                 //startCamera JS.Document.Body c
                 //let q = SweetAlert.Box(Title="foo").mi

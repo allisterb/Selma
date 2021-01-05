@@ -99,7 +99,10 @@ module ClientExtensions =
     [<Direct "getCameraCanvas()">]
     let getCameraCanvas() = X<CanvasElement>
 
-    let questionBox title text (queueSteps: int[] option) (dim:(int * int) option) (onCreate:(Box->unit) option) (onShow:(unit->unit) option) (onInput:SweetAlertResult<obj>->unit)= 
+    type SweetAlert with
+        static member QueueBoxes = SweetAlert.Mixin(Box()).Queue
+
+    let questionBox title text (queueSteps: Box[] option) (dim:(int * int) option) (onCreate:(Box->unit) option) (onShow:(unit->unit) option) (onInput:SweetAlertResult<obj>->unit)= 
         let prom = 
             let b = 
                 match dim with
@@ -121,19 +124,20 @@ module ClientExtensions =
                         AllowOutsideClick = false
                     )   
             do if onCreate.IsSome then onCreate.Value b
-            //b |> SweetAlert.Fire
-            
+          
             match queueSteps with
             | None -> b |> SweetAlert.Fire
             | Some s -> 
-                b.ProgressSteps <- queueSteps.Value
-                (SweetAlert.Mixin b).Queue([|b|])
+                b.ProgressSteps <- seq {1..s.Length} |> Array.ofSeq
+                (SweetAlert.Mixin b).Queue(Array.create (s.Length) b)
             
         do if onShow.IsSome then onShow.Value()
         prom.Then(Action<SweetAlertResult<obj>>(onInput))
         
     let confirmQuestionBox = SweetAlert.ClickConfirm
          
+    let boxesWithTitles (boxes:string array) = boxes |> Array.map(fun b -> SweetAlert.Box(TitleText = b))
+    
 [<JavaScript>]
 type _Html =
    | Elem of string * _Html list
