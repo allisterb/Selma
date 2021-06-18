@@ -72,7 +72,8 @@ module Main =
         | User'(Intent "greet" (_, None))::[] -> handle "greet" (fun _ -> say "Hello, tell me your name to get started.")
           
         (* Dispatch *)
-        // User login
+        
+        (* User login *)
         | User'(Intent "greet" (_, Entity1Of1 "name" _))::[] -> dispatch User.name User.update
         | User'(Intent "hello" (_, Entity1Of1 "contact" _))::[] -> dispatch User.name User.update
 

@@ -8,9 +8,7 @@
     <Compile Include="ClientExtensions.fs" />
     <Compile Include="Authentication.fs" />
     <Compile Include="Bootstrap.fs" />
-    <Compile Include="Babelfy.fs" />
     <Compile Include="Witai.fs" />
-    <Compile Include="QnAMaker.fs" />
     <Compile Include="NLG.fs" />
     <Compile Include="NLU.fs" />
     <Compile Include="CUI.fs" />
@@ -51,6 +49,7 @@
     <ProjectReference Include="..\SMApp.Base\SMApp.Base.csproj" />
     <ProjectReference Include="..\SMApp.Core\SMApp.Core.fsproj" />
     <ProjectReference Include="..\SMApp.Logger.Serilog\SMApp.Logger.Serilog.csproj" />
+    <ProjectReference Include="..\SMApp.NLU.ExpertAI\SMApp.NLU.ExpertAI.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="SMApp.BotLibre">

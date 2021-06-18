@@ -7,7 +7,6 @@ open WebSharper.JavaScript
 open WebSharper.JQuery
 open WebSharper.UI
 open WebSharper.UI.Client
-open WebSharper.UI.Html
 
 open SMApp.JQueryTerminal
 open SMApp.WebSpeech
@@ -155,16 +154,12 @@ module Client =
             (* Quick commands *)
             | Text.Blank -> say' "Tell me what you want me to do or ask me a question."
             | Text.Debug ->
-                debug <| sprintf "Utterances: %A" Utterances
-                debug <| sprintf "Questions: %A" Questions
-                for p in Props do debug <| sprintf "%s: %A"  p.Key p.Value                
-                SweetAlert.SweetAlert.QueueBoxes([|SweetAlert.Box(TitleText ="1"); SweetAlert.Box(TitleText ="2"); SweetAlert.Box(TitleText ="3")|]) |> ignore
-                //let c = createDialogueBoxCanvas()
-                //startCamera JS.Document.Body c
-                //let q = SweetAlert.Box(Title="foo").mi
-                //debug (CUI.GetSameTextTypingPattern "debug" None)
-                //let pattern = CUI.TypingDNA.GetTypingPattern(new TypingDNAOptions(Type = 1, Text = "hello my name is", CaseSensitive = false))
-                //debug pattern
+                //debug <| sprintf "Utterances: %A" Utterances
+                //debug <| sprintf "Questions: %A" Questions
+                //for p in Props do debug <| sprintf "%s: %A"  p.Key p.Value
+                let r = Server.getRel()
+                //match r with
+                ()
             | Text.Voices -> 
                 let voices = speechSynthesis().GetVoices() |> toArray    
                 sprintf "There are currently %i voices installed on this computer or device." voices.Length |> say'

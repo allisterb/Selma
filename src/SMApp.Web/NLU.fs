@@ -188,12 +188,32 @@ module NLU =
             | "three" -> Utterance("three", Some(Intent("questionresponse", Some 1.0f)), None, Some([Entity("wit/ordinal", "", "three", Some 1.0f)])) |> Some
             | _ -> None
 
+        let (|Four|_|) =
+            function
+            | "4"
+            | "four" -> Utterance("four", Some(Intent("questionresponse", Some 1.0f)), None, Some([Entity("wit/ordinal", "", "four", Some 1.0f)])) |> Some
+            | _ -> None
+
+        let (|Five|_|) =
+            function
+            | "5"
+            | "five" -> Utterance("five", Some(Intent("questionresponse", Some 1.0f)), None, Some([Entity("wit/ordinal", "", "five", Some 1.0f)])) |> Some
+            | _ -> None
+
+
         let (|QuickNumber|_|) =
             function
             | One m 
             | Two m -> Some m
             | _ -> None
 
+        let (|QuickJournal|_|) =
+            function
+            | "help"
+            | "help me"
+            | "what's this?"
+            | "huh" -> Utterance("help", Some(Intent("help", Some 1.0f)), None, None) |> Some 
+            | _ -> None
         [<JavaScript>]
         type Utterance' = Utterance' of string * Intent' list * Entity' list * Trait' list
         with 

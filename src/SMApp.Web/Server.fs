@@ -14,6 +14,10 @@ open SMApp
 open SMApp.Models
     
 module Server =        
+    let private httpClient = new System.Net.Http.HttpClient()
+
+    let private expertai = new SMApp.NLU.ExpertAI.Client(httpClient)
+
     let private pgdb =
         Sql.host (Runtime.Config("PGSQL"))
         |> Sql.port 5432
@@ -188,3 +192,15 @@ module Server =
             Address = None
         }) 
         |> Async.map(function | Ok r -> Ok r | Error exn -> Error(exn.Message))
+
+    [<Rpc>]
+    let getRel(): Async<Result<string, string>> =
+        let n = 1
+        let r = 
+            expertai.ContextsAsync() 
+               |> Async.AwaitTask 
+               |> Async.Catch 
+               |> Async.map(function | Choice1Of2 r -> Ok("") | Choice2Of2 exn -> Error(exn.Message))
+        r
+        
+        

@@ -99,13 +99,7 @@ module Symptoms =
         (* KB query *)
 
         | User(Intent "kbquery" (_, _) as u)::[] -> 
-            async {
-                let! a = QnAMaker.getAnswer u.Text 
-                let! html = a.answers.[0].answer |> Server.mdtohtml
-                let! text = a.answers.[0].answer |> Server.mdtotext
-                echo html
-                say text
-            } |> Async.Start
+            ()
 
         | _ -> didNotUnderstand()
 
