@@ -14,9 +14,11 @@ open SMApp
 open SMApp.Models
     
 module Server =        
-    let private httpClient = new System.Net.Http.HttpClient()
-
-    let private expertai = new SMApp.NLU.ExpertAI.Client(httpClient)
+    
+    let private expertai =
+        let httpClient = new System.Net.Http.HttpClient()
+        httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + Runtime.Config("EXPERTAI_TOKEN"))
+        new SMApp.NLU.ExpertAI.Client(httpClient)
 
     let private pgdb =
         Sql.host (Runtime.Config("PGSQL"))

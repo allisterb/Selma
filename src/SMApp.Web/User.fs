@@ -60,7 +60,6 @@ module User =
         let loginUser u = 
             do sayRandom waitRetrievePhrases "user name"
             async { 
-                let! r = Server.getRel()
                 match! Server.getUser u with 
                 | Some user ->
                     do! Server.updateUserLastLogin user.Name |> Async.Ignore
@@ -68,7 +67,6 @@ module User =
                     if Option.isSome user.LastLoggedIn then 
                         let! h = Server.humanize user.LastLoggedIn.Value
                         say <| sprintf "You last logged in %s." h
-                        
                         
                         //Question("authenticateUser", name, UserAuthentication u, None, update) |> ask
                 | None _ -> 

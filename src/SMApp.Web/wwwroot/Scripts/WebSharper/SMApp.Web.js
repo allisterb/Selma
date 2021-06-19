@@ -2406,9 +2406,9 @@
    sayRandom(NLG.waitRetrievePhrases(),"user name");
    Concurrency.Start((b$1=null,Concurrency.Delay(function()
    {
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getRel:-795711990",[]),function()
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getRel:-954360487",[]),function()
     {
-     return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:1912761553",[u]),function(a$25)
+     return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:-432261839",[u]),function(a$25)
      {
       var user;
       return a$25==null?(say((function($10)
@@ -2434,7 +2434,7 @@
          };
         }(Global.id))(u));
        }
-      })),Concurrency.Zero()):(user=a$25.$0,Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.updateUserLastLogin:-1326261564",[user.Name]),function()
+      })),Concurrency.Zero()):(user=a$25.$0,Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.updateUserLastLogin:996228985",[user.Name]),function()
       {
        sayRandom(NLG.helloUserPhrases(),(function($10)
        {
@@ -2443,7 +2443,7 @@
          return $10(Utils.prettyPrint($11));
         };
        }(Global.id))(user.Name));
-       return user.LastLoggedIn!=null?Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.humanize:-1009851921",[user.LastLoggedIn.$0]),function(a$26)
+       return user.LastLoggedIn!=null?Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.humanize:-1470683310",[user.LastLoggedIn.$0]),function(a$26)
        {
         say((function($10)
         {
@@ -2502,7 +2502,7 @@
    User.debug($3);
    Concurrency.Start((b$1=null,Concurrency.Delay(function()
    {
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.hasFace:216973478",[Arrays.get($3,2)]),function(a$25)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.hasFace:-923007387",[Arrays.get($3,2)]),function(a$25)
     {
      return a$25?(say("Face detected"),Concurrency.Zero()):(say(function($10)
      {
@@ -2546,7 +2546,7 @@
    }(Global.id))(Arrays.get($6,0)));
   }):m.$==1&&(a$16=DialogueModule.User_(d,m.$0),a$16!=null&&a$16.$==1&&(a$17=NLU$1.Intent$1("hello",a$16.$0),a$17!=null&&a$17.$==1&&(a$17.$0[0]==null&&(a$18=NLU$1.Entity1Of1("name",a$17.$0[1]),a$18!=null&&a$18.$==1&&(m.$1.$==0&&($7=a$18.$0,true))))))?Concurrency.Start((b=null,Concurrency.Delay(function()
   {
-   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:1912761553",[$7.get_Value()]),function(a$25)
+   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:-432261839",[$7.get_Value()]),function(a$25)
    {
     return a$25==null?(say((function($10)
     {
@@ -2620,7 +2620,7 @@
    return Concurrency.Start((b$1=null,Concurrency.Delay(function()
    {
     sayRandom(NLG.waitAddPhrases(),"symptom entry");
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addSymptomJournalEntry:-1620161810",[user().Name,s,l,m$1]),function(a$7)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addSymptomJournalEntry:-761436038",[user().Name,s,l,m$1]),function(a$7)
     {
      return a$7.$==1?(say(function($8)
      {
@@ -3023,7 +3023,7 @@
    Unchecked.Equals(Client.CUI().Mic,null)?Client.initMic(_main):void 0;
    Unchecked.Equals(Client.CUI().Voice,null)?Client.initSpeech():void 0;
    Client.ClientState().$===0?Client.set_ClientState(ClientState.ClientReady):void 0;
-   return($1=Text.Blank(command),$1!=null&&$1.$==1)?Client["say'"]("Tell me what you want me to do or ask me a question."):($2=Text.Debug(command),$2!=null&&$2.$==1)?((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getRel:-795711990",[]),null):($3=Text.Voices(command),$3!=null&&$3.$==1)?(voices=ClientExtensions.toArray(ClientExtensions.speechSynthesis().getVoices()),(Client["say'"]((function($5)
+   return($1=Text.Blank(command),$1!=null&&$1.$==1)?Client["say'"]("Tell me what you want me to do or ask me a question."):($2=Text.Debug(command),$2!=null&&$2.$==1)?((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getRel:-954360487",[]),null):($3=Text.Voices(command),$3!=null&&$3.$==1)?(voices=ClientExtensions.toArray(ClientExtensions.speechSynthesis().getVoices()),(Client["say'"]((function($5)
    {
     return function($6)
     {
