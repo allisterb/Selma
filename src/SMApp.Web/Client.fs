@@ -154,12 +154,14 @@ module Client =
             (* Quick commands *)
             | Text.Blank -> say' "Tell me what you want me to do or ask me a question."
             | Text.Debug ->
-                //debug <| sprintf "Utterances: %A" Utterances
-                //debug <| sprintf "Questions: %A" Questions
-                //for p in Props do debug <| sprintf "%s: %A"  p.Key p.Value
-                let r = Server.getRel()
-                //match r with
-                ()
+                debug <| sprintf "Utterances: %A" Utterances
+                debug <| sprintf "Questions: %A" Questions
+                for p in Props do debug <| sprintf "%s: %A"  p.Key p.Value
+                async {
+                    match! Server.getEmotionalTraits("I am mostly sad today.") with
+                    | Ok c -> debug c.Head.Label
+                    | Error e -> debug e
+                } |> CUI.Wait
             | Text.Voices -> 
                 let voices = speechSynthesis().GetVoices() |> toArray    
                 sprintf "There are currently %i voices installed on this computer or device." voices.Length |> say'

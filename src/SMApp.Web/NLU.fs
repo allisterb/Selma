@@ -6,7 +6,6 @@ open WebSharper
 open WebSharper.JavaScript
 
 open SMApp.NLU
-open SMApp.Models
 
 [<JavaScript;AutoOpen>]
 module NLU =
@@ -200,20 +199,21 @@ module NLU =
             | "five" -> Utterance("five", Some(Intent("questionresponse", Some 1.0f)), None, Some([Entity("wit/ordinal", "", "five", Some 1.0f)])) |> Some
             | _ -> None
 
-
         let (|QuickNumber|_|) =
             function
             | One m 
-            | Two m -> Some m
+            | Two m 
+            | Three m
+            | Four m
+            | Five m -> Some m
             | _ -> None
 
         let (|QuickJournal|_|) =
             function
-            | "help"
-            | "help me"
-            | "what's this?"
-            | "huh" -> Utterance("help", Some(Intent("help", Some 1.0f)), None, None) |> Some 
+            | "journal"
+            | "diary" -> Utterance("journal", Some(Intent("journal", Some 1.0f)), None, None) |> Some 
             | _ -> None
+        
         [<JavaScript>]
         type Utterance' = Utterance' of string * Intent' list * Entity' list * Trait' list
         with 
@@ -323,6 +323,11 @@ module NLU =
                             |> Some
                 Utterance(sentence, intent, traits, entities) |> Some            
             | _ -> None        
+
+    type EmotionalTrait = EmotionalTrait of string * string list * float with
+        member x.Label = let (EmotionalTrait(l, _, _)) = x in l
+        member x.Hierarchy = let (EmotionalTrait(_, h, _)) = x in h
+        member x.Frequence = let (EmotionalTrait(_, _, f)) = x in f
 
     [<RequireQualifiedAccess>]
     module Domain =

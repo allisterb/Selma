@@ -8,4 +8,8 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SMApp.Base\SMApp.Base.csproj" />
+  </ItemGroup>
+
 </Project>

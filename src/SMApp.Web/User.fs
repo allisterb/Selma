@@ -63,7 +63,7 @@ module User =
                 match! Server.getUser u with 
                 | Some user ->
                     do! Server.updateUserLastLogin user.Name |> Async.Ignore
-                    sayRandom helloUserPhrases <| sprintf "%A" user.Name
+                    sayRandom helloUserPhrases user.Name
                     if Option.isSome user.LastLoggedIn then 
                         let! h = Server.humanize user.LastLoggedIn.Value
                         say <| sprintf "You last logged in %s." h
@@ -77,29 +77,25 @@ module User =
         let addUser u tp = 
             async { 
                 do sayRandom waitAddPhrases "user"
-                //match! Server.en
                 match! Server.addUser u with 
                 | Ok _ -> 
-                    match! Server.addUserTypingPattern u tp with
-                    | Ok _ ->
                         add "user" u
-                        say <| sprintf "Hello %A, nice to meet you." props.["user"]
-                    | Error _ -> say <| sprintf "Sorry I was not able to add the user %s to the system." u 
+                        say <| sprintf "Hello %A, nice to meet you." props.["user"] 
                 | Error e -> 
                     error <| sprintf "Error adding user %s:%s." u e
                     say <| sprintf "Sorry I was not able to add the user %s to the system." u
             } |> Async.Start
 
-               
         let switchUserQuestion u = Question("switchUser", name, Verification, None, fun _ -> say <| sprintf "Do you want me to switch to the user %s" u)
           
         (* Interpreter logic begins here *)
         match Dialogue.frame utterances with
-        /// User login
+        
+        (* User login *)
         | User'(Intent "greet" (_, Entity1Of1 "name" u))::[] -> handle "loginUser" (fun _ -> loginUser u.Value)
         | User'(Intent "hello" (_, Entity1Of1 "contact" u))::[] -> handle "loginUser" (fun _ -> loginUser u.Value)
         
-        /// User authentication
+        (* User authentication *)
         | Response' "authenticateUser" (_, StrA user, _)::[] -> endt "authenticateUser" (fun _ ->
             debug user
             async { 
@@ -109,14 +105,14 @@ module User =
             } |> Async.Start
           ) 
         
-        /// User add
+        (* User add *)
         | No(Response' "addUser" (_, _, PStr u))::[] -> endt "addUser" (fun _ -> say <| sprintf "Ok I did not add the user %s. But you must login for me to help you." u)
         | Yes(Response' "addUser" (_, _, PStr u))::[] -> endt "addUser" (fun _ -> Question("authenticateNewUser1", name, UserAuthentication u, None, update) |> ask)
         | Response' "authenticateNewUser1" (_, StrA user, _)::[] -> endt "authenticateNewUser1" (fun _ -> 
             say <| sprintf "Authenticate new user %s." user.[0]
           )
 
-        /// User switch
+        (* User switch *)
         | User(Intent "hello" (None, Entity1Of1 "name" u))::[] -> 
             async {
                 match! Server.getUser u.Value with

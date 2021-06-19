@@ -12,13 +12,11 @@ open Humanizer
 
 open SMApp
 open SMApp.Models
+open SMApp.NLU.ExpertAI
     
 module Server =        
     
-    let private expertai =
-        let httpClient = new System.Net.Http.HttpClient()
-        httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + Runtime.Config("EXPERTAI_TOKEN"))
-        new SMApp.NLU.ExpertAI.Client(httpClient)
+    let private expertai = ExpertAIApi()
 
     let private pgdb =
         Sql.host (Runtime.Config("PGSQL"))
@@ -196,13 +194,13 @@ module Server =
         |> Async.map(function | Ok r -> Ok r | Error exn -> Error(exn.Message))
 
     [<Rpc>]
-    let getRel(): Async<Result<string, string>> =
-        let n = 1
-        let r = 
-            expertai.ContextsAsync() 
-               |> Async.AwaitTask 
-               |> Async.Catch 
-               |> Async.map(function | Choice1Of2 r -> Ok("") | Choice2Of2 exn -> Error(exn.Message))
-        r
+    let getEmotionalTraits(sentence:string): Async<Result<EmotionalTrait list, string>> =
+        let from_category(c:Category) = EmotionalTrait(c.Label, (Seq.toList c.Hierarchy), (float) c.Frequency) in
+        expertai.AnalyzeEmotionalTraits(sentence)
+        |> Async.AwaitTask 
+        |> Async.Catch 
+        |> Async.map(function 
+            | Choice1Of2 r -> r.Categories |> Seq.map from_category |> Seq.toList |> Ok 
+            | Choice2Of2 exn -> Error(exn.Message))
         
         
