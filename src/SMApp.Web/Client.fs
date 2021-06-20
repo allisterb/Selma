@@ -158,8 +158,8 @@ module Client =
                 debug <| sprintf "Questions: %A" Questions
                 for p in Props do debug <| sprintf "%s: %A"  p.Key p.Value
                 async {
-                    match! Server.getEmotionalTraits("I am mostly sad today.") with
-                    | Ok c -> debug c.Head.Label
+                    match! Server.getRelations("I had pain in my shoulder today when I watered the plants.") with
+                    | Ok c -> for r in c.Head do debug <| sprintf "%A" r
                     | Error e -> debug e
                 } |> CUI.Wait
             | Text.Voices -> 

@@ -202,5 +202,36 @@ module Server =
         |> Async.map(function 
             | Choice1Of2 r -> r.Categories |> Seq.map from_category |> Seq.toList |> Ok 
             | Choice2Of2 exn -> Error(exn.Message))
+
+    [<Rpc>]
+    let getRelations(sentence:string): Async<Result<Knowledge.Relation list list, string>> =
+        let rec sub_from_related_item(r:RelatedItem) =
+            if (r.Related = null) || r.Related.Count = 0 then 
+                r.Text |> Subject
+            else
+                let rr = r.Related |> Seq.item 0
+                Knowledge.Relation((r.Text |> Subject), (rr.Text |> Verb ), None) |> Subject.Relation
+        
+        let rec obj_from_related_item(r:RelatedItem) =
+            if (r.Related = null) || r.Related.Count = 0 then 
+                r.Text |> Knowledge.Object
+            else
+                let rr = r.Related |> Seq.item 0
+                Knowledge.Relation((r.Text |> Subject), (rr.Text |> Verb ), None) |> Object.Relation
+
+        let from_relation(r:Relation) =
+            let v = r.Verb.Text |> Verb
+            let s = sub_from_related_item (r.Related |> Seq.item 0)
+            if r.Related.Count = 1 then 
+                [Knowledge.Relation(s, v, None)]
+            else
+                r.Related |> Seq.skip 1 |> Seq.map (fun o -> Knowledge.Relation(s, v, Some(obj_from_related_item o))) |> Seq.toList
+        
+        expertai.AnalyzeRelations(sentence)
+        |> Async.AwaitTask 
+        |> Async.Catch 
+        |> Async.map(function 
+            | Choice1Of2 r -> r |> Seq.map from_relation |> Seq.toList |> Ok 
+            | Choice2Of2 exn -> Error(exn.Message))
         
         
