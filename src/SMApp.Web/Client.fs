@@ -157,9 +157,10 @@ module Client =
                 debug <| sprintf "Utterances: %A" Utterances
                 debug <| sprintf "Questions: %A" Questions
                 for p in Props do debug <| sprintf "%s: %A"  p.Key p.Value
+            | Text.DebugTriples dt ->
                 async {
-                    match! Server.getRelations("I had pain in my shoulder today when I watered the plants.") with
-                    | Ok c -> for r in c.Head do debug <| sprintf "%A" r
+                    match! Server.getTriples dt with
+                    | Ok c -> for r in c do for e in r do debug <| sprintf "%A" e
                     | Error e -> debug e
                 } |> CUI.Wait
             | Text.Voices -> 

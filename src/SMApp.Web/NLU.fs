@@ -126,6 +126,11 @@ module NLU =
             | "debug" -> Some ()
             | _ -> None
 
+        let (|DebugTriples|_|) : string -> string option=
+            function
+            | s when s.StartsWith "debug-triples " -> let dt = s.Replace("debug-triples ", "") in Some dt
+            | _ -> None
+
         let (|Voices|_|) =
             function
             | "voices" -> Some ()

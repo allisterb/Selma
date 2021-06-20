@@ -204,28 +204,35 @@ module Server =
             | Choice2Of2 exn -> Error(exn.Message))
 
     [<Rpc>]
-    let getRelations(sentence:string): Async<Result<Knowledge.Relation list list, string>> =
+    let getTriples(sentence:string): Async<Result<Knowledge.Triple list list, string>> =
         let rec sub_from_related_item(r:RelatedItem) =
+            let rt = if r.Lemma <> "" then r.Lemma  else r.Text
             if (r.Related = null) || r.Related.Count = 0 then 
-                r.Text |> Subject
-            else
+                Subject rt
+            else if r.Related.Count = 1 then
                 let rr = r.Related |> Seq.item 0
-                Knowledge.Relation((r.Text |> Subject), (rr.Text |> Verb ), None) |> Subject.Relation
-        
+                let rrt = (if rr.Lemma <> "" then rr.Lemma  else rr.Text)
+                Subject.Relation(Knowledge.Relation(rt, rr.Relation, rrt))
+            else failwithf "This subject term has more than 1 relation."
+
         let rec obj_from_related_item(r:RelatedItem) =
+            let rt = if r.Lemma <> "" then r.Lemma  else r.Text
             if (r.Related = null) || r.Related.Count = 0 then 
-                r.Text |> Knowledge.Object
-            else
+                Knowledge.Object rt
+            else if r.Related.Count = 1 then
                 let rr = r.Related |> Seq.item 0
-                Knowledge.Relation((r.Text |> Subject), (rr.Text |> Verb ), None) |> Object.Relation
+                let rrt = (if rr.Lemma <> "" then rr.Lemma  else rr.Text)
+                Object.Relation(Knowledge.Relation(rt, rr.Relation, rrt))
+            else failwithf "This object term has more than 1 relation."    
 
         let from_relation(r:Relation) =
-            let v = r.Verb.Text |> Verb
+            let v = (if r.Verb.Lemma <> "" then r.Verb.Lemma  else r.Verb.Text) |> Verb
             let s = sub_from_related_item (r.Related |> Seq.item 0)
+            let rs = r.Related |> Seq.item 0
             if r.Related.Count = 1 then 
-                [Knowledge.Relation(s, v, None)]
+                [Triple(SubjectVerbRelation.Relation(s, rs.Relation, v), None)]
             else
-                r.Related |> Seq.skip 1 |> Seq.map (fun o -> Knowledge.Relation(s, v, Some(obj_from_related_item o))) |> Seq.toList
+                r.Related |> Seq.skip 1 |> Seq.map (fun o -> Triple(SubjectVerbRelation.Relation(s, rs.Relation, v), Some(VerbObjectRelation.Relation(v, o.Relation, (obj_from_related_item o))))) |> Seq.toList
         
         expertai.AnalyzeRelations(sentence)
         |> Async.AwaitTask 
