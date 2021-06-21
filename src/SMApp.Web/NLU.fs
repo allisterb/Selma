@@ -126,9 +126,19 @@ module NLU =
             | "debug" -> Some ()
             | _ -> None
 
+        let (|DebugEntities|_|) : string -> string option=
+            function
+            | s when s.StartsWith "debug-entities " -> let dt = s.Replace("debug-entities ", "") in Some dt
+            | _ -> None
+
         let (|DebugTriples|_|) : string -> string option=
             function
             | s when s.StartsWith "debug-triples " -> let dt = s.Replace("debug-triples ", "") in Some dt
+            | _ -> None
+
+        let (|DebugEmotionalTraits|_|) : string -> string option=
+            function
+            | s when s.StartsWith "debug-et " -> let et = s.Replace("debug-et ", "") in Some et
             | _ -> None
 
         let (|Voices|_|) =
@@ -219,6 +229,11 @@ module NLU =
             | "diary" -> Utterance("journal", Some(Intent("journal", Some 1.0f)), None, None) |> Some 
             | _ -> None
         
+        let (|JournalEntry|_|) : string -> Utterance option=
+            function
+            | s when s.StartsWith "journal " && s.Replace("journal ", "") <> ""-> let j = s.Replace("journal ", "") in Utterance("journal", Some(Intent("journal", Some 1.0f)), None, Some([Entity("journal_entry", "", j, Some 1.0f)])) |> Some 
+            | _ -> None
+
         [<JavaScript>]
         type Utterance' = Utterance' of string * Intent' list * Entity' list * Trait' list
         with 

@@ -239,6 +239,6 @@ module Server =
         |> Async.Catch 
         |> Async.map(function 
             | Choice1Of2 r -> r |> Seq.map from_relation |> Seq.toList |> Ok 
-            | Choice2Of2 exn -> Error(exn.Message))
+            | Choice2Of2 exn -> errex "Exception raised retrieving relations for sentence {0}." exn [sentence]; Error(exn.Message))
         
         

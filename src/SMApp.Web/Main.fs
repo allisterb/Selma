@@ -59,6 +59,7 @@ module Main =
    
         (* Interpreter logic begins here *)
         match Dialogue.frame utterances with
+        
         (* Agenda *)
         | Agenda User.name -> 
             debug <| sprintf "Agenda is %A." (d.DialogueQuestions.Peek())
@@ -76,6 +77,9 @@ module Main =
         (* User login *)
         | User'(Intent "greet" (_, Entity1Of1 "name" _))::[] -> dispatch User.name User.update
         | User'(Intent "hello" (_, Entity1Of1 "contact" _))::[] -> dispatch User.name User.update
+
+        (* Journal entry *)
+        | User(Intent "journal" _)::[] -> dispatch Journal.name Journal.update
 
         | _ -> didNotUnderstand()
 

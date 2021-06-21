@@ -9,6 +9,7 @@
     <Compile Include="Authentication.fs" />
     <Compile Include="Bootstrap.fs" />
     <Compile Include="Witai.fs" />
+    <Compile Include="BabelNet.fs" />
     <Compile Include="NLG.fs" />
     <Compile Include="NLU.fs" />
     <Compile Include="Knowledge.fs" />
@@ -17,6 +18,7 @@
     <Compile Include="Dialogue.fs" />
     <Compile Include="Questions.fs" />
     <Compile Include="User.fs" />
+    <Compile Include="Journal.fs" />
     <Compile Include="Symptoms.fs" />
     <Compile Include="Main.fs" />
     <Compile Include="Client.fs" />

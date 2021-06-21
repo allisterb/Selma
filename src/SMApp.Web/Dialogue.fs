@@ -106,6 +106,7 @@ module Dialogue =
         debug <| sprintf "%s interpreter did not understand utterance." name
         popu d debug
         say d "Sorry I didn't understand what you meant."
+        if not (have d "user") then say d "You must login to use most functions in Selma."
       
     let frame (utterances:Stack<Utterance>) = utterances |> Seq.take (if utterances.Count >= 5 then 5 else utterances.Count) |> List.ofSeq
     

@@ -62,7 +62,9 @@ module User =
             async { 
                 match! Server.getUser u with 
                 | Some user ->
+                    add "user" u
                     do! Server.updateUserLastLogin user.Name |> Async.Ignore
+                    
                     sayRandom helloUserPhrases user.Name
                     if Option.isSome user.LastLoggedIn then 
                         let! h = Server.humanize user.LastLoggedIn.Value

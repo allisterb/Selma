@@ -28,6 +28,7 @@ module Knowledge =
     and Subject = 
         | Subject of string
         | Relation of Relation<string, string>
+    
 
     with override x.ToString() = match x with | Subject text -> text | Relation r -> r.ToString()
 

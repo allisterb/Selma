@@ -157,12 +157,26 @@ module Client =
                 debug <| sprintf "Utterances: %A" Utterances
                 debug <| sprintf "Questions: %A" Questions
                 for p in Props do debug <| sprintf "%s: %A"  p.Key p.Value
+            | Text.DebugEntities e ->
+                async {
+                    let! entities = BabelNet.disambiguate e
+                    for entity in entities do debug <|sprintf "%A" entity
+                } |> CUI.Wait
+
             | Text.DebugTriples dt ->
                 async {
                     match! Server.getTriples dt with
                     | Ok c -> for r in c do for e in r do debug <| sprintf "%A" e
                     | Error e -> debug e
                 } |> CUI.Wait
+
+            | Text.DebugEmotionalTraits et ->
+                async {
+                    match! Server.getEmotionalTraits et with
+                    | Ok t -> for e in t do debug <| sprintf "%A" e
+                    | Error e -> debug e
+                } |> CUI.Wait
+
             | Text.Voices -> 
                 let voices = speechSynthesis().GetVoices() |> toArray    
                 sprintf "There are currently %i voices installed on this computer or device." voices.Length |> say'
@@ -179,6 +193,10 @@ module Client =
                     | Text.QuickNo m 
                     | Text.QuickNumber m -> 
                         debug <| sprintf "Quick Text: %A." m                        
+                        m |> push |> Main.update
+                        ClientState <- ClientReady
+                    | Text.JournalEntry m ->
+                        debug <| sprintf "Journal entry: %A." m                        
                         m |> push |> Main.update
                         ClientState <- ClientReady
                     (* Use the NLU service for everything else *)
