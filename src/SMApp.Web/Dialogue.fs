@@ -25,7 +25,7 @@ and
 and 
     [<JavaScript>] QuestionType =
     | UserAuthentication of string
-    | Verification 
+    | Verification
     | Disjunctive 
     | ConceptCompletion 
 

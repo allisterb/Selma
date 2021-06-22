@@ -76,7 +76,7 @@ module User =
                     Question("addUser", name, Verification, None, fun _ -> add "addUser" u; say <| sprintf "Do you want me to add the user %s?" u) |> ask
             } |> Async.Start
         
-        let addUser u tp = 
+        let addUser u = 
             async { 
                 do sayRandom waitAddPhrases "user"
                 match! Server.addUser u with 
@@ -109,11 +109,8 @@ module User =
         
         (* User add *)
         | No(Response' "addUser" (_, _, PStr u))::[] -> endt "addUser" (fun _ -> say <| sprintf "Ok I did not add the user %s. But you must login for me to help you." u)
-        | Yes(Response' "addUser" (_, _, PStr u))::[] -> endt "addUser" (fun _ -> Question("authenticateNewUser1", name, UserAuthentication u, None, update) |> ask)
-        | Response' "authenticateNewUser1" (_, StrA user, _)::[] -> endt "authenticateNewUser1" (fun _ -> 
-            say <| sprintf "Authenticate new user %s." user.[0]
-          )
-
+        | Yes(Response' "addUser" (_, _, PStr u))::[] -> endt "addUser" (fun _ -> addUser u)
+        
         (* User switch *)
         | User(Intent "hello" (None, Entity1Of1 "name" u))::[] -> 
             async {

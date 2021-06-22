@@ -63,7 +63,12 @@ module Journal =
             "What do you feel about your day today and why?"
             "Describe the place that makes you feel the calmest. Is there anything that could be added to make it even better?"
             "What makes you feel like the best version of yourself?"
-            "What made you feel uneasy today? "
+            "What made you feel uneasy today?"
+            "What makes you feel sad and why?"
+            "What makes you feel happy and why?"
+            "What makes you feel angry and why?"
+            "What makes you feel safe and why?"
+            "I have trouble sleeping when…"
         ]
         let process_entry() = 
             let triples:Stack<Triple list list> = prop "journal_entry"
