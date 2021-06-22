@@ -1962,6 +1962,58 @@
    return this.$==1?Global.String(this.$0):this.$0;
   }
  },null,Object);
+ Knowledge.SubjectVerbObject1OfAny=function(s,svr,v,vor,o,triples)
+ {
+  return triples==null?null:Seq.tryPick(function(t)
+  {
+   var $1,$2,$3,$4,$5,$6,$7,$8;
+   return($2=Knowledge.TripleSubject(s,t.$0.$0),$2!=null&&$2.$==1)&&(($3=Knowledge.TripleRelation(svr,t.$0.$1),$3!=null&&$3.$==1)&&(($4=Knowledge.TripleVerb(v,t.$0.$2),$4!=null&&$4.$==1)&&(($5=t.$1,$5!=null&&$5.$==1)&&(($6=Knowledge.TripleVerb(v,t.$1.$0.$0),$6!=null&&$6.$==1)&&(($7=Knowledge.TripleRelation(vor,t.$1.$0.$1),$7!=null&&$7.$==1)&&($8=Knowledge.TripleObject(o,t.$1.$0.$2),$8!=null&&$8.$==1))))))?{
+    $:1,
+    $0:t
+   }:null;
+  },triples.$0);
+ };
+ Knowledge.SubjectVerb1OfAny=function(s,svr,v,triples)
+ {
+  return triples==null?null:Seq.tryPick(function(t)
+  {
+   var $1,$2,$3,$4;
+   return($2=Knowledge.TripleSubject(s,t.$0.$0),$2!=null&&$2.$==1)&&(($3=Knowledge.TripleRelation(svr,t.$0.$1),$3!=null&&$3.$==1)&&($4=Knowledge.TripleVerb(v,t.$0.$2),$4!=null&&$4.$==1))?{
+    $:1,
+    $0:t
+   }:null;
+  },triples.$0);
+ };
+ Knowledge.TripleObject=function(s,a)
+ {
+  var $1;
+  return a.$==0&&(a.$0.toUpperCase()===s.toUpperCase()&&($1=a.$0,true))?{
+   $:1,
+   $0:null
+  }:null;
+ };
+ Knowledge.TripleVerb=function(s,a)
+ {
+  return a.$0.toUpperCase()===s.toUpperCase()?{
+   $:1,
+   $0:null
+  }:null;
+ };
+ Knowledge.TripleRelation=function(s,a)
+ {
+  return a.toUpperCase()===s.toUpperCase()?{
+   $:1,
+   $0:null
+  }:null;
+ };
+ Knowledge.TripleSubject=function(s,a)
+ {
+  var $1;
+  return a.$==0&&(a.$0.toUpperCase()===s.toUpperCase()&&($1=a.$0,true))?{
+   $:1,
+   $0:null
+  }:null;
+ };
  MicState.MicReady={
   $:5
  };
@@ -2608,7 +2660,7 @@
    sayRandom(NLG.waitRetrievePhrases(),"user name");
    Concurrency.Start((b$1=null,Concurrency.Delay(function()
    {
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:1132896002",[u]),function(a$25)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:-1129382380",[u]),function(a$25)
     {
      var user;
      return a$25==null?(say((function($10)
@@ -2634,10 +2686,10 @@
         };
        }(Global.id))(u));
       }
-     })),Concurrency.Zero()):(user=a$25.$0,(add("user",u),Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.updateUserLastLogin:1011549222",[user.Name]),function()
+     })),Concurrency.Zero()):(user=a$25.$0,(add("user",u),Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.updateUserLastLogin:1406773965",[user.Name]),function()
      {
       sayRandom(NLG.helloUserPhrases(),user.Name);
-      return user.LastLoggedIn!=null?Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.humanize:433215673",[user.LastLoggedIn.$0]),function(a$26)
+      return user.LastLoggedIn!=null?Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.humanize:-1686857129",[user.LastLoggedIn.$0]),function(a$26)
       {
        say((function($10)
        {
@@ -2695,7 +2747,7 @@
    User.debug($3);
    Concurrency.Start((b$1=null,Concurrency.Delay(function()
    {
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.hasFace:106371397",[Arrays.get($3,2)]),function(a$25)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.hasFace:-1148526753",[Arrays.get($3,2)]),function(a$25)
     {
      return a$25?(say("Face detected"),Concurrency.Zero()):(say(function($10)
      {
@@ -2739,7 +2791,7 @@
    }(Global.id))(Arrays.get($6,0)));
   }):m.$==1&&(a$16=DialogueModule.User_(d,m.$0),a$16!=null&&a$16.$==1&&(a$17=NLU$1.Intent$1("hello",a$16.$0),a$17!=null&&a$17.$==1&&(a$17.$0[0]==null&&(a$18=NLU$1.Entity1Of1("name",a$17.$0[1]),a$18!=null&&a$18.$==1&&(m.$1.$==0&&($7=a$18.$0,true))))))?Concurrency.Start((b=null,Concurrency.Delay(function()
   {
-   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:1132896002",[$7.get_Value()]),function(a$25)
+   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:-1129382380",[$7.get_Value()]),function(a$25)
    {
     return a$25==null?(say((function($10)
     {
@@ -2816,7 +2868,7 @@
    b$1=null;
    return Concurrency.Delay(function()
    {
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getTriples:32057520",[e]),function(a$7)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getTriples:-578366823",[e]),function(a$7)
     {
      var triples;
      return a$7.$==1?(say((function($8)
@@ -2842,6 +2894,7 @@
   {
    Journal.debug(m$1);
   },Journal.name());
+  List.ofArray(["What do you feel about your day today and why?","Describe the place that makes you feel the calmest. Is there anything that could be added to make it even better?","What makes you feel like the best version of yourself?","What made you feel uneasy today? "]);
   m=DialogueModule.frame(d.$4);
   m.$==1&&(a=User$1(m.$0),a!=null&&a.$==1&&(a$1=NLU$1.Intent$1("journal",a.$0),a$1!=null&&a$1.$==1&&(a$2=NLU$1.Entity1Of1("journal_entry",a$1.$0[1]),a$2!=null&&a$2.$==1&&(m.$1.$==0&&($1=a$2.$0,true)))))?Concurrency.Start((b=null,Concurrency.Delay(function()
   {
@@ -2902,7 +2955,7 @@
    return Concurrency.Start((b$1=null,Concurrency.Delay(function()
    {
     sayRandom(NLG.waitAddPhrases(),"symptom entry");
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addSymptomJournalEntry:-576108649",[user().Name,s,l,m$1]),function(a$7)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addSymptomJournalEntry:839306054",[user().Name,s,l,m$1]),function(a$7)
     {
      return a$7.$==1?(say(function($8)
      {
@@ -3372,7 +3425,7 @@
         });
        })))):(a$1=Text.DebugTriples(command),a$1!=null&&a$1.$==1?(dt=a$1.$0,Client.CUI().Wait((b$1=null,Concurrency.Delay(function()
        {
-        return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getTriples:32057520",[dt]),function(a$11)
+        return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getTriples:-578366823",[dt]),function(a$11)
         {
          return a$11.$==1?(Client.debug(a$11.$0),Concurrency.Zero()):Concurrency.For(a$11.$0,function(a$12)
          {
@@ -3391,7 +3444,7 @@
         });
        })))):(a$2=Text.DebugEmotionalTraits(command),a$2!=null&&a$2.$==1?(et=a$2.$0,Client.CUI().Wait((b$2=null,Concurrency.Delay(function()
        {
-        return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getEmotionalTraits:-863679596",[et]),function(a$11)
+        return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getEmotionalTraits:915661547",[et]),function(a$11)
         {
          return a$11.$==1?(Client.debug(a$11.$0),Concurrency.Zero()):Concurrency.For(a$11.$0,function(a$12)
          {

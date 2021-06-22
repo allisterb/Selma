@@ -21,7 +21,7 @@ type Startup() =
             .AddCookie("WebSharper", fun _ -> ())   
         |> ignore
 
-    member this.Configure(app: IApplicationBuilder, env: IHostingEnvironment) =
+    member this.Configure(app: IApplicationBuilder, env: IHostEnvironment) =
         if env.IsDevelopment() then app.UseDeveloperExceptionPage() |> ignore
         app.UseAuthentication()
             .UseStaticFiles()

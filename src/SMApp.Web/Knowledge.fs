@@ -28,8 +28,6 @@ module Knowledge =
     and Subject = 
         | Subject of string
         | Relation of Relation<string, string>
-    
-
     with override x.ToString() = match x with | Subject text -> text | Relation r -> r.ToString()
 
     and Verb = Verb of string with override x.ToString() = let (Verb t) = x in t 
@@ -38,3 +36,43 @@ module Knowledge =
         | Object of string
         | Relation of Relation<string, string>
     with override x.ToString() = match x with | Object text -> text | Relation r -> r.ToString()
+
+    (* Triple patterns *)
+    let (|TripleSubject|_|) (s:string) =
+        function
+        | Subject ss when ss.ToUpper() = s.ToUpper() -> Some()
+        | _ -> None
+
+    let (|TripleRelation|_|) (s:string) :string -> unit option =
+        function
+        | ss when ss.ToUpper() = s.ToUpper() -> Some()
+        | _ -> None
+
+    let (|TripleVerb|_|) (s:string) =
+        function
+        | Verb ss when ss.ToUpper() = s.ToUpper() -> Some()
+        | _ -> None
+
+    (* Triple patterns *)
+    let (|TripleObject|_|) (s:string) =
+        function
+        | Object ss when ss.ToUpper() = s.ToUpper() -> Some()
+        | _ -> None
+
+    let (|SubjectVerb1OfAny|_|) (s:string) (svr:string) (v:string) (triples:Triple list option) : Triple option = 
+        triples 
+        |> Option.bind(
+            List.tryPick(fun t -> 
+                match t with 
+                | Triple(SubjectVerbRelation.Relation(TripleSubject s, TripleRelation svr, TripleVerb v), _) -> Some t 
+                | _ -> None   
+            )) 
+             
+    let (|SubjectVerbObject1OfAny|_|) (s:string) (svr:string) (v:string) (vor:string) (o:string) (triples:Triple list option) : Triple option = 
+        triples 
+        |> Option.bind(
+            List.tryPick(fun t -> 
+                match t with 
+                | Triple(SubjectVerbRelation.Relation(TripleSubject s, TripleRelation svr, TripleVerb v), Some(VerbObjectRelation.Relation(TripleVerb v, TripleRelation vor, TripleObject o))) -> Some t 
+                | _ -> None
+            ))

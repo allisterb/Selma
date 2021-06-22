@@ -27,9 +27,11 @@ module Journal =
 
         (* Manage the dialogue state elements*)
         let have = Dialogue.have d 
-        let prop k  = Dialogue.prop d k
+        let prop k = Dialogue.prop<'a> d k
         let add k v = Dialogue.add d debug k v
         let remove = Dialogue.remove d debug
+        
+        let user():User = prop "user"
 
         let pushu = Dialogue.pushu d debug
         let pushq = Dialogue.pushq d debug
@@ -54,36 +56,17 @@ module Journal =
         let (|Response|_|) = Dialogue.(|Response_|_|) d
         let (|Response'|_|) = Dialogue.(|Response'_|_|) d
        
-        let user():User = prop "user"
-
-        (* Triple patterns *)
-        let (|TripleSubject|_|) (s:string) =
-            function
-            | Subject ss when ss = s -> Some()
-            | _ -> None
-
-        let (|TripleRelation|_|) (s:string) =
-            function
-            | ss when ss = s -> Some()
-            | _ -> None
-
-        let (|TripleVerb|_|) (s:string) =
-            function
-            | Verb ss when ss = s -> Some()
-            | _ -> None
-
-        let (|SubjectVerb1OfAny|_|) (s:string) (sr:string) (v:string) :Triple list option -> Triple option = 
-            function
-            | Some triples when triples |> List.tryPick(fun t -> match t with | Triple(SubjectVerbRelation.Relation(TripleSubject s, TripleRelation sr, TripleVerb v), _) -> Some t | _ -> None) |> Option.isSome -> 
-                triples |> List.pick(fun t -> match t with | Triple(SubjectVerbRelation.Relation(TripleSubject s, TripleRelation sr, v), _) -> Some t | _ -> None) 
-                |> Some 
-            | _ -> None
-
-
+        
         (* Journal functions *)
 
+        let writing_prompts = [
+            "What do you feel about your day today and why?"
+            "Describe the place that makes you feel the calmest. Is there anything that could be added to make it even better?"
+            "What makes you feel like the best version of yourself?"
+            "What made you feel uneasy today? "
+        ]
         let process_entry() = 
-            let triples = prop<Stack<Triple list list>> "journal_entry"
+            let triples:Stack<Triple list list> = prop "journal_entry"
             ()
         let addEntry e = 
             async {

@@ -15,7 +15,7 @@ if not %ERRORLEVEL%==0  (
     popd
     goto End
 )
-oc start-build selma --from-dir=bin\Debug\netcoreapp2.2\publish
+oc start-build selma --from-dir=bin\Debug\netcoreapp3.1\publish
 if not %ERRORLEVEL%==0  (
     echo Could not start build on OpenShift.
     set ERROR_CODE=1

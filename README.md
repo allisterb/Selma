@@ -1,9 +1,9 @@
 # About
 ## App Url
-https://bit.ly/3krS0FY
+https://bit.ly/3gUajTJ
 
 ## What it does
-Selma is a multimodal CUI designed to provide accessible and inclusive access to self-management tools like medication trackers, mood and symptom trackers, dream and sleep journals, time, activity and exercise, trackers, personal planners, reliable knowledge bases on health conditions and diseases, and similar tools used in the management of chronic physical and mental diseases and disorders and conditions like ADHD or chronic pain where.self-management skills for life activities are critical.
+Selma is a multimodal CUI designed to provide accessible and inclusive access to healthcare self-management tools like medication trackers, mood and symptom trackers, theraputic journals, time, activity and exercise, trackers, personal planners, reliable knowledge bases on health conditions and diseases, and similar tools used in the management of chronic physical and mental diseases and disorders and conditions like ADHD or chronic pain where.self-management skills for life activities are critical.
 
 Selma follows in the tradition of 'therapy bots' like ELIZA but updated with powerful ML-trained NLU models for interacting with users in real-time using both typed text and speech. Existing self-management apps like journal, activity-, and symptom-tracking apps all use GUIs or touch UIs and assume users are sighted and dexterous. The reliance on a visual medium and complex interface for entering and reviewing daily self-management data is a significant barrier to adoption of these apps by people with disabilities and chronic conditions, who form a majority of a self-management app's user base.
 
@@ -11,7 +11,7 @@ Selma eschews complex GUI forms and visual widgets like scales and calendars and
 
 The Selma CUI is an accessible user interface that produces text output easily read by screen readers, braille displays and other assistive technology. Users interact in a conversational style with Selma which gathers information in specific areas and guides the user through specific tasks like daily medication and mood tracking and filling out periodic journal entries and evaluations. Users can ask questions (“Did I take my meds today?”, “Did I go out this week?”) and bots can answer intelligently based on information previously captured and analyzed. With the user's consent the information gathered can be automatically sent to the patient’s health providers, reducing the time needed for administering these routine tasks and allowing face-to-face communication and direct supervision with a practitioner to be conserved and more effectively use. The information can also be analyzed for possibly warning symptoms or threats of acute events that may require intervention.
 
-Selma uses Facebook's Wit.ai NLU service for understanding what users say and and input as text.
+Selma uses Facebook's Wit.ai NLU service and the expert.ai deep text analysis NLU service.
 
 ### What is self-management?
 `Self-management can be defined as the methods, skills, and strategies by which
