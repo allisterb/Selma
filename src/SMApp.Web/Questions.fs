@@ -9,7 +9,7 @@ open SMApp.TypingDNA
 
 [<JavaScript>]
 module QuestionDialogs =
-    let userAuthenticationDialogue (d:Dialogue) (debug:string -> unit) (q:Question) (u:string) =
+    let userAuthenticationDialog (d:Dialogue) (debug:string -> unit) (q:Question) (u:string) =
         let say = Dialogue.say d
         let trigger = Dialogue.trigger d debug q.Target q.Name
         let cancel = Dialogue.cancel d debug 
@@ -69,9 +69,9 @@ module Questions =
     let rec ask (d:Dialogue) (debug:string -> unit) (q:Question) =        
         Dialogue.pushq d debug q
         q.Target d
-        (* Display an UI elements for question *)
+        (* Display any UI elements for question *)
         match q.Type with
-        | UserAuthentication u -> QuestionDialogs.userAuthenticationDialogue d debug q u
+        | UserAuthentication u -> QuestionDialogs.userAuthenticationDialog d debug q u
         | _ -> ()
 
 

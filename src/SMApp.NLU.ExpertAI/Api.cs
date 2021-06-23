@@ -34,8 +34,15 @@ namespace SMApp.NLU.ExpertAI
         public async Task<ICollection<MainLemma>> AnalyzeMainLemmas(string sentence)
         {
             var request = new AnalysisRequest() { Document = new Document() { Text = sentence } };
-            var r = await client.AnalyzePostAsync("standard", Language2.En, Analysis.Disambiguation, request);
+            var r = await client.AnalyzePostAsync("standard", Language2.En, Analysis.Relevants, request);
             return r.Success ? r.Data.MainLemmas : throw new Exception(r.Errors.Select(e => e.Message).Aggregate((s1, s2) => s1 + Environment.NewLine + s2));
+        }
+
+        public async Task<ICollection<Entity>> AnalyzeEntities(string sentence)
+        {
+            var request = new AnalysisRequest() { Document = new Document() { Text = sentence } };
+            var r = await client.AnalyzePostAsync("standard", Language2.En, Analysis.Entities, request);
+            return r.Success ? r.Data.Entities : throw new Exception(r.Errors.Select(e => e.Message).Aggregate((s1, s2) => s1 + Environment.NewLine + s2));
         }
 
         public async Task<CategorizeDocument> AnalyzeEmotionalTraits(string sentence)

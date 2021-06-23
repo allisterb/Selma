@@ -193,6 +193,7 @@ module Server =
         }) 
         |> Async.map(function | Ok r -> Ok r | Error exn -> Error(exn.Message))
 
+    (* expert.ai NLU functions *)
     [<Rpc>]
     let getEmotionalTraits(sentence:string): Async<Result<EmotionalTrait list, string>> =
         let from_category(c:Category) = EmotionalTrait(c.Label, (Seq.toList c.Hierarchy), (float) c.Frequency) in
@@ -201,6 +202,26 @@ module Server =
         |> Async.Catch 
         |> Async.map(function 
             | Choice1Of2 r -> r.Categories |> Seq.map from_category |> Seq.toList |> Ok 
+            | Choice2Of2 exn -> Error(exn.Message))
+
+    [<Rpc>]
+    let getEntities(sentence:string): Async<Result<ExpertAIEntity list, string>> =
+        let from_entity(e:Entity) = ExpertAIEntity(e.Type, e.Lemma, (e.Positions |> Seq.map(fun p -> (p.Start, p.End)) |> Seq.toList), e.Relevance) in
+        expertai.AnalyzeEntities(sentence)
+        |> Async.AwaitTask 
+        |> Async.Catch 
+        |> Async.map(function 
+            | Choice1Of2 r -> r |> Seq.map from_entity |> Seq.toList |> Ok 
+            | Choice2Of2 exn -> Error(exn.Message))
+
+    [<Rpc>]
+    let getMainLemmas(sentence:string): Async<Result<ExpertAILemma list, string>> =
+        let from_lemma(l:MainLemma) = ExpertAILemma(l.Value, (float) l.Score, (l.Positions |> Seq.map(fun p -> (p.Start, p.End)) |> Seq.toList)) in
+        expertai.AnalyzeMainLemmas(sentence)
+        |> Async.AwaitTask 
+        |> Async.Catch 
+        |> Async.map(function 
+            | Choice1Of2 r -> r |> Seq.map from_lemma |> Seq.toList |> Ok 
             | Choice2Of2 exn -> Error(exn.Message))
 
     [<Rpc>]

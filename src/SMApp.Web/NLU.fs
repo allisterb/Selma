@@ -131,6 +131,11 @@ module NLU =
             | s when s.StartsWith "debug-entities " -> let dt = s.Replace("debug-entities ", "") in Some dt
             | _ -> None
 
+        let (|DebugLemmas|_|) : string -> string option=
+            function
+            | s when s.StartsWith "debug-lemmas " -> let dt = s.Replace("debug-lemmas ", "") in Some dt
+            | _ -> None
+
         let (|DebugTriples|_|) : string -> string option=
             function
             | s when s.StartsWith "debug-triples " -> let dt = s.Replace("debug-triples ", "") in Some dt
@@ -139,6 +144,16 @@ module NLU =
         let (|DebugEmotionalTraits|_|) : string -> string option=
             function
             | s when s.StartsWith "debug-et " -> let et = s.Replace("debug-et ", "") in Some et
+            | _ -> None
+
+        let (|DebugBehaviouralTraits|_|) : string -> string option=
+            function
+            | s when s.StartsWith "debug-bt " -> let et = s.Replace("debug-bt ", "") in Some et
+            | _ -> None
+
+        let (|DebugEntry|_|) : string -> string option=
+            function
+            | s when s.StartsWith "debug-entry " -> let et = s.Replace("debug-entry ", "") in Some et
             | _ -> None
 
         let (|Voices|_|) =

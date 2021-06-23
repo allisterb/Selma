@@ -55,8 +55,8 @@ module Client =
     let Output = new Stack<string>()
     let Questions = new Stack<Question>()
     let Utterances = new Stack<Utterance>()
-    let Dialogue = Dialogue(CUI, Props, Questions, Output, Utterances)
-    let push (m:Utterance) = Utterances.Push m; Dialogue
+    //let Dialogue = Dialogue(CUI, Props, Questions, Output, Utterances)
+    //let push (m:Utterance) = Utterances.Push m; Dialogue
 
     (* Speech *)
     let synth = Window.SpeechSynthesis
@@ -122,6 +122,8 @@ module Client =
     let Main =             
         /// Mic interpreter
         let main' (command:obj*obj) =
+            let Dialogue = Dialogue(CUI, Props, Questions, Output, Utterances)
+            let push (m:Utterance) = Utterances.Push m; Dialogue
             let i, e = command
             debug <| sprintf "Voice: %A %A" i e
             let intent = 
@@ -149,7 +151,8 @@ module Client =
                 if CUI.Mic = None then initMic main'
                 if CUI.Voice = None then initSpeech()
             do if ClientState = ClientNotInitialzed then ClientState <- ClientReady
-            
+            let Dialogue = Dialogue(CUI, Props, Questions, Output, Utterances)
+            let push (m:Utterance) = Utterances.Push m; Dialogue
             match command with
             (* Quick commands *)
             | Text.Blank -> say' "Tell me what you want me to do or ask me a question."
@@ -159,21 +162,42 @@ module Client =
                 for p in Props do debug <| sprintf "%s: %A"  p.Key p.Value
             | Text.DebugEntities e ->
                 async {
-                    let! entities = BabelNet.disambiguate e
-                    for entity in entities do debug <|sprintf "%A" entity
+                    match! Server.getEntities e with
+                    | Ok entities -> 
+                        for entity in entities do debug <|sprintf "%A" entity
+                        echo "Entities:"
+                        for entity in entities do echo <| sprintf "<span style='color:white;background-color:#7B68EE'>%A</span>" entity
+                    | Error e -> debug e
+                } |> CUI.Wait
+
+            | Text.DebugLemmas e ->
+                async {
+                    match! Server.getMainLemmas e with
+                    | Ok lemmas -> 
+                        for lemma in lemmas do 
+                            debug <|sprintf "%A" lemma
+                        echo "Lemmas:"
+                        for lemma in lemmas do echo <| sprintf "<span style='color:white;background-color:#FFC0CB'>%A</span>" lemma
+                    | Error e -> debug e
                 } |> CUI.Wait
 
             | Text.DebugTriples dt ->
                 async {
                     match! Server.getTriples dt with
-                    | Ok c -> for r in c do for e in r do debug <| sprintf "%A" e
+                    | Ok c -> 
+                        for r in c do for e in r do debug <| sprintf "%A" e
+                        echo "Triples:"
+                        for triple in c do echo <| sprintf "<span style='color:white;background-color:#00FA9A'>%A</span>" triple
                     | Error e -> debug e
                 } |> CUI.Wait
 
             | Text.DebugEmotionalTraits et ->
                 async {
                     match! Server.getEmotionalTraits et with
-                    | Ok t -> for e in t do debug <| sprintf "%A" e
+                    | Ok t -> 
+                        for e in t do debug <| sprintf "%A" e
+                        echo "Emotional Traits:"
+                        for tr in t do echo <| sprintf "<span style='color:white;background-color:#FF4500'>%A</span>" tr
                     | Error e -> debug e
                 } |> CUI.Wait
 

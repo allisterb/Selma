@@ -37,6 +37,17 @@ module Knowledge =
         | Relation of Relation<string, string>
     with override x.ToString() = match x with | Object text -> text | Relation r -> r.ToString()
 
+    type ExpertAIEntity = ExpertAIEntity of string * string * (int64*int64) list * int64 with
+        member x.Type = let (ExpertAIEntity(t, _, _, _))= x in t
+        member x.Lemma = let (ExpertAIEntity(_, n, _, _))= x in n
+        member x.Positions = let (ExpertAIEntity(_, _, p, _))= x in p
+        member x.Relevance = let (ExpertAIEntity(_, _, _, r))= x in r
+
+    type ExpertAILemma = ExpertAILemma of string * float * (int64*int64) list  with
+        member x.Value = let (ExpertAILemma(v, _, _))= x in v
+        member x.Score = let (ExpertAILemma(_, s, _))= x in s
+        member x.Positions = let (ExpertAILemma(_, _, p))= x in p
+
     (* Triple patterns *)
     let (|TripleSubject|_|) (s:string) =
         function

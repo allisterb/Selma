@@ -79,11 +79,37 @@ module Journal =
                 | Ok triples ->
                     if triples.Length > 0 then
                         debug <| sprintf "Got %i sentences from NLU server" (triples.Length)
-                        add "journal_entry" (Stack(triples))
-                        process_entry()
+                        add "journal_entry_triples" (Stack(triples))
+                        echo "Triples:"
+                        for triple in triples do echo <| sprintf "<span style='color:white;background-color:#00FA9A'>%s</span>" (triple.ToString())
                     else 
                         say <| sprintf "Sorry I could not add an entry your journal entry."
                 | Error e -> say <| sprintf "I could not add your journal entry. The following error occurred: %A" e
+                
+                (*
+                match! Server.getMainLemmas e with
+                | Ok lemmas -> 
+                    for lemma in lemmas do 
+                        debug <|sprintf "%A" lemma
+                    echo "Lemmas:"
+                    for lemma in lemmas do echo <| sprintf "<span style='color:white;background-color:#FFC0CB'>%A</span>" lemma
+                | Error e -> debug e
+
+                
+                match! Server.getEntities e with
+                | Ok entities -> 
+                    for entity in entities do debug <|sprintf "%A" entity
+                    echo "Entities:"
+                    for entity in entities do echo <| sprintf "<span style='color:white;background-color:#7B68EE'>%A</span>" entity
+                | Error e -> debug e
+                *)
+                match! Server.getEmotionalTraits e with
+                    | Ok t -> 
+                        for et in t do debug <| sprintf "%A" et
+                        echo "Emotional Traits:"
+                        for tr in t do echo <| sprintf "<span style='color:white;background-color:#FF4500'>%A</span>" tr
+                    | Error e -> debug e
+                say "I see that you mentioned these things happened to you in Iraq. Would you tell me more about your time there?"
             }
 
         (* Symptom journal functions *) 
@@ -110,12 +136,8 @@ module Journal =
 
         | User(Intent "journal" (_, Entity1Of1 "journal_entry" j))::[] ->
             async {
-                say "Ok I'll add that entry to your symptom journal."
+                say "Ok let me analyze what you've written and add that to your journal."
                 do! addEntry j.Value 
-                //addSymptom s.Value None (None)
-                //let! j = getSymptomJournal (user().Name)
-                //say <| sprintf "I see this is the 3rd time today you've had pain %s" (user())
-                //ask "painVideo" ""
             } 
             |> Async.Start
 
