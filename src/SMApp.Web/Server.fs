@@ -16,8 +16,6 @@ open SMApp.NLU.ExpertAI
     
 module Server =        
     
-    let private expertai = ExpertAIApi()
-
     let private pgdb =
         Sql.host (Runtime.Config("PGSQL"))
         |> Sql.port 5432
@@ -29,6 +27,19 @@ module Server =
         |> Sql.formatConnectionString
         |> Sql.connect
  
+    (*Config functions *)
+    let private getServerConfigVal(name:string) : string  = 
+        pgdb
+        |> Sql.query "SELECT * FROM config WHERE name=@n"
+        |> Sql.parameters ["n", Sql.string name]
+        |> Sql.execute (fun read -> read.string "value") 
+        |> function 
+            | Ok v  -> (infof "Retrieved config value {0}={1} from database." [name;v.Head]; v.Head) 
+            | Error exn -> errex "Error retrieving config value {0} from database." exn [name]; raise exn
+
+
+    let private expertai = ExpertAIApi(getServerConfigVal("expertai_auth_token"))
+
     (* Text transformation functions *)
     [<Rpc>]
     let humanize(date:DateTime) = async { return date.Humanize() }
@@ -194,10 +205,21 @@ module Server =
         |> Async.map(function | Ok r -> Ok r | Error exn -> Error(exn.Message))
 
     (* expert.ai NLU functions *)
+    
     [<Rpc>]
     let getEmotionalTraits(sentence:string): Async<Result<EmotionalTrait list, string>> =
         let from_category(c:Category) = EmotionalTrait(c.Label, (Seq.toList c.Hierarchy), (float) c.Frequency) in
         expertai.AnalyzeEmotionalTraits(sentence)
+        |> Async.AwaitTask 
+        |> Async.Catch 
+        |> Async.map(function 
+            | Choice1Of2 r -> r.Categories |> Seq.map from_category |> Seq.toList |> Ok 
+            | Choice2Of2 exn -> Error(exn.Message))
+
+    [<Rpc>]
+    let getBehavioralTraits(sentence:string): Async<Result<BehavioralTrait list, string>> =
+        let from_category(c:Category) = BehavioralTrait(c.Label, (Seq.toList c.Hierarchy), (float) c.Frequency) in
+        expertai.AnalyzeBehavioralTraits(sentence)
         |> Async.AwaitTask 
         |> Async.Catch 
         |> Async.map(function 

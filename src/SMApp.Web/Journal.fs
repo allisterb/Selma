@@ -56,7 +56,6 @@ module Journal =
         let (|Response|_|) = Dialogue.(|Response_|_|) d
         let (|Response'|_|) = Dialogue.(|Response'_|_|) d
        
-        
         (* Journal functions *)
 
         let writing_prompts = [
@@ -81,12 +80,11 @@ module Journal =
                         debug <| sprintf "Got %i sentences from NLU server" (triples.Length)
                         add "journal_entry_triples" (Stack(triples))
                         echo "Triples:"
-                        for triple in triples do echo <| sprintf "<span style='color:white;background-color:#00FA9A'>%s</span>" (triple.ToString())
+                        for triple in triples do echo <| sprintf "<span style='color:white;background-color:#00FA9A'>%A</span>" (triple)
                     else 
                         say <| sprintf "Sorry I could not add an entry your journal entry."
                 | Error e -> say <| sprintf "I could not add your journal entry. The following error occurred: %A" e
                 
-                (*
                 match! Server.getMainLemmas e with
                 | Ok lemmas -> 
                     for lemma in lemmas do 
@@ -95,21 +93,28 @@ module Journal =
                     for lemma in lemmas do echo <| sprintf "<span style='color:white;background-color:#FFC0CB'>%A</span>" lemma
                 | Error e -> debug e
 
-                
                 match! Server.getEntities e with
                 | Ok entities -> 
                     for entity in entities do debug <|sprintf "%A" entity
                     echo "Entities:"
                     for entity in entities do echo <| sprintf "<span style='color:white;background-color:#7B68EE'>%A</span>" entity
                 | Error e -> debug e
-                *)
+                
                 match! Server.getEmotionalTraits e with
                     | Ok t -> 
                         for et in t do debug <| sprintf "%A" et
                         echo "Emotional Traits:"
                         for tr in t do echo <| sprintf "<span style='color:white;background-color:#FF4500'>%A</span>" tr
                     | Error e -> debug e
-                say "I see that you mentioned these things happened to you in Iraq. Would you tell me more about your time there?"
+
+                match! Server.getBehavioralTraits e with
+                    | Ok t -> 
+                        for et in t do debug <| sprintf "%A" et
+                        echo "Behavioral Traits:"
+                        for tr in t do echo <| sprintf "<span style='color:white;background-color:#FFFF00'>%A</span>" tr
+                    | Error e -> debug e
+
+                //say "I see that you mentioned these things happened to you in Iraq. Would you tell me more about your time there?"
             }
 
         (* Symptom journal functions *) 

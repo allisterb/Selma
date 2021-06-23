@@ -201,6 +201,16 @@ module Client =
                     | Error e -> debug e
                 } |> CUI.Wait
 
+            | Text.DebugBehavioralTraits bt ->
+                async {
+                    match! Server.getBehavioralTraits bt with
+                    | Ok t -> 
+                        for e in t do debug <| sprintf "%A" e
+                        echo "Behavioral Traits:"
+                        for tr in t do echo <| sprintf "<span style='color:white;background-color:#FF4500'>%A</span>" tr
+                    | Error e -> debug e
+                } |> CUI.Wait
+
             | Text.Voices -> 
                 let voices = speechSynthesis().GetVoices() |> toArray    
                 sprintf "There are currently %i voices installed on this computer or device." voices.Length |> say'

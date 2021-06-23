@@ -7,7 +7,12 @@ module Knowledge =
     type EmotionalTrait = EmotionalTrait of string * string list * float with
         member x.Label = let (EmotionalTrait(l, _, _)) = x in l
         member x.Hierarchy = let (EmotionalTrait(_, h, _)) = x in h
-        member x.Frequence = let (EmotionalTrait(_, _, f)) = x in f
+        member x.Frequency = let (EmotionalTrait(_, _, f)) = x in f
+
+    type BehavioralTrait = BehavioralTrait of string * string list * float with
+        member x.Label = let (BehavioralTrait(l, _, _)) = x in l
+        member x.Hierarchy = let (BehavioralTrait(_, h, _)) = x in h
+        member x.Frequency = let (BehavioralTrait(_, _, f)) = x in f
 
     type Relation<'t1, 't2> = Relation of 't1 * string * 't2 with
         member x.T1 = let (Relation(t1, _, _)) = x in t1

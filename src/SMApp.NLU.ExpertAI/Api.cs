@@ -11,15 +11,11 @@ namespace SMApp.NLU.ExpertAI
     public class ExpertAIApi : Runtime
     {
         #region Constructors
-        static ExpertAIApi()
+        public ExpertAIApi(string token) : base() 
         {
-            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + Config("EXPERTAI_TOKEN"));
-        }
-
-        public ExpertAIApi() : base() 
-        {
+            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
             client = new Client(httpClient);
-            Initialized = !string.IsNullOrEmpty(Config("EXPERTAI_TOKEN"));
+            Initialized = token != "";
         }
         #endregion
 

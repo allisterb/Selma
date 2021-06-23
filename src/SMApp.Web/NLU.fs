@@ -146,7 +146,7 @@ module NLU =
             | s when s.StartsWith "debug-et " -> let et = s.Replace("debug-et ", "") in Some et
             | _ -> None
 
-        let (|DebugBehaviouralTraits|_|) : string -> string option=
+        let (|DebugBehavioralTraits|_|) : string -> string option=
             function
             | s when s.StartsWith "debug-bt " -> let et = s.Replace("debug-bt ", "") in Some et
             | _ -> None
