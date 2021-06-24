@@ -22,6 +22,7 @@ module Bs =
         
     let btnPrimary id label onclick = button [eid id; cls "btn btn-primary"; on.click onclick] [text label]
     let btnSecondary id label onclick = button [eid id; cls "btn btn-secondary"; on.click onclick] [text label]
+    let btnSuccess id label onclick = button [eid id; cls "btn btn-success"; on.click onclick] [text label]
 
     let input lbl extras (target, labelExtras, targetExtras) =
         div (cls "form-group" :: extras) [

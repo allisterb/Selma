@@ -1,2 +1,2 @@
 @echo off
-oc port-forward pgsql-1-5pwfb 5433:5432
+oc port-forward pgsql-1-qqrwp 5433:5432

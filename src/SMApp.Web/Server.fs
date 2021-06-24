@@ -34,9 +34,8 @@ module Server =
         |> Sql.parameters ["n", Sql.string name]
         |> Sql.execute (fun read -> read.string "value") 
         |> function 
-            | Ok v  -> (infof "Retrieved config value {0}={1} from database." [name;v.Head]; v.Head) 
+            | Ok v  -> infof "Retrieved config value {0}={1} from database." [name;v.Head]; v.Head 
             | Error exn -> errex "Error retrieving config value {0} from database." exn [name]; raise exn
-
 
     let private expertai = ExpertAIApi(getServerConfigVal("expertai_auth_token"))
 

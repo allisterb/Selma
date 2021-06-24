@@ -1,7 +1,7 @@
 ﻿.terminal {
     --color: #40AADD;
     --background: white;
-    --size: 2;
+    --size: 2
 }
 
 #microphone {
@@ -17,7 +17,7 @@
 }
 
 .invisible {
-    display:none !important
+    display: none !important
 }
 /*
     font-size: unset;
@@ -34,4 +34,11 @@
 
 .swal2-popup {
     width: unset
+}
+
+
+@media (max-width: 479px) {
+    .terminal {
+        --size: 1
+    }
 }

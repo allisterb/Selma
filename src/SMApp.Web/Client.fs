@@ -30,7 +30,7 @@ module Client =
             web.Avatar <- "20926186"
             web.Voice <- "cmu-slt";
             web.VoiceMod <- "default";
-            web.Width <- 175;
+            web.Width <- if JQuery(JS.Window).Width() <= 479 then 90 else 175
             web.CreateBox();
             web.AddMessage("")
             web.ProcessMessages(0)
@@ -154,6 +154,7 @@ module Client =
             let Dialogue = Dialogue(CUI, Props, Questions, Output, Utterances)
             let push (m:Utterance) = Utterances.Push m; Dialogue
             match command with
+
             (* Quick commands *)
             | Text.Blank -> say' "Tell me what you want me to do or ask me a question."
             | Text.Debug ->
@@ -215,6 +216,7 @@ module Client =
                 let voices = speechSynthesis().GetVoices() |> toArray    
                 sprintf "There are currently %i voices installed on this computer or device." voices.Length |> say'
                 voices |> Array.iteri (fun i v -> sprintf "Voice %i. Name: %s, Local: %A." i v.Name v.LocalService |> say')
+            
             | _ ->
                 match ClientState with
                 | ClientUnderstand -> say' "I'm still trying to understand what you said before."

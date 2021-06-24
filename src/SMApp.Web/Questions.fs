@@ -3,6 +3,7 @@
 open System.Collections.Generic
 
 open WebSharper
+open WebSharper.UI
 open WebSharper.JavaScript
 open WebSharper.JQuery
 open SMApp.TypingDNA
@@ -69,9 +70,17 @@ module Questions =
     let rec ask (d:Dialogue) (debug:string -> unit) (q:Question) =        
         Dialogue.pushq d debug q
         q.Target d
+
         (* Display any UI elements for question *)
         match q.Type with
         | UserAuthentication u -> QuestionDialogs.userAuthenticationDialog d debug q u
+        | Verification (v, r) -> 
+            d.Cui.EchoDoc <| Doc.Concat [
+                Bs.btnPrimary "" "Yes" (fun _ _ -> d.Cui.Term.Enable();v())
+                Html.text "     "
+                Bs.btnSecondary "" "No" (fun _ _ -> d.Cui.Term.Enable();r()) 
+            ]
+            d.Cui.Term.Disable()
         | _ -> ()
 
 

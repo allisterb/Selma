@@ -22,6 +22,7 @@ module User =
         let echo = Dialogue.echo d
         let say' = Dialogue.say' d
         let say = Dialogue.say d
+        let doc = cui.EchoDoc
         let sayRandom = Dialogue.sayRandom d
         let sayRandom' = Dialogue.sayRandom' d
 
@@ -69,11 +70,9 @@ module User =
                     if Option.isSome user.LastLoggedIn then 
                         let! h = Server.humanize user.LastLoggedIn.Value
                         say <| sprintf "You last logged in %s." h
-                        
-                        //Question("authenticateUser", name, UserAuthentication u, None, update) |> ask
                 | None _ -> 
                     say <| sprintf "I did not find a user with the name %s." u
-                    Question("addUser", name, Verification, None, fun _ -> add "addUser" u; say <| sprintf "Do you want me to add the user %s?" u) |> ask
+                    Question("addUser", name, Verification ((fun _ -> trigger "verify" "yes"), (fun _ -> trigger "reject" "no")), None, fun _ -> add "addUser" u; say <| sprintf "Do you want me to add the user %s?" u) |> ask
             } |> Async.Start
         
         let addUser u = 
@@ -82,13 +81,15 @@ module User =
                 match! Server.addUser u with 
                 | Ok _ -> 
                         add "user" u
-                        say <| sprintf "Hello %A, nice to meet you." props.["user"] 
+                        add "newuser" true
+                        say <| sprintf "Hello %A, nice to meet you." props.["user"]
+                        echo <| sprintf "Enter the command <span style='background-color=blue;color:white'>journal</span> to see a list of writing prompts, or enter <span style='background-color=red;color:white'>help</span> at any time to see a list of available commands."
                 | Error e -> 
                     error <| sprintf "Error adding user %s:%s." u e
                     say <| sprintf "Sorry I was not able to add the user %s to the system." u
             } |> Async.Start
 
-        let switchUserQuestion u = Question("switchUser", name, Verification, None, fun _ -> say <| sprintf "Do you want me to switch to the user %s" u)
+        let switchUserQuestion u = Question("switchUser", name, Verification ((fun _ -> trigger "verify" "yes"), (fun _ -> trigger "reject" "no")), None, fun _ -> say <| sprintf "Do you want me to switch to the user %s" u)
           
         (* Interpreter logic begins here *)
         match Dialogue.frame utterances with
@@ -96,16 +97,6 @@ module User =
         (* User login *)
         | User'(Intent "greet" (_, Entity1Of1 "name" u))::[] -> handle "loginUser" (fun _ -> loginUser u.Value)
         | User'(Intent "hello" (_, Entity1Of1 "contact" u))::[] -> handle "loginUser" (fun _ -> loginUser u.Value)
-        
-        (* User authentication *)
-        | Response' "authenticateUser" (_, StrA user, _)::[] -> endt "authenticateUser" (fun _ ->
-            debug user
-            async { 
-                match! Server.hasFace user.[2] with
-                | false -> say <| sprintf "Sorry I did not detect a face in the camera image. Make sure you can see the red square around your face in the camera window when you click the OK button." 
-                | true -> say "Face detected"
-            } |> Async.Start
-          ) 
         
         (* User add *)
         | No(Response' "addUser" (_, _, PStr u))::[] -> endt "addUser" (fun _ -> say <| sprintf "Ok I did not add the user %s. But you must login for me to help you." u)
@@ -120,6 +111,7 @@ module User =
             } |> Async.Start
         | Yes(Response "switchUser" (_, _, PStr user))::[] ->
             props.["user"] <- user
+            if have "newuser" then remove "newuser"
             say <| sprintf "Ok I switched to user %A." user  
         | No(Response "switchUser" (_, _, PStr user))::[] -> 
             say <| sprintf "Ok I did not switch to user %s." user

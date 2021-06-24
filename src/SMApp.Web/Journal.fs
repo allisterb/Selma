@@ -113,8 +113,6 @@ module Journal =
                         echo "Behavioral Traits:"
                         for tr in t do echo <| sprintf "<span style='color:white;background-color:#FFFF00'>%A</span>" tr
                     | Error e -> debug e
-
-                //say "I see that you mentioned these things happened to you in Iraq. Would you tell me more about your time there?"
             }
 
         (* Symptom journal functions *) 

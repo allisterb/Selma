@@ -57,7 +57,7 @@ module CUI =
                 x.Avatar.ProcessMessages(0) 
             } |> Async.Start
 
-         member x.SayDoc (d:Doc) =
+         member x.EchoDoc (d:Doc) =
            let i =  JQuery(".terminal-output").Get().[0].ChildNodes.Length
            div [cls "terminal-command"; dindex (i + 1)] [d] |> Doc.RunAppend (terminalOutput())
 
