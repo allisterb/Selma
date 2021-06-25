@@ -3,8 +3,7 @@
 open System.Collections.Generic
 
 open WebSharper
-open WebSharper.JavaScript
-open WebSharper.JQuery
+open WebSharper.UI
 open SMApp.Models
 open SMApp.NLU
 
@@ -12,6 +11,7 @@ open SMApp.NLU
 module Journal =
     let name = "Journal"
     let debug m = ClientExtensions.debug name m
+    let mutable journalEntry = false
 
     /// Update the dialogue state
     let rec update d =        
@@ -22,6 +22,7 @@ module Journal =
         let echo = Dialogue.echo d
         let say' = Dialogue.say' d
         let say = Dialogue.say d
+        let doc = cui.EchoDoc
         let sayRandom = Dialogue.sayRandom d
         let sayRandom' = Dialogue.sayRandom' d
 
@@ -59,15 +60,9 @@ module Journal =
         (* Journal functions *)
 
         let writing_prompts = [
-            "What do you feel about your day today and why?"
-            "Describe the place that makes you feel the calmest. Is there anything that could be added to make it even better?"
-            "What makes you feel like the best version of yourself?"
-            "What made you feel uneasy today?"
-            "What makes you feel sad and why?"
-            "What makes you feel happy and why?"
-            "What makes you feel angry and why?"
-            "What makes you feel safe and why?"
-            "I have trouble sleeping when…"
+            "Describe a place that makes me feel fearful or angry."
+            "Something happened in the past week that made me feel angry or upset"
+            "I remember this dream I had…"
         ]
         let process_entry() = 
             let triples:Stack<Triple list list> = prop "journal_entry"
@@ -137,7 +132,32 @@ module Journal =
 
         (* Journal *)
 
-        | User(Intent "journal" (_, Entity1Of1 "journal_entry" j))::[] ->
+        | User(Intent "journal" (_, None))::[] -> 
+            say "Choose one of the following the writing prompts:"
+            for p in writing_prompts do say p
+            echo <| sprintf "1. %s" writing_prompts.[0]
+            echo <| sprintf "2. %s" writing_prompts.[1]
+            echo <| sprintf "3. %s" writing_prompts.[2]
+            doc <| Doc.Concat [
+                Html.ol [cls "pagination"] [
+                    Html.li [cls "page-item"] [Html.a [cls "page-link"; href "#"; Html.on.click(fun _ _ -> trigger "1" "1")] [Html.text "1"]]
+                    Html.text "     "
+                    Html.li [cls "page-item"] [Html.a [cls "page-link"; href "#"; Html.on.click(fun _ _ -> trigger "2" "2")] [Html.text "2"]]
+                    Html.text "     "
+                    Html.li [cls "page-item"] [Html.a [cls "page-link"; href "#"; Html.on.click(fun _ _ -> trigger "3" "3")] [Html.text "3"]]
+                ]
+            ]
+            
+        | User(Number n)::User(Intent "journal" (_, None))::[] -> 
+            if (n <= 0 || n > 3) then
+                say "Choose a writing prompt from 1 to 3."
+            else
+                add "writingprompt" n
+                add "journalentry" true
+                echo <| sprintf "<span style='color:white;background-color:#7B68EE'>%A</span>" writing_prompts.[n - 1]
+                say "Enter your journal entry and I'll analyze it and add it to your journal."
+        
+        | User(Intent "journal" (_, Entity1Of1 "journal_entry" j))::User(Number n)::User(Intent "journal" (_, None))::[] ->
             async {
                 say "Ok let me analyze what you've written and add that to your journal."
                 do! addEntry j.Value 

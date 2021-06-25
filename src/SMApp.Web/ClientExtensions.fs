@@ -19,6 +19,8 @@ open SMApp.TypingDNA
 
 [<AutoOpen; JavaScript>]
 module ClientExtensions =
+    let rnd = System.Random()
+
     let rawOpt = EchoOptions(Raw=true)
 
     type Terminal with
@@ -59,8 +61,12 @@ module ClientExtensions =
 
     let eid = attr.id
     
+    let reid s = s + "-" + rnd.Next().ToString()  |> eid
+
     let cls n = attr.``class`` n
     
+    let href s = attr.href s
+
     let dindex (n:int) = Attr.Create "data-index" (n.ToString())
     
     let container c = div [cls "container"] c

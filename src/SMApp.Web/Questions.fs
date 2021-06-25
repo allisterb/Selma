@@ -76,9 +76,9 @@ module Questions =
         | UserAuthentication u -> QuestionDialogs.userAuthenticationDialog d debug q u
         | Verification (v, r) -> 
             d.Cui.EchoDoc <| Doc.Concat [
-                Bs.btnPrimary "" "Yes" (fun _ _ -> d.Cui.Term.Enable();v())
+                Bs.btnPrimary "Yes" (fun _ _ -> d.Cui.Term.Enable();v())
                 Html.text "     "
-                Bs.btnSecondary "" "No" (fun _ _ -> d.Cui.Term.Enable();r()) 
+                Bs.btnSecondary "No" (fun _ _ -> d.Cui.Term.Enable();r()) 
             ]
             d.Cui.Term.Disable()
         | _ -> ()

@@ -3,7 +3,9 @@
 open System.Collections.Generic
 
 open WebSharper
+open WebSharper.UI
 open WebSharper.JavaScript
+
 open WebSharper.JQuery
 open SMApp.Models
 open SMApp.NLU
@@ -70,6 +72,11 @@ module User =
                     if Option.isSome user.LastLoggedIn then 
                         let! h = Server.humanize user.LastLoggedIn.Value
                         say <| sprintf "You last logged in %s." h
+                        doc <| Doc.Concat [
+                            Bs.btnSuccess "journal" (fun _ _ -> trigger "journal" "journal")
+                            Html.text "     "
+                            Bs.btnPrimary "help" (fun _ _ -> trigger "help" "help")
+                        ]
                 | None _ -> 
                     say <| sprintf "I did not find a user with the name %s." u
                     Question("addUser", name, Verification ((fun _ -> trigger "verify" "yes"), (fun _ -> trigger "reject" "no")), None, fun _ -> add "addUser" u; say <| sprintf "Do you want me to add the user %s?" u) |> ask
@@ -115,6 +122,8 @@ module User =
             say <| sprintf "Ok I switched to user %A." user  
         | No(Response "switchUser" (_, _, PStr user))::[] -> 
             say <| sprintf "Ok I did not switch to user %s." user
+        
+        | User(Intent "journal" _)::[] -> Journal.update d
         
         | _ -> didNotUnderstand()
 

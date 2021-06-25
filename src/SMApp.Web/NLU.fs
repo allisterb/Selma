@@ -39,6 +39,10 @@ module NLU =
 
     type Utterance' = Trait list option * Entity list option
     
+    let quick_utter name = Utterance("", Some(Intent(name, Some 1.0f)), None, None)
+
+    let quick_number (n:int) = Utterance("", Some (Intent("questionresponse", Some 1.0f)), None, Some([Entity("wit/ordinal", "", n.ToString(), Some 1.0f)]))
+
     let (|Intent|_|) n :Utterance -> Utterance' option= 
         function
         | m when m.Intent.IsSome && m.Intent.Value.Name = n -> (m.Traits, m.Entities) |> Some
@@ -93,6 +97,19 @@ module NLU =
                 Some a
             with _ -> None
         | _ -> None
+
+    let (|Number|_|) :Utterance -> int option= 
+        function 
+        | Intent "1" (None, None) 
+        | Intent "2" (None, None)
+        | Intent "3" (None, None) 
+        | Intent "4" (None, None) 
+        | Intent "5" (None, None) 
+        | Intent "6" (None, None)
+        | Intent "7" (None, None)
+        | Intent "8" (None, None)
+        | Intent "9" (None, None) as m -> Some (Int32.Parse(m.Intent.Value.Name))
+        |  _ -> None
 
     [<RequireQualifiedAccess>]
     module Voice =

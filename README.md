@@ -3,7 +3,7 @@
 https://bit.ly/3gUajTJ
 
 ## What it does
-Selma is a multimodal CUI designed to provide accessible and inclusive access to healthcare self-management tools like medication trackers, mood and symptom trackers, theraputic journals, time, activity and exercise, trackers, personal planners, reliable knowledge bases on health conditions and diseases, and similar tools used in the management of chronic physical and mental diseases and disorders and conditions like ADHD or chronic pain where.self-management skills for life activities are critical.
+Selma is a multimodal CUI designed to provide accessible and inclusive access to healthcare self-management tools like medication trackers, mood and symptom trackers, theraputic journals, time, activity and exercise trackers, personal planners, reliable knowledge bases on health conditions and diseases, and similar tools used in the management of chronic physical and mental diseases and disorders and conditions like ADHD or chronic pain where self-management skills for life activities are critical.
 
 Selma follows in the tradition of 'therapy bots' like ELIZA but updated with powerful ML-trained NLU models for interacting with users in real-time using both typed text and speech. Existing self-management apps like journal, activity-, and symptom-tracking apps all use GUIs or touch UIs and assume users are sighted and dexterous. The reliance on a visual medium and complex interface for entering and reviewing daily self-management data is a significant barrier to adoption of these apps by people with disabilities and chronic conditions, who form a majority of a self-management app's user base.
 

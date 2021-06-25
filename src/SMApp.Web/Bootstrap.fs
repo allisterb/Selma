@@ -19,10 +19,10 @@ module Resources =
 [<Require(typeof<Resources.CSS>);Require(typeof<JQuery.Resources.JQuery>);Require(typeof<Resources.PopperJS>);Require(typeof<Resources.JS>)>]
 [<JavaScript>]
 module Bs =
-        
-    let btnPrimary id label onclick = button [eid id; cls "btn btn-primary"; on.click onclick] [text label]
-    let btnSecondary id label onclick = button [eid id; cls "btn btn-secondary"; on.click onclick] [text label]
-    let btnSuccess id label onclick = button [eid id; cls "btn btn-success"; on.click onclick] [text label]
+    
+    let btnPrimary label onclick = button [reid "btn"; cls "btn btn-primary"; on.click onclick] [text label]
+    let btnSecondary label onclick = button [reid "btn"; cls "btn btn-secondary"; on.click onclick] [text label]
+    let btnSuccess label onclick = button [reid "btn"; cls "btn btn-success"; on.click onclick] [text label]
 
     let input lbl extras (target, labelExtras, targetExtras) =
         div (cls "form-group" :: extras) [

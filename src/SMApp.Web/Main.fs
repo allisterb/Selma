@@ -4,9 +4,6 @@ open System.Collections.Generic
 
 open WebSharper
 
-open SMApp.Models
-open SMApp.NLU
-
 [<JavaScript>]
 module Main =
     let name = "Main"
@@ -20,6 +17,7 @@ module Main =
         let echo = Dialogue.echo d
         let say' = Dialogue.say' d
         let say = Dialogue.say d
+        let doc = cui.EchoDoc
         let sayRandom = Dialogue.sayRandom d
         let sayRandom' = Dialogue.sayRandom' d
 

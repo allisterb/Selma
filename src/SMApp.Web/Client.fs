@@ -41,7 +41,8 @@ module Client =
     }
     let mutable MicState = MicNotInitialized
     let mutable ClientState = ClientNotInitialzed
-    
+    let cui() = CUI
+
     (* Console and terminal messages *)
     let echo m = CUI.Term.EchoHtml' <| sprintf "%A" m 
     let debug m = debug "CLIENT" m
@@ -118,31 +119,32 @@ module Client =
             )
         do mic.Connect("4Y2BLQY5TWLIN7HFIV264S53MY4PCUAT")
     
+    /// Mic interpreter
+    let main' (command:obj*obj) =
+        let Dialogue = Dialogue(CUI, Props, Questions, Output, Utterances)
+        let push (m:Utterance) = Utterances.Push m; Dialogue
+        let i, e = command
+        debug <| sprintf "Voice: %A %A" i e
+        let intent = 
+            match i, e with
+            | Voice.Intent' i -> Some i
+            | _ -> None
+        let _trait = 
+            match e with
+            | Voice.Trait' t -> Some [t]
+            | _ -> None
+        let entity = 
+            match e with
+            | Voice.Entity' entity -> Some [entity]
+            | _ -> None
+        match (intent, _trait, entity) with
+        | None, None, None -> ()
+        | _ -> 
+            debug <| sprintf "Voice: %A %A %A" intent _trait entity
+            Utterance("", intent, _trait, entity) |> push |> Main.update
+
     /// Main interpreter
     let Main =             
-        /// Mic interpreter
-        let main' (command:obj*obj) =
-            let Dialogue = Dialogue(CUI, Props, Questions, Output, Utterances)
-            let push (m:Utterance) = Utterances.Push m; Dialogue
-            let i, e = command
-            debug <| sprintf "Voice: %A %A" i e
-            let intent = 
-                match i, e with
-                | Voice.Intent' i -> Some i
-                | _ -> None
-            let _trait = 
-                match e with
-                | Voice.Trait' t -> Some [t]
-                | _ -> None
-            let entity = 
-                match e with
-                | Voice.Entity' entity -> Some [entity]
-                | _ -> None
-            match (intent, _trait, entity) with
-            | None, None, None -> ()
-            | _ -> 
-                debug <| sprintf "Voice: %A %A %A" intent _trait entity
-                Utterance("", intent, _trait, entity) |> push |> Main.update
         
         /// Terminal interpreter 
         let main (term:Terminal) (command:string)  =
@@ -151,9 +153,14 @@ module Client =
                 if CUI.Mic = None then initMic main'
                 if CUI.Voice = None then initSpeech()
             do if ClientState = ClientNotInitialzed then ClientState <- ClientReady
+            
             let Dialogue = Dialogue(CUI, Props, Questions, Output, Utterances)
             let push (m:Utterance) = Utterances.Push m; Dialogue
+            
             match command with
+            (* Journal entry *)
+            | j when Dialogue.Props.ContainsKey "journalentry" -> 
+                Utterance("journal", Some(Intent("journal", Some 1.0f)), None, Some([Entity("journal_entry", "", j, Some 1.0f)])) |> push |> Journal.update
 
             (* Quick commands *)
             | Text.Blank -> say' "Tell me what you want me to do or ask me a question."
@@ -260,5 +267,15 @@ module Client =
         Interpreter(main', (main, mainOpt))
     
     let run() =        
-        do Terminal("#term", ThisAction<Terminal, string>(fun term command -> Main.Text term command), Main.Options) |> ignore
+        let term =  Terminal("#term", ThisAction<Terminal, string>(fun term command -> Main.Text term command), Main.Options)
+        CUI <- { CUI with Term = term }
+        let Dialogue = Dialogue(CUI, Props, Questions, Output, Utterances)
+        let push (m:Utterance) = Utterances.Push m; Dialogue
+        
+        CUI.EchoDoc <| Doc.Concat [
+            Bs.btnSuccess "hello" (fun _ _ -> initMic(main');initSpeech();quick_utter "greet" |> push |> SMApp.Web.Main.update)
+            Html.text "     "
+            Bs.btnPrimary "help" (fun _ _ -> initMic(main');initSpeech();quick_utter "help" |> push |> SMApp.Web.Main.update)
+        ]
+
         Doc.Empty
