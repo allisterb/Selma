@@ -4,15 +4,14 @@ open System.Collections.Generic
 
 open WebSharper
 open WebSharper.UI
+
 open SMApp.Models
-open SMApp.NLU
 
 [<JavaScript>]
 module Journal =
     let name = "Journal"
     let debug m = ClientExtensions.debug name m
-    let mutable journalEntry = false
-
+   
     /// Update the dialogue state
     let rec update d =        
         Dialogue.debugInterpreterStart d debug name
@@ -57,60 +56,87 @@ module Journal =
         let (|Response|_|) = Dialogue.(|Response_|_|) d
         let (|Response'|_|) = Dialogue.(|Response'_|_|) d
        
-        (* Journal functions *)
+        (* Writing journal functions *)
 
         let writing_prompts = [
             "Describe a place that makes me feel fearful or angry."
             "Something happened in the past week that made me feel angry or upset"
             "I remember this dream I had…"
         ]
-        let process_entry() = 
-            let triples:Stack<Triple list list> = prop "journal_entry"
-            ()
+        let processEntry() = 
+            let writingPrompt:int = prop "journalentry_writingprompt" 
+            let triples:Stack<Triple list list> = prop "journalentry_triples"
+            let lemmas:ExpertAILemma list = prop "journalentry_mainlemmas"
+            let entities:ExpertAIEntity list = prop "journalentry_entities"
+            let emotional_traits:ExpertAIEntity list = prop "journalentry_emotionaltraits"
+            let behavioural_traits:ExpertAIEntity list = prop "journalentry_behaviouraltraits"
+            say <| writingPrompt.ToString()
+            remove "journalentry_behaviouraltraits"
+            remove "journalentry_emotionaltraits"
+            remove "journalentry_entities"
+            remove "journalentry_mainlemmas"
+            remove "journalentry_triples"
+            remove "journalentry_writingprompt"
+            remove "journalentry"
+
         let addEntry e = 
             async {
                 match! Server.getTriples e with
-                | Ok triples ->
-                    if triples.Length > 0 then
-                        debug <| sprintf "Got %i sentences from NLU server" (triples.Length)
-                        add "journal_entry_triples" (Stack(triples))
-                        echo "Triples:"
-                        for triple in triples do echo <| sprintf "<span style='color:white;background-color:#00FA9A'>%A</span>" (triple)
-                    else 
-                        say <| sprintf "Sorry I could not add an entry your journal entry."
-                | Error e -> say <| sprintf "I could not add your journal entry. The following error occurred: %A" e
-                
-                match! Server.getMainLemmas e with
-                | Ok lemmas -> 
-                    for lemma in lemmas do 
-                        debug <|sprintf "%A" lemma
-                    echo "Lemmas:"
-                    for lemma in lemmas do echo <| sprintf "<span style='color:white;background-color:#FFC0CB'>%A</span>" lemma
-                | Error e -> debug e
+                | Ok triples ->              
+                    debug <| sprintf "Got %i sentences from NLU server" (triples.Length)
+                    add "journalentry_triples" (Stack(triples))
+                    echo "Triples:"
+                    for triple in triples do echo <| sprintf "<span style='color:white;background-color:#00FA9A'>%A</span>" (triple)
 
-                match! Server.getEntities e with
-                | Ok entities -> 
-                    for entity in entities do debug <|sprintf "%A" entity
-                    echo "Entities:"
-                    for entity in entities do echo <| sprintf "<span style='color:white;background-color:#7B68EE'>%A</span>" entity
-                | Error e -> debug e
-                
-                match! Server.getEmotionalTraits e with
-                    | Ok t -> 
-                        for et in t do debug <| sprintf "%A" et
-                        echo "Emotional Traits:"
-                        for tr in t do echo <| sprintf "<span style='color:white;background-color:#FF4500'>%A</span>" tr
-                    | Error e -> debug e
+                    match! Server.getMainLemmas e with
+                    | Ok lemmas -> 
+                        for lemma in lemmas do debug <|sprintf "%A" lemma
+                        add "journalentry_mainlemmas" lemmas
+                        echo "Lemmas:"
+                        for lemma in lemmas do echo <| sprintf "<span style='color:white;background-color:#FFC0CB'>%A</span>" lemma
 
-                match! Server.getBehavioralTraits e with
-                    | Ok t -> 
-                        for et in t do debug <| sprintf "%A" et
-                        echo "Behavioral Traits:"
-                        for tr in t do echo <| sprintf "<span style='color:white;background-color:#FFFF00'>%A</span>" tr
-                    | Error e -> debug e
+                        match! Server.getEntities e with
+                        | Ok entities -> 
+                            for entity in entities do debug <|sprintf "%A" entity
+                            add "journalentry_entities" entities
+                            echo "Entities:"
+                            for entity in entities do echo <| sprintf "<span style='color:white;background-color:#7B68EE'>%A</span>" entity
+
+                            match! Server.getEmotionalTraits e with
+                            | Ok t -> 
+                                for et in t do debug <| sprintf "%A" et
+                                add "journalentry_emotionaltraits" t
+                                echo "Emotional Traits:"
+                                for tr in t do echo <| sprintf "<span style='color:white;background-color:#FF4500'>%A</span>" tr
+
+                                match! Server.getBehavioralTraits e with
+                                | Ok t -> 
+                                    add "journalentry_behaviouraltraits" t
+                                    for et in t do debug <| sprintf "%A" et
+                                    echo "Behavioral Traits:"
+                                    for tr in t do echo <| sprintf "<span style='color:white;background-color:#FFFF00'>%A</span>" tr
+
+                                    return Ok()
+
+                                | Error e -> 
+                                    debug e
+                                    return Error e
+
+                            | Error e -> 
+                                debug e
+                                return Error e
+                        | Error e -> 
+                            debug e
+                            return Error e
+                    | Error e -> 
+                        debug e
+                        return Error e
+                | Error e -> 
+                    return Error e
             }
 
         (* Symptom journal functions *) 
+
         let addSymptom s l m = 
             async { 
                 do sayRandom waitAddPhrases "symptom entry"
@@ -134,7 +160,7 @@ module Journal =
 
         | User(Intent "journal" (_, None))::[] -> 
             say "Choose one of the following the writing prompts:"
-            for p in writing_prompts do say p
+            cui.Say writing_prompts
             echo <| sprintf "1. %s" writing_prompts.[0]
             echo <| sprintf "2. %s" writing_prompts.[1]
             echo <| sprintf "3. %s" writing_prompts.[2]
@@ -152,18 +178,24 @@ module Journal =
             if (n <= 0 || n > 3) then
                 say "Choose a writing prompt from 1 to 3."
             else
-                add "writingprompt" n
                 add "journalentry" true
+                add "journalentry_writingprompt" n
                 echo <| sprintf "<span style='color:white;background-color:#7B68EE'>%A</span>" writing_prompts.[n - 1]
                 say "Enter your journal entry and I'll analyze it and add it to your journal."
         
         | User(Intent "journal" (_, Entity1Of1 "journal_entry" j))::User(Number n)::User(Intent "journal" (_, None))::[] ->
+            popu()
             async {
                 say "Ok let me analyze what you've written and add that to your journal."
-                do! addEntry j.Value 
+                match! addEntry j.Value with
+                | Ok _ -> 
+                    popu()
+                    popu()
+                    processEntry()
+                | Error e -> say "Sorry I was not able to add your journal entry. Could you try again? Press the up arrow to return to the text you just wrote."
             } 
             |> Async.Start
-
+        
         | Yes(Response "painVideo"(_, _, _))::[] -> cui.EchoHtml'("""<iframe width="560" height="315" src="https://www.youtube.com/embed/SkAqOditKN0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>""")
             
         (* Meds *)

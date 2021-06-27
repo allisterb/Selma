@@ -57,6 +57,15 @@ module CUI =
                 x.Avatar.ProcessMessages(0) 
             } |> Async.Start
 
+         member x.Say (text:string list) =                
+            async {
+                let synth = Window.SpeechSynthesis
+                for t in text do 
+                    x.Avatar.AddMessage t
+                if synth.Speaking then SDK.Chime()
+                x.Avatar.ProcessMessages(0)
+            } |> Async.Start
+                   
          member x.EchoDoc (d:Doc) =
            let i =  JQuery(".terminal-output").Get().[0].ChildNodes.Length
            div [] [d] |> Doc.RunAppend (terminalOutput())
@@ -71,7 +80,7 @@ module CUI =
                x.Avatar.ProcessMessages(0) 
            } |> Async.Start
 
-         member x.sayRandom phrases t = x.Say <| getRandomPhrase phrases t
+         member x.sayRandom phrases t = x.Say((getRandomPhrase phrases t))
      
          member x.Wait (f:unit -> unit) =
              do 

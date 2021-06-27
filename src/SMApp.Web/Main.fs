@@ -63,11 +63,14 @@ module Main =
             debug <| sprintf "Agenda is %A." (d.DialogueQuestions.Peek())
             User.update d
 
+        (* Help *)
         | Intent "help" _::[] ->
             say "The following commands are available."
             echo "The following commands are available:"
             echo "<span style='background-color:blue;color:white'>journal</span> - Show a list of writing prompts"
             echo "<span style='background-color:blue;color:white'>debug-journal</span> <text-entry> - Show a set of debug info for a journal entry."
+        
+        
         (* Greet *)
         | Start(User'(Intent "greet" (_, None)))::[] ->  
                 add "started" true

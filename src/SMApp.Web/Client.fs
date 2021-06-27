@@ -76,7 +76,7 @@ module Client =
         if CUI.Voice = None then  
             debug "No female browser speech synthesis voice is available. Using CMU SLT Female voice via TTS."
 
-    let say' text = CUI.Say text         
+    let say' (text:string) = CUI.Say text         
     
     let say text =
         Output.Push text
@@ -160,6 +160,7 @@ module Client =
             match command with
             (* Journal entry *)
             | j when Dialogue.Props.ContainsKey "journalentry" -> 
+                debug "Routing input as journal entry."
                 Utterance("journal", Some(Intent("journal", Some 1.0f)), None, Some([Entity("journal_entry", "", j, Some 1.0f)])) |> push |> Journal.update
 
             (* Quick commands *)

@@ -26,6 +26,7 @@ and
     [<JavaScript>] QuestionType =
     | UserAuthentication of string
     | Verification of (unit->unit) * (unit->unit)
+    | WritingPrompt of string list
     | Disjunctive 
     | ConceptCompletion 
 
@@ -36,7 +37,7 @@ type Form = Form of string * Question list
 module Dialogue =
     let echo (d:Dialogue) t = d.Cui.EchoHtml' t
 
-    let say' (d:Dialogue) t = d.Cui.Say t
+    let say' (d:Dialogue) (t:string) = d.Cui.Say t
  
     let say (d:Dialogue) t =
         d.Output.Push t

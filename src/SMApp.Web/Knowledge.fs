@@ -75,6 +75,11 @@ module Knowledge =
         | Object ss when ss.ToUpper() = s.ToUpper() -> Some()
         | _ -> None
 
+    let (|ExpertAIEntityType|_|) (s:string) :string->unit option =
+        function
+        | ss when ss.ToUpper() = s.ToUpper() -> Some()
+        | _ -> None
+
     let (|SubjectVerb1OfAny|_|) (s:string) (svr:string) (v:string) (triples:Triple list option) : Triple option = 
         triples 
         |> Option.bind(
@@ -90,5 +95,14 @@ module Knowledge =
             List.tryPick(fun t -> 
                 match t with 
                 | Triple(SubjectVerbRelation.Relation(TripleSubject s, TripleRelation svr, TripleVerb v), Some(VerbObjectRelation.Relation(TripleVerb v, TripleRelation vor, TripleObject o))) -> Some t 
+                | _ -> None
+            ))
+
+    let (|ExpertAIEntity1OfAnyType|_|) (s:string) (entities:ExpertAIEntity list option) : ExpertAIEntity option =
+        entities
+        |> Option.bind(
+            List.tryPick(fun t ->
+                match t with
+                | ExpertAIEntity(ExpertAIEntityType s, _, _, _) -> Some t
                 | _ -> None
             ))
