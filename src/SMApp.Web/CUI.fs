@@ -52,7 +52,8 @@ module CUI =
          member x.Say text =
             async {
                 let synth = Window.SpeechSynthesis
-                if synth.Speaking then SDK.Chime()
+                while synth.Speaking do 
+                    do! Async.Sleep 1000
                 x.Avatar.AddMessage(text)
                 x.Avatar.ProcessMessages(0) 
             } |> Async.Start
@@ -60,9 +61,9 @@ module CUI =
          member x.Say (text:string list) =                
             async {
                 let synth = Window.SpeechSynthesis
-                for t in text do 
-                    x.Avatar.AddMessage t
-                if synth.Speaking then SDK.Chime()
+                while synth.Speaking do 
+                    do! Async.Sleep 1000
+                for t in text do x.Avatar.AddMessage t
                 x.Avatar.ProcessMessages(0)
             } |> Async.Start
                    

@@ -23,6 +23,11 @@ module Bs =
     let btnPrimary label onclick = button [reid "btn"; cls "btn btn-primary"; on.click onclick] [text label]
     let btnSecondary label onclick = button [reid "btn"; cls "btn btn-secondary"; on.click onclick] [text label]
     let btnSuccess label onclick = button [reid "btn"; cls "btn btn-success"; on.click onclick] [text label]
+    let btnDanger label onclick = button [reid "btn"; cls "btn btn-danger"; on.click onclick] [text label]
+    let btnWarning label onclick = button [reid "btn"; cls "btn btn-warning"; on.click onclick] [text label]
+    let btnInfo label onclick = button [reid "btn"; cls "btn btn-info"; on.click onclick] [text label]
+    let btnLight label onclick = button [reid "btn"; cls "btn btn-light"; on.click onclick] [text label]
+    let btnDark label onclick = button [reid "btn"; cls "btn btn-dark"; on.click onclick] [text label]
 
     let input lbl extras (target, labelExtras, targetExtras) =
         div (cls "form-group" :: extras) [

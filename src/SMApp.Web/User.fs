@@ -60,23 +60,28 @@ module User =
         let user():User = prop "user"
         
         (* User functions *)
+        let switchUserQuestion u = Question("switchUser", name, Verification ((fun _ -> trigger "verify" "yes"), (fun _ -> trigger "reject" "no")), None, fun _ -> say <| sprintf "Do you want me to switch to the user %s" u)
+
         let loginUser u = 
             do sayRandom waitRetrievePhrases "user name"
             async { 
                 match! Server.getUser u with 
                 | Some user ->
+                    sayRandom helloUserPhrases user.Name
                     add "user" u
                     do! Server.updateUserLastLogin user.Name |> Async.Ignore
-                    
-                    sayRandom helloUserPhrases user.Name
                     if Option.isSome user.LastLoggedIn then 
                         let! h = Server.humanize user.LastLoggedIn.Value
                         say <| sprintf "You last logged in %s." h
-                        doc <| Doc.Concat [
-                            Bs.btnSuccess "journal" (fun _ _ -> trigger "journal" "journal")
-                            Html.text "     "
-                            Bs.btnPrimary "help" (fun _ _ -> trigger "help" "help")
-                        ]
+                    doc <| Doc.Concat [
+                        Bs.btnPrimary "journal" (fun _ _ -> trigger "journal" "journal")
+                        Html.text "     "
+                        Bs.btnSuccess "symptoms" (fun _ _ -> trigger "symptom_journal" "symptom_journal")
+                        Html.text "     "
+                        Bs.btnInfo "medication" (fun _ _ -> trigger "medication_journal" "medication_journal")
+                        Html.text "     "
+                        Bs.btnPrimary "help" (fun _ _ -> trigger "help" "help")
+                    ]
                 | None _ -> 
                     say <| sprintf "I did not find a user with the name %s." u
                     Question("addUser", name, Verification ((fun _ -> trigger "verify" "yes"), (fun _ -> trigger "reject" "no")), None, fun _ -> add "addUser" u; say <| sprintf "Do you want me to add the user %s?" u) |> ask
@@ -90,13 +95,11 @@ module User =
                         add "user" u
                         add "newuser" true
                         say <| sprintf "Hello %A, nice to meet you." props.["user"]
-                        echo <| sprintf "Enter the command <span style='background-color=blue;color:white'>journal</span> to see a list of writing prompts, or enter <span style='background-color=red;color:white'>help</span> at any time to see a list of available commands."
+                        say "Click on one of the buttons below to get a list of writing prompts."
                 | Error e -> 
                     error <| sprintf "Error adding user %s:%s." u e
                     say <| sprintf "Sorry I was not able to add the user %s to the system." u
             } |> Async.Start
-
-        let switchUserQuestion u = Question("switchUser", name, Verification ((fun _ -> trigger "verify" "yes"), (fun _ -> trigger "reject" "no")), None, fun _ -> say <| sprintf "Do you want me to switch to the user %s" u)
           
         (* Interpreter logic begins here *)
         match Dialogue.frame utterances with
@@ -123,7 +126,9 @@ module User =
         | No(Response "switchUser" (_, _, PStr user))::[] -> 
             say <| sprintf "Ok I did not switch to user %s." user
         
-        | User(Intent "journal" _)::[] -> Journal.update d
+        | User(Intent "journal" _)::[] 
+        | User(Intent "symptom_journal" _)::[]
+        | User(Intent "medication_journal" _)::[] -> Journal.update d
         
         | _ -> didNotUnderstand()
 

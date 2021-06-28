@@ -137,6 +137,12 @@ module Journal =
 
         (* Symptom journal functions *) 
 
+        let symptom_writing_prompts = [
+            "Describe the symptoms you are having right now."
+            "Describe the symptoms you have had for the past month."
+            "Describe any symptoms that your condition causes."
+        ]
+
         let addSymptom s l m = 
             async { 
                 do sayRandom waitAddPhrases "symptom entry"
@@ -157,6 +163,8 @@ module Journal =
         match Dialogue.frame utterances with
 
         (* Journal *)
+
+        (* Writing Journal *)
 
         | User(Intent "journal" (_, None))::[] -> 
             say "Choose one of the following the writing prompts:"
@@ -196,6 +204,46 @@ module Journal =
             } 
             |> Async.Start
         
+        (* Symptom Journal *)
+
+        | User(Intent "symptom_journal" (_, None))::[] -> 
+            say "Choose one of the following the writing prompts:"
+            cui.Say symptom_writing_prompts
+            echo <| sprintf "1. %s" symptom_writing_prompts.[0]
+            echo <| sprintf "2. %s" symptom_writing_prompts.[1]
+            echo <| sprintf "3. %s" symptom_writing_prompts.[2]
+            doc <| Doc.Concat [
+                Html.ol [cls "pagination"] [
+                    Html.li [cls "page-item"] [Html.a [cls "page-link"; href "#"; Html.on.click(fun _ _ -> trigger "1" "1")] [Html.text "1"]]
+                    Html.text "     "
+                    Html.li [cls "page-item"] [Html.a [cls "page-link"; href "#"; Html.on.click(fun _ _ -> trigger "2" "2")] [Html.text "2"]]
+                    Html.text "     "
+                    Html.li [cls "page-item"] [Html.a [cls "page-link"; href "#"; Html.on.click(fun _ _ -> trigger "3" "3")] [Html.text "3"]]
+                ]
+            ]
+            
+        | User(Number n)::User(Intent "symptom_journal" (_, None))::[] -> 
+            if (n <= 0 || n > 3) then
+                say "Choose a writing prompt from 1 to 3."
+            else
+                add "journalentry" true
+                add "journalentry_writingprompt" n
+                echo <| sprintf "<span style='color:white;background-color:#7B68EE'>%A</span>" symptom_writing_prompts.[n - 1]
+                say "Enter the symptoms you are having and I'll analyze it and add it to your journal."
+        
+        | User(Intent "journal" (_, Entity1Of1 "journal_entry" j))::User(Number n)::User(Intent "symptom_journal" (_, None))::[] ->
+            popu()
+            async {
+                say "Ok let me analyze your symptoms."
+                match! addEntry j.Value with
+                | Ok _ -> 
+                    popu()
+                    popu()
+                    processEntry()
+                | Error e -> say "Sorry I was not able to add your journal entry. Could you try again? Press the up arrow to return to the text you just wrote."
+            } 
+            |> Async.Start
+
         | Yes(Response "painVideo"(_, _, _))::[] -> cui.EchoHtml'("""<iframe width="560" height="315" src="https://www.youtube.com/embed/SkAqOditKN0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>""")
             
         (* Meds *)

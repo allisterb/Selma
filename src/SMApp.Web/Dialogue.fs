@@ -26,7 +26,7 @@ and
     [<JavaScript>] QuestionType =
     | UserAuthentication of string
     | Verification of (unit->unit) * (unit->unit)
-    | WritingPrompt of string list
+    | WritingPrompt of string list * (int->unit)
     | Disjunctive 
     | ConceptCompletion 
 

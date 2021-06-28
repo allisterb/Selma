@@ -3,6 +3,7 @@
 open System.Collections.Generic
 
 open WebSharper
+open WebSharper.UI
 
 [<JavaScript>]
 module Main =
@@ -39,6 +40,17 @@ module Main =
         let didNotUnderstand() = Dialogue.didNotUnderstand d debug name
 
         let ask = Questions.ask d debug
+
+        let showMainButtons() =
+            doc <| Doc.Concat [
+                Bs.btnPrimary "journal" (fun _ _ -> trigger "journal" "journal")
+                Html.text "     "
+                Bs.btnSuccess "symptoms" (fun _ _ -> trigger "symptoms" "symptoms")
+                Html.text "     "
+                Bs.btnInfo "medication" (fun _ _ -> trigger "medication" "medication")
+                Html.text "     "
+                Bs.btnPrimary "help" (fun _ _ -> trigger "help" "help")
+            ]
 
         (* Base dialogue patterns *)
         let (|Agenda|_|) = Dialogue.(|Agenda_|_|) d debug

@@ -742,6 +742,26 @@
    $1:extras
   }),[Doc.Element("label",labelExtras,[Doc.TextNode(lbl)]),Doc.Input([ClientExtensions.cls("form-control"),targetExtras],target)]);
  };
+ Bs.btnDark=function(label,onclick)
+ {
+  return Doc.Element("button",[ClientExtensions.reid("btn"),ClientExtensions.cls("btn btn-dark"),AttrModule.Handler("click",onclick)],[Doc.TextNode(label)]);
+ };
+ Bs.btnLight=function(label,onclick)
+ {
+  return Doc.Element("button",[ClientExtensions.reid("btn"),ClientExtensions.cls("btn btn-light"),AttrModule.Handler("click",onclick)],[Doc.TextNode(label)]);
+ };
+ Bs.btnInfo=function(label,onclick)
+ {
+  return Doc.Element("button",[ClientExtensions.reid("btn"),ClientExtensions.cls("btn btn-info"),AttrModule.Handler("click",onclick)],[Doc.TextNode(label)]);
+ };
+ Bs.btnWarning=function(label,onclick)
+ {
+  return Doc.Element("button",[ClientExtensions.reid("btn"),ClientExtensions.cls("btn btn-warning"),AttrModule.Handler("click",onclick)],[Doc.TextNode(label)]);
+ };
+ Bs.btnDanger=function(label,onclick)
+ {
+  return Doc.Element("button",[ClientExtensions.reid("btn"),ClientExtensions.cls("btn btn-danger"),AttrModule.Handler("click",onclick)],[Doc.TextNode(label)]);
+ };
  Bs.btnSuccess=function(label,onclick)
  {
   return Doc.Element("button",[ClientExtensions.reid("btn"),ClientExtensions.cls("btn btn-success"),AttrModule.Handler("click",onclick)],[Doc.TextNode(label)]);
@@ -2295,13 +2315,22 @@
    $this=this;
    Concurrency.Start((b=null,Concurrency.Delay(function()
    {
-    return Concurrency.Combine(Concurrency.For(text,function(a)
+    return Concurrency.Combine(Concurrency.While(function()
     {
-     $this.Avatar.addMessage(a);
-     return Concurrency.Zero();
-    }),Concurrency.Delay(function()
+     return Global.speechSynthesis.speaking;
+    },Concurrency.Delay(function()
     {
-     return Concurrency.Combine(Global.speechSynthesis.speaking?(SDK.chime(),Concurrency.Zero()):Concurrency.Zero(),Concurrency.Delay(function()
+     return Concurrency.Bind(Concurrency.Sleep(1000),function()
+     {
+      return Concurrency.Return(null);
+     });
+    })),Concurrency.Delay(function()
+    {
+     return Concurrency.Combine(Concurrency.For(text,function(a)
+     {
+      $this.Avatar.addMessage(a);
+      return Concurrency.Zero();
+     }),Concurrency.Delay(function()
      {
       $this.Avatar.processMessages(0);
       return Concurrency.Zero();
@@ -2315,7 +2344,16 @@
    $this=this;
    Concurrency.Start((b=null,Concurrency.Delay(function()
    {
-    return Concurrency.Combine(Global.speechSynthesis.speaking?(SDK.chime(),Concurrency.Zero()):Concurrency.Zero(),Concurrency.Delay(function()
+    return Concurrency.Combine(Concurrency.While(function()
+    {
+     return Global.speechSynthesis.speaking;
+    },Concurrency.Delay(function()
+    {
+     return Concurrency.Bind(Concurrency.Sleep(1000),function()
+     {
+      return Concurrency.Return(null);
+     });
+    })),Concurrency.Delay(function()
     {
      $this.Avatar.addMessage(text);
      $this.Avatar.processMessages(0);
@@ -2820,23 +2858,35 @@
     d.get_Cui().Term.enable();
     return r();
    };
-  })])),d.get_Cui().Term.disable()):void 0;
+  })])),d.get_Cui().Term.disable()):m.$==2?void 0:void 0;
  };
- Journal.update$173$96=Runtime.Curried3(function(trigger,$1,$2)
+ Journal.update$221$96=Runtime.Curried3(function(trigger,$1,$2)
  {
   return(trigger("3"))("3");
  });
- Journal.update$171$96=Runtime.Curried3(function(trigger,$1,$2)
+ Journal.update$219$96=Runtime.Curried3(function(trigger,$1,$2)
  {
   return(trigger("2"))("2");
  });
- Journal.update$169$96=Runtime.Curried3(function(trigger,$1,$2)
+ Journal.update$217$96=Runtime.Curried3(function(trigger,$1,$2)
+ {
+  return(trigger("1"))("1");
+ });
+ Journal.update$181$96=Runtime.Curried3(function(trigger,$1,$2)
+ {
+  return(trigger("3"))("3");
+ });
+ Journal.update$179$96=Runtime.Curried3(function(trigger,$1,$2)
+ {
+  return(trigger("2"))("2");
+ });
+ Journal.update$177$96=Runtime.Curried3(function(trigger,$1,$2)
  {
   return(trigger("1"))("1");
  });
  Journal.update=function(d)
  {
-  var cui,remove,trigger,writing_prompts,m,$1,a,a$1,$2,a$2,a$3,a$4,a$5,$3,a$6,a$7,a$8,a$9,a$10,a$11,a$12,j,b,$4,a$13,$5,$6,a$14,a$15,$7,$8,a$16,$9;
+  var cui,remove,trigger,writing_prompts,symptom_writing_prompts,m,$1,a,a$1,$2,a$2,a$3,a$4,a$5,$3,a$6,a$7,a$8,a$9,a$10,a$11,a$12,j,b,$4,a$13,a$14,$5,a$15,a$16,a$17,a$18,$6,a$19,a$20,a$21,a$22,a$23,a$24,a$25,j$1,b$1,$7,a$26,$8,$9,a$27,a$28,$10,$11,a$29,$12;
   function echo(t$1)
   {
    DialogueModule.echo(d,t$1);
@@ -2844,6 +2894,10 @@
   function say(t$1)
   {
    DialogueModule.say(d,t$1);
+  }
+  function doc(a$30)
+  {
+   cui.EchoDoc(a$30);
   }
   function prop(k)
   {
@@ -2875,9 +2929,9 @@
   {
    Journal.update(d$3);
   }
-  function User$1(a$17)
+  function User$1(a$30)
   {
-   return DialogueModule.User_(d,a$17);
+   return DialogueModule.User_(d,a$30);
   }
   function processEntry()
   {
@@ -2899,161 +2953,161 @@
   }
   function addEntry(e)
   {
-   var b$1;
-   b$1=null;
+   var b$2;
+   b$2=null;
    return Concurrency.Delay(function()
    {
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getTriples:-399037318",[e]),function(a$17)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getTriples:-72584170",[e]),function(a$30)
     {
      var triples;
-     return a$17.$==1?Concurrency.Return({
+     return a$30.$==1?Concurrency.Return({
       $:1,
-      $0:a$17.$0
-     }):(triples=a$17.$0,(Journal.debug((function($10)
+      $0:a$30.$0
+     }):(triples=a$30.$0,(Journal.debug((function($13)
      {
-      return function($11)
+      return function($14)
       {
-       return $10("Got "+Global.String($11)+" sentences from NLU server");
+       return $13("Got "+Global.String($14)+" sentences from NLU server");
       };
-     }(Global.id))(triples.get_Length())),add("journalentry_triples",[].concat(Arrays.ofSeq(triples)).reverse()),echo("Triples:"),Concurrency.Combine(Concurrency.For(triples,function(a$18)
+     }(Global.id))(triples.get_Length())),add("journalentry_triples",[].concat(Arrays.ofSeq(triples)).reverse()),echo("Triples:"),Concurrency.Combine(Concurrency.For(triples,function(a$31)
      {
-      echo((function($10)
+      echo((function($13)
       {
-       return function($11)
+       return function($14)
        {
-        return $10("<span style='color:white;background-color:#00FA9A'>"+Utils.printList(function($12)
+        return $13("<span style='color:white;background-color:#00FA9A'>"+Utils.printList(function($15)
         {
-         return SMApp$Web_GeneratedPrintf.p$2($12);
-        },$11)+"</span>");
+         return SMApp$Web_GeneratedPrintf.p$2($15);
+        },$14)+"</span>");
        };
-      }(Global.id))(a$18));
+      }(Global.id))(a$31));
       return Concurrency.Zero();
      }),Concurrency.Delay(function()
      {
-      return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getMainLemmas:1157275050",[e]),function(a$18)
+      return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getMainLemmas:1887214064",[e]),function(a$31)
       {
        var e$1,lemmas;
-       return a$18.$==1?(e$1=a$18.$0,(Journal.debug(e$1),Concurrency.Return({
+       return a$31.$==1?(e$1=a$31.$0,(Journal.debug(e$1),Concurrency.Return({
         $:1,
         $0:e$1
-       }))):(lemmas=a$18.$0,Concurrency.Combine(Concurrency.For(lemmas,function(a$19)
+       }))):(lemmas=a$31.$0,Concurrency.Combine(Concurrency.For(lemmas,function(a$32)
        {
-        Journal.debug((function($10)
+        Journal.debug((function($13)
         {
-         return function($11)
+         return function($14)
          {
-          return $10(SMApp$Web_GeneratedPrintf.p$1($11));
+          return $13(SMApp$Web_GeneratedPrintf.p$1($14));
          };
-        }(Global.id))(a$19));
+        }(Global.id))(a$32));
         return Concurrency.Zero();
        }),Concurrency.Delay(function()
        {
         add("journalentry_mainlemmas",lemmas);
         echo("Lemmas:");
-        return Concurrency.Combine(Concurrency.For(lemmas,function(a$19)
+        return Concurrency.Combine(Concurrency.For(lemmas,function(a$32)
         {
-         echo((function($10)
+         echo((function($13)
          {
-          return function($11)
+          return function($14)
           {
-           return $10("<span style='color:white;background-color:#FFC0CB'>"+SMApp$Web_GeneratedPrintf.p$1($11)+"</span>");
+           return $13("<span style='color:white;background-color:#FFC0CB'>"+SMApp$Web_GeneratedPrintf.p$1($14)+"</span>");
           };
-         }(Global.id))(a$19));
+         }(Global.id))(a$32));
          return Concurrency.Zero();
         }),Concurrency.Delay(function()
         {
-         return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getEntities:-923109685",[e]),function(a$19)
+         return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getEntities:1630696078",[e]),function(a$32)
          {
           var e$2,entities;
-          return a$19.$==1?(e$2=a$19.$0,(Journal.debug(e$2),Concurrency.Return({
+          return a$32.$==1?(e$2=a$32.$0,(Journal.debug(e$2),Concurrency.Return({
            $:1,
            $0:e$2
-          }))):(entities=a$19.$0,Concurrency.Combine(Concurrency.For(entities,function(a$20)
+          }))):(entities=a$32.$0,Concurrency.Combine(Concurrency.For(entities,function(a$33)
           {
-           Journal.debug((function($10)
+           Journal.debug((function($13)
            {
-            return function($11)
+            return function($14)
             {
-             return $10(SMApp$Web_GeneratedPrintf.p($11));
+             return $13(SMApp$Web_GeneratedPrintf.p($14));
             };
-           }(Global.id))(a$20));
+           }(Global.id))(a$33));
            return Concurrency.Zero();
           }),Concurrency.Delay(function()
           {
            add("journalentry_entities",entities);
            echo("Entities:");
-           return Concurrency.Combine(Concurrency.For(entities,function(a$20)
+           return Concurrency.Combine(Concurrency.For(entities,function(a$33)
            {
-            echo((function($10)
+            echo((function($13)
             {
-             return function($11)
+             return function($14)
              {
-              return $10("<span style='color:white;background-color:#7B68EE'>"+SMApp$Web_GeneratedPrintf.p($11)+"</span>");
+              return $13("<span style='color:white;background-color:#7B68EE'>"+SMApp$Web_GeneratedPrintf.p($14)+"</span>");
              };
-            }(Global.id))(a$20));
+            }(Global.id))(a$33));
             return Concurrency.Zero();
            }),Concurrency.Delay(function()
            {
-            return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getEmotionalTraits:1477072601",[e]),function(a$20)
+            return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getEmotionalTraits:-2006046026",[e]),function(a$33)
             {
              var e$3,t$1;
-             return a$20.$==1?(e$3=a$20.$0,(Journal.debug(e$3),Concurrency.Return({
+             return a$33.$==1?(e$3=a$33.$0,(Journal.debug(e$3),Concurrency.Return({
               $:1,
               $0:e$3
-             }))):(t$1=a$20.$0,Concurrency.Combine(Concurrency.For(t$1,function(a$21)
+             }))):(t$1=a$33.$0,Concurrency.Combine(Concurrency.For(t$1,function(a$34)
              {
-              Journal.debug((function($10)
+              Journal.debug((function($13)
               {
-               return function($11)
+               return function($14)
                {
-                return $10(SMApp$Web_GeneratedPrintf.p$10($11));
+                return $13(SMApp$Web_GeneratedPrintf.p$10($14));
                };
-              }(Global.id))(a$21));
+              }(Global.id))(a$34));
               return Concurrency.Zero();
              }),Concurrency.Delay(function()
              {
               add("journalentry_emotionaltraits",t$1);
               echo("Emotional Traits:");
-              return Concurrency.Combine(Concurrency.For(t$1,function(a$21)
+              return Concurrency.Combine(Concurrency.For(t$1,function(a$34)
               {
-               echo((function($10)
+               echo((function($13)
                {
-                return function($11)
+                return function($14)
                 {
-                 return $10("<span style='color:white;background-color:#FF4500'>"+SMApp$Web_GeneratedPrintf.p$10($11)+"</span>");
+                 return $13("<span style='color:white;background-color:#FF4500'>"+SMApp$Web_GeneratedPrintf.p$10($14)+"</span>");
                 };
-               }(Global.id))(a$21));
+               }(Global.id))(a$34));
                return Concurrency.Zero();
               }),Concurrency.Delay(function()
               {
-               return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getBehavioralTraits:1322822711",[e]),function(a$21)
+               return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getBehavioralTraits:677094490",[e]),function(a$34)
                {
                 var e$4,t$2;
-                return a$21.$==1?(e$4=a$21.$0,(Journal.debug(e$4),Concurrency.Return({
+                return a$34.$==1?(e$4=a$34.$0,(Journal.debug(e$4),Concurrency.Return({
                  $:1,
                  $0:e$4
-                }))):(t$2=a$21.$0,(add("journalentry_behaviouraltraits",t$2),Concurrency.Combine(Concurrency.For(t$2,function(a$22)
+                }))):(t$2=a$34.$0,(add("journalentry_behaviouraltraits",t$2),Concurrency.Combine(Concurrency.For(t$2,function(a$35)
                 {
-                 Journal.debug((function($10)
+                 Journal.debug((function($13)
                  {
-                  return function($11)
+                  return function($14)
                   {
-                   return $10(SMApp$Web_GeneratedPrintf.p$11($11));
+                   return $13(SMApp$Web_GeneratedPrintf.p$11($14));
                   };
-                 }(Global.id))(a$22));
+                 }(Global.id))(a$35));
                  return Concurrency.Zero();
                 }),Concurrency.Delay(function()
                 {
                  echo("Behavioral Traits:");
-                 return Concurrency.Combine(Concurrency.For(t$2,function(a$22)
+                 return Concurrency.Combine(Concurrency.For(t$2,function(a$35)
                  {
-                  echo((function($10)
+                  echo((function($13)
                   {
-                   return function($11)
+                   return function($14)
                    {
-                    return $10("<span style='color:white;background-color:#FFFF00'>"+SMApp$Web_GeneratedPrintf.p$11($11)+"</span>");
+                    return $13("<span style='color:white;background-color:#FFFF00'>"+SMApp$Web_GeneratedPrintf.p$11($14)+"</span>");
                    };
-                  }(Global.id))(a$22));
+                  }(Global.id))(a$35));
                   return Concurrency.Zero();
                  }),Concurrency.Delay(function()
                  {
@@ -3088,26 +3142,27 @@
   };
   trigger=Runtime.Curried(DialogueModule.trigger,2,[d,d$2,t]);
   writing_prompts=List.ofArray(["Describe a place that makes me feel fearful or angry.","Something happened in the past week that made me feel angry or upset","I remember this dream I had\u2026"]);
+  symptom_writing_prompts=List.ofArray(["Describe the symptoms you are having right now.","Describe the symptoms you have had for the past month.","Describe any symptoms that your condition causes."]);
   m=DialogueModule.frame(d.$4);
-  m.$==1&&(a=User$1(m.$0),a!=null&&a.$==1&&(a$1=NLU$1.Intent$1("journal",a.$0),a$1!=null&&a$1.$==1&&(a$1.$0[1]==null&&m.$1.$==0)))?(say("Choose one of the following the writing prompts:"),cui.Say(writing_prompts),echo((function($10)
+  m.$==1&&(a=User$1(m.$0),a!=null&&a.$==1&&(a$1=NLU$1.Intent$1("journal",a.$0),a$1!=null&&a$1.$==1&&(a$1.$0[1]==null&&m.$1.$==0)))?(say("Choose one of the following the writing prompts:"),cui.Say(writing_prompts),echo((function($13)
   {
-   return function($11)
+   return function($14)
    {
-    return $10("1. "+Utils.toSafe($11));
+    return $13("1. "+Utils.toSafe($14));
    };
-  }(Global.id))(writing_prompts.get_Item(0))),echo((function($10)
+  }(Global.id))(writing_prompts.get_Item(0))),echo((function($13)
   {
-   return function($11)
+   return function($14)
    {
-    return $10("2. "+Utils.toSafe($11));
+    return $13("2. "+Utils.toSafe($14));
    };
-  }(Global.id))(writing_prompts.get_Item(1))),echo((function($10)
+  }(Global.id))(writing_prompts.get_Item(1))),echo((function($13)
   {
-   return function($11)
+   return function($14)
    {
-    return $10("3. "+Utils.toSafe($11));
+    return $13("3. "+Utils.toSafe($14));
    };
-  }(Global.id))(writing_prompts.get_Item(2))),cui.EchoDoc(Doc.Concat([Doc.Element("ol",[ClientExtensions.cls("pagination")],[Doc.Element("li",[ClientExtensions.cls("page-item")],[Doc.Element("a",[ClientExtensions.cls("page-link"),ClientExtensions.href("#"),AttrProxy.HandlerImpl("click",function()
+  }(Global.id))(writing_prompts.get_Item(2))),doc(Doc.Concat([Doc.Element("ol",[ClientExtensions.cls("pagination")],[Doc.Element("li",[ClientExtensions.cls("page-item")],[Doc.Element("a",[ClientExtensions.cls("page-link"),ClientExtensions.href("#"),AttrProxy.HandlerImpl("click",function()
   {
    return function()
    {
@@ -3125,20 +3180,69 @@
    {
     return(trigger("3"))("3");
    };
-  })],[Doc.TextNode("3")])])])]))):m.$==1&&(a$2=User$1(m.$0),a$2!=null&&a$2.$==1&&(a$3=NLU$1.Number(a$2.$0),a$3!=null&&a$3.$==1&&(m.$1.$==1&&(a$4=User$1(m.$1.$0),a$4!=null&&a$4.$==1&&(a$5=NLU$1.Intent$1("journal",a$4.$0),a$5!=null&&a$5.$==1&&(a$5.$0[1]==null&&(m.$1.$1.$==0&&($2=a$3.$0,true))))))))?$2<=0||$2>3?say("Choose a writing prompt from 1 to 3."):(add("journalentry",true),add("journalentry_writingprompt",$2),echo((function($10)
+  })],[Doc.TextNode("3")])])])]))):m.$==1&&(a$2=User$1(m.$0),a$2!=null&&a$2.$==1&&(a$3=NLU$1.Number(a$2.$0),a$3!=null&&a$3.$==1&&(m.$1.$==1&&(a$4=User$1(m.$1.$0),a$4!=null&&a$4.$==1&&(a$5=NLU$1.Intent$1("journal",a$4.$0),a$5!=null&&a$5.$==1&&(a$5.$0[1]==null&&(m.$1.$1.$==0&&($2=a$3.$0,true))))))))?$2<=0||$2>3?say("Choose a writing prompt from 1 to 3."):(add("journalentry",true),add("journalentry_writingprompt",$2),echo((function($13)
   {
-   return function($11)
+   return function($14)
    {
-    return $10("<span style='color:white;background-color:#7B68EE'>"+Utils.prettyPrint($11)+"</span>");
+    return $13("<span style='color:white;background-color:#7B68EE'>"+Utils.prettyPrint($14)+"</span>");
    };
   }(Global.id))(writing_prompts.get_Item($2-1))),say("Enter your journal entry and I'll analyze it and add it to your journal.")):m.$==1&&(a$6=User$1(m.$0),a$6!=null&&a$6.$==1&&(a$7=NLU$1.Intent$1("journal",a$6.$0),a$7!=null&&a$7.$==1&&(a$8=NLU$1.Entity1Of1("journal_entry",a$7.$0[1]),a$8!=null&&a$8.$==1&&(m.$1.$==1&&(a$9=User$1(m.$1.$0),a$9!=null&&a$9.$==1&&(a$10=NLU$1.Number(a$9.$0),a$10!=null&&a$10.$==1&&(m.$1.$1.$==1&&(a$11=User$1(m.$1.$1.$0),a$11!=null&&a$11.$==1&&(a$12=NLU$1.Intent$1("journal",a$11.$0),a$12!=null&&a$12.$==1&&(a$12.$0[1]==null&&(m.$1.$1.$1.$==0&&($3=[a$8.$0,a$10.$0],true))))))))))))?(j=$3[0],popu(),Concurrency.Start((b=null,Concurrency.Delay(function()
   {
    say("Ok let me analyze what you've written and add that to your journal.");
-   return Concurrency.Bind(addEntry(j.get_Value()),function(a$17)
+   return Concurrency.Bind(addEntry(j.get_Value()),function(a$30)
    {
-    return a$17.$==1?(say("Sorry I was not able to add your journal entry. Could you try again? Press the up arrow to return to the text you just wrote."),Concurrency.Zero()):(popu(),popu(),processEntry(),Concurrency.Zero());
+    return a$30.$==1?(say("Sorry I was not able to add your journal entry. Could you try again? Press the up arrow to return to the text you just wrote."),Concurrency.Zero()):(popu(),popu(),processEntry(),Concurrency.Zero());
    });
-  })),null)):m.$==1&&(a$13=NLU$1.Yes(m.$0),a$13!=null&&a$13.$==1&&(($5=DialogueModule.Response_(d,"painVideo",a$13.$0),$5!=null&&$5.$==1)&&m.$1.$==0))?cui["EchoHtml'"]("<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/SkAqOditKN0\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>"):m.$==1&&(a$14=User$1(m.$0),a$14!=null&&a$14.$==1&&(a$15=NLU$1.Intent$1("medjournal",a$14.$0),a$15!=null&&a$15.$==1&&(($7=a$15.$0[1],$7!=null&&$7.$==1)&&(m.$1.$==0&&($6=a$15.$0[1].$0,true)))))?(say("ok I added that entry to your medication journal."),say("You should be careful not to take too many painkillers over a short period of time.")):m.$==1&&(a$16=User$1(m.$0),a$16!=null&&a$16.$==1&&(($9=NLU$1.Intent$1("kbquery",a$16.$0),$9!=null&&$9.$==1)&&(m.$1.$==0&&($8=a$16.$0,true))))?void 0:DialogueModule.didNotUnderstand(d,function(m$1)
+  })),null)):m.$==1&&(a$13=User$1(m.$0),a$13!=null&&a$13.$==1&&(a$14=NLU$1.Intent$1("symptom_journal",a$13.$0),a$14!=null&&a$14.$==1&&(a$14.$0[1]==null&&m.$1.$==0)))?(say("Choose one of the following the writing prompts:"),cui.Say(symptom_writing_prompts),echo((function($13)
+  {
+   return function($14)
+   {
+    return $13("1. "+Utils.toSafe($14));
+   };
+  }(Global.id))(symptom_writing_prompts.get_Item(0))),echo((function($13)
+  {
+   return function($14)
+   {
+    return $13("2. "+Utils.toSafe($14));
+   };
+  }(Global.id))(symptom_writing_prompts.get_Item(1))),echo((function($13)
+  {
+   return function($14)
+   {
+    return $13("3. "+Utils.toSafe($14));
+   };
+  }(Global.id))(symptom_writing_prompts.get_Item(2))),doc(Doc.Concat([Doc.Element("ol",[ClientExtensions.cls("pagination")],[Doc.Element("li",[ClientExtensions.cls("page-item")],[Doc.Element("a",[ClientExtensions.cls("page-link"),ClientExtensions.href("#"),AttrProxy.HandlerImpl("click",function()
+  {
+   return function()
+   {
+    return(trigger("1"))("1");
+   };
+  })],[Doc.TextNode("1")])]),Doc.TextNode("     "),Doc.Element("li",[ClientExtensions.cls("page-item")],[Doc.Element("a",[ClientExtensions.cls("page-link"),ClientExtensions.href("#"),AttrProxy.HandlerImpl("click",function()
+  {
+   return function()
+   {
+    return(trigger("2"))("2");
+   };
+  })],[Doc.TextNode("2")])]),Doc.TextNode("     "),Doc.Element("li",[ClientExtensions.cls("page-item")],[Doc.Element("a",[ClientExtensions.cls("page-link"),ClientExtensions.href("#"),AttrProxy.HandlerImpl("click",function()
+  {
+   return function()
+   {
+    return(trigger("3"))("3");
+   };
+  })],[Doc.TextNode("3")])])])]))):m.$==1&&(a$15=User$1(m.$0),a$15!=null&&a$15.$==1&&(a$16=NLU$1.Number(a$15.$0),a$16!=null&&a$16.$==1&&(m.$1.$==1&&(a$17=User$1(m.$1.$0),a$17!=null&&a$17.$==1&&(a$18=NLU$1.Intent$1("symptom_journal",a$17.$0),a$18!=null&&a$18.$==1&&(a$18.$0[1]==null&&(m.$1.$1.$==0&&($5=a$16.$0,true))))))))?$5<=0||$5>3?say("Choose a writing prompt from 1 to 3."):(add("journalentry",true),add("journalentry_writingprompt",$5),echo((function($13)
+  {
+   return function($14)
+   {
+    return $13("<span style='color:white;background-color:#7B68EE'>"+Utils.prettyPrint($14)+"</span>");
+   };
+  }(Global.id))(symptom_writing_prompts.get_Item($5-1))),say("Enter the symptoms you are having and I'll analyze it and add it to your journal.")):m.$==1&&(a$19=User$1(m.$0),a$19!=null&&a$19.$==1&&(a$20=NLU$1.Intent$1("journal",a$19.$0),a$20!=null&&a$20.$==1&&(a$21=NLU$1.Entity1Of1("journal_entry",a$20.$0[1]),a$21!=null&&a$21.$==1&&(m.$1.$==1&&(a$22=User$1(m.$1.$0),a$22!=null&&a$22.$==1&&(a$23=NLU$1.Number(a$22.$0),a$23!=null&&a$23.$==1&&(m.$1.$1.$==1&&(a$24=User$1(m.$1.$1.$0),a$24!=null&&a$24.$==1&&(a$25=NLU$1.Intent$1("symptom_journal",a$24.$0),a$25!=null&&a$25.$==1&&(a$25.$0[1]==null&&(m.$1.$1.$1.$==0&&($6=[a$21.$0,a$23.$0],true))))))))))))?(j$1=$6[0],popu(),Concurrency.Start((b$1=null,Concurrency.Delay(function()
+  {
+   say("Ok let me analyze your symptoms.");
+   return Concurrency.Bind(addEntry(j$1.get_Value()),function(a$30)
+   {
+    return a$30.$==1?(say("Sorry I was not able to add your journal entry. Could you try again? Press the up arrow to return to the text you just wrote."),Concurrency.Zero()):(popu(),popu(),processEntry(),Concurrency.Zero());
+   });
+  })),null)):m.$==1&&(a$26=NLU$1.Yes(m.$0),a$26!=null&&a$26.$==1&&(($8=DialogueModule.Response_(d,"painVideo",a$26.$0),$8!=null&&$8.$==1)&&m.$1.$==0))?cui["EchoHtml'"]("<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/SkAqOditKN0\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>"):m.$==1&&(a$27=User$1(m.$0),a$27!=null&&a$27.$==1&&(a$28=NLU$1.Intent$1("medjournal",a$27.$0),a$28!=null&&a$28.$==1&&(($10=a$28.$0[1],$10!=null&&$10.$==1)&&(m.$1.$==0&&($9=a$28.$0[1].$0,true)))))?(say("ok I added that entry to your medication journal."),say("You should be careful not to take too many painkillers over a short period of time.")):m.$==1&&(a$29=User$1(m.$0),a$29!=null&&a$29.$==1&&(($12=NLU$1.Intent$1("kbquery",a$29.$0),$12!=null&&$12.$==1)&&(m.$1.$==0&&($11=a$29.$0,true))))?void 0:DialogueModule.didNotUnderstand(d,function(m$1)
   {
    Journal.debug(m$1);
   },Journal.name());
@@ -3163,11 +3267,7 @@
  };
  User.update=function(d)
  {
-  var props,cui,handle,trigger,endt,ask,m,$1,a,a$1,a$2,$2,a$3,a$4,a$5,$3,a$6,a$7,a$8,$4,a$9,a$10,a$11,$5,a$12,a$13,a$14,b,$6,a$15,a$16,a$17,$7,a$18,a$19,a$20,$8,a$21,$9;
-  function echo(t$1)
-  {
-   DialogueModule.echo(d,t$1);
-  }
+  var props,cui,handle,trigger,endt,ask,m,$1,a,a$1,a$2,$2,a$3,a$4,a$5,$3,a$6,a$7,a$8,$4,a$9,a$10,a$11,$5,a$12,a$13,a$14,b,$6,a$15,a$16,a$17,$7,a$18,a$19,a$20,$8,a$21,$9,$10,$11;
   function say(t$1)
   {
    DialogueModule.say(d,t$1);
@@ -3223,109 +3323,6 @@
   {
    return DialogueModule["Response'_"](d,n,a$22);
   }
-  function loginUser(u)
-  {
-   var b$1;
-   sayRandom(NLG.waitRetrievePhrases(),"user name");
-   Concurrency.Start((b$1=null,Concurrency.Delay(function()
-   {
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:1932655625",[u]),function(a$22)
-    {
-     var user;
-     return a$22==null?(say((function($10)
-     {
-      return function($11)
-      {
-       return $10("I did not find a user with the name "+Utils.toSafe($11)+".");
-      };
-     }(Global.id))(u)),ask(new Question({
-      $:0,
-      $0:"addUser",
-      $1:User.name(),
-      $2:{
-       $:1,
-       $0:function()
-       {
-        (trigger("verify"))("yes");
-       },
-       $1:function()
-       {
-        (trigger("reject"))("no");
-       }
-      },
-      $3:null,
-      $4:function()
-      {
-       add("addUser",u);
-       say((function($10)
-       {
-        return function($11)
-        {
-         return $10("Do you want me to add the user "+Utils.toSafe($11)+"?");
-        };
-       }(Global.id))(u));
-      }
-     })),Concurrency.Zero()):(user=a$22.$0,(add("user",u),Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.updateUserLastLogin:1004073373",[user.Name]),function()
-     {
-      sayRandom(NLG.helloUserPhrases(),user.Name);
-      return user.LastLoggedIn!=null?Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.humanize:-142107536",[user.LastLoggedIn.$0]),function(a$23)
-      {
-       say((function($10)
-       {
-        return function($11)
-        {
-         return $10("You last logged in "+Utils.toSafe($11)+".");
-        };
-       }(Global.id))(a$23));
-       doc(Doc.Concat([Bs.btnSuccess("journal",function()
-       {
-        return function()
-        {
-         return(trigger("journal"))("journal");
-        };
-       }),Doc.TextNode("     "),Bs.btnPrimary("help",function()
-       {
-        return function()
-        {
-         return(trigger("help"))("help");
-        };
-       })]));
-       return Concurrency.Zero();
-      }):Concurrency.Zero();
-     })));
-    });
-   })),null);
-  }
-  function addUser(u)
-  {
-   var b$1;
-   Concurrency.Start((b$1=null,Concurrency.Delay(function()
-   {
-    sayRandom(NLG.waitAddPhrases(),"user");
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addUser:-1781464047",[u]),function(a$22)
-    {
-     return a$22.$==1?(ClientExtensions.error((((Runtime.Curried3(function($10,$11,$12)
-     {
-      return $10("Error adding user "+Utils.toSafe($11)+":"+Utils.toSafe($12)+".");
-     }))(Global.id))(u))(a$22.$0)),say((function($10)
-     {
-      return function($11)
-      {
-       return $10("Sorry I was not able to add the user "+Utils.toSafe($11)+" to the system.");
-      };
-     }(Global.id))(u)),Concurrency.Zero()):(add("user",u),add("newuser",true),say((function($10)
-     {
-      return function($11)
-      {
-       return $10("Hello "+Utils.prettyPrint($11)+", nice to meet you.");
-      };
-     }(Global.id))(props.get_Item("user"))),echo(function($10)
-     {
-      return $10("Enter the command <span style='background-color=blue;color:white'>journal</span> to see a list of writing prompts, or enter <span style='background-color=red;color:white'>help</span> at any time to see a list of available commands.");
-     }(Global.id)),Concurrency.Zero());
-    });
-   })),null);
-  }
   function switchUserQuestion(u)
   {
    return new Question({
@@ -3346,15 +3343,129 @@
     $3:null,
     $4:function()
     {
-     say((function($10)
+     say((function($12)
      {
-      return function($11)
+      return function($13)
       {
-       return $10("Do you want me to switch to the user "+Utils.toSafe($11));
+       return $12("Do you want me to switch to the user "+Utils.toSafe($13));
       };
      }(Global.id))(u));
     }
    });
+  }
+  function loginUser(u)
+  {
+   var b$1;
+   sayRandom(NLG.waitRetrievePhrases(),"user name");
+   Concurrency.Start((b$1=null,Concurrency.Delay(function()
+   {
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:518689784",[u]),function(a$22)
+    {
+     var user;
+     return a$22==null?(say((function($12)
+     {
+      return function($13)
+      {
+       return $12("I did not find a user with the name "+Utils.toSafe($13)+".");
+      };
+     }(Global.id))(u)),ask(new Question({
+      $:0,
+      $0:"addUser",
+      $1:User.name(),
+      $2:{
+       $:1,
+       $0:function()
+       {
+        (trigger("verify"))("yes");
+       },
+       $1:function()
+       {
+        (trigger("reject"))("no");
+       }
+      },
+      $3:null,
+      $4:function()
+      {
+       add("addUser",u);
+       say((function($12)
+       {
+        return function($13)
+        {
+         return $12("Do you want me to add the user "+Utils.toSafe($13)+"?");
+        };
+       }(Global.id))(u));
+      }
+     })),Concurrency.Zero()):(user=a$22.$0,(sayRandom(NLG.helloUserPhrases(),user.Name),add("user",u),Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.updateUserLastLogin:867843632",[user.Name]),function()
+     {
+      return Concurrency.Combine(user.LastLoggedIn!=null?Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.humanize:-675352505",[user.LastLoggedIn.$0]),function(a$23)
+      {
+       say((function($12)
+       {
+        return function($13)
+        {
+         return $12("You last logged in "+Utils.toSafe($13)+".");
+        };
+       }(Global.id))(a$23));
+       return Concurrency.Zero();
+      }):Concurrency.Zero(),Concurrency.Delay(function()
+      {
+       doc(Doc.Concat([Bs.btnPrimary("journal",function()
+       {
+        return function()
+        {
+         return(trigger("journal"))("journal");
+        };
+       }),Doc.TextNode("     "),Bs.btnSuccess("symptoms",function()
+       {
+        return function()
+        {
+         return(trigger("symptom_journal"))("symptom_journal");
+        };
+       }),Doc.TextNode("     "),Bs.btnInfo("medication",function()
+       {
+        return function()
+        {
+         return(trigger("medication_journal"))("medication_journal");
+        };
+       }),Doc.TextNode("     "),Bs.btnPrimary("help",function()
+       {
+        return function()
+        {
+         return(trigger("help"))("help");
+        };
+       })]));
+       return Concurrency.Zero();
+      }));
+     })));
+    });
+   })),null);
+  }
+  function addUser(u)
+  {
+   var b$1;
+   Concurrency.Start((b$1=null,Concurrency.Delay(function()
+   {
+    sayRandom(NLG.waitAddPhrases(),"user");
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addUser:857143155",[u]),function(a$22)
+    {
+     return a$22.$==1?(ClientExtensions.error((((Runtime.Curried3(function($12,$13,$14)
+     {
+      return $12("Error adding user "+Utils.toSafe($13)+":"+Utils.toSafe($14)+".");
+     }))(Global.id))(u))(a$22.$0)),say((function($12)
+     {
+      return function($13)
+      {
+       return $12("Sorry I was not able to add the user "+Utils.toSafe($13)+" to the system.");
+      };
+     }(Global.id))(u)),Concurrency.Zero()):(add("user",u),add("newuser",true),say((function($12)
+     {
+      return function($13)
+      {
+       return $12("Hello "+Utils.prettyPrint($13)+", nice to meet you.");
+      };
+     }(Global.id))(props.get_Item("user"))),say("Click on one of the buttons below to get a list of writing prompts."),Concurrency.Zero());
+    });
+   })),null);
   }
   DialogueModule.debugInterpreterStart(d,function(m$1)
   {
@@ -3378,11 +3489,11 @@
    loginUser($2.get_Value());
   }):m.$==1&&(a$6=NLU$1.No(m.$0),a$6!=null&&a$6.$==1&&(a$7=_Response("addUser",a$6.$0),a$7!=null&&a$7.$==1&&(a$8=NLU$1.PStr(a$7.$0[2]),a$8!=null&&a$8.$==1&&(m.$1.$==0&&($3=a$8.$0,true)))))?(endt("addUser"))(function()
   {
-   say((function($10)
+   say((function($12)
    {
-    return function($11)
+    return function($13)
     {
-     return $10("Ok I did not add the user "+Utils.toSafe($11)+". But you must login for me to help you.");
+     return $12("Ok I did not add the user "+Utils.toSafe($13)+". But you must login for me to help you.");
     };
    }(Global.id))($3));
   }):m.$==1&&(a$9=NLU$1.Yes(m.$0),a$9!=null&&a$9.$==1&&(a$10=_Response("addUser",a$9.$0),a$10!=null&&a$10.$==1&&(a$11=NLU$1.PStr(a$10.$0[2]),a$11!=null&&a$11.$==1&&(m.$1.$==0&&($4=a$11.$0,true)))))?(endt("addUser"))(function()
@@ -3390,32 +3501,32 @@
    addUser($4);
   }):m.$==1&&(a$12=User$1(m.$0),a$12!=null&&a$12.$==1&&(a$13=NLU$1.Intent$1("hello",a$12.$0),a$13!=null&&a$13.$==1&&(a$13.$0[0]==null&&(a$14=NLU$1.Entity1Of1("name",a$13.$0[1]),a$14!=null&&a$14.$==1&&(m.$1.$==0&&($5=a$14.$0,true))))))?Concurrency.Start((b=null,Concurrency.Delay(function()
   {
-   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:1932655625",[$5.get_Value()]),function(a$22)
+   return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getUser:518689784",[$5.get_Value()]),function(a$22)
    {
-    return a$22==null?(say((function($10)
+    return a$22==null?(say((function($12)
     {
-     return function($11)
+     return function($13)
      {
-      return $10("Sorry, the user "+Utils.toSafe($11)+" does not exist.");
+      return $12("Sorry, the user "+Utils.toSafe($13)+" does not exist.");
      };
     }(Global.id))($5.get_Value())),Concurrency.Zero()):(ask(switchUserQuestion(a$22.$0.Name)),Concurrency.Zero());
    });
   })),null):m.$==1&&(a$15=NLU$1.Yes(m.$0),a$15!=null&&a$15.$==1&&(a$16=Response("switchUser",a$15.$0),a$16!=null&&a$16.$==1&&(a$17=NLU$1.PStr(a$16.$0[2]),a$17!=null&&a$17.$==1&&(m.$1.$==0&&($6=a$17.$0,true)))))?(props.set_Item("user",$6),DialogueModule.have(d,"newuser")?DialogueModule.remove(d,function(m$1)
   {
    User.debug(m$1);
-  },"newuser"):void 0,say((function($10)
+  },"newuser"):void 0,say((function($12)
   {
-   return function($11)
+   return function($13)
    {
-    return $10("Ok I switched to user "+Utils.prettyPrint($11)+".");
+    return $12("Ok I switched to user "+Utils.prettyPrint($13)+".");
    };
-  }(Global.id))($6))):m.$==1&&(a$18=NLU$1.No(m.$0),a$18!=null&&a$18.$==1&&(a$19=Response("switchUser",a$18.$0),a$19!=null&&a$19.$==1&&(a$20=NLU$1.PStr(a$19.$0[2]),a$20!=null&&a$20.$==1&&(m.$1.$==0&&($7=a$20.$0,true)))))?say((function($10)
+  }(Global.id))($6))):m.$==1&&(a$18=NLU$1.No(m.$0),a$18!=null&&a$18.$==1&&(a$19=Response("switchUser",a$18.$0),a$19!=null&&a$19.$==1&&(a$20=NLU$1.PStr(a$19.$0[2]),a$20!=null&&a$20.$==1&&(m.$1.$==0&&($7=a$20.$0,true)))))?say((function($12)
   {
-   return function($11)
+   return function($13)
    {
-    return $10("Ok I did not switch to user "+Utils.toSafe($11)+".");
+    return $12("Ok I did not switch to user "+Utils.toSafe($13)+".");
    };
-  }(Global.id))($7)):m.$==1&&(a$21=User$1(m.$0),a$21!=null&&a$21.$==1&&(($9=NLU$1.Intent$1("journal",a$21.$0),$9!=null&&$9.$==1)&&m.$1.$==0))?Journal.update(d):DialogueModule.didNotUnderstand(d,function(m$1)
+  }(Global.id))($7)):m.$==1&&(a$21=User$1(m.$0),a$21!=null&&a$21.$==1&&(($9=NLU$1.Intent$1("journal",a$21.$0),$9!=null&&$9.$==1)?m.$1.$==0:($10=NLU$1.Intent$1("symptom_journal",a$21.$0),$10!=null&&$10.$==1)?m.$1.$==0:($11=NLU$1.Intent$1("medication_journal",a$21.$0),$11!=null&&$11.$==1)&&m.$1.$==0))?Journal.update(d):DialogueModule.didNotUnderstand(d,function(m$1)
   {
    User.debug(m$1);
   },User.name());
@@ -3467,7 +3578,7 @@
    return Concurrency.Start((b$1=null,Concurrency.Delay(function()
    {
     sayRandom(NLG.waitAddPhrases(),"symptom entry");
-    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addSymptomJournalEntry:1190959481",[user().Name,s,l,m$1]),function(a$7)
+    return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.addSymptomJournalEntry:-1333512637",[user().Name,s,l,m$1]),function(a$7)
     {
      return a$7.$==1?(say(function($8)
      {
@@ -4005,7 +4116,7 @@
          a=Text.DebugEntities(command);
          return a!=null&&a.$==1?(e$1=a.$0,Client.CUI().Wait((b=null,Concurrency.Delay(function()
          {
-          return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getEntities:-923109685",[e$1]),function(a$13)
+          return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getEntities:1630696078",[e$1]),function(a$13)
           {
            var entities;
            return a$13.$==1?(Client.debug(a$13.$0),Concurrency.Zero()):(entities=a$13.$0,Concurrency.Combine(Concurrency.For(entities,function(a$14)
@@ -4036,7 +4147,7 @@
           });
          })))):(a$1=Text.DebugLemmas(command),a$1!=null&&a$1.$==1?(e$2=a$1.$0,Client.CUI().Wait((b$1=null,Concurrency.Delay(function()
          {
-          return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getMainLemmas:1157275050",[e$2]),function(a$13)
+          return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getMainLemmas:1887214064",[e$2]),function(a$13)
           {
            var lemmas;
            return a$13.$==1?(Client.debug(a$13.$0),Concurrency.Zero()):(lemmas=a$13.$0,Concurrency.Combine(Concurrency.For(lemmas,function(a$14)
@@ -4067,7 +4178,7 @@
           });
          })))):(a$2=Text.DebugTriples(command),a$2!=null&&a$2.$==1?(dt=a$2.$0,Client.CUI().Wait((b$2=null,Concurrency.Delay(function()
          {
-          return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getTriples:-399037318",[dt]),function(a$13)
+          return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getTriples:-72584170",[dt]),function(a$13)
           {
            var c;
            return a$13.$==1?(Client.debug(a$13.$0),Concurrency.Zero()):(c=a$13.$0,Concurrency.Combine(Concurrency.For(c,function(a$14)
@@ -4104,7 +4215,7 @@
           });
          })))):(a$3=Text.DebugEmotionalTraits(command),a$3!=null&&a$3.$==1?(et=a$3.$0,Client.CUI().Wait((b$3=null,Concurrency.Delay(function()
          {
-          return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getEmotionalTraits:1477072601",[et]),function(a$13)
+          return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getEmotionalTraits:-2006046026",[et]),function(a$13)
           {
            var t;
            return a$13.$==1?(Client.debug(a$13.$0),Concurrency.Zero()):(t=a$13.$0,Concurrency.Combine(Concurrency.For(t,function(a$14)
@@ -4135,7 +4246,7 @@
           });
          })))):(a$4=Text.DebugBehavioralTraits(command),a$4!=null&&a$4.$==1?(bt=a$4.$0,Client.CUI().Wait((b$4=null,Concurrency.Delay(function()
          {
-          return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getBehavioralTraits:1322822711",[bt]),function(a$13)
+          return Concurrency.Bind((new AjaxRemotingProvider.New()).Async("SMApp.Web:SMApp.Web.Server.getBehavioralTraits:677094490",[bt]),function(a$13)
           {
            var t;
            return a$13.$==1?(Client.debug(a$13.$0),Concurrency.Zero()):(t=a$13.$0,Concurrency.Combine(Concurrency.For(t,function(a$14)
@@ -4236,7 +4347,7 @@
  };
  SMApp$Web_GeneratedPrintf.p$21=function($1)
  {
-  return $1.$==4?"ConceptCompletion":$1.$==3?"Disjunctive":$1.$==2?"WritingPrompt "+Utils.printList(Utils.prettyPrint,$1.$0):$1.$==1?"Verification (<fun>, <fun>)":"UserAuthentication "+Utils.prettyPrint($1.$0);
+  return $1.$==4?"ConceptCompletion":$1.$==3?"Disjunctive":$1.$==2?"WritingPrompt ("+Utils.printList(Utils.prettyPrint,$1.$0)+", "+"<fun>"+")":$1.$==1?"Verification (<fun>, <fun>)":"UserAuthentication "+Utils.prettyPrint($1.$0);
  };
  GeneratedPrintf.p=function($1)
  {

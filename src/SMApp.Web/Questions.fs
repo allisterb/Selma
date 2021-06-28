@@ -81,6 +81,7 @@ module Questions =
                 Bs.btnSecondary "No" (fun _ _ -> d.Cui.Term.Enable();r()) 
             ]
             d.Cui.Term.Disable()
+        | WritingPrompt _ -> ()
         | _ -> ()
 
 
