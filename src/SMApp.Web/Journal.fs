@@ -63,13 +63,16 @@ module Journal =
             "Something happened in the past week that made me feel angry or upset"
             "I remember this dream I had…"
         ]
+
         let processEntry() = 
+            let text:string = prop "journalentry_text" 
             let writingPrompt:int = prop "journalentry_writingprompt" 
-            let triples:Stack<Triple list list> = prop "journalentry_triples"
+            let triples:Triple list list = prop "journalentry_triples"
             let lemmas:ExpertAILemma list = prop "journalentry_mainlemmas"
             let entities:ExpertAIEntity list = prop "journalentry_entities"
-            let emotional_traits:ExpertAIEntity list = prop "journalentry_emotionaltraits"
-            let behavioural_traits:ExpertAIEntity list = prop "journalentry_behaviouraltraits"
+            let emotionalTraits:EmotionalTrait list = prop "journalentry_emotionaltraits"
+            let behaviouralTraits:BehavioralTrait list = prop "journalentry_behaviouraltraits"
+
             say <| writingPrompt.ToString()
             remove "journalentry_behaviouraltraits"
             remove "journalentry_emotionaltraits"
@@ -77,14 +80,32 @@ module Journal =
             remove "journalentry_mainlemmas"
             remove "journalentry_triples"
             remove "journalentry_writingprompt"
+            remove "journalentry_text"
             remove "journalentry"
 
+            let wje :WritingJournlEntry= {
+                UserName = "l"
+                Date = System.DateTime.Now
+                WritingPrompt = writingPrompt
+                Text = text
+                KnowledgeTriples = triples 
+                KnowledgeLemmas = lemmas
+                KnowledgeEntities = entities
+                KnowledgeEmotionalTraits = emotionalTraits
+                KnowledgeBehaviouralTraits = behaviouralTraits
+            }
+            async {
+                match! Server.addWritingJournalEntry wje with
+                | Ok _ -> ()
+                | Error r -> ()
+            } |> Async.Start
         let addEntry e = 
             async {
+                add "journalentry_text" e
                 match! Server.getTriples e with
                 | Ok triples ->              
                     debug <| sprintf "Got %i sentences from NLU server" (triples.Length)
-                    add "journalentry_triples" (Stack(triples))
+                    add "journalentry_triples" (triples)
                     echo "Triples:"
                     for triple in triples do echo <| sprintf "<span style='color:white;background-color:#00FA9A'>%A</span>" (triple)
 

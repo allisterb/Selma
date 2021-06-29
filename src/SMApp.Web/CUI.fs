@@ -50,20 +50,22 @@ module CUI =
          member x.Debug loc m = debug loc m
  
          member x.Say text =
+            let getSynth() = Window.SpeechSynthesis
             async {
-                let synth = Window.SpeechSynthesis
-                while synth.Speaking do 
+                let synth = getSynth()
+                while synth.Speaking || synth.Pending do 
                     do! Async.Sleep 1000
                 x.Avatar.AddMessage(text)
                 x.Avatar.ProcessMessages(0) 
             } |> Async.Start
 
          member x.Say (text:string list) =                
+            let getSynth() = Window.SpeechSynthesis
             async {
-                let synth = Window.SpeechSynthesis
-                while synth.Speaking do 
+                let synth = getSynth()
+                while synth.Speaking || synth.Pending do 
                     do! Async.Sleep 1000
-                for t in text do x.Avatar.AddMessage t
+                text |> List.map(fun s -> s + " ") |> List.reduce (+) |> x.Avatar.AddMessage
                 x.Avatar.ProcessMessages(0)
             } |> Async.Start
                    

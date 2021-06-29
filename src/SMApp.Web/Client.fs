@@ -56,8 +56,6 @@ module Client =
     let Output = new Stack<string>()
     let Questions = new Stack<Question>()
     let Utterances = new Stack<Utterance>()
-    //let Dialogue = Dialogue(CUI, Props, Questions, Output, Utterances)
-    //let push (m:Utterance) = Utterances.Push m; Dialogue
 
     (* Speech *)
     let synth = Window.SpeechSynthesis

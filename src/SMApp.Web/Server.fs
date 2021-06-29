@@ -9,6 +9,7 @@ open FSharp.Control
 open WebSharper
 open Npgsql.FSharp
 open Humanizer
+open Newtonsoft.Json
 
 open SMApp
 open SMApp.Models
@@ -159,7 +160,7 @@ module Server =
 
     (* Symptom journal functions *)
     [<Rpc>]
-    let addSymptomJournalEntry (user:string) (name:string) (location:string option) (magnitude:int option) : Async<Result<unit, exn>> =
+    let addSymptomJournalEntry (user:string) (name:string) (location:string option) (magnitude:int option) :Async<Result<unit, exn>> =
         pgdb
         |> Sql.query "INSERT INTO public.physical_symptom_journal(user_name, name, date, magnitude, location) VALUES (@u, @n, @d, @m, @l);"
         |> Sql.parameters [
@@ -176,6 +177,42 @@ module Server =
             | Error exn -> errex "Did not add symptom {0} for user {1} to database" exn [name;user]; Error exn
         )
     
+    [<Rpc>]
+    let getWritingJournal(userName:string) : Async<WritingJournlEntry list option> = 
+        pgdb
+        |> Sql.query "SELECT * FROM public.writing_journal WHERE user_name=@u"
+        |> Sql.parameters ["u", Sql.string userName]
+        |> Sql.executeAsync (fun read -> {
+            UserName =  read.string("user_name")
+            Date = (read.timestamp "date").ToDateTime() 
+            WritingPrompt = (read.int "writing_prompt")
+            Text = read.string "text"
+            KnowledgeTriples = Newtonsoft.Json.JsonConvert.DeserializeObject<Triple list list>(read.string "knowledge_triples")
+            KnowledgeLemmas = Newtonsoft.Json.JsonConvert.DeserializeObject<ExpertAILemma list>(read.string "knowledge_lemmas")
+            KnowledgeEntities = Newtonsoft.Json.JsonConvert.DeserializeObject<ExpertAIEntity list>(read.string "knowledge_entities")
+            KnowledgeEmotionalTraits = Newtonsoft.Json.JsonConvert.DeserializeObject<EmotionalTrait list>(read.string "knowledge_emotional_traits")
+            KnowledgeBehaviouralTraits = Newtonsoft.Json.JsonConvert.DeserializeObject<BehavioralTrait list>(read.string "knowledge_behavioural_traits")
+        }) 
+        |> Async.map(function | Ok j  -> Some j | Error exn -> err(exn.Message); None)
+
+    [<Rpc>]
+    let addWritingJournalEntry (entry:WritingJournlEntry) : Async<Result<unit, string>> = 
+        pgdb
+        |> Sql.query "INSERT INTO public.writing_journal(user_name, date, writing_prompt, text, knowledge_triples, knowledge_lemmas, knowledge_entities, knowledge_emotional_traits, knowledge_behavioural_traits) VALUES(@u, @d, @w, @t, @kt, @kl, @ke, @ket, @kbt);"
+        |> Sql.parameters [
+            ("u", Sql.string entry.UserName) 
+            ("d", Sql.timestamp DateTime.Now)
+            ("w", Sql.int entry.WritingPrompt)
+            ("t", Sql.string entry.Text)
+            ("kt", Sql.string (JsonConvert.SerializeObject(entry.KnowledgeTriples)))
+            ("kl", Sql.string (JsonConvert.SerializeObject(entry.KnowledgeTriples)))
+            ("ke", Sql.string (JsonConvert.SerializeObject(entry.KnowledgeEntities)))
+            ("ket", Sql.string (JsonConvert.SerializeObject(entry.KnowledgeEmotionalTraits)))
+            ("kbt", Sql.string (JsonConvert.SerializeObject(entry.KnowledgeBehaviouralTraits)))
+        ]
+        |> Sql.executeNonQueryAsync
+        |> Async.map(function | Ok j  -> Ok() | Error exn -> err(exn.Message); Error(exn.Message))
+
     [<Rpc>]
     let getSymptomJournal(userName:string) : Async<SymptomEntry list option> = 
         pgdb

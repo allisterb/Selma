@@ -1,5 +1,7 @@
 ﻿namespace SMApp.Web
 
+open System
+
 open WebSharper
 
 [<JavaScript;AutoOpen>]
@@ -80,6 +82,11 @@ module Knowledge =
         | ss when ss.ToUpper() = s.ToUpper() -> Some()
         | _ -> None
 
+    let (|EmotionalTraitLabel|_|) (s:string) :string->unit option =
+        function
+        | ss when ss.ToUpper() = s.ToUpper() -> Some()
+        | _ -> None
+
     let (|SubjectVerb1OfAny|_|) (s:string) (svr:string) (v:string) (triples:Triple list option) : Triple option = 
         triples 
         |> Option.bind(
@@ -98,6 +105,15 @@ module Knowledge =
                 | _ -> None
             ))
 
+    let (|EmotionalTrait1OfAny|_|) (s:string) (traits:EmotionalTrait list) : EmotionalTrait option =
+        traits
+        |> 
+        List.tryPick(fun t ->
+            match t with
+            | EmotionalTrait(EmotionalTraitLabel s, _, _) -> Some t
+            | _ -> None
+        )
+
     let (|ExpertAIEntity1OfAnyType|_|) (s:string) (entities:ExpertAIEntity list option) : ExpertAIEntity option =
         entities
         |> Option.bind(
@@ -106,3 +122,16 @@ module Knowledge =
                 | ExpertAIEntity(ExpertAIEntityType s, _, _, _) -> Some t
                 | _ -> None
             ))
+
+    
+    type WritingJournlEntry = {
+        UserName: string
+        Date: DateTime
+        WritingPrompt: int
+        Text: string
+        KnowledgeTriples: Triple list list
+        KnowledgeLemmas: ExpertAILemma list
+        KnowledgeEntities: ExpertAIEntity list
+        KnowledgeBehaviouralTraits: BehavioralTrait list
+        KnowledgeEmotionalTraits: EmotionalTrait list
+    }

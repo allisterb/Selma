@@ -42,4 +42,5 @@ module Models =
         Date: DateTime
         Magnitude: int option
         Location: string option
-    }    
+    }
+    
