@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Apis.CloudHealthcare.v1" Version="1.52.0.2363" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SMApp.Base\SMApp.Base.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="seismic-bonfire-319022-63f6692bc48a.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

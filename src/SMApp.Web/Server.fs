@@ -14,6 +14,7 @@ open Newtonsoft.Json
 open SMApp
 open SMApp.Models
 open SMApp.NLU.ExpertAI
+open SMApp.NLU.GoogleHC
     
 module Server =        
     
@@ -319,5 +320,10 @@ module Server =
         |> Async.map(function 
             | Choice1Of2 r -> r |> Seq.map from_relation |> Seq.toList |> Ok 
             | Choice2Of2 exn -> errex "Exception raised retrieving relations for sentence {0}." exn [sentence]; Error(exn.Message))
+
+    [<Rpc>]
+    let getGoogleNLU() =
+        let goog = GoogleHCApi.AnalyzeEntities("Patient requires MRI on right shoulder to rule out supraspinatus tear.") |> Async.AwaitTask
+        ()
         
         

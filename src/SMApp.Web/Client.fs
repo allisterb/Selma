@@ -167,6 +167,7 @@ module Client =
                 debug <| sprintf "Utterances: %A" Utterances
                 debug <| sprintf "Questions: %A" Questions
                 for p in Props do debug <| sprintf "%s: %A"  p.Key p.Value
+                do Server.getGoogleNLU()
             | Text.DebugEntities e ->
                 async {
                     match! Server.getEntities e with

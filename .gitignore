@@ -342,3 +342,4 @@ healthchecksdb
 /deploy/oc-deploy.cmd
 /build/oc-port-forward.cmd
 **/*.ionide/
+seismic-bonfire-319022-63f6692bc48a.json

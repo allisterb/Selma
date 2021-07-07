@@ -32,6 +32,7 @@
     <None Include="wsconfig.json" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="BrightstarDBLibs" Version="1.14.0-alpha0003" />
     <PackageReference Include="Markdig" Version="0.22.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.Azure.CognitiveServices.Vision.Face" Version="2.6.0-preview.1" />
@@ -54,6 +55,7 @@
     <ProjectReference Include="..\SMApp.Core\SMApp.Core.fsproj" />
     <ProjectReference Include="..\SMApp.Logger.Serilog\SMApp.Logger.Serilog.csproj" />
     <ProjectReference Include="..\SMApp.NLU.ExpertAI\SMApp.NLU.ExpertAI.csproj" />
+    <ProjectReference Include="..\SMApp.NLU.GoogleHC\SMApp.NLU.GoogleHC.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="SMApp.BotLibre">
